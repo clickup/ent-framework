@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`minifyStack 1`] = `
+"at Ent.ts:525 (Function.loadNullable)
+at Ent.ts:563 (Function.loadX)
+at EntSome.ts:45 (EntSome.asset2)
+at Memoize.ts:75 (EntSome.<anonymous>)
+at AsanaDriver.ts:256
+at promise.ts:55
+at promise.ts:55 (Object.mapJoin)
+at AsanaDriver.ts:255 (loadProjects)"
+`;

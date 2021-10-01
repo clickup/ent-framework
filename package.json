@@ -1,0 +1,25 @@
+{
+  "name": "ent-framework",
+  "description": "Graph database library",
+  "version": "2.5.93",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "build": "tsc.sh",
+    "dev": "tsc.sh && tsc.sh --watch",
+    "lint": "lint.sh",
+    "test": "test.sh"
+  },
+  "dependencies": {
+    "delay": "^4.3.0",
+    "lodash": "^4.17.20",
+    "object-hash": "^2.0.1",
+    "p-defer": "^3.0.0",
+    "pg": "^8.3.3",
+    "quick-lru": "^4.0.1",
+    "streaming-iterables": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/uniqid": "^4.1.3"
+  }
+}
