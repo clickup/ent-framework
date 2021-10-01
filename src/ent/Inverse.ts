@@ -1,0 +1,135 @@
+import { Client } from "../abstract/Client";
+import { Cluster } from "../abstract/Cluster";
+import { Query } from "../abstract/Query";
+import { Schema } from "../abstract/Schema";
+import { join } from "../helpers";
+import Memoize from "../Memoize";
+import { ID, IDFieldsRequired, Table } from "../types";
+import { VC } from "./VC";
+
+// For perf reasons, we return no more than that number of id2s per each id1.
+const MAX_ID2_PER_ID1 = 1000;
+
+// No DB unique indexes can include a nullable field and be really unique, so we
+// simulate id1=NULL via just storing "0" in the inverse, and Inverse abstracts
+// this fact from the caller.
+const ZERO_NULL = "0";
+
+/**
+ * Represents an inverse assoc manager which knows how to modify/query/fix
+ * inverses. Parameter `name` is the inverse's schema name (in SQL like
+ * databases, most likely a table name), and `type` defines which schema refers
+ * another schema (e.g. "org2user").
+ */
+export class Inverse<TClient extends Client, TTable extends Table> {
+  private inverseSchema = Inverse.buildInverseSchema(this.id2Schema, this.name);
+
+  constructor(
+    public readonly cluster: Cluster<TClient>,
+    public readonly id2Schema: Schema<TTable>,
+    public readonly id2Field: IDFieldsRequired<TTable>,
+    public readonly name: string,
+    public readonly type: string
+  ) {}
+
+  /**
+   * Runs after a row was inserted to the main schema.
+   */
+  async afterInsert(vc: VC, id1: string | null, id2: string) {
+    await this.run(
+      vc,
+      id1,
+      this.inverseSchema.insert({ id1: id1 ?? ZERO_NULL, type: this.type, id2 })
+    );
+  }
+
+  /**
+   * Runs after a row was updated in the main schema.
+   */
+  async afterUpdate(
+    vc: VC,
+    id1: string | null,
+    id2: string,
+    oldID1: string | null
+  ) {
+    if (id1 === oldID1) {
+      return;
+    }
+
+    await join([
+      this.afterDelete(vc, oldID1, id2),
+      this.afterInsert(vc, id1, id2),
+    ]);
+  }
+
+  /**
+   * Runs after a row was deleted in the main schema.
+   */
+  async afterDelete(vc: VC, id1: string | null, id2: string) {
+    const row = await this.run(
+      vc,
+      id1,
+      this.inverseSchema.loadBy({ id1: id1 ?? "0", type: this.type, id2 })
+    );
+    if (row) {
+      await this.run(vc, id1, this.inverseSchema.delete(row.id));
+    }
+  }
+
+  /**
+   * Returns all id2s by a particular (id1, type) pair. The number of resulting
+   * rows is limited to not overload the database.
+   */
+  async id2s(vc: VC, id1: string | null) {
+    const rows = await this.run(
+      vc,
+      id1,
+      this.inverseSchema.select({
+        where: { id1: id1 ?? ZERO_NULL, type: this.type },
+        limit: MAX_ID2_PER_ID1,
+      })
+    );
+    return rows.map((row) => row.id2).sort();
+  }
+
+  /**
+   * A shortcut to run a query on the shard of id1.
+   */
+  private async run<TOutput>(
+    vc: VC,
+    id1: string | null,
+    query: Query<TOutput>
+  ) {
+    // id1=NULL inverse is always put to the global shard.
+    const shard = id1 ? this.cluster.shard(id1) : this.cluster.globalShard();
+    return shard.run(
+      query,
+      vc.toAnnotation(),
+      vc.session(shard, this.name + ":" + this.type)
+    );
+  }
+
+  /**
+   * Creates an inverse schema which derives its id field's autoInsert from the
+   * passed id2 schema. The returned schema is heavily cached, so batching for
+   * it works efficiently even for different id2 schemas.
+   */
+  @Memoize(
+    (schema: Schema<Table>, name: string) => schema.table[ID].autoInsert + name
+  )
+  private static buildInverseSchema<TTable extends Table>(
+    schema: Schema<TTable>,
+    name: string
+  ) {
+    return new schema.constructor(
+      name,
+      {
+        id: { type: ID, autoInsert: schema.table[ID].autoInsert! },
+        type: { type: String },
+        id1: { type: ID },
+        id2: { type: ID },
+      },
+      ["id1", "type", "id2"]
+    );
+  }
+}

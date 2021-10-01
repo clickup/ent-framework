@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": [
+    "src/**/*",
+  ],
+  "compilerOptions": {
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "rootDir": "src",
+    "outDir": "dist",
+    "lib": [
+      "es2019",
+    ],
+    "types": [
+      "node",
+      "jest"
+    ],
+    "module": "commonjs",
+  }
+}
