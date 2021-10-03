@@ -1,7 +1,7 @@
 {
   "name": "ent-framework",
   "description": "Graph database library",
-  "version": "2.5.94",
+  "version": "2.5.95",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
@@ -17,7 +17,8 @@
     "p-defer": "^3.0.0",
     "pg": "^8.3.3",
     "quick-lru": "^5.1.0",
-    "streaming-iterables": "^5.0.2"
+    "streaming-iterables": "^5.0.2",
+    "uniqid": "^5.0.3"
   },
   "devDependencies": {
     "@types/uniqid": "^4.1.3"

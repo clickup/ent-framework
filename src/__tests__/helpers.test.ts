@@ -8,11 +8,11 @@ test("minifyStack", () => {
         at Function.loadNullable (/Users/user/slapdash/packages/server/src/lib/ent/ent/Ent.ts:525:45)
         at Function.loadX (/Users/user/slapdash/packages/server/src/lib/ent/ent/Ent.ts:563:30)
         at EntSome.asset2 (/Users/user/slapdash/packages/server/src/ents/EntSome.ts:45:21)
-        at EntSome.<anonymous> (/Users/user/slapdash/packages/shared/src/Memoize.ts:75:40)
+        at EntSome.<anonymous> (/Users/user/slapdash/packages/slapdash-shared/src/Memoize.ts:75:40)
         at /Users/user/slapdash/packages/server/src/lib/connectors/asana/AsanaDriver.ts:256:32
-        at /Users/user/slapdash/packages/shared/src/promise.ts:55:39
+        at /Users/user/slapdash/packages/slapdash-shared/src/promise.ts:55:39
         at Array.map (<anonymous>)
-        at Object.mapJoin (/Users/user/slapdash/packages/shared/src/promise.ts:55:23)
+        at Object.mapJoin (/Users/user/slapdash/packages/slapdash-shared/src/promise.ts:55:23)
         at loadProjects (/Users/user/slapdash/packages/server/src/lib/connectors/asana/AsanaDriver.ts:255:11)`,
       1
     )
