@@ -1,12 +1,12 @@
 {
   "name": "ent-framework",
   "description": "Graph database library",
-  "version": "2.5.102",
+  "version": "2.6.27",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
     "build": "tsc.sh",
-    "dev": "tsc.sh && tsc.sh --watch",
+    "dev": "tight-loop.sh tsc.sh --watch",
     "lint": "lint.sh",
     "test": "test.sh"
   },
