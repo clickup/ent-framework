@@ -264,7 +264,7 @@ export function nullthrows<T>(x?: T | null, message?: string | Error): T {
  * It's like an analog of "async on intent" comment in the code.
  */
 export function runInVoid(
-  funcOrPromise: (() => Promise<any> | void) | Promise<any>
+  funcOrPromise: (() => Promise<unknown> | void) | Promise<unknown> | void
 ) {
   if (funcOrPromise instanceof Function) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
