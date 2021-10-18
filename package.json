@@ -1,7 +1,7 @@
 {
   "name": "ent-framework",
   "description": "Graph database library",
-  "version": "2.6.30",
+  "version": "2.6.37",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
@@ -21,6 +21,7 @@
     "uniqid": "^5.4.0"
   },
   "devDependencies": {
+    "@types/pg": "^7.14.11",
     "@types/uniqid": "^4.1.3"
   }
 }
