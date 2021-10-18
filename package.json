@@ -11,14 +11,14 @@
     "test": "test.sh"
   },
   "dependencies": {
-    "delay": "^4.3.0",
-    "lodash": "^4.17.20",
-    "object-hash": "^2.0.1",
+    "delay": "^4.4.1",
+    "lodash": "^4.17.21",
+    "object-hash": "^2.2.0",
     "p-defer": "^3.0.0",
-    "pg": "^8.3.3",
-    "quick-lru": "^5.1.0",
-    "streaming-iterables": "^5.0.2",
-    "uniqid": "^5.0.3"
+    "pg": "^8.7.1",
+    "quick-lru": "^5.1.1",
+    "streaming-iterables": "^5.0.4",
+    "uniqid": "^5.4.0"
   },
   "devDependencies": {
     "@types/uniqid": "^4.1.3"
