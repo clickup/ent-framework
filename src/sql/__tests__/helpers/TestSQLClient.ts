@@ -116,10 +116,10 @@ const master = new SQLClientPool(
     },
     isMaster: true,
     config: {
-      host: process.env.DB_HOST!.replace(/[,;].*/s, ""),
-      database: process.env.DB_DATABASE,
-      user: process.env.DB_USER || undefined,
-      password: process.env.DB_PASS || undefined,
+      host: process.env.DB_HOST_DEFAULT || process.env.PGHOST,
+      database: process.env.DB_DATABASE || process.env.PGDATABASE,
+      user: process.env.DB_USER || process.env.PGUSER,
+      password: process.env.DB_PASS || process.env.PGPASSWORD,
     },
   },
   {}
@@ -128,11 +128,14 @@ const master = new SQLClientPool(
 export const testCluster = new Cluster(
   2, // numReadShards,
   2, // numWriteShards,
-  [
-    new Island(new TestSQLClient(master), [
-      new TestSQLClient(
-        new SQLClientPool({ ...master.dest, isMaster: false }, master.loggers)
-      ),
-    ]),
-  ]
+  new Map([
+    [
+      0,
+      new Island(new TestSQLClient(master), [
+        new TestSQLClient(
+          new SQLClientPool({ ...master.dest, isMaster: false }, master.loggers)
+        ),
+      ]),
+    ],
+  ])
 );

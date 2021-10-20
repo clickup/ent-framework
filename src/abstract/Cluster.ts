@@ -26,12 +26,12 @@ export class Island<TClient extends Client> {
  * Shard 0 is a special "global" shard.
  */
 export class Cluster<TClient extends Client> {
-  readonly shards: Array<Shard<TClient>>;
+  readonly shards: ReadonlyArray<Shard<TClient>>;
 
   constructor(
     public readonly numReadShards: number,
     public readonly numWriteShards: number,
-    public readonly islands: Array<Island<TClient>>
+    public readonly islands: ReadonlyMap<number, Island<TClient>>
   ) {
     if (this.numWriteShards > this.numReadShards) {
       throw Error(
@@ -58,7 +58,7 @@ export class Cluster<TClient extends Client> {
   }
 
   prewarm() {
-    for (const island of this.islands) {
+    for (const island of this.islands.values()) {
       island.master.prewarm();
       island.replicas.forEach((client) => client.prewarm());
     }
@@ -75,7 +75,11 @@ export class Cluster<TClient extends Client> {
   }
 
   shard(id: string): Shard<TClient> {
-    const noMatterWhatIsland = this.islands[0];
+    const noMatterWhatIsland = [...this.islands.values()][0];
+    if (!noMatterWhatIsland) {
+      throw Error("The cluster has no islands");
+    }
+
     const shardNo = noMatterWhatIsland.master.shardNoByID(id);
     const shard = this.shards[shardNo];
     if (!shard) {
@@ -90,7 +94,7 @@ export class Cluster<TClient extends Client> {
     // TODO: this memoization needs to be cleaned time to time to re-discover
     // shards, e.g. in case some DB came back online.
     const islandsByShard: Array<Island<TClient>> = [];
-    await mapJoin(this.islands, async (island) => {
+    await mapJoin([...this.islands.values()], async (island) => {
       const shardNos = await island.master.shardNos();
       for (const shardNo of shardNos) {
         if (shardNo >= this.numReadShards) {
