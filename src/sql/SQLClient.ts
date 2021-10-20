@@ -302,7 +302,15 @@ export class SQLClientPool extends Client implements SQLClient {
     return Object.assign(Object.create(this.constructor.prototype), {
       ...this,
       shardName: this.buildShardName(no),
-      sqlPreamble: `SET search_path TO ${this.buildShardName(no)}; `,
+      // We must have "public" in search_path, because extensions are always
+      // installed in "public" schema. The extensions may expose operators (e.g.
+      // "citext" exposes comparison operators) which must be available in all
+      // shards by default. There is a way to install an extension to a
+      // particular schema (and we used to do this), but a) there can be only
+      // one such schema, and b) there are be problems running pg_dump to
+      // migrate this shard to another machine (since pg_dump doesn't emit
+      // CREATE EXTENSION statement when filtering by schema name).
+      sqlPreamble: `SET search_path TO ${this.buildShardName(no)}, public; `,
     });
   }
 
