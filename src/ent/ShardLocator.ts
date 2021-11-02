@@ -131,7 +131,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     }
   }
 
-  /** All shareds except shard 0 */
+  /** All shards except shard 0 */
   allNonGlobalShards() {
     return this.cluster.shards.filter((shard) => shard.no !== 0);
   }
