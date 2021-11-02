@@ -11,6 +11,7 @@ import {
 const MAX_BIGINT = "9223372036854775807";
 const MAX_BIGINT_RE = new RegExp("^\\d{1," + MAX_BIGINT.length + "}$");
 const ONE_SECOND_IN_US = BigInt(1e9);
+const MAX_REPLICATION_LAG_IN_US = ONE_SECOND_IN_US * BigInt(3);
 
 /**
  * Outside of Ent-framework code, you probably want to use isSlapdashID
@@ -183,7 +184,7 @@ export class SQLClientPool extends Client implements SQLClient {
     // TODO: implement real xlog position fetching
     return this.dest.isMaster
       ? process.hrtime.bigint()
-      : process.hrtime.bigint() - ONE_SECOND_IN_US;
+      : process.hrtime.bigint() - MAX_REPLICATION_LAG_IN_US;
   }
 
   async query<TRes>(
