@@ -4,9 +4,19 @@
 export class Session {
   private pos: bigint = BigInt(0);
 
-  static deserialize(data?: string): Session {
+  static deserialize(
+    data: string | undefined,
+    prevSession: Session | null
+  ): Session {
+    const pos = BigInt(data || 0);
+    if (prevSession && prevSession.pos >= pos) {
+      // The previous session holds a more recent wal position than the one
+      // we're deserializing, so we should respect it better.
+      return prevSession;
+    }
+
     const session = new this();
-    session.setPos(BigInt(data ?? 0));
+    session.setPos(pos);
     return session;
   }
 
