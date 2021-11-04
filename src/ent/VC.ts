@@ -152,7 +152,7 @@ export class VC {
   serializeSessions() {
     const sessions: Record<string, string | undefined> = {};
     for (const [key, session] of this.sessions) {
-      sessions[key] = session.serialize();
+      sessions[key] = session.serialize(); // `undefined` will be eaten by JSON.stringify() d
     }
 
     return JSON.stringify({
@@ -177,9 +177,12 @@ export class VC {
       return this;
     }
 
-    const sessions = new Map<string, Session>();
-    for (const [key, session] of Object.entries(data.sessions)) {
-      sessions.set(key, Session.deserialize(session));
+    const sessions = new Map(this.sessions);
+    for (const [key, sessionStr] of Object.entries(data.sessions)) {
+      sessions.set(
+        key,
+        Session.deserialize(sessionStr, sessions.get(key) ?? null)
+      );
     }
 
     return new VC(
