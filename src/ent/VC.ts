@@ -79,7 +79,10 @@ export class VC {
      * should a request be sent to a replica or to the master. */
     private sessions: Map<string, Session>,
     /** Sticky objects attached to the VC (and inherited when deriving). */
-    private flavors: ReadonlyMap<Function, VCFlavor>
+    private flavors: ReadonlyMap<Function, VCFlavor>,
+    /** If true, it's the initial "root" VC which is not yet derived to any
+     * user's VC. */
+    private isRoot: boolean
   ) {}
 
   /**
@@ -132,11 +135,7 @@ export class VC {
    * particular schema name (most likely, table).
    */
   session(shard: Shard<Client>, schemaName: string) {
-    if (this.freshness !== null) {
-      return this.freshness;
-    }
-
-    const key = schemaName + ":" + shard.no;
+    const key = shard.no + ":" + schemaName;
     let session = this.sessions.get(key);
     if (session === undefined) {
       session = new Session();
@@ -147,51 +146,46 @@ export class VC {
   }
 
   /**
-   * Serializes shard sessions (master xlog positions) to a string format.
+   * Serializes shard sessions (master wal positions) to a string format. The
+   * method always returns a value which is compatible to
+   * deserializeSessions() input.
    */
   serializeSessions() {
-    const sessions: Record<string, string | undefined> = {};
+    const sessions: Record<string, string> = {};
     for (const [key, session] of this.sessions) {
-      sessions[key] = session.serialize(); // `undefined` will be eaten by JSON.stringify() d
+      const sessionStr = session.serialize();
+      if (sessionStr) {
+        sessions[key] = sessionStr;
+      }
     }
 
-    return JSON.stringify({
-      freshness: this.freshness ? this.freshness.toString() : null,
-      sessions,
-    });
+    // Not a single write has been done in this VC; skip serialization.
+    if (Object.keys(sessions).length === 0) {
+      return "";
+    }
+
+    return JSON.stringify(sessions);
   }
 
   /**
-   * Restores previously serialized sessions to a new VC.
+   * This method has a side effect, because it reflects the changes in the
+   * global DB state as seen by the current VC's user. Restores previously
+   * serialized sessions to the existing VC and all its parent VCs which share
+   * the same userID. (The latter happens, because `this.sessions` map is passed
+   * by reference to all derived VCs starting from the one which sets userID;
+   * see `new VC(...)` clauses all around and toLowerInternal() logic.) The
+   * sessions are merged according to wal position (greater wal position wins).
    */
-  withDeserializedSessions(dataStr: string) {
+  deserializeSessions(dataStr: string) {
     if (!dataStr) {
-      return this;
+      return;
     }
 
-    const data: {
-      freshness: string | null;
-      sessions: Record<string, string>;
-    } = JSON.parse(dataStr);
-    if (!data.sessions) {
-      return this;
+    const data = JSON.parse(dataStr) as Record<string, string>;
+    for (const [key, sessionStr] of Object.entries(data)) {
+      const oldSession = this.sessions.get(key) ?? null;
+      this.sessions.set(key, Session.deserialize(sessionStr, oldSession));
     }
-
-    const sessions = new Map(this.sessions);
-    for (const [key, sessionStr] of Object.entries(data.sessions)) {
-      sessions.set(
-        key,
-        Session.deserialize(sessionStr, sessions.get(key) ?? null)
-      );
-    }
-
-    return new VC(
-      this.trace,
-      this.userID,
-      data.freshness === MASTER.toString() ? MASTER : this.freshness,
-      sessions,
-      this.flavors
-    );
   }
 
   /**
@@ -203,7 +197,8 @@ export class VC {
       this.userID,
       this.freshness,
       this.sessions,
-      this.flavors
+      this.flavors,
+      this.isRoot
     );
   }
 
@@ -216,7 +211,14 @@ export class VC {
       return this;
     }
 
-    return new VC(this.trace, this.userID, MASTER, this.sessions, this.flavors);
+    return new VC(
+      this.trace,
+      this.userID,
+      MASTER,
+      this.sessions,
+      this.flavors,
+      this.isRoot
+    );
   }
 
   /**
@@ -235,7 +237,8 @@ export class VC {
       this.userID,
       STALE_REPLICA,
       this.sessions,
-      this.flavors
+      this.flavors,
+      this.isRoot
     );
   }
 
@@ -250,7 +253,8 @@ export class VC {
           this.userID,
           this.freshness,
           this.sessions,
-          new Map([...this.flavors.entries(), [flavor.constructor, flavor]])
+          new Map([...this.flavors.entries(), [flavor.constructor, flavor]]),
+          this.isRoot
         )
       : this;
   }
@@ -264,7 +268,8 @@ export class VC {
       this.userID,
       this.freshness,
       this.sessions,
-      this.flavors
+      this.flavors,
+      this.isRoot
     );
   }
 
@@ -281,21 +286,8 @@ export class VC {
       OMNI_ID,
       this.freshness,
       this.sessions,
-      this.flavors
-    );
-  }
-
-  /**
-   * Creates a new VC with downgraded permissions.
-   */
-  @Memoize()
-  toGuest() {
-    return new VC(
-      this.trace,
-      GUEST_ID,
-      this.freshness,
-      this.sessions,
-      this.flavors
+      this.flavors,
+      this.isRoot
     );
   }
 
@@ -373,33 +365,44 @@ export class VC {
   }
 
   /**
-   * Used internally by Ent.ts to lower permissions of an injected VC. For
-   * guest, userID === null. IMPORTANT: freshness is always reset to default
-   * one it VC is demoted.
+   * Used internally by Ent framework to lower permissions of an injected VC.
+   * For guest, userID === null.
+   * - freshness is always reset to default one it VC is demoted
+   * - isRoot is changed to false once a root VC is switched to a per-user VC
    */
   @Memoize()
   public toLowerInternal(userID: string | null) {
-    const newUserID = userID ? "" + userID : GUEST_ID;
+    const newUserID = userID ? userID.toString() : GUEST_ID;
 
-    if (this.freshness === STALE_REPLICA) {
-      // A special case: demote STALE_REPLICA freshness to default (it's not
-      // transitive).
-      return new VC(this.trace, newUserID, null, this.sessions, this.flavors);
-    }
-
-    if (this.userID === newUserID) {
-      // This happens most of the time: a VC is already user-owned, and
-      // freshness is default or master.
+    if (this.userID === newUserID && this.freshness !== STALE_REPLICA) {
+      // Speed optimization (this happens most of the time): a VC is already
+      // user-owned, and freshness is default or MASTER.
       return this;
     }
 
-    // User changed (most likely omni->userID or omni->guest).
+    const switchesToUserFirstTime =
+      this.isRoot && newUserID !== GUEST_ID && newUserID !== OMNI_ID;
+    const newIsRoot = this.isRoot && !switchesToUserFirstTime;
+
+    // Create an independent sessions map only when we switch to a non-root VC
+    // the 1st time (e.g. in the beginning of HTTP connection).
+    const newSessions = switchesToUserFirstTime
+      ? new Map(this.sessions)
+      : this.sessions;
+
+    // A special case: demote STALE_REPLICA freshness to default (it's not
+    // transitive and applies only till the next derivation).
+    const newFreshness =
+      this.freshness === STALE_REPLICA ? null : this.freshness;
+
+    // Something has changed (most commonly omni->userID or omni->guest).
     return new VC(
       this.trace,
       newUserID,
-      this.freshness,
-      this.sessions,
-      this.flavors
+      newFreshness,
+      newSessions,
+      this.flavors,
+      newIsRoot
     );
   }
 
@@ -411,6 +414,6 @@ export class VC {
    * of calls and reasons, why some object was accessed.
    */
   static createGuestPleaseDoNotUseCreationPointsMustBeLimited() {
-    return new this(new VCTrace(), GUEST_ID, null, new Map(), new Map());
+    return new VC(new VCTrace(), GUEST_ID, null, new Map(), new Map(), true);
   }
 }
