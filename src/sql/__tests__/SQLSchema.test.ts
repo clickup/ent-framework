@@ -58,7 +58,7 @@ class EncryptedValue {
 }
 
 async function shardRun<TOutput>(query: Query<TOutput>) {
-  return shard.run(query, annotation, session, null);
+  return shard.run(query, annotation, session);
 }
 
 beforeEach(async () => {
@@ -727,7 +727,6 @@ test("loadby_single_one_column", async () => {
   const row = await shard.run(
     schema.loadBy({ name: "b" }),
     annotation,
-    new Session(),
     STALE_REPLICA
   );
   replica.toMatchSnapshot();
