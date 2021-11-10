@@ -41,21 +41,21 @@ export class Shard<TClient extends Client> {
   async run<TOutput>(
     query: Query<TOutput>,
     annotation: QueryAnnotation,
-    session: Session,
-    freshness: null | typeof MASTER | typeof STALE_REPLICA
+    session: Session | typeof MASTER | typeof STALE_REPLICA
   ): Promise<TOutput> {
     if (query.IS_WRITE) {
-      freshness = MASTER;
+      const client = await this.client(MASTER);
+      if (session instanceof Session) {
+        const res = await query.run(client, annotation);
+        session.setPos(client.xid());
+        return res;
+      } else {
+        return query.run(client, annotation);
+      }
+    } else {
+      const client = await this.client(session);
+      return query.run(client, annotation);
     }
-
-    const client = await this.client(freshness ?? session);
-    const res = await query.run(client, annotation);
-
-    if (query.IS_WRITE) {
-      session.setPos(client.xid());
-    }
-
-    return res;
   }
 
   @Memoize()

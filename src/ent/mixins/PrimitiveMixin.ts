@@ -180,8 +180,7 @@ export function PrimitiveMixin<
         const id = await shard.run(
           this.SCHEMA.insert(input),
           vc.toAnnotation(),
-          vc.session(shard, this.SCHEMA.name),
-          vc.freshness
+          vc.session(shard, this.SCHEMA.name)
         );
 
         if (id) {
@@ -209,8 +208,7 @@ export function PrimitiveMixin<
         [ID]: await shard.run(
           this.SCHEMA.idGen(),
           vc.toAnnotation(),
-          vc.session(shard, this.SCHEMA.name),
-          vc.freshness
+          vc.session(shard, this.SCHEMA.name)
         ),
       };
       return this.TRIGGERS.wrapInsert(doInsert, vc, inputWithID);
@@ -247,8 +245,7 @@ export function PrimitiveMixin<
       const id = await shard.run(
         query,
         vc.toAnnotation(),
-        vc.session(shard, this.SCHEMA.name),
-        vc.freshness
+        vc.session(shard, this.SCHEMA.name)
       );
       vc.cache(IDsCacheUpdatable).add(id);
       return id;
@@ -260,8 +257,7 @@ export function PrimitiveMixin<
       const row = await shard.run(
         query,
         vc.toAnnotation(),
-        vc.session(shard, this.SCHEMA.name),
-        vc.freshness
+        vc.session(shard, this.SCHEMA.name)
       );
       if (!row) {
         return null;
@@ -279,8 +275,7 @@ export function PrimitiveMixin<
       const row = await shard.run(
         query,
         vc.toAnnotation(),
-        vc.session(shard, this.SCHEMA.name),
-        vc.freshness
+        vc.session(shard, this.SCHEMA.name)
       );
       if (!row) {
         return null;
@@ -306,8 +301,7 @@ export function PrimitiveMixin<
         const rows = await shard.run(
           this.SCHEMA.select({ where, limit, order, custom }),
           vc.toAnnotation(),
-          vc.session(shard, this.SCHEMA.name),
-          vc.freshness
+          vc.session(shard, this.SCHEMA.name)
         );
         return mapJoin(rows, async (row) => this.createEnt(vc, row));
       });
@@ -350,8 +344,7 @@ export function PrimitiveMixin<
             custom,
           }),
           vc.toAnnotation(),
-          vc.session(shard, this.SCHEMA.name),
-          vc.freshness
+          vc.session(shard, this.SCHEMA.name)
         );
         const chunk = await mapJoin(rows, async (row) =>
           this.createEnt(vc, row)
@@ -384,8 +377,7 @@ export function PrimitiveMixin<
         shard.run(
           this.SCHEMA.count(where),
           vc.toAnnotation(),
-          vc.session(shard, this.SCHEMA.name),
-          vc.freshness
+          vc.session(shard, this.SCHEMA.name)
         )
       );
 
@@ -411,8 +403,7 @@ export function PrimitiveMixin<
           const updated = await shard.run(
             this.constructor.SCHEMA.update(this[ID], input),
             this.vc.toAnnotation(),
-            this.vc.session(shard, this.constructor.SCHEMA.name),
-            this.vc.freshness
+            this.vc.session(shard, this.constructor.SCHEMA.name)
           );
 
           if (updated) {
@@ -456,8 +447,7 @@ export function PrimitiveMixin<
           const deleted = await shard.run(
             this.constructor.SCHEMA.delete(this[ID]),
             this.vc.toAnnotation(),
-            this.vc.session(shard, this.constructor.SCHEMA.name),
-            this.vc.freshness
+            this.vc.session(shard, this.constructor.SCHEMA.name)
           );
 
           if (deleted) {

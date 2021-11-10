@@ -49,23 +49,13 @@ test("stress", async () => {
     const names = range(2).map((i) => i + "-" + uniq);
 
     const ids = await mapJoin(names, async (name) =>
-      shard.run(
-        schema.insert({ prefix: "pfx", name }),
-        annotation,
-        session,
-        null
-      )
+      shard.run(schema.insert({ prefix: "pfx", name }), annotation, session)
     );
 
     await join(
       ids.map(async (id, i) => {
         const row = nullthrows(
-          await shard.run(
-            schema.load(nullthrows(id)),
-            annotation,
-            session,
-            null
-          )
+          await shard.run(schema.load(nullthrows(id)), annotation, session)
         );
         expect(row.name).toEqual(names[i]);
       })
@@ -77,8 +67,7 @@ test("stress", async () => {
           await shard.run(
             schema.loadBy({ prefix: "pfx", name: names[i] }),
             annotation,
-            session,
-            null
+            session
           )
         );
         expect(row.id).toEqual(id);
@@ -90,17 +79,11 @@ test("stress", async () => {
         const updated = await shard.run(
           schema.update(nullthrows(id), { name: "upd" + names[i] }),
           annotation,
-          session,
-          null
+          session
         );
         expect(updated).toBeTruthy();
         const row = nullthrows(
-          await shard.run(
-            schema.load(nullthrows(id)),
-            annotation,
-            session,
-            null
-          )
+          await shard.run(schema.load(nullthrows(id)), annotation, session)
         );
         expect(row.name).toEqual("upd" + names[i]);
       })
