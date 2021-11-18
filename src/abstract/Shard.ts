@@ -42,16 +42,13 @@ export class Shard<TClient extends Client> {
     query: Query<TOutput>,
     annotation: QueryAnnotation,
     session: Session,
-    freshness: null | typeof MASTER | typeof STALE_REPLICA
+    origFreshness: null | typeof MASTER | typeof STALE_REPLICA
   ): Promise<TOutput> {
-    if (query.IS_WRITE) {
-      freshness = MASTER;
-    }
-
+    const freshness = query.IS_WRITE ? MASTER : origFreshness;
     const client = await this.client(freshness ?? session);
     const res = await query.run(client, annotation);
 
-    if (query.IS_WRITE) {
+    if (query.IS_WRITE && origFreshness !== STALE_REPLICA) {
       session.setPos(client.xid());
     }
 
