@@ -180,12 +180,14 @@ export class VC {
    * see `new VC(...)` clauses all around and toLowerInternal() logic.) The
    * sessions are merged according to wal position (greater wal position wins).
    */
-  withDeserializedSessions(dataStr: string) {
-    if (dataStr) {
-      const data = JSON.parse(dataStr) as Record<string, string>;
-      for (const [key, sessionStr] of Object.entries(data)) {
-        const oldSession = this.sessions.get(key) ?? null;
-        this.sessions.set(key, Session.deserialize(sessionStr, oldSession));
+  withDeserializedSessions(...dataStrs: string[]) {
+    for (const dataStr of dataStrs) {
+      if (dataStr) {
+        const data = JSON.parse(dataStr) as Record<string, string>;
+        for (const [key, sessionStr] of Object.entries(data)) {
+          const oldSession = this.sessions.get(key) ?? null;
+          this.sessions.set(key, Session.deserialize(sessionStr, oldSession));
+        }
       }
     }
 
