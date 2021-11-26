@@ -34,8 +34,8 @@ export class TestSQLClient extends Client implements SQLClient {
     return res;
   }
 
-  xid() {
-    return this.client.xid();
+  sessionPos() {
+    return this.client.sessionPos();
   }
 
   async shardNos() {
