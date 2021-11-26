@@ -22,7 +22,7 @@ import {
   Where,
 } from "../types";
 import * as sqlClientMod from "./SQLClient";
-import { SQLError } from "./SQLClient";
+import { SQLError } from "./SQLError";
 
 const DEADLOCK_RETRY_MS_MIN = 2000;
 const DEADLOCK_RETRY_MS_MAX = 5000;
