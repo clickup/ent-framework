@@ -169,8 +169,7 @@ export class VC {
 
   /**
    * Returns the new VC derived from the current one with empty caches and with
-   * all replication log sessions restored based on the serialized info
-   * provided.
+   * all replication sessions restored based on the serialized info provided.
    *
    * This method also has a side effect, because it reflects the changes in the
    * global DB state as seen by the current VC's user. It restores previously

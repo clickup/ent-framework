@@ -34,10 +34,17 @@ type PoolClientX = PoolClient & {
 
 export class SQLClientPool extends Client implements SQLClient {
   readonly shardName = "public";
-  private sqlPreamble: string = "";
+
   private pool: Pool;
   private shardNoPadLen: number;
   private maxReplicationLagNano: bigint;
+  private lastQuery = {
+    transactionTimestamp: new Date(),
+    clockTimestamp: new Date(),
+    lastReplayTimestamp: new Date(),
+    localStartHrtime: process.hrtime.bigint(),
+    localEndHrtime: process.hrtime.bigint(),
+  };
 
   constructor(public readonly dest: SQLClientDest, loggers: Loggers) {
     super(dest.name, dest.isMaster, loggers);
@@ -72,7 +79,7 @@ export class SQLClientPool extends Client implements SQLClient {
       });
   }
 
-  xid(): bigint {
+  sessionPos(): bigint {
     // TODO: implement real xlog position fetching
     return this.dest.isMaster
       ? process.hrtime.bigint()
@@ -92,31 +99,64 @@ export class SQLClientPool extends Client implements SQLClient {
       let error: string | undefined;
       let connID: number | null = null;
       let res: QueryResult | undefined;
+
       try {
         const conn = await this.poolConnect();
         connID = conn.id ?? 0;
         try {
-          const resMulti = (await conn.query(this.sqlPreamble + query)) as
-            | QueryResult[]
-            | QueryResult;
-          if (resMulti instanceof Array) {
-            if (resMulti.length > 2) {
-              throw Error("Multi-queries are not allowed by SQLClient");
-            }
+          // A good and simple explanation of the protocol is here:
+          // https://www.postgresql.org/docs/13/protocol-flow.html. In short, we
+          // can't use prepared-statement-based operations even theoretically,
+          // because this mode doesn't support multi-queries. Also notice that
+          // TS typing is doomed for multi-queries:
+          // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/33297
+          const localStartHrtime = process.hrtime.bigint();
+          const resMulti: [
+            QueryResult<never>,
+            QueryResult,
+            QueryResult<{
+              transaction_timestamp: Date;
+              clock_timestamp: Date;
+              pg_last_xact_replay_timestamp: Date | null;
+            }>
+          ] = (await conn.query(
+            // We must always have "public" in search_path, because extensions
+            // are by default installed in "public" schema. Some extensions may
+            // expose operators (e.g. "citext" exposes comparison operators)
+            // which must be available in all shards by default, so they should
+            // live in "public". (There is a way to install an extension to a
+            // particular schema, but a) there can be only one such schema, and
+            // b) there are be problems running pg_dump to migrate this shard to
+            // another machine since pg_dump doesn't emit CREATE EXTENSION
+            // statement when filtering by schema name).
+            [
+              `SET search_path TO ${this.shardName}, public`,
+              query,
+              "SELECT transaction_timestamp(), clock_timestamp(), pg_last_xact_replay_timestamp()",
+            ].join("; ")
+          )) as any;
 
-            res = resMulti[1]; // skip search_path preamble
-          } else {
-            res = resMulti;
+          if (resMulti.length > 3) {
+            throw Error(
+              `Multi-query (with semicolons) is not allowed as an input to SQLClient.query(); got ${query}`
+            );
           }
+
+          const timestamps = resMulti[2].rows[0];
+          this.lastQuery = {
+            transactionTimestamp: timestamps.transaction_timestamp,
+            clockTimestamp: timestamps.clock_timestamp,
+            lastReplayTimestamp:
+              timestamps.pg_last_xact_replay_timestamp ??
+              timestamps.transaction_timestamp,
+            localStartHrtime,
+            localEndHrtime: process.hrtime.bigint(),
+          };
+
+          return resMulti[1].rows;
         } finally {
           this.poolRelease(conn);
         }
-
-        if (!res.rows) {
-          throw Error("Unsupported response from query");
-        }
-
-        return res.rows;
       } catch (e: any) {
         error = "" + e;
         throw e;
@@ -195,15 +235,6 @@ export class SQLClientPool extends Client implements SQLClient {
     return Object.assign(Object.create(this.constructor.prototype), {
       ...this,
       shardName: this.buildShardName(no),
-      // We must have "public" in search_path, because extensions are always
-      // installed in "public" schema. The extensions may expose operators (e.g.
-      // "citext" exposes comparison operators) which must be available in all
-      // shards by default. There is a way to install an extension to a
-      // particular schema (and we used to do this), but a) there can be only
-      // one such schema, and b) there are be problems running pg_dump to
-      // migrate this shard to another machine (since pg_dump doesn't emit
-      // CREATE EXTENSION statement when filtering by schema name).
-      sqlPreamble: `SET search_path TO ${this.buildShardName(no)}, public; `,
     });
   }
 

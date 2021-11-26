@@ -92,9 +92,9 @@ export abstract class Client {
   abstract readonly shardName: string;
 
   /**
-   * Returns the current Client's replication log position (e.g. WAL position).
+   * Returns the current Client's replication session position (e.g. WAL position).
    */
-  abstract xid(): bigint;
+  abstract sessionPos(): bigint;
 
   /**
    * Returns all shard numbers discoverable via the connection to the Client's
