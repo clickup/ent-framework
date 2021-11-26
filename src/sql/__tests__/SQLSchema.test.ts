@@ -5,7 +5,7 @@ import { Session } from "../../abstract/Session";
 import { MASTER, Shard, STALE_REPLICA } from "../../abstract/Shard";
 import { join, nullthrows } from "../../helpers";
 import { $and, $gte, $literal, $lte, $ne, $not, $or, ID } from "../../types";
-import { SQLError } from "../SQLClient";
+import { SQLError } from "../SQLError";
 import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
 import { SQLSchema } from "../SQLSchema";
 import { testCluster, TestSQLClient } from "./helpers/TestSQLClient";
