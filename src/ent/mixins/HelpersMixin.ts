@@ -175,20 +175,31 @@ export function HelpersMixin<
       let numChangedAttrs = 0;
       const changedAttrs: UpdateInput<TTable> = {};
 
-      // Iterate over both regular fields and symbol fields.
+      // Iterate over BOTH regular fields AND symbol fields. Notice that for
+      // symbol fields, we'll always have a "changed" signal since the input Ent
+      // doesn't have them (they are to be used in triggers only).
       for (const key of Reflect.ownKeys(this.constructor.SCHEMA.table)) {
         const field = key as unknown as keyof typeof input;
         const value = input[field];
+        const existingValue = (this as any)[field];
 
-        if (field === ID || value === undefined) {
+        // Undefined is treated as "do not touch" signal for the field.
+        if (value === undefined) {
           continue;
         }
 
-        const existingValue = (this as any)[field];
+        // ID field is always treated as immutable.
+        if (field === ID) {
+          continue;
+        }
+
+        // Exact equality means "do not touch".
         if (existingValue === value) {
           continue;
         }
 
+        // Works for most of Node built-in types: Date, Buffer, as well as for
+        // user-defined custom types.
         if (
           value !== null &&
           typeof value === "object" &&
@@ -199,11 +210,12 @@ export function HelpersMixin<
           continue;
         }
 
-        changedAttrs[field] = value as any;
+        // There IS a change in this field. Record it.
+        changedAttrs[field] = value;
         numChangedAttrs++;
       }
 
-      if (numChangedAttrs) {
+      if (numChangedAttrs > 0) {
         return this.updateOriginal(changedAttrs);
       }
 
