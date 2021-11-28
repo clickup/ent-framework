@@ -153,7 +153,7 @@ export class SQLClientPool extends Client implements SQLClient {
             localEndHrtime: process.hrtime.bigint(),
           };
 
-          return resMulti[1].rows;
+          res = resMulti[1];
         } finally {
           this.poolRelease(conn);
         }
@@ -175,6 +175,8 @@ export class SQLClientPool extends Client implements SQLClient {
           this.isMaster
         );
       }
+
+      return res.rows;
     } catch (origError) {
       if (origError instanceof Error && (origError as any).severity) {
         // Only wrap the errors which PG sent to us explicitly. Those errors
