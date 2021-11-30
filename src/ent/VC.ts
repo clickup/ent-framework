@@ -161,7 +161,7 @@ export class VC {
 
     // Not a single write has been done in this VC; skip serialization.
     if (Object.keys(sessions).length === 0) {
-      return "";
+      return undefined;
     }
 
     return JSON.stringify(sessions);
@@ -179,7 +179,7 @@ export class VC {
    * see `new VC(...)` clauses all around and toLowerInternal() logic.) The
    * sessions are merged according to wal position (greater wal position wins).
    */
-  withDeserializedSessions(...dataStrs: string[]) {
+  withDeserializedSessions(...dataStrs: ReadonlyArray<string | undefined>) {
     for (const dataStr of dataStrs) {
       if (dataStr) {
         const data = JSON.parse(dataStr) as Record<string, string>;

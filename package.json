@@ -1,7 +1,7 @@
 {
   "name": "ent-framework",
   "description": "Graph database library",
-  "version": "2.7.88",
+  "version": "2.7.93",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
