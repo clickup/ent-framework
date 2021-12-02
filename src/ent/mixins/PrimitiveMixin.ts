@@ -176,7 +176,7 @@ export function PrimitiveMixin<
         true // allowRandomShard
       );
 
-      const doInsert = async (input: InsertInput<TTable>) => {
+      const insertEntAndInverses = async (input: InsertInput<TTable>) => {
         const id = await shard.run(
           this.SCHEMA.insert(input),
           vc.toAnnotation(),
@@ -185,6 +185,7 @@ export function PrimitiveMixin<
         );
 
         if (id) {
+          vc.cache(IDsCacheUpdatable).add(id);
           await mapJoin(this.INVERSES, async (inverse) =>
             inverse.afterInsert(
               vc,
@@ -192,28 +193,28 @@ export function PrimitiveMixin<
               id
             )
           );
-          vc.cache(IDsCacheUpdatable).add(id);
         }
 
         return id;
       };
 
       if (!this.TRIGGERS.hasInsertTriggers()) {
-        return doInsert(input);
+        return insertEntAndInverses(input);
       }
 
       // We have some triggers; that means we must generate an ID separately to
       // let the before-triggers see it before the actual db operation happens.
-      const inputWithID = {
+      const id = await shard.run(
+        this.SCHEMA.idGen(),
+        vc.toAnnotation(),
+        vc.session(shard, this.SCHEMA.name),
+        vc.freshness
+      );
+      vc.cache(IDsCacheUpdatable).add(id); // to enable privacy checks in beforeInsert triggers
+      return this.TRIGGERS.wrapInsert(insertEntAndInverses, vc, {
         ...input,
-        [ID]: await shard.run(
-          this.SCHEMA.idGen(),
-          vc.toAnnotation(),
-          vc.session(shard, this.SCHEMA.name),
-          vc.freshness
-        ),
-      };
-      return this.TRIGGERS.wrapInsert(doInsert, vc, inputWithID);
+        [ID]: id,
+      });
     }
 
     static async upsert(vc: VC, input: InsertInput<TTable>) {
