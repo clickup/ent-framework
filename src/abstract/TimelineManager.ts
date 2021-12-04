@@ -7,10 +7,14 @@
  */
 export class TimelineManager {
   private pos = BigInt(0);
-  private hrtime = BigInt(0);
+  private hrtimeOfChange = BigInt(0);
   private triggerRefreshPromise: Promise<unknown> | null = null;
 
   constructor(
+    /** Time interval after which a replica is declared as "caught up" even if
+     * it's not caught up. This is to not read from master forever when
+     * something has happened with the replica. */
+    public readonly maxLagMs: number,
     /** Up to how often we call triggerRefresh(). */
     private refreshMs: number | null,
     /** For replica island client, this method is called time to time to refresh
@@ -27,10 +31,10 @@ export class TimelineManager {
   async currentPos(): Promise<bigint> {
     if (
       this.refreshMs !== null &&
-      this.hrtime <
-        process.hrtime.bigint() - BigInt(this.refreshMs) * BigInt(1e6)
+      process.hrtime.bigint() >
+        this.hrtimeOfChange + BigInt(this.refreshMs) * BigInt(1e6)
     ) {
-      // Outdates pos; refresh it with coalescing multiple requests.
+      // Outdated pos; refresh it, also coalesce concurrent requests if any.
       try {
         this.triggerRefreshPromise ??= this.triggerRefresh();
         await this.triggerRefreshPromise;
@@ -48,6 +52,6 @@ export class TimelineManager {
    */
   setCurrentPos(pos: bigint) {
     this.pos = pos > this.pos ? pos : this.pos;
-    this.hrtime = process.hrtime.bigint();
+    this.hrtimeOfChange = process.hrtime.bigint();
   }
 }

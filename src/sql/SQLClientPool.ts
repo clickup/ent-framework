@@ -6,6 +6,7 @@ import { runInVoid, sanitizeIDForDebugPrinting, toFloatMs } from "../helpers";
 import { parseLsn, SQLClient } from "./SQLClient";
 import { SQLError } from "./SQLError";
 
+const DEFAULT_MAX_REPLICATION_LAG_MS = 15000;
 const DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS = 1000;
 const DEFAULT_PREWARM_INTERVAL_MS = 10000;
 const DEFAULT_MAX_CONN_LIFETIME_JITTER = 0.2;
@@ -35,7 +36,9 @@ type PoolClientX = PoolClient & {
 
 export class SQLClientPool extends Client implements SQLClient {
   readonly shardName = "public";
+
   readonly timelineManager = new TimelineManager(
+    this.dest.config.maxReplicationLagMs ?? DEFAULT_MAX_REPLICATION_LAG_MS,
     this.isMaster ? null : DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS,
     async () =>
       this.query(

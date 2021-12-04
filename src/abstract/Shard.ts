@@ -50,7 +50,10 @@ export class Shard<TClient extends Client> {
     const res = await query.run(client, annotation);
 
     if (query.IS_WRITE && origFreshness !== STALE_REPLICA) {
-      timeline.setPos(await client.timelineManager.currentPos());
+      timeline.setPos(
+        await client.timelineManager.currentPos(),
+        client.timelineManager.maxLagMs
+      );
     }
 
     return res;
