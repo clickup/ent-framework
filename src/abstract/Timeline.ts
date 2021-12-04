@@ -22,7 +22,9 @@ const SERIALIZE_EXPIRATION_GAP_MS = 600 * 1000;
  */
 export class Timeline {
   constructor(
-    private state: "unknown" | { pos: bigint; expiresAt: number } = "unknown"
+    private state:
+      | "unknown"
+      | { readonly pos: bigint; readonly expiresAt: number } = "unknown"
   ) {}
 
   static deserialize(
@@ -45,6 +47,17 @@ export class Timeline {
     return new this(
       pos ? { pos, expiresAt: parseInt(parts[1] || "0") } : "unknown"
     );
+  }
+
+  static cloneMap(timelines: ReadonlyMap<string, Timeline>) {
+    const copy = new Map<string, Timeline>();
+    for (const [key, timeline] of timelines.entries()) {
+      if (timeline.state !== "unknown") {
+        copy.set(key, new Timeline(timeline.state));
+      }
+    }
+
+    return copy;
   }
 
   serialize(): string | undefined {

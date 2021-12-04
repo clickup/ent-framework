@@ -397,7 +397,7 @@ export class VC {
     // Create an independent timelines map only when we switch to a non-root VC
     // the 1st time (e.g. in the beginning of HTTP connection).
     const newTimelines = switchesToUserFirstTime
-      ? new Map(this.timelines)
+      ? Timeline.cloneMap(this.timelines)
       : this.timelines;
 
     // A special case: demote STALE_REPLICA freshness to default (it's not
