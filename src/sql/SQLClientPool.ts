@@ -2,7 +2,12 @@ import { Pool, PoolClient, PoolConfig, QueryResult } from "pg";
 import { Client, Loggers } from "../abstract/Client";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { TimelineManager } from "../abstract/TimelineManager";
-import { runInVoid, sanitizeIDForDebugPrinting, toFloatMs } from "../helpers";
+import {
+  nullthrows,
+  runInVoid,
+  sanitizeIDForDebugPrinting,
+  toFloatMs,
+} from "../helpers";
 import { parseLsn, SQLClient } from "./SQLClient";
 import { SQLError } from "./SQLError";
 
@@ -153,9 +158,18 @@ export class SQLClientPool extends Client implements SQLClient {
             pg_last_wal_replay_lsn?: string | null;
           };
           this.timelineManager.setCurrentPos(
-            parseLsn(lsn.pg_current_wal_insert_lsn) ??
-              parseLsn(lsn.pg_last_wal_replay_lsn) ??
-              BigInt(0)
+            this.dest.isMaster
+              ? // Master always has pg_current_wal_insert_lsn defined.
+                nullthrows(parseLsn(lsn.pg_current_wal_insert_lsn))
+              : // When pg_last_wal_replay_lsn is returned as null, it means that
+                // the client's database is not a replica, i.e. it doesn't
+                // replay from a master. This happens e.g. on dev environment
+                // when testing replication lag code (typically done by just
+                // manually creating a copy of the database and declaring it as
+                // a replica). For such cases, we treat such "replica" as always
+                // lagging, i.e. having pos=0 which is less than any known
+                // master's pos.
+                parseLsn(lsn.pg_last_wal_replay_lsn) ?? BigInt(0)
           );
         } finally {
           this.poolRelease(conn);
