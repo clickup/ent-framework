@@ -105,7 +105,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
     return shard.run(
       query,
       vc.toAnnotation(),
-      vc.session(shard, this.name + ":" + this.type),
+      vc.timeline(shard, this.name + ":" + this.type),
       vc.freshness
     );
   }

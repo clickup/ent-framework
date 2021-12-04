@@ -1,12 +1,12 @@
 import { Pool, PoolClient, PoolConfig, QueryResult } from "pg";
 import { Client, Loggers } from "../abstract/Client";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
-import { SessionPosManager } from "../abstract/SessionPosManager";
+import { TimelineManager } from "../abstract/TimelineManager";
 import { runInVoid, sanitizeIDForDebugPrinting, toFloatMs } from "../helpers";
 import { parseLsn, SQLClient } from "./SQLClient";
 import { SQLError } from "./SQLError";
 
-const DEFAULT_REPLICA_SESSION_POS_REFRESH_MS = 1000;
+const DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS = 1000;
 const DEFAULT_PREWARM_INTERVAL_MS = 10000;
 const DEFAULT_MAX_CONN_LIFETIME_JITTER = 0.2;
 
@@ -35,12 +35,12 @@ type PoolClientX = PoolClient & {
 
 export class SQLClientPool extends Client implements SQLClient {
   readonly shardName = "public";
-  readonly sessionPosManager = new SessionPosManager(
-    this.isMaster ? null : DEFAULT_REPLICA_SESSION_POS_REFRESH_MS,
+  readonly timelineManager = new TimelineManager(
+    this.isMaster ? null : DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS,
     async () =>
       this.query(
-        "SELECT 'SESSION_POS_RELOAD'",
-        "SESSION_POS_RELOAD",
+        "SELECT 'TIMELINE_POS_REFRESH'",
+        "TIMELINE_POS_REFRESH",
         "pg_catalog",
         [],
         1
@@ -149,7 +149,7 @@ export class SQLClientPool extends Client implements SQLClient {
             pg_current_wal_insert_lsn?: string | null;
             pg_last_wal_replay_lsn?: string | null;
           };
-          this.sessionPosManager.setCurrentPos(
+          this.timelineManager.setCurrentPos(
             parseLsn(lsn.pg_current_wal_insert_lsn) ??
               parseLsn(lsn.pg_last_wal_replay_lsn) ??
               BigInt(0)
@@ -237,7 +237,7 @@ export class SQLClientPool extends Client implements SQLClient {
     return Object.assign(Object.create(this.constructor.prototype), {
       ...this,
       shardName: this.buildShardName(no),
-      // Notice that sessionPosManager is DERIVED from the current object; thus,
+      // Notice that timelineManager is DERIVED from the current object; thus,
       // it's shared across all the clients within the island.
     });
   }

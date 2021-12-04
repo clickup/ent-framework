@@ -3,7 +3,7 @@ import { Client } from "./Client";
 import { Island } from "./Cluster";
 import { Query } from "./Query";
 import { QueryAnnotation } from "./QueryAnnotation";
-import { Session } from "./Session";
+import { Timeline } from "./Timeline";
 
 /**
  * Master freshness: reads always go to master.
@@ -25,16 +25,16 @@ export class Shard<TClient extends Client> {
   ) {}
 
   async client(
-    session: Session | typeof MASTER | typeof STALE_REPLICA
+    timeline: Timeline | typeof MASTER | typeof STALE_REPLICA
   ): Promise<TClient> {
     const { master, replicas } = await this.clients();
-    if (session === MASTER || !replicas.length) {
+    if (timeline === MASTER || !replicas.length) {
       return master;
     }
 
     const replica = replicas[Math.trunc(Math.random() * replicas.length)];
-    return session === STALE_REPLICA ||
-      session.isCaughtUp(await replica.sessionPosManager.currentPos())
+    return timeline === STALE_REPLICA ||
+      timeline.isCaughtUp(await replica.timelineManager.currentPos())
       ? replica
       : master;
   }
@@ -42,15 +42,15 @@ export class Shard<TClient extends Client> {
   async run<TOutput>(
     query: Query<TOutput>,
     annotation: QueryAnnotation,
-    session: Session,
+    timeline: Timeline,
     origFreshness: null | typeof MASTER | typeof STALE_REPLICA
   ): Promise<TOutput> {
     const freshness = query.IS_WRITE ? MASTER : origFreshness;
-    const client = await this.client(freshness ?? session);
+    const client = await this.client(freshness ?? timeline);
     const res = await query.run(client, annotation);
 
     if (query.IS_WRITE && origFreshness !== STALE_REPLICA) {
-      session.setPos(await client.sessionPosManager.currentPos());
+      timeline.setPos(await client.timelineManager.currentPos());
     }
 
     return res;

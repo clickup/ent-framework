@@ -2,7 +2,7 @@ import Memoize from "../Memoize";
 import { Batcher, Runner } from "./Batcher";
 import { QueryAnnotation } from "./QueryAnnotation";
 import { Schema } from "./Schema";
-import { SessionPosManager } from "./SessionPosManager";
+import { TimelineManager } from "./TimelineManager";
 
 export interface Loggers {
   // Logs actual queries to the database (e.g. raw SQL queries, after batching).
@@ -45,10 +45,10 @@ export abstract class Client {
   abstract readonly shardName: string;
 
   /**
-   * Tracks the master/replica replication session position. Shared across all
+   * Tracks the master/replica replication timeline position. Shared across all
    * the clients within the same island.
    */
-  abstract readonly sessionPosManager: SessionPosManager;
+  abstract readonly timelineManager: TimelineManager;
 
   constructor(
     public readonly name: string,

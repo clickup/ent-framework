@@ -180,7 +180,7 @@ export function PrimitiveMixin<
         const id = await shard.run(
           this.SCHEMA.insert(input),
           vc.toAnnotation(),
-          vc.session(shard, this.SCHEMA.name),
+          vc.timeline(shard, this.SCHEMA.name),
           vc.freshness
         );
 
@@ -207,7 +207,7 @@ export function PrimitiveMixin<
       const id = await shard.run(
         this.SCHEMA.idGen(),
         vc.toAnnotation(),
-        vc.session(shard, this.SCHEMA.name),
+        vc.timeline(shard, this.SCHEMA.name),
         vc.freshness
       );
       vc.cache(IDsCacheUpdatable).add(id); // to enable privacy checks in beforeInsert triggers
@@ -248,7 +248,7 @@ export function PrimitiveMixin<
       const id = await shard.run(
         query,
         vc.toAnnotation(),
-        vc.session(shard, this.SCHEMA.name),
+        vc.timeline(shard, this.SCHEMA.name),
         vc.freshness
       );
       vc.cache(IDsCacheUpdatable).add(id);
@@ -261,7 +261,7 @@ export function PrimitiveMixin<
       const row = await shard.run(
         query,
         vc.toAnnotation(),
-        vc.session(shard, this.SCHEMA.name),
+        vc.timeline(shard, this.SCHEMA.name),
         vc.freshness
       );
       if (!row) {
@@ -280,7 +280,7 @@ export function PrimitiveMixin<
       const row = await shard.run(
         query,
         vc.toAnnotation(),
-        vc.session(shard, this.SCHEMA.name),
+        vc.timeline(shard, this.SCHEMA.name),
         vc.freshness
       );
       if (!row) {
@@ -307,7 +307,7 @@ export function PrimitiveMixin<
         const rows = await shard.run(
           this.SCHEMA.select({ where, limit, order, custom }),
           vc.toAnnotation(),
-          vc.session(shard, this.SCHEMA.name),
+          vc.timeline(shard, this.SCHEMA.name),
           vc.freshness
         );
         return mapJoin(rows, async (row) => this.createEnt(vc, row));
@@ -351,7 +351,7 @@ export function PrimitiveMixin<
             custom,
           }),
           vc.toAnnotation(),
-          vc.session(shard, this.SCHEMA.name),
+          vc.timeline(shard, this.SCHEMA.name),
           vc.freshness
         );
         const chunk = await mapJoin(rows, async (row) =>
@@ -385,7 +385,7 @@ export function PrimitiveMixin<
         shard.run(
           this.SCHEMA.count(where),
           vc.toAnnotation(),
-          vc.session(shard, this.SCHEMA.name),
+          vc.timeline(shard, this.SCHEMA.name),
           vc.freshness
         )
       );
@@ -412,7 +412,7 @@ export function PrimitiveMixin<
           const updated = await shard.run(
             this.constructor.SCHEMA.update(this[ID], input),
             this.vc.toAnnotation(),
-            this.vc.session(shard, this.constructor.SCHEMA.name),
+            this.vc.timeline(shard, this.constructor.SCHEMA.name),
             this.vc.freshness
           );
 
@@ -457,7 +457,7 @@ export function PrimitiveMixin<
           const deleted = await shard.run(
             this.constructor.SCHEMA.delete(this[ID]),
             this.vc.toAnnotation(),
-            this.vc.session(shard, this.constructor.SCHEMA.name),
+            this.vc.timeline(shard, this.constructor.SCHEMA.name),
             this.vc.freshness
           );
 

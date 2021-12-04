@@ -1,8 +1,8 @@
 import delay from "delay";
 import { Query } from "../../abstract/Query";
 import { QueryAnnotation } from "../../abstract/QueryAnnotation";
-import { Session } from "../../abstract/Session";
 import { MASTER, Shard, STALE_REPLICA } from "../../abstract/Shard";
+import { Timeline } from "../../abstract/Timeline";
 import { join, nullthrows } from "../../helpers";
 import { $and, $gte, $literal, $lte, $ne, $not, $or, ID } from "../../types";
 import { SQLError } from "../SQLError";
@@ -15,7 +15,7 @@ const TABLE_NULLABLE_UNIQUE_KEY = 'schema"test_nullable_unique_key';
 const TABLE_2COL = 'schema"test_2col';
 const TABLE_2COL_NULLABLE_UNIQUE_KEY = "schema_test_2col_nullable_unique_key";
 const TABLE_DATE = "schema-te[st],_date";
-const session = new Session();
+const timeline = new Timeline();
 const annotation: QueryAnnotation = {
   trace: "some-trace",
   debugStack: "",
@@ -58,14 +58,14 @@ class EncryptedValue {
 }
 
 async function shardRun<TOutput>(query: Query<TOutput>) {
-  return shard.run(query, annotation, session, null);
+  return shard.run(query, annotation, timeline, null);
 }
 
 beforeEach(async () => {
-  session.reset();
+  timeline.reset();
   shard = testCluster.randomShard();
   master = await shard.client(MASTER);
-  replica = await shard.client(session);
+  replica = await shard.client(timeline);
 
   await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE);
   await master.rows(
@@ -143,7 +143,7 @@ beforeEach(async () => {
   );
   master.resetSnapshot();
   replica.resetSnapshot();
-  session.reset();
+  timeline.reset();
 });
 
 const schema = new SQLSchema(
@@ -727,7 +727,7 @@ test("loadby_single_one_column", async () => {
   const row = await shard.run(
     schema.loadBy({ name: "b" }),
     annotation,
-    new Session(),
+    timeline,
     STALE_REPLICA
   );
   replica.toMatchSnapshot();
