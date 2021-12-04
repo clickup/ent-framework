@@ -3,8 +3,8 @@ import compact from "lodash/compact";
 import { Client } from "../abstract/Client";
 import { Handler, Loader } from "../abstract/Loader";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
-import { Session } from "../abstract/Session";
 import { MASTER, Shard, STALE_REPLICA } from "../abstract/Shard";
+import { Timeline } from "../abstract/Timeline";
 import { minifyStack } from "../helpers";
 import Memoize from "../Memoize";
 import { VCFlavor, VCWithStacks } from "./VCFlavor";
@@ -72,12 +72,12 @@ export class VC {
     /** ID of the "user" represented by this VC. */
     public readonly userID: string,
     /** Allows to set VC to always use either a master or a replica DB. E.g. if
-     * freshness=MASTER, then all the session data is ignored, and all the
+     * freshness=MASTER, then all the timeline data is ignored, and all the
      * requests are sent to master. */
     public readonly freshness: null | typeof MASTER | typeof STALE_REPLICA,
     /** Replication WAL position per shard & Ent. Used to make decisions,
      * should a request be sent to a replica or to the master. */
-    private sessions: Map<string, Session>,
+    private timelines: Map<string, Timeline>,
     /** Sticky objects attached to the VC (and inherited when deriving). */
     private flavors: ReadonlyMap<Function, VCFlavor>,
     /** If true, it's the initial "root" VC which is not yet derived to any
@@ -131,61 +131,65 @@ export class VC {
   }
 
   /**
-   * Returns shard+schemaName session which tracks replica staleness for the
+   * Returns shard+schemaName timeline which tracks replica staleness for the
    * particular schema name (most likely, table).
    */
-  session(shard: Shard<Client>, schemaName: string) {
+  timeline(shard: Shard<Client>, schemaName: string) {
     const key = shard.no + ":" + schemaName;
-    let session = this.sessions.get(key);
-    if (session === undefined) {
-      session = new Session();
-      this.sessions.set(key, session);
+    let timeline = this.timelines.get(key);
+    if (timeline === undefined) {
+      timeline = new Timeline();
+      this.timelines.set(key, timeline);
     }
 
-    return session;
+    return timeline;
   }
 
   /**
-   * Serializes shard sessions (master wal positions) to a string format. The
+   * Serializes shard timelines (master WAL positions) to a string format. The
    * method always returns a value which is compatible to
-   * withDeserializedSessions() input.
+   * withDeserializedTimelines() input.
    */
-  serializeSessions() {
-    const sessions: Record<string, string> = {};
-    for (const [key, session] of this.sessions) {
-      const sessionStr = session.serialize();
-      if (sessionStr) {
-        sessions[key] = sessionStr;
+  serializeTimelines() {
+    const timelines: Record<string, string> = {};
+    for (const [key, timeline] of this.timelines) {
+      const timelineStr = timeline.serialize();
+      if (timelineStr) {
+        timelines[key] = timelineStr;
       }
     }
 
     // Not a single write has been done in this VC; skip serialization.
-    if (Object.keys(sessions).length === 0) {
+    if (Object.keys(timelines).length === 0) {
       return undefined;
     }
 
-    return JSON.stringify(sessions);
+    return JSON.stringify(timelines);
   }
 
   /**
    * Returns the new VC derived from the current one with empty caches and with
-   * all replication sessions restored based on the serialized info provided.
+   * all replication timelines restored based on the serialized info provided.
    *
    * This method also has a side effect, because it reflects the changes in the
    * global DB state as seen by the current VC's user. It restores previously
-   * serialized sessions to the existing VC and all its parent VCs which share
-   * the same userID. (The latter happens, because `this.sessions` map is passed
-   * by reference to all derived VCs starting from the one which sets userID;
-   * see `new VC(...)` clauses all around and toLowerInternal() logic.) The
-   * sessions are merged according to wal position (greater wal position wins).
+   * serialized timelines to the existing VC and all its parent VCs which share
+   * the same userID. (The latter happens, because `this.timelines` map is
+   * passed by reference to all derived VCs starting from the one which sets
+   * userID; see `new VC(...)` clauses all around and toLowerInternal() logic.)
+   * The timelines are merged according to wal position (greater wal position
+   * wins).
    */
-  withDeserializedSessions(...dataStrs: ReadonlyArray<string | undefined>) {
+  withDeserializedTimelines(...dataStrs: ReadonlyArray<string | undefined>) {
     for (const dataStr of dataStrs) {
       if (dataStr) {
         const data = JSON.parse(dataStr) as Record<string, string>;
-        for (const [key, sessionStr] of Object.entries(data)) {
-          const oldSession = this.sessions.get(key) ?? null;
-          this.sessions.set(key, Session.deserialize(sessionStr, oldSession));
+        for (const [key, timelineStr] of Object.entries(data)) {
+          const oldTimeline = this.timelines.get(key) ?? null;
+          this.timelines.set(
+            key,
+            Timeline.deserialize(timelineStr, oldTimeline)
+          );
         }
       }
     }
@@ -201,7 +205,7 @@ export class VC {
       this.trace,
       this.userID,
       this.freshness,
-      this.sessions,
+      this.timelines,
       this.flavors,
       this.isRoot
     );
@@ -220,7 +224,7 @@ export class VC {
       this.trace,
       this.userID,
       MASTER,
-      this.sessions,
+      this.timelines,
       this.flavors,
       this.isRoot
     );
@@ -241,7 +245,7 @@ export class VC {
       this.trace,
       this.userID,
       STALE_REPLICA,
-      this.sessions,
+      this.timelines,
       this.flavors,
       this.isRoot
     );
@@ -257,7 +261,7 @@ export class VC {
           this.trace,
           this.userID,
           this.freshness,
-          this.sessions,
+          this.timelines,
           new Map([...this.flavors.entries(), [flavor.constructor, flavor]]),
           this.isRoot
         )
@@ -272,7 +276,7 @@ export class VC {
       new VCTrace(prefix),
       this.userID,
       this.freshness,
-      this.sessions,
+      this.timelines,
       this.flavors,
       this.isRoot
     );
@@ -290,7 +294,7 @@ export class VC {
       this.trace,
       OMNI_ID,
       this.freshness,
-      this.sessions,
+      this.timelines,
       this.flavors,
       this.isRoot
     );
@@ -389,11 +393,11 @@ export class VC {
       this.isRoot && newUserID !== GUEST_ID && newUserID !== OMNI_ID;
     const newIsRoot = this.isRoot && !switchesToUserFirstTime;
 
-    // Create an independent sessions map only when we switch to a non-root VC
+    // Create an independent timelines map only when we switch to a non-root VC
     // the 1st time (e.g. in the beginning of HTTP connection).
-    const newSessions = switchesToUserFirstTime
-      ? new Map(this.sessions)
-      : this.sessions;
+    const newTimelines = switchesToUserFirstTime
+      ? new Map(this.timelines)
+      : this.timelines;
 
     // A special case: demote STALE_REPLICA freshness to default (it's not
     // transitive and applies only till the next derivation).
@@ -405,7 +409,7 @@ export class VC {
       this.trace,
       newUserID,
       newFreshness,
-      newSessions,
+      newTimelines,
       this.flavors,
       newIsRoot
     );

@@ -1,23 +1,23 @@
 /**
  * Tracks replica staleness per "user".
  */
-export class Session {
+export class Timeline {
   private pos: bigint = BigInt(0);
 
   static deserialize(
     data: string | undefined,
-    prevSession: Session | null
-  ): Session {
+    prevTimeline: Timeline | null
+  ): Timeline {
     const pos = BigInt(data || 0);
-    if (prevSession && prevSession.pos >= pos) {
-      // The previous session holds a more recent wal position than the one
+    if (prevTimeline && prevTimeline.pos >= pos) {
+      // The previous timeline holds a more recent WAL position than the one
       // we're deserializing, so we should respect it better.
-      return prevSession;
+      return prevTimeline;
     }
 
-    const session = new this();
-    session.setPos(pos);
-    return session;
+    const timeline = new this();
+    timeline.setPos(pos);
+    return timeline;
   }
 
   serialize(): string | undefined {

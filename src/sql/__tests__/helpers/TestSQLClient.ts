@@ -16,8 +16,8 @@ export class TestSQLClient extends Client implements SQLClient {
     return this.client.shardName;
   }
 
-  get sessionPosManager() {
-    return this.client.sessionPosManager;
+  get timelineManager() {
+    return this.client.timelineManager;
   }
 
   constructor(private client: SQLClient) {

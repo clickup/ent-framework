@@ -1,14 +1,14 @@
 import delay from "delay";
 import hash from "object-hash";
 import { QueryAnnotation } from "../../abstract/QueryAnnotation";
-import { Session } from "../../abstract/Session";
 import { MASTER, Shard } from "../../abstract/Shard";
+import { Timeline } from "../../abstract/Timeline";
 import { join, mapJoin, nullthrows } from "../../helpers";
 import { SQLSchema } from "../SQLSchema";
 import { testCluster, TestSQLClient } from "./helpers/TestSQLClient";
 
 const TABLE = 'schema"stress_test';
-const session = new Session();
+const timeline = new Timeline();
 const annotation: QueryAnnotation = {
   trace: "some-trace",
   debugStack: "",
@@ -31,7 +31,7 @@ beforeEach(async () => {
     )`,
     TABLE
   );
-  session.reset();
+  timeline.reset();
 });
 
 const schema = new SQLSchema(
@@ -52,7 +52,7 @@ test("stress", async () => {
       shard.run(
         schema.insert({ prefix: "pfx", name }),
         annotation,
-        session,
+        timeline,
         null
       )
     );
@@ -63,7 +63,7 @@ test("stress", async () => {
           await shard.run(
             schema.load(nullthrows(id)),
             annotation,
-            session,
+            timeline,
             null
           )
         );
@@ -77,7 +77,7 @@ test("stress", async () => {
           await shard.run(
             schema.loadBy({ prefix: "pfx", name: names[i] }),
             annotation,
-            session,
+            timeline,
             null
           )
         );
@@ -90,7 +90,7 @@ test("stress", async () => {
         const updated = await shard.run(
           schema.update(nullthrows(id), { name: "upd" + names[i] }),
           annotation,
-          session,
+          timeline,
           null
         );
         expect(updated).toBeTruthy();
@@ -98,7 +98,7 @@ test("stress", async () => {
           await shard.run(
             schema.load(nullthrows(id)),
             annotation,
-            session,
+            timeline,
             null
           )
         );

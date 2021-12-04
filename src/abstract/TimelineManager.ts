@@ -1,11 +1,11 @@
 /**
  * A side effect based container which holds the current master or replica
- * session position. For master, the expectation is that the pos will be updated
- * after each query only, so no need to use refreshMs. For replica, it's also
- * updated after each query PLUS the class will call triggerRefresh() hook not
- * more often than every refreshMs interval.
+ * timeline position. For master, the expectation is that the pos will be
+ * updated after each query only, so no need to use refreshMs. For replica, it's
+ * also updated after each query PLUS the class will call triggerRefresh() hook
+ * not more often than every refreshMs interval.
  */
-export class SessionPosManager {
+export class TimelineManager {
   private pos = BigInt(0);
   private hrtime = BigInt(0);
   private triggerRefreshPromise: Promise<unknown> | null = null;
@@ -21,7 +21,7 @@ export class SessionPosManager {
   ) {}
 
   /**
-   * Returns the current Client's replication session position (e.g. WAL
+   * Returns the current Client's replication timeline position (e.g. WAL
    * position).
    */
   async currentPos(): Promise<bigint> {
@@ -43,7 +43,7 @@ export class SessionPosManager {
   }
 
   /**
-   * Sets the actual session pos. Must be called by the client after each
+   * Sets the actual timeline pos. Must be called by the client after each
    * interaction with the database.
    */
   setCurrentPos(pos: bigint) {
