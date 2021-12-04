@@ -7,7 +7,7 @@ const SEP = ":";
  */
 export class Timeline {
   constructor(
-    private state: "unknown" | { pos: BigInt; expiresAt: number } = "unknown"
+    private state: "unknown" | { pos: bigint; expiresAt: number } = "unknown"
   ) {}
 
   static deserialize(
@@ -39,6 +39,11 @@ export class Timeline {
   }
 
   setPos(pos: bigint, maxLagMs: number) {
+    if (this.state !== "unknown" && this.state.pos >= pos) {
+      // We already hold a "more recent" pos, so don't need to update it.
+      return;
+    }
+
     this.state = { pos, expiresAt: Date.now() + maxLagMs };
   }
 
