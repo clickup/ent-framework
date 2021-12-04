@@ -1,54 +1,58 @@
 const SEP = ":";
 
 /**
- * Tracks replication timeline position (replica staleness) per "user" and Ent.
+ * Tracks replication timeline position at master per "user" and Ent.
  * - serialization format: "pos:expiresAt"
  * - wipes expired records (expiration is calculated at assignment moment)
  */
 export class Timeline {
-  private pos: bigint = BigInt(0);
-  private expiresAt: number = 0;
+  constructor(
+    private state: "unknown" | { pos: BigInt; expiresAt: number } = "unknown"
+  ) {}
 
   static deserialize(
     data: string | undefined,
     prevTimeline: Timeline | null
   ): Timeline {
-    const parts = data ? data.split(SEP) : ["0", "0"];
-    const pos = BigInt(parts[0]);
+    const parts = data ? data.split(SEP) : [];
+    const pos = BigInt(parts[0] || "0");
 
-    if (prevTimeline && prevTimeline.pos >= pos) {
+    if (
+      prevTimeline &&
+      prevTimeline.state !== "unknown" &&
+      prevTimeline.state.pos >= pos
+    ) {
       // The previous timeline holds a more recent WAL position than the one
       // we're deserializing, so we should respect it better.
       return prevTimeline;
     }
 
-    const timeline = new this();
-    timeline.pos = pos;
-    timeline.expiresAt = parseInt(parts[1] || Date.now().toString());
-    return timeline;
+    return new this(
+      pos ? { pos, expiresAt: parseInt(parts[1] || "0") } : "unknown"
+    );
   }
 
   serialize(): string | undefined {
-    return this.pos === BigInt(0) || Date.now() >= this.expiresAt
+    return this.state === "unknown" || Date.now() >= this.state.expiresAt
       ? undefined
-      : this.pos.toString() + SEP + this.expiresAt;
+      : this.state.pos.toString() + SEP + this.state.expiresAt;
   }
 
   setPos(pos: bigint, maxLagMs: number) {
-    this.pos = pos;
-    this.expiresAt = Date.now() + maxLagMs;
+    this.state = { pos, expiresAt: Date.now() + maxLagMs };
   }
 
-  isCaughtUp(replicaPos: bigint): boolean | "expired" {
-    return replicaPos >= this.pos
-      ? true
-      : Date.now() >= this.expiresAt
+  isCaughtUp(replicaPos: bigint): false | "unknown" | "caught-up" | "expired" {
+    return this.state === "unknown"
+      ? "unknown" // don't know anything about master; assume the replica is caught up
+      : replicaPos >= this.state.pos
+      ? "caught-up"
+      : Date.now() >= this.state.expiresAt
       ? "expired"
       : false;
   }
 
   reset() {
-    this.pos = BigInt(0);
-    this.expiresAt = 0;
+    this.state = "unknown";
   }
 }
