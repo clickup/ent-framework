@@ -65,12 +65,21 @@ export function escapeStringify(v: any, stringify: (v: any) => string): string {
   return v === null || v === undefined ? "NULL" : escapeString(stringify(v));
 }
 
+export function parseLsn(lsn: string | null | undefined) {
+  if (!lsn) {
+    return null;
+  }
+
+  const [a, b] = lsn.split("/").map((x) => BigInt(parseInt(x, 16)));
+  return (a << BigInt(32)) + b;
+}
+
 export interface SQLClient extends Client {
-  query<TRes>(
-    query: string,
+  query<TRow>(
+    query: string | { query: string; hints: Record<string, string> },
     op: string,
     table: string,
     annotations: Iterable<QueryAnnotation>,
     batchFactor: number
-  ): Promise<TRes[]>;
+  ): Promise<TRow[]>;
 }

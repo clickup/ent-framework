@@ -1,11 +1,12 @@
 import { Pool, PoolClient, PoolConfig, QueryResult } from "pg";
 import { Client, Loggers } from "../abstract/Client";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { SessionPosManager } from "../abstract/SessionPosManager";
 import { runInVoid, sanitizeIDForDebugPrinting, toFloatMs } from "../helpers";
-import { SQLClient } from "./SQLClient";
+import { parseLsn, SQLClient } from "./SQLClient";
 import { SQLError } from "./SQLError";
 
-const DEFAULT_MAX_REPLICATION_LAG_MS = 3000;
+const DEFAULT_REPLICA_SESSION_POS_REFRESH_MS = 1000;
 const DEFAULT_PREWARM_INTERVAL_MS = 10000;
 const DEFAULT_MAX_CONN_LIFETIME_JITTER = 0.2;
 
@@ -34,17 +35,20 @@ type PoolClientX = PoolClient & {
 
 export class SQLClientPool extends Client implements SQLClient {
   readonly shardName = "public";
+  readonly sessionPosManager = new SessionPosManager(
+    this.isMaster ? null : DEFAULT_REPLICA_SESSION_POS_REFRESH_MS,
+    async () =>
+      this.query(
+        "SELECT 'SESSION_POS_RELOAD'",
+        "SESSION_POS_RELOAD",
+        "pg_catalog",
+        [],
+        1
+      )
+  );
 
   private pool: Pool;
   private shardNoPadLen: number;
-  private maxReplicationLagNano: bigint;
-  private lastQuery = {
-    transactionTimestamp: new Date(),
-    clockTimestamp: new Date(),
-    lastReplayTimestamp: new Date(),
-    localStartHrtime: process.hrtime.bigint(),
-    localEndHrtime: process.hrtime.bigint(),
-  };
 
   constructor(public readonly dest: SQLClientDest, loggers: Loggers) {
     super(dest.name, dest.isMaster, loggers);
@@ -55,11 +59,6 @@ export class SQLClientPool extends Client implements SQLClient {
     if (!this.shardNoPadLen) {
       throw Error("Invalid shards.nameFormat value");
     }
-
-    this.maxReplicationLagNano =
-      BigInt(
-        dest.config.maxReplicationLagMs ?? DEFAULT_MAX_REPLICATION_LAG_MS
-      ) * BigInt(1e6);
 
     this.pool = new Pool(dest.config)
       .on("connect", (conn: PoolClientX) => {
@@ -79,26 +78,33 @@ export class SQLClientPool extends Client implements SQLClient {
       });
   }
 
-  sessionPos(): bigint {
-    // TODO: implement real xlog position fetching
-    return this.dest.isMaster
-      ? process.hrtime.bigint()
-      : process.hrtime.bigint() - this.maxReplicationLagNano;
-  }
-
-  async query<TRes>(
-    query: string,
+  async query<TRow>(
+    queryIn: string | { query: string; hints: Record<string, string> },
     op: string,
     table: string,
     annotations: Iterable<QueryAnnotation>,
     batchFactor: number
-  ): Promise<TRes[]> {
-    query = `/*${this.shardName}*/${query}`;
+  ): Promise<TRow[]> {
+    const queriesSet =
+      typeof queryIn === "object"
+        ? Object.entries(queryIn.hints).map(([k, v]) => `SET ${k} TO ${v}`)
+        : [];
+    const queriesReset =
+      typeof queryIn === "object"
+        ? Object.keys(queryIn.hints).map((k) => `RESET ${k}`)
+        : [];
+    const queryWithHints = // this is what's logged as a string
+      `/*${this.shardName}*/` +
+      [
+        ...queriesSet,
+        typeof queryIn === "object" ? queryIn.query : queryIn,
+      ].join("; ");
+
     try {
       const startTime = process.hrtime();
       let error: string | undefined;
       let connID: number | null = null;
-      let res: QueryResult | undefined;
+      let res: TRow[] | undefined;
 
       try {
         const conn = await this.poolConnect();
@@ -110,16 +116,7 @@ export class SQLClientPool extends Client implements SQLClient {
           // because this mode doesn't support multi-queries. Also notice that
           // TS typing is doomed for multi-queries:
           // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/33297
-          const localStartHrtime = process.hrtime.bigint();
-          const resMulti: [
-            QueryResult<never>,
-            QueryResult,
-            QueryResult<{
-              transaction_timestamp: Date;
-              clock_timestamp: Date;
-              pg_last_xact_replay_timestamp: Date | null;
-            }>
-          ] = (await conn.query(
+          const resMulti: QueryResult[] = (await conn.query(
             // We must always have "public" in search_path, because extensions
             // are by default installed in "public" schema. Some extensions may
             // expose operators (e.g. "citext" exposes comparison operators)
@@ -131,29 +128,32 @@ export class SQLClientPool extends Client implements SQLClient {
             // statement when filtering by schema name).
             [
               `SET search_path TO ${this.shardName}, public`,
-              query,
-              "SELECT transaction_timestamp(), clock_timestamp(), pg_last_xact_replay_timestamp()",
+              queryWithHints,
+              ...queriesReset,
+              "SELECT " +
+                (this.dest.isMaster
+                  ? "pg_current_wal_insert_lsn()" // on master
+                  : "pg_last_wal_replay_lsn()"), // on replica
             ].join("; ")
           )) as any;
 
-          if (resMulti.length > 3) {
+          if (resMulti.length !== 3 + queriesSet.length + queriesReset.length) {
             throw Error(
-              `Multi-query (with semicolons) is not allowed as an input to SQLClient.query(); got ${query}`
+              `Multi-query (with semicolons) is not allowed as an input to SQLClient.query(); got ${queryWithHints}`
             );
           }
 
-          const timestamps = resMulti[2].rows[0];
-          this.lastQuery = {
-            transactionTimestamp: timestamps.transaction_timestamp,
-            clockTimestamp: timestamps.clock_timestamp,
-            lastReplayTimestamp:
-              timestamps.pg_last_xact_replay_timestamp ??
-              timestamps.transaction_timestamp,
-            localStartHrtime,
-            localEndHrtime: process.hrtime.bigint(),
-          };
+          res = resMulti[1 + queriesSet.length].rows;
 
-          res = resMulti[1];
+          const lsn = resMulti[resMulti.length - 1].rows[0] as {
+            pg_current_wal_insert_lsn?: string | null;
+            pg_last_wal_replay_lsn?: string | null;
+          };
+          this.sessionPosManager.setCurrentPos(
+            parseLsn(lsn.pg_current_wal_insert_lsn) ??
+              parseLsn(lsn.pg_last_wal_replay_lsn) ??
+              BigInt(0)
+          );
         } finally {
           this.poolRelease(conn);
         }
@@ -168,20 +168,20 @@ export class SQLClientPool extends Client implements SQLClient {
           this.shardName,
           table,
           batchFactor,
-          query,
-          res ? res.rows : undefined,
+          queryWithHints,
+          res ? res : undefined,
           toFloatMs(process.hrtime(startTime)),
           error,
           this.isMaster
         );
       }
 
-      return res.rows;
+      return res;
     } catch (origError) {
       if (origError instanceof Error && (origError as any).severity) {
         // Only wrap the errors which PG sent to us explicitly. Those errors
         // mean that there was some aborted transaction.
-        throw new SQLError(origError, this.name, query.trim());
+        throw new SQLError(origError, this.name, queryWithHints.trim());
       } else {
         // Some other error (hard to reproduce; possibly a connection error?).
         throw origError;
@@ -237,6 +237,8 @@ export class SQLClientPool extends Client implements SQLClient {
     return Object.assign(Object.create(this.constructor.prototype), {
       ...this,
       shardName: this.buildShardName(no),
+      // Notice that sessionPosManager is DERIVED from the current object; thus,
+      // it's shared across all the clients within the island.
     });
   }
 
