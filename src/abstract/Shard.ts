@@ -33,7 +33,8 @@ export class Shard<TClient extends Client> {
     }
 
     const replica = replicas[Math.trunc(Math.random() * replicas.length)];
-    return session === STALE_REPLICA || session.isCaughtUp(replica.sessionPos())
+    return session === STALE_REPLICA ||
+      session.isCaughtUp(await replica.sessionPosManager.currentPos())
       ? replica
       : master;
   }
@@ -49,7 +50,7 @@ export class Shard<TClient extends Client> {
     const res = await query.run(client, annotation);
 
     if (query.IS_WRITE && origFreshness !== STALE_REPLICA) {
-      session.setPos(client.sessionPos());
+      session.setPos(await client.sessionPosManager.currentPos());
     }
 
     return res;

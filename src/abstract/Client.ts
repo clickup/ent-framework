@@ -2,6 +2,7 @@ import Memoize from "../Memoize";
 import { Batcher, Runner } from "./Batcher";
 import { QueryAnnotation } from "./QueryAnnotation";
 import { Schema } from "./Schema";
+import { SessionPosManager } from "./SessionPosManager";
 
 export interface Loggers {
   // Logs actual queries to the database (e.g. raw SQL queries, after batching).
@@ -36,6 +37,19 @@ export interface Loggers {
 }
 
 export abstract class Client {
+  /**
+   * Each Client may be bound to some shard, so the queries executed via it will
+   * be namespaced to this shard. E.g. in PostgreSQL, shard name is schema name
+   * (or "public" if the client wasn't created by withShard() method).
+   */
+  abstract readonly shardName: string;
+
+  /**
+   * Tracks the master/replica replication session position. Shared across all
+   * the clients within the same island.
+   */
+  abstract readonly sessionPosManager: SessionPosManager;
+
   constructor(
     public readonly name: string,
     public readonly isMaster: boolean,
@@ -85,18 +99,6 @@ export abstract class Client {
   }
 
   /**
-   * Each Client may be bound to some shard, so the queries executed via it will
-   * be namespaced to this shard. E.g. in PostgreSQL, shard name is schema name
-   * (or "public" if the client wasn't created by withShard() method).
-   */
-  abstract readonly shardName: string;
-
-  /**
-   * Returns the current Client's replication session position (e.g. WAL position).
-   */
-  abstract sessionPos(): bigint;
-
-  /**
    * Returns all shard numbers discoverable via the connection to the Client's
    * database.
    */
@@ -114,7 +116,10 @@ export abstract class Client {
   abstract withShard(no: number): this;
 
   /**
-   * A convenience method to put connections prewarming logic to.
+   * A convenience method to put connections prewarming logic to. The idea is to
+   * keep the needed number of open connections and also, in each connection,
+   * minimize the time which the very 1st query will take (e.g. pre-cache
+   * full-text dictionaries).
    */
   prewarm() {}
 }

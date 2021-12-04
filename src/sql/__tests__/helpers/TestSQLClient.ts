@@ -12,6 +12,14 @@ import { SQLClientPool } from "../../SQLClientPool";
 export class TestSQLClient extends Client implements SQLClient {
   readonly queries: string[] = [];
 
+  get shardName() {
+    return this.client.shardName;
+  }
+
+  get sessionPosManager() {
+    return this.client.sessionPosManager;
+  }
+
   constructor(private client: SQLClient) {
     super("test", client.isMaster, client.loggers);
   }
@@ -34,10 +42,6 @@ export class TestSQLClient extends Client implements SQLClient {
     return res;
   }
 
-  sessionPos() {
-    return this.client.sessionPos();
-  }
-
   async shardNos() {
     return this.client.shardNos();
   }
@@ -48,10 +52,6 @@ export class TestSQLClient extends Client implements SQLClient {
 
   withShard(no: number): this {
     return new TestSQLClient(this.client.withShard(no)) as this;
-  }
-
-  get shardName() {
-    return this.client.shardName;
   }
 
   toMatchSnapshot() {
