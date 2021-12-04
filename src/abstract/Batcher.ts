@@ -179,7 +179,10 @@ export class Batcher<TInput, TOutput> {
       this.queuedInputs.set(key, input);
 
       this.queuedAnnotations.set(
-        annotation.trace + annotation.vc + annotation.debugStack,
+        annotation.trace +
+          annotation.vc +
+          annotation.debugStack +
+          annotation.whyClient,
         annotation
       );
 

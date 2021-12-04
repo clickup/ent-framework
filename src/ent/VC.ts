@@ -359,6 +359,7 @@ export class VC {
         debugStack: "",
         // vc has all flavors mixed in
         vc: this.toString(),
+        whyClient: undefined,
       };
     }
 

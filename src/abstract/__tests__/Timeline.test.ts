@@ -15,8 +15,4 @@ test("serialize and deserialize", async () => {
   timeline.setPos(BigInt(5), 10000 /* ms */); // 5 < 52, so it's a no-op
   expect(timeline.isCaughtUp(BigInt(50))).toBeTruthy();
   expect(timeline.isCaughtUp(BigInt(40))).not.toBeTruthy();
-
-  timeline.setPos(BigInt(101), 1 /* ms */);
-  await new Promise((r) => setTimeout(r, 100));
-  expect(timeline.serialize()).toEqual(undefined);
 });
