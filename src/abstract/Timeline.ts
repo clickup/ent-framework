@@ -1,6 +1,21 @@
 const SEP = ":";
 
 /**
+ * The reason why the decision that this replica timeline is "good enough" has
+ * been made.
+ */
+export type TimelineCaughtUpReason =
+  | false
+  | "replica-bc-master-state-unknown"
+  | "replica-bc-caught-up"
+  | "replica-bc-pos-expired";
+
+// Even when pos is expired, we still continue to serialize it for some time for
+// better debugging. Having this gap allows the system trigger
+// "replica-bc-pos-expired" reason of a replica choice longer.
+const SERIALIZE_EXPIRATION_GAP_MS = 600 * 1000;
+
+/**
  * Tracks replication timeline position at master per "user" and Ent.
  * - serialization format: "pos:expiresAt"
  * - wipes expired records (expiration is calculated at assignment moment)
@@ -33,7 +48,8 @@ export class Timeline {
   }
 
   serialize(): string | undefined {
-    return this.state === "unknown" || Date.now() >= this.state.expiresAt
+    return this.state === "unknown" ||
+      Date.now() >= this.state.expiresAt + SERIALIZE_EXPIRATION_GAP_MS
       ? undefined
       : this.state.pos.toString() + SEP + this.state.expiresAt;
   }
@@ -47,13 +63,13 @@ export class Timeline {
     this.state = { pos, expiresAt: Date.now() + maxLagMs };
   }
 
-  isCaughtUp(replicaPos: bigint): false | "unknown" | "caught-up" | "expired" {
+  isCaughtUp(replicaPos: bigint): TimelineCaughtUpReason {
     return this.state === "unknown"
-      ? "unknown" // don't know anything about master; assume the replica is caught up
+      ? "replica-bc-master-state-unknown" // don't know anything about master; assume the replica is caught up
       : replicaPos >= this.state.pos
-      ? "caught-up"
+      ? "replica-bc-caught-up"
       : Date.now() >= this.state.expiresAt
-      ? "expired"
+      ? "replica-bc-pos-expired"
       : false;
   }
 

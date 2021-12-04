@@ -13,6 +13,7 @@ const annotation: QueryAnnotation = {
   trace: "some-trace",
   debugStack: "",
   vc: "some-vc",
+  whyClient: undefined,
 };
 let shard: Shard<TestSQLClient>;
 let master: TestSQLClient;

@@ -20,6 +20,7 @@ const annotation: QueryAnnotation = {
   trace: "some-trace",
   debugStack: "",
   vc: "some-vc",
+  whyClient: undefined,
 };
 let master: TestSQLClient;
 let replica: TestSQLClient;
