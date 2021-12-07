@@ -4,36 +4,42 @@ import { QueryAnnotation } from "./QueryAnnotation";
 import { Schema } from "./Schema";
 import { TimelineManager } from "./TimelineManager";
 
+export interface ClientQueryLoggerProps {
+  annotations: Iterable<QueryAnnotation>;
+  connID: string;
+  op: string;
+  shard: string;
+  table: string;
+  batchFactor: number;
+  msg: string;
+  output: any;
+  elapsed: number;
+  error: string | undefined;
+  isMaster: boolean;
+  backendPID: number;
+  backend: string;
+}
+
+export interface EntInputLoggerProps {
+  annotation: QueryAnnotation;
+  runnerName: string;
+  shard: string;
+  table: string;
+  key: string;
+  dedup: number;
+  batchFactor: number;
+  input: any;
+  output: any;
+  elapsed: number;
+  error: string | undefined;
+  isMaster: boolean;
+}
+
 export interface Loggers {
   // Logs actual queries to the database (e.g. raw SQL queries, after batching).
-  clientQueryLogger?: (
-    annotations: Iterable<QueryAnnotation>,
-    connID: string,
-    op: string,
-    shard: string,
-    table: string,
-    batchFactor: number,
-    msg: string,
-    output: any,
-    elapsed: number,
-    error: string | undefined,
-    isMaster: boolean
-  ) => void;
+  clientQueryLogger?: (props: ClientQueryLoggerProps) => void;
   // Logs input queries for every shard (i.e. before batching).
-  entInputLogger?: (
-    annotation: QueryAnnotation,
-    runnerName: string,
-    shard: string,
-    table: string,
-    key: string,
-    dedup: number,
-    batchFactor: number,
-    input: any,
-    output: any,
-    elapsed: number,
-    error: string | undefined,
-    isMaster: boolean
-  ) => void;
+  entInputLogger?: (props: EntInputLoggerProps) => void;
 }
 
 export abstract class Client {

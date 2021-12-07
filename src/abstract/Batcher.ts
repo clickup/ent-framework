@@ -1,5 +1,6 @@
 import delay from "delay";
 import { runInVoid, toFloatMs } from "../helpers";
+import { Loggers } from "./Client";
 import { QueryAnnotation } from "./QueryAnnotation";
 
 export const DEFAULT_MAX_BATCH_SIZE = 100;
@@ -136,20 +137,7 @@ export class Batcher<TInput, TOutput> {
 
   constructor(
     private runner: Runner<TInput, TOutput>,
-    private entInputLogger?: (
-      annotation: QueryAnnotation,
-      runnerName: string,
-      shard: string,
-      table: string,
-      key: string,
-      dedup: number,
-      batchFactor: number,
-      input: any,
-      output: any,
-      elapsed: number,
-      error: string | undefined,
-      isMaster: boolean
-    ) => void,
+    private entInputLogger?: Loggers["entInputLogger"],
     private maxBatchSize: number = 0
   ) {
     if (!this.maxBatchSize) {
@@ -249,20 +237,20 @@ export class Batcher<TInput, TOutput> {
         if (this.entInputLogger) {
           const input = inputs.get(key);
           for (const { annotation } of handler.callbacks) {
-            this.entInputLogger(
+            this.entInputLogger({
               annotation,
-              this.runner.constructor.name,
-              this.runner.shardName,
-              this.runner.name,
+              runnerName: this.runner.constructor.name,
+              shard: this.runner.shardName,
+              table: this.runner.name,
               key,
-              handler.callbacks.length, // dedup
-              inputs.size, // batchFactor
+              dedup: handler.callbacks.length,
+              batchFactor: inputs.size,
               input,
               output,
-              toFloatMs(process.hrtime(handler.startTime)),
-              "" + error,
-              this.runner.isMaster
-            );
+              elapsed: toFloatMs(process.hrtime(handler.startTime)),
+              error: "" + error,
+              isMaster: this.runner.isMaster,
+            });
           }
         }
       }

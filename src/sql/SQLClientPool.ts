@@ -37,6 +37,9 @@ export interface SQLClientDest {
 type PoolClientX = PoolClient & {
   id?: number;
   closeAt?: number;
+  // Implemented but not documented property, see:
+  // https://github.com/brianc/node-postgres/issues/2665
+  processID?: number | null;
 };
 
 export class SQLClientPool extends Client implements SQLClient {
@@ -112,11 +115,13 @@ export class SQLClientPool extends Client implements SQLClient {
       const startTime = process.hrtime();
       let error: string | undefined;
       let connID: number | null = null;
+      let processID: number | null = null;
       let res: TRow[] | undefined;
 
       try {
         const conn = await this.poolConnect();
         connID = conn.id ?? 0;
+        processID = conn.processID ?? 0;
         try {
           // A good and simple explanation of the protocol is here:
           // https://www.postgresql.org/docs/13/protocol-flow.html. In short, we
@@ -178,19 +183,21 @@ export class SQLClientPool extends Client implements SQLClient {
         error = "" + e;
         throw e;
       } finally {
-        this.loggers.clientQueryLogger?.(
+        this.loggers.clientQueryLogger?.({
           annotations,
-          "" + connID,
+          connID: "" + connID,
+          backendPID: processID ?? 0,
+          backend: `${this.dest.config.host}:${this.dest.config.port ?? 5432}`,
           op,
-          this.shardName,
+          shard: this.shardName,
           table,
           batchFactor,
-          queryWithHints,
-          res ? res : undefined,
-          toFloatMs(process.hrtime(startTime)),
+          msg: queryWithHints,
+          output: res ? res : undefined,
+          elapsed: toFloatMs(process.hrtime(startTime)),
           error,
-          this.isMaster
-        );
+          isMaster: this.isMaster,
+        });
       }
 
       return res;
