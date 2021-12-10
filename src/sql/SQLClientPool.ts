@@ -90,26 +90,24 @@ export class SQLClientPool extends Client implements SQLClient {
   }
 
   async query<TRow>(
-    queryIn: string | { query: string; hints: Record<string, string> },
+    query: string | { query: string; hints: Record<string, string> },
     op: string,
     table: string,
     annotations: Iterable<QueryAnnotation>,
     batchFactor: number
   ): Promise<TRow[]> {
     const queriesSet =
-      typeof queryIn === "object"
-        ? Object.entries(queryIn.hints).map(([k, v]) => `SET ${k} TO ${v}`)
+      typeof query === "object"
+        ? Object.entries(query.hints).map(([k, v]) => `SET ${k} TO ${v}`)
         : [];
     const queriesReset =
-      typeof queryIn === "object"
-        ? Object.keys(queryIn.hints).map((k) => `RESET ${k}`)
+      typeof query === "object"
+        ? Object.keys(query.hints).map((k) => `RESET ${k}`)
         : [];
+
+    query = (typeof query === "object" ? query.query : query).trimRight();
     const queryWithHints = // this is what's logged as a string
-      `/*${this.shardName}*/` +
-      [
-        ...queriesSet,
-        typeof queryIn === "object" ? queryIn.query : queryIn,
-      ].join("; ");
+      `/*${this.shardName}*/` + [...queriesSet, query].join("; ");
 
     try {
       const startTime = process.hrtime();
@@ -123,6 +121,10 @@ export class SQLClientPool extends Client implements SQLClient {
         connID = conn.id ?? 0;
         processID = conn.processID ?? 0;
         try {
+          if (query === "") {
+            throw Error("Empty query passed to query()");
+          }
+
           // A good and simple explanation of the protocol is here:
           // https://www.postgresql.org/docs/13/protocol-flow.html. In short, we
           // can't use prepared-statement-based operations even theoretically,
@@ -152,7 +154,7 @@ export class SQLClientPool extends Client implements SQLClient {
 
           if (resMulti.length !== 3 + queriesSet.length + queriesReset.length) {
             throw Error(
-              `Multi-query (with semicolons) is not allowed as an input to SQLClient.query(); got ${queryWithHints}`
+              `Multi-query (with semicolons) is not allowed as an input to query(); got ${queryWithHints}`
             );
           }
 
