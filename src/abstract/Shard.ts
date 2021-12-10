@@ -68,7 +68,8 @@ export class Shard<TClient extends Client> {
     timeline: Timeline | typeof MASTER | typeof STALE_REPLICA,
     isWrite: true | undefined
   ): Promise<{ client: TClient; whyClient: WhyClient }> {
-    const { master, replicas } = await this.clients();
+    const island = await this.locateIsland();
+    const { master, replicas } = await this.clients(island);
 
     if (isWrite) {
       return { client: master, whyClient: "master-bc-is-write" };
@@ -100,14 +101,16 @@ export class Shard<TClient extends Client> {
   }
 
   /**
-   * Returns all the clients within this shard.
+   * Returns all the clients within this shard. Memoized by island, so in case
+   * the island changes, it will be re-calculated.
    */
   @Memoize()
-  private async clients() {
-    const island = await this.locateIsland();
+  private async clients(islandForMemoize: Island<TClient>) {
     return {
-      master: island.master.withShard(this.no),
-      replicas: island.replicas.map((client) => client.withShard(this.no)),
+      master: islandForMemoize.master.withShard(this.no),
+      replicas: islandForMemoize.replicas.map((client) =>
+        client.withShard(this.no)
+      ),
     };
   }
 }
