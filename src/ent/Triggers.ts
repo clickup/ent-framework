@@ -1,6 +1,7 @@
-import { Flatten, join, PartialSymbols } from "../helpers";
+import { Flatten, join } from "../helpers";
 import {
   InsertInput,
+  InsertInputPartialSymbols,
   Row,
   RowWithID,
   Table,
@@ -86,15 +87,15 @@ export type AfterMutationTrigger<TTable extends Table> = (
   vc: VC,
   args: {
     // We don't know if it's called after INSERT, UPDATE or DELETE, so use the
-    // most narrow list of fields which is PartialSymbols of InsertInput.
-    newOrOldRow: Flatten<PartialSymbols<InsertInput<TTable>> & RowWithID>;
+    // most narrow list of fields which is InsertInputPartialSymbols.
+    newOrOldRow: Flatten<InsertInputPartialSymbols<TTable> & RowWithID>;
     op: "INSERT" | "UPDATE" | "DELETE";
   }
 ) => Promise<unknown>;
 
 export type DepsBuilder<TTable extends Table> = (
   vc: VC,
-  row: Flatten<Readonly<PartialSymbols<InsertInput<TTable>> & RowWithID>>
+  row: Flatten<Readonly<InsertInputPartialSymbols<TTable> & RowWithID>>
 ) => string | Promise<string>;
 
 export class Triggers<TTable extends Table> {

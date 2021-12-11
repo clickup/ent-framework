@@ -164,7 +164,7 @@ const schemaTestHeadline = new SQLSchema(TABLE_HEADLINE, {
   headline: { type: String },
   name: { type: String, allowNull: true, autoInsert: "NULL" },
   [$EPHEMERAL]: { type: String, allowNull: true }, // required, but nullable
-  [$EPHEMERAL2]: { type: Number, autoInsert: null }, // optional (can be skipped), but if present, must be non-nullable
+  [$EPHEMERAL2]: { type: Number, autoInsert: "NULL" }, // optional (can be skipped), but if present, must be non-nullable
 });
 
 export class EntTestHeadline extends BaseEnt(testCluster, schemaTestHeadline) {

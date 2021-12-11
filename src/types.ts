@@ -50,7 +50,7 @@ type Spec = {
 // { id: Spec, name: Spec, ... } - table columns
 export type Table = {
   [ID]: Spec;
-  [K: string]: Spec;
+  [K: string | symbol]: Spec;
 };
 
 // SpecType -> Value deduction (always deduces non-nullable type)
@@ -107,6 +107,15 @@ type InsertFieldsOptional<TTable extends Table> = {
 // Excludes id Spec entirely and makes autoInsert/autoUpdate Specs optional.
 export type InsertInput<TTable extends Table> = {
   [K in InsertFieldsRequired<TTable>]: Value<TTable[K]>;
+} & {
+  [K in InsertFieldsOptional<TTable>]?: Value<TTable[K]>;
+};
+
+// Same as InsertInput, but with all "symbol" props being partial.
+export type InsertInputPartialSymbols<TTable extends Table> = {
+  [K in InsertFieldsRequired<TTable>]:
+    | Value<TTable[K]>
+    | (K extends symbol ? undefined : never);
 } & {
   [K in InsertFieldsOptional<TTable>]?: Value<TTable[K]>;
 };
