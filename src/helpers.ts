@@ -17,13 +17,6 @@ export type AddNew<
 > = OmitNew<TClass> & { new (): InstanceType<TClass> & TRet };
 
 /**
- * Returns a type with all symbol keys being optional.
- */
-export type PartialSymbols<T> = {
-  [K in keyof T]: K extends symbol ? T[K] | undefined : T[K];
-};
-
-/**
  * Flattens the interface to make it more readable in IntelliSense. Can be used
  * when someone modifies (picks, omits, etc.) a huge type.
  */

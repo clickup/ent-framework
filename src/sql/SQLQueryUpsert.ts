@@ -52,7 +52,7 @@ class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
         specs: pickBy(
           this.schema.table,
           ({ autoInsert }) => autoInsert === undefined
-        ),
+        ) as Partial<TTable>,
       }
     );
 
