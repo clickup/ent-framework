@@ -69,7 +69,7 @@ export type PrimitiveClass<
 
   /**
    * Inserts an Ent or updates an existing one if unique key matches.
-   * - Don't use upsert() too often, because upsert may still deplete IDs even
+   * - Don't use upsert() too often, because upsert may still delete IDs even
    *   if the object was updated, not inserted (there is no good ways to solve
    *   this in some DB engines like SQL so far).
    * - Upsert can't work if some triggers are defined for the Ent, because we
