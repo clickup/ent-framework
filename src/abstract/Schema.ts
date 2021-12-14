@@ -71,7 +71,7 @@ export abstract class Schema<
       this.name +
       ":" +
       hash([this.table, this.uniqueKey], {
-        algorithm: "MD5",
+        algorithm: "md5",
         ignoreUnknown: true,
       });
   }
