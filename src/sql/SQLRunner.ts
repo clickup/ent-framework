@@ -26,6 +26,9 @@ import { SQLError } from "./SQLError";
 
 const DEADLOCK_RETRY_MS_MIN = 2000;
 const DEADLOCK_RETRY_MS_MAX = 5000;
+const ERROR_DEADLOCK = "deadlock detected";
+const ERROR_CONFLICT_RECOVERY =
+  "canceling statement due to conflict with recovery";
 
 /**
  * A convenient pile of helper methods usable by most of SQLQuery* classes. In
@@ -40,6 +43,8 @@ export abstract class SQLRunner<
   TInput,
   TOutput
 > extends Runner<TInput, TOutput> {
+  override ["constructor"]: typeof SQLRunner;
+
   abstract readonly op: string;
 
   readonly shardName = this.client.shardName;
@@ -71,19 +76,25 @@ export abstract class SQLRunner<
     }
   }
 
-  delayForSingleQueryDeadlockRetry(e: any) {
+  delayForSingleQueryRetryOnError(e: any) {
     // Deadlocks may happen when a simple query involves multiple rows (e.g.
     // deleting a row by ID, but this row has foreign keys, especially with ON
     // DELETE CASCADE).
-    return e instanceof SQLError && e.message.includes("deadlock detected")
+    return e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)
       ? random(DEADLOCK_RETRY_MS_MIN, DEADLOCK_RETRY_MS_MAX)
-      : null;
+      : e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY)
+      ? "immediate_retry"
+      : "no_retry";
   }
 
-  override shouldDebatchAndRetryOnError(e: any) {
-    // Is it an SQL level errors from a write query returned by PG in a special
-    // error message?
-    return super.shouldDebatchAndRetryOnError(e) && e instanceof SQLError;
+  shouldDebatchOnError(e: any) {
+    return (
+      // Debatch ALL SQL WRITE query errors (FK errors, deadlocks etc.)
+      (e instanceof SQLError && this.constructor.IS_WRITE) ||
+      // Debatch "conflict with recovery" errors (we support retries only after
+      // debatching, so have to return true here).
+      (e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY))
+    );
   }
 
   protected async clientQuery<TOutput>(

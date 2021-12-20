@@ -79,31 +79,27 @@ export abstract class Runner<TInput, TOutput> {
   ): Promise<Map<string, TOutput>>;
 
   /**
-   * If the single query's error is a deadlock error AND it needs to be retried,
-   * returns the number of milliseconds to wait before retrying. Otherwise,
-   * returns null.
+   * If the single query's error needs to be retried (e.g. it's a deadlock
+   * error), returns the number of milliseconds to wait before retrying.
    */
-  abstract delayForSingleQueryDeadlockRetry(error: any): number | null;
+  abstract delayForSingleQueryRetryOnError(
+    error: any
+  ): number | "immediate_retry" | "no_retry";
 
   /**
-   * If this method returns true, in case of an error, the batch is split back
-   * into sub-queries, they are executed (retried) individually, and then the
-   * response of each query is delivered to each caller individually. Used
-   * mostly for e.g. batch-deadlock errors or for FK constraint errors when it
-   * makes sense to retry other members of the batch and not fail it entirely
-   * hurting other innocent queries.
+   * If this method returns true for an error object, the batch is split back
+   * into sub-queries, they are executed individually, and then the response of
+   * each query is delivered to each caller individually. Used mostly for e.g.
+   * batch-deadlock errors or for FK constraint errors when it makes sense to
+   * retry other members of the batch and not fail it entirely hurting other
+   * innocent queries.
    *
    * We can do this, because we know that if some transaction is aborted, it's
    * always safe to retry it. (If we're not sure about the transaction, e.g. the
    * client doesn't support transactions at all, then the method should return
    * false.)
    */
-  shouldDebatchAndRetryOnError(_error: any) {
-    // This method is likely overridden in derived classes, because we need to
-    // retry only if it's a DB error and if we're sure that the DB engine did
-    // not apply the change.
-    return (this.constructor as typeof Runner).IS_WRITE;
-  }
+  abstract shouldDebatchOnError(error: any): boolean;
 }
 
 /**
@@ -206,7 +202,7 @@ export class Batcher<TInput, TOutput> {
         outputs = await this.runner.runBatch(inputs, annotations);
       } catch (e: any) {
         // Relatively rare under heavy load (since errors are rare).
-        if (this.runner.shouldDebatchAndRetryOnError(e)) {
+        if (this.runner.shouldDebatchOnError(e)) {
           await this.runSingleForEach(inputs, annotations, outputs, errors);
         } else {
           for (const key of handlers.keys()) {
@@ -273,13 +269,17 @@ export class Batcher<TInput, TOutput> {
         this.runner
           .runSingle(input, annotations)
           .catch(async (error) => {
-            const retryMs = this.runner.delayForSingleQueryDeadlockRetry(error);
-            if (retryMs) {
+            const retryMs = this.runner.delayForSingleQueryRetryOnError(error);
+
+            if (typeof retryMs === "number") {
               await delay(retryMs);
-              return this.runner.runSingle(input, annotations);
-            } else {
-              throw error;
             }
+
+            if (retryMs !== "no_retry") {
+              return this.runner.runSingle(input, annotations);
+            }
+
+            throw error;
           })
           .then((output) => outOutputs.set(key, output))
           .catch((error) => outErrors.set(key, error))
