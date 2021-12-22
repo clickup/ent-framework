@@ -10,7 +10,7 @@ export default function Memoize(hashFunction?: (...args: any[]) => any) {
     _propertyKey: string,
     descriptor: TypedPropertyDescriptor<any>
   ) => {
-    if (descriptor.value ?? null !== null) {
+    if ((descriptor.value ?? null) !== null) {
       descriptor.value = getNewFunction(descriptor.value, hashFunction);
     } else if (descriptor.get) {
       descriptor.get = getNewFunction(descriptor.get, hashFunction);

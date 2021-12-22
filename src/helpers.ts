@@ -238,7 +238,7 @@ export function nullthrows<T>(x?: T | null, message?: string | Error): T {
   const error =
     message instanceof Error
       ? message
-      : new Error(message ?? "Got unexpected " + x + " in nullthrows()");
+      : new Error(message ?? `Got unexpected ${x} in nullthrows()`);
   Error.captureStackTrace(error, nullthrows);
   throw error;
 }
