@@ -105,7 +105,7 @@ export class SQLClientPool extends Client implements SQLClient {
         ? Object.keys(query.hints).map((k) => `RESET ${k}`)
         : [];
 
-    query = (typeof query === "object" ? query.query : query).trimRight();
+    query = (typeof query === "object" ? query.query : query).trimEnd();
     const queryWithHints = // this is what's logged as a string
       `/*${this.shardName}*/` + [...queriesSet, query].join("; ");
 
