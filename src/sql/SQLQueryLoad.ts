@@ -39,7 +39,7 @@ class SQLRunnerLoad<TTable extends Table> extends SQLRunner<
 
   async runSingle(
     input: string,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Row<TTable> | undefined> {
     const sql = this.prefix + this.listBuilder([input]) + this.suffix;
     const rows = await this.clientQuery<Row<TTable>>(sql, annotations, 1);
@@ -48,7 +48,7 @@ class SQLRunnerLoad<TTable extends Table> extends SQLRunner<
 
   async runBatch(
     inputs: Map<string, string>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Map<string, Row<TTable>>> {
     const sql = this.prefix + this.listBuilder(inputs.values()) + this.suffix;
     const rows = await this.clientQuery<Row<TTable>>(

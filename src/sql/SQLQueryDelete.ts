@@ -34,7 +34,7 @@ class SQLRunnerDelete<TTable extends Table> extends SQLRunner<
 
   async runSingle(
     input: string,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<boolean> {
     const sql = this.prefix + this.listBuilder([input]) + this.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(sql, annotations, 1);
@@ -43,7 +43,7 @@ class SQLRunnerDelete<TTable extends Table> extends SQLRunner<
 
   async runBatch(
     inputs: Map<string, string>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Map<string, boolean>> {
     const sql = this.prefix + this.listBuilder(inputs.values()) + this.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(

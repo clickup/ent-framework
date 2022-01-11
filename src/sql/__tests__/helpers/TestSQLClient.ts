@@ -28,7 +28,7 @@ export class TestSQLClient extends Client implements SQLClient {
     query: string,
     op: string,
     table: string,
-    annotations: Iterable<QueryAnnotation>,
+    annotations: QueryAnnotation[],
     batchFactor: number
   ): Promise<TRes[]> {
     this.queries.push(query);

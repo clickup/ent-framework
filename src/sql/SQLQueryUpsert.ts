@@ -91,7 +91,7 @@ class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
 
   async runSingle(
     input: InsertInput<TTable>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<string | undefined> {
     const sql =
       this.prefixSimple +
@@ -103,7 +103,7 @@ class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
 
   async runBatch(
     inputs: Map<string, InsertInput<TTable>>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Map<string, string>> {
     // In "WITH ... VALUES ... INSERT ... ON CONFLICT UPDATE ... RETURNING ..." in
     // case insert didn't happen we can't match the updated row id with the WITH id.

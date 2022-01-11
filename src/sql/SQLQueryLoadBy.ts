@@ -52,7 +52,7 @@ class SQLRunnerLoadBy<
 
   async runSingle(
     input: LoadByInput<TTable, TUniqueKey>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Row<TTable> | undefined> {
     const sql = this.prefix + this.whereBuilder([input]) + this.suffix;
     const rows = await this.clientQuery<Row<TTable>>(sql, annotations, 1);
@@ -61,7 +61,7 @@ class SQLRunnerLoadBy<
 
   async runBatch(
     inputs: Map<string, LoadByInput<TTable, TUniqueKey>>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Map<string, Row<TTable>>> {
     const sql = this.prefix + this.whereBuilder(inputs.values()) + this.suffix;
     const rows = await this.clientQuery<Row<TTable>>(

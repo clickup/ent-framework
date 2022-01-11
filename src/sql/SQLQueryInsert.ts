@@ -64,7 +64,7 @@ class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
 
   async runSingle(
     input: InsertInput<TTable>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<string | undefined> {
     const sql =
       this.valuesBuilderSimple.prefix +
@@ -80,7 +80,7 @@ class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
 
   async runBatch(
     inputs: Map<string, InsertInput<TTable>>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Map<string, string>> {
     const pieces: string[] = [];
     for (const [key, input] of inputs) {

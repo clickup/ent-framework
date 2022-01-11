@@ -49,7 +49,7 @@ class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
 
   async runSingle(
     input: SelectInput<TTable>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Array<Row<TTable>>> {
     let sql =
       this.prefix +
@@ -62,7 +62,7 @@ class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
 
   async runBatch(
     inputs: Map<string, SelectInput<TTable>>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Map<string, Array<Row<TTable>>>> {
     // SELECT '...' AS _key, ... FROM ... WHERE ...
     //    UNION ALL

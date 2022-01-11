@@ -35,7 +35,7 @@ class SQLRunnerIDGen<TTable extends Table> extends SQLRunner<
 
   async runSingle(
     _input: void,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<string | undefined> {
     const sql = "SELECT " + this.idAutoInsert;
     const rows = await this.clientQuery<{ [k: string]: string }>(
@@ -48,7 +48,7 @@ class SQLRunnerIDGen<TTable extends Table> extends SQLRunner<
 
   async runBatch(
     inputs: Map<string, void>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Map<string, string>> {
     const parts = [];
     for (const key of inputs.keys()) {
