@@ -113,6 +113,7 @@ const master = new SQLClientPool(
     isMaster: true,
     config: {
       host: process.env.DB_HOST_DEFAULT || process.env.PGHOST,
+      port: parseInt(process.env.DB_PORT || process.env.PGPORT || "5432"),
       database: process.env.DB_DATABASE || process.env.PGDATABASE,
       user: process.env.DB_USER || process.env.PGUSER,
       password: process.env.DB_PASS || process.env.PGPASSWORD,
