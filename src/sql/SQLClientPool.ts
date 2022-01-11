@@ -93,7 +93,7 @@ export class SQLClientPool extends Client implements SQLClient {
     query: string | { query: string; hints: Record<string, string> },
     op: string,
     table: string,
-    annotations: Iterable<QueryAnnotation>,
+    annotations: QueryAnnotation[],
     batchFactor: number
   ): Promise<TRow[]> {
     const queriesSet =

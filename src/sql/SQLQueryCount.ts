@@ -34,7 +34,7 @@ class SQLRunnerCount<TTable extends Table> extends SQLRunner<
 
   async runSingle(
     input: CountInput<TTable>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<number> {
     const sql =
       this.prefix +
@@ -46,7 +46,7 @@ class SQLRunnerCount<TTable extends Table> extends SQLRunner<
 
   async runBatch(
     inputs: Map<string, CountInput<TTable>>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Map<string, number>> {
     // SELECT 0 AS i, COUNT(1) FROM ... WHERE ...
     //    UNION ALL

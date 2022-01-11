@@ -67,7 +67,7 @@ export abstract class Runner<TInput, TOutput> {
    */
   abstract runSingle(
     input: TInput,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<TOutput | undefined>;
 
   /**
@@ -75,7 +75,7 @@ export abstract class Runner<TInput, TOutput> {
    */
   abstract runBatch?(
     inputs: Map<string, TInput>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<Map<string, TOutput>>;
 
   /**
@@ -185,7 +185,7 @@ export class Batcher<TInput, TOutput> {
 
     const inputs = this.queuedInputs;
     const handlers = this.queuedHandlers;
-    const annotations = this.queuedAnnotations.values();
+    const annotations = [...this.queuedAnnotations.values()];
     this.queuedInputs = new Map();
     this.queuedHandlers = new Map();
     this.queuedAnnotations = new Map();
@@ -259,7 +259,7 @@ export class Batcher<TInput, TOutput> {
 
   private async runSingleForEach(
     inputs: Map<string, TInput>,
-    annotations: Iterable<QueryAnnotation>,
+    annotations: QueryAnnotation[],
     outOutputs: Map<string, TOutput | undefined>,
     outErrors: Map<string, any>
   ) {

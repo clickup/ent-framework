@@ -33,7 +33,7 @@ class SQLRunnerDeleteWhere<TTable extends Table> extends SQLRunner<
 
   async runSingle(
     input: DeleteWhereInput<TTable>,
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<string[]> {
     if (!(input[ID] instanceof Array)) {
       throw Error(

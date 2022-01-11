@@ -5,7 +5,7 @@ import { Schema } from "./Schema";
 import { TimelineManager } from "./TimelineManager";
 
 export interface ClientQueryLoggerProps {
-  annotations: Iterable<QueryAnnotation>;
+  annotations: QueryAnnotation[];
   connID: string;
   op: string;
   shard: string;

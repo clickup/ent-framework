@@ -111,7 +111,7 @@ class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
 
   async runSingle(
     input: UpdateInput<TTable> & { [ID]: string },
-    annotations: Iterable<QueryAnnotation>
+    annotations: QueryAnnotation[]
   ): Promise<boolean> {
     const literal = input[$literal];
     const sql =
@@ -129,7 +129,7 @@ class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
     ? undefined
     : async (
         inputs: Map<string, UpdateInput<TTable> & { [ID]: string }>,
-        annotations: Iterable<QueryAnnotation>
+        annotations: QueryAnnotation[]
       ): Promise<Map<string, boolean>> => {
         const pieces: string[] = [];
         for (const [key, input] of inputs) {

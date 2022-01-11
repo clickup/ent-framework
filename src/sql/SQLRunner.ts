@@ -99,7 +99,7 @@ export abstract class SQLRunner<
 
   protected async clientQuery<TOutput>(
     sql: string,
-    annotations: Iterable<QueryAnnotation>,
+    annotations: QueryAnnotation[],
     batchFactor: number
   ) {
     const rows = await this.client.query<TOutput>(
