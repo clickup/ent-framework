@@ -7,7 +7,7 @@
 export default function Memoize(hashFunction?: (...args: any[]) => any) {
   return (
     _target: Object,
-    _propertyKey: string,
+    _propertyKey: string | symbol,
     descriptor: TypedPropertyDescriptor<any>
   ) => {
     if ((descriptor.value ?? null) !== null) {
