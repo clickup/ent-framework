@@ -37,7 +37,7 @@ class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
 }
 
 async function init() {
-  await mapJoin(testCluster.shards, async (shard) => {
+  await mapJoin([...testCluster.shards.values()], async (shard) => {
     const client = await shard.client(MASTER);
     await join([
       client.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_USER),
