@@ -131,9 +131,13 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     }
   }
 
-  /** All shards except shard 0 */
-  allNonGlobalShards() {
-    return this.cluster.shards.filter((shard) => shard.no !== 0);
+  /**
+   * All shards for this particular Ent depending on its affinity.
+   */
+  allShards() {
+    return [...this.cluster.shards.values()].filter((shard) =>
+      this.shardAffinity === GLOBAL_SHARD ? shard.no === 0 : shard.no !== 0
+    );
   }
 
   private shardFromAffinity(

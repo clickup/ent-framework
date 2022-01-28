@@ -1,3 +1,4 @@
+import compact from "lodash/compact";
 import random from "lodash/random";
 import range from "lodash/range";
 import { mapJoin, runInVoid } from "../helpers";
@@ -10,6 +11,7 @@ import { Shard } from "./Shard";
  */
 export class Island<TClient extends Client> {
   constructor(
+    public readonly no: number,
     public readonly master: TClient,
     public readonly replicas: TClient[]
   ) {}
@@ -25,13 +27,14 @@ export class Island<TClient extends Client> {
  * Shard 0 is a special "global" shard.
  */
 export class Cluster<TClient extends Client> {
-  readonly shards: ReadonlyArray<Shard<TClient>>;
+  readonly shards: ReadonlyMap<number, Shard<TClient>>;
+  readonly islands: ReadonlyMap<number, Island<TClient>>;
   private islandsByShardsCache: Promise<Array<Island<TClient>>> | undefined;
 
   constructor(
     public readonly numReadShards: number,
     public readonly numWriteShards: number,
-    public readonly islands: ReadonlyMap<number, Island<TClient>>,
+    islands: ReadonlyArray<Island<TClient>>,
     public readonly shardsRediscoverMs: number = 10000
   ) {
     if (this.numWriteShards > this.numReadShards) {
@@ -44,12 +47,15 @@ export class Cluster<TClient extends Client> {
       );
     }
 
-    this.shards = range(0, numReadShards).map(
-      (no) =>
+    this.islands = new Map(islands.map((island) => [island.no, island]));
+    this.shards = new Map(
+      range(0, numReadShards).map((no) => [
+        no,
         new Shard(no, async () => {
           const islandsByShards = await this.islandsByShardsCached();
           return islandsByShards[no] || this.throwOnBadShardNo(no);
-        })
+        }),
+      ])
     );
   }
 
@@ -61,13 +67,13 @@ export class Cluster<TClient extends Client> {
   }
 
   globalShard(): Shard<TClient> {
-    return this.shards[0];
+    return this.shards.get(0)!;
   }
 
   randomShard(): Shard<TClient> {
-    // TODO: implement power-of-two algorithm to pick the smallest in size shard.
+    // TODO: implement power-of-two algorithm to pick the shard smallest in size.
     const noFromOne = random(1, this.numWriteShards - 1);
-    return this.shards[noFromOne];
+    return this.shards.get(noFromOne)!;
   }
 
   shard(id: string): Shard<TClient> {
@@ -77,12 +83,21 @@ export class Cluster<TClient extends Client> {
     }
 
     const shardNo = noMatterWhatIsland.master.shardNoByID(id);
-    const shard = this.shards[shardNo];
+    const shard = this.shards.get(shardNo);
     if (!shard) {
       this.throwOnBadShardNo(shardNo);
     }
 
     return shard;
+  }
+
+  async islandShards(islandNo: number) {
+    const islandsByShards = await this.islandsByShardsCached();
+    return compact(
+      islandsByShards.map((island, shardNo) =>
+        island.no === islandNo ? this.shards.get(shardNo) : null
+      )
+    );
   }
 
   private async islandsByShardsCached() {

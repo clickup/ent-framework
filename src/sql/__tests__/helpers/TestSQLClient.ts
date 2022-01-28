@@ -125,14 +125,11 @@ const master = new SQLClientPool(
 export const testCluster = new Cluster(
   2, // numReadShards,
   2, // numWriteShards,
-  new Map([
-    [
-      0,
-      new Island(new TestSQLClient(master), [
-        new TestSQLClient(
-          new SQLClientPool({ ...master.dest, isMaster: false }, master.loggers)
-        ),
-      ]),
-    ],
-  ])
+  [
+    new Island(0, new TestSQLClient(master), [
+      new TestSQLClient(
+        new SQLClientPool({ ...master.dest, isMaster: false }, master.loggers)
+      ),
+    ]),
+  ]
 );
