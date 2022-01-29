@@ -235,7 +235,10 @@ export class SQLClientPool extends Client implements SQLClient {
         .sort();
     } catch (e: any) {
       // Being unable to access a DB is not a critical error here, we'll just
-      // miss some shards (and other shards will work).
+      // miss some shards (and other shards will work). DO NOT throw through
+      // here yet! This needs to be addressed holistically and with careful
+      // retries. Also, we have shards rediscovery every 10 or so seconds, so a
+      // missing island will self-heal eventually.
       logGlobalError("shardNos()", e);
       return [];
     }
