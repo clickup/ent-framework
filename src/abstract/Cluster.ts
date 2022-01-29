@@ -1,9 +1,13 @@
+import delay from "delay";
 import compact from "lodash/compact";
 import random from "lodash/random";
 import range from "lodash/range";
 import { mapJoin, runInVoid } from "../helpers";
 import { Client } from "./Client";
 import { Shard } from "./Shard";
+
+const DISCOVER_ERROR_RETRY_ATTEMPTS = 1;
+const DISCOVER_ERROR_RETRY_DELAY_MS = 3000;
 
 /**
  * Island is 1 master + N replicas.
@@ -29,7 +33,9 @@ export class Island<TClient extends Client> {
 export class Cluster<TClient extends Client> {
   readonly shards: ReadonlyMap<number, Shard<TClient>>;
   readonly islands: ReadonlyMap<number, Island<TClient>>;
-  private islandsByShardsCache: Promise<Array<Island<TClient>>> | undefined;
+  private islandsByShardsCache:
+    | Promise<ReadonlyMap<number, Island<TClient>>>
+    | undefined;
 
   constructor(
     public readonly numReadShards: number,
@@ -53,7 +59,7 @@ export class Cluster<TClient extends Client> {
         no,
         new Shard(no, async () => {
           const islandsByShards = await this.islandsByShardsCached();
-          return islandsByShards[no] || this.throwOnBadShardNo(no);
+          return islandsByShards.get(no) || this.throwOnBadShardNo(no);
         }),
       ])
     );
@@ -94,7 +100,7 @@ export class Cluster<TClient extends Client> {
   async islandShards(islandNo: number) {
     const islandsByShards = await this.islandsByShardsCached();
     return compact(
-      islandsByShards.map((island, shardNo) =>
+      [...islandsByShards.entries()].map(([shardNo, island]) =>
         island.no === islandNo ? this.shards.get(shardNo) : null
       )
     );
@@ -102,33 +108,7 @@ export class Cluster<TClient extends Client> {
 
   private async islandsByShardsCached() {
     if (this.islandsByShardsCache === undefined) {
-      this.islandsByShardsCache = (async () => {
-        const islandsByShard: Array<Island<TClient>> = [];
-        await mapJoin([...this.islands.values()], async (island) => {
-          const shardNos = await island.master.shardNos();
-          for (const shardNo of shardNos) {
-            if (shardNo >= this.numReadShards) {
-              continue;
-            }
-
-            if (islandsByShard[shardNo]) {
-              throw Error(
-                "Shard #" +
-                  shardNo +
-                  " exists in more than one islands (" +
-                  island.master.name +
-                  " and " +
-                  islandsByShard[shardNo].master.name +
-                  ")"
-              );
-            }
-
-            islandsByShard[shardNo] = island;
-          }
-        });
-        return islandsByShard;
-      })();
-
+      this.islandsByShardsCache = this.islandsByShardsExpensive();
       // Schedule re-discovery in background to refresh the cache in the future.
       setTimeout(() => {
         this.islandsByShardsCache = undefined;
@@ -137,6 +117,40 @@ export class Cluster<TClient extends Client> {
     }
 
     return this.islandsByShardsCache;
+  }
+
+  private async islandsByShardsExpensive(
+    retriesLeft = DISCOVER_ERROR_RETRY_ATTEMPTS
+  ): Promise<Map<number, Island<TClient>>> {
+    try {
+      const islandsByShard = new Map<number, Island<TClient>>();
+      await mapJoin([...this.islands.values()], async (island) => {
+        const shardNos = await island.master.shardNos();
+        for (const shardNo of shardNos) {
+          if (shardNo >= this.numReadShards) {
+            continue;
+          }
+
+          const otherIsland = islandsByShard.get(shardNo);
+          if (otherIsland) {
+            throw Error(
+              `Shard #${shardNo} exists in more than one islands ` +
+                `(${island.master.name} and ${otherIsland?.master.name})`
+            );
+          }
+
+          islandsByShard.set(shardNo, island);
+        }
+      });
+      return islandsByShard;
+    } catch (e) {
+      if (retriesLeft > 0) {
+        await delay(DISCOVER_ERROR_RETRY_DELAY_MS);
+        return this.islandsByShardsExpensive(retriesLeft - 1);
+      } else {
+        throw e;
+      }
+    }
   }
 
   throwOnBadShardNo(shardNo: number): never {
