@@ -134,7 +134,7 @@ export class Cluster<TClient extends Client> {
           const otherIsland = islandsByShard.get(shardNo);
           if (otherIsland) {
             throw Error(
-              `Shard #${shardNo} exists in more than one islands ` +
+              `Shard #${shardNo} exists in more than one island ` +
                 `(${island.master.name} and ${otherIsland?.master.name})`
             );
           }
