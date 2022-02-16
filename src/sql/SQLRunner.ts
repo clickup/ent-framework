@@ -532,7 +532,7 @@ export abstract class SQLRunner<
     const valueType = this.schema.table[field].type;
     const escapeCode =
       valueType === Date
-        ? `this.escapeDate(${valueCode})`
+        ? `this.escapeDate(${valueCode}, ${JSON.stringify(field)})`
         : valueType === Boolean
         ? `this.escapeBoolean(${valueCode})`
         : valueType === Number

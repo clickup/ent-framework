@@ -53,8 +53,12 @@ export function escapeString(v: string | null | undefined): string {
       "'" + ("" + v).replace(/\0/g, "").replace(/'/g, "''") + "'";
 }
 
-export function escapeDate(v: Date | null | undefined): string {
-  return v === null || v === undefined ? "NULL" : "'" + v.toISOString() + "'";
+export function escapeDate(v: Date | null | undefined, field?: string): string {
+  try {
+    return v === null || v === undefined ? "NULL" : "'" + v.toISOString() + "'";
+  } catch (e) {
+    throw Error(`Failed to perform escapeDate for "${field}": ${e}`);
+  }
 }
 
 export function escapeBoolean(v: boolean | null | undefined): string {
