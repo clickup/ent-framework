@@ -21,7 +21,7 @@ export class SQLQueryUpsert<TTable extends Table> extends QueryBase<
   protected readonly RUNNER_CLASS = SQLRunnerUpsert;
 }
 
-class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
+export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
   TTable,
   InsertInput<TTable>,
   string

@@ -15,5 +15,22 @@
       "jest"
     ],
     "module": "commonjs",
+  },
+  "typedocOptions": {
+    "entryPoints": "src",
+    "entryPointStrategy": "expand",
+    "mergeModulesMergeMode": "project",
+    "out": "docs",
+    "logLevel": "Warn",
+    "hideGenerator": true,
+    "excludeInternal": true,
+    "excludePrivate": true,
+    "categorizeByGroup": true,
+    "hideInPageTOC": true,
+    "gitRevision": "master",
+    "exclude": [
+      "src/internal/**",
+      "src/__tests__/**",
+    ]
   }
 }

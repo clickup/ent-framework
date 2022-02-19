@@ -14,7 +14,7 @@ export class SQLQueryDeleteWhere<TTable extends Table> extends QueryBase<
   protected readonly RUNNER_CLASS = SQLRunnerDeleteWhere;
 }
 
-class SQLRunnerDeleteWhere<TTable extends Table> extends SQLRunner<
+export class SQLRunnerDeleteWhere<TTable extends Table> extends SQLRunner<
   TTable,
   DeleteWhereInput<TTable>,
   string[]

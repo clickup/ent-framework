@@ -13,7 +13,7 @@ export class SQLQueryCount<TTable extends Table> extends QueryBase<
   protected readonly RUNNER_CLASS = SQLRunnerCount;
 }
 
-class SQLRunnerCount<TTable extends Table> extends SQLRunner<
+export class SQLRunnerCount<TTable extends Table> extends SQLRunner<
   TTable,
   CountInput<TTable>,
   number

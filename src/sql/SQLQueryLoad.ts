@@ -13,7 +13,7 @@ export class SQLQueryLoad<TTable extends Table> extends QueryBase<
   protected readonly RUNNER_CLASS = SQLRunnerLoad;
 }
 
-class SQLRunnerLoad<TTable extends Table> extends SQLRunner<
+export class SQLRunnerLoad<TTable extends Table> extends SQLRunner<
   TTable,
   string,
   Row<TTable> | null

@@ -5,17 +5,14 @@ import { VCWithQueryCache } from "./VCFlavor";
 
 const OPS = ["loadNullable", "loadByNullable", "select", "count"] as const;
 
-type AnyEntClass = new (...args: any) => any;
+export type AnyClass = new (...args: any) => any;
 
 type Op = typeof OPS[number];
 
 export class QueryCache {
   private cache?: {
     options: VCWithQueryCache["options"];
-    byEntClass: Map<
-      AnyEntClass,
-      Record<Op, QuickLRU<string, Promise<unknown>>>
-    >;
+    byEntClass: Map<AnyClass, Record<Op, QuickLRU<string, Promise<unknown>>>>;
   };
 
   constructor(vc: VC) {
@@ -35,7 +32,7 @@ export class QueryCache {
    * have a risk of caching a transient SQL error).
    */
   set(
-    EntClass: AnyEntClass,
+    EntClass: AnyClass,
     op: Op,
     key: string,
     value: Promise<unknown> | undefined
@@ -73,7 +70,7 @@ export class QueryCache {
   /**
    * Deletes cache slots or keys for an Ent.
    */
-  delete(EntClass: AnyEntClass, ops: Op[], key?: string) {
+  delete(EntClass: AnyClass, ops: Op[], key?: string) {
     const byOp = this.cache?.byEntClass.get(EntClass);
     if (!byOp) {
       return this;
@@ -96,7 +93,7 @@ export class QueryCache {
    * case it's inflight already.
    */
   get<TValue>(
-    EntClass: AnyEntClass,
+    EntClass: AnyClass,
     op: Op,
     key: string
   ): Promise<TValue> | undefined {
@@ -112,7 +109,7 @@ export class QueryCache {
    * Read-through caching pattern.
    */
   async through<TValue>(
-    EntClass: AnyEntClass,
+    EntClass: AnyClass,
     op: Op,
     key: string,
     creator: () => Promise<TValue>

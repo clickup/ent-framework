@@ -14,7 +14,7 @@ export class SQLQueryIDGen<TTable extends Table> extends QueryBase<
   protected readonly RUNNER_CLASS = SQLRunnerIDGen;
 }
 
-class SQLRunnerIDGen<TTable extends Table> extends SQLRunner<
+export class SQLRunnerIDGen<TTable extends Table> extends SQLRunner<
   TTable,
   void,
   string
