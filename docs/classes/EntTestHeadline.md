@@ -39,7 +39,7 @@ BaseEnt(testCluster, schemaTestHeadline).constructor
 
 #### Inherited from
 
-BaseEnt(testCluster, schemaTestHeadline).\_\_@$EPHEMERAL2@4959
+BaseEnt(testCluster, schemaTestHeadline).\_\_@$EPHEMERAL2@4961
 
 ___
 
@@ -49,7 +49,7 @@ ___
 
 #### Inherited from
 
-BaseEnt(testCluster, schemaTestHeadline).\_\_@$EPHEMERAL@4958
+BaseEnt(testCluster, schemaTestHeadline).\_\_@$EPHEMERAL@4960
 
 ___
 
