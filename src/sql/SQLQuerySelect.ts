@@ -24,7 +24,7 @@ const ALLOWED_ORDER = [
   "DESC NULLS FIRST",
 ];
 
-class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
+export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
   TTable,
   SelectInput<TTable>,
   Array<Row<TTable>>

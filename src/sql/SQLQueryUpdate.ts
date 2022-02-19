@@ -70,7 +70,7 @@ export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
   }
 }
 
-class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
+export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
   TTable,
   UpdateInput<TTable> & { [ID]: string },
   boolean

@@ -40,7 +40,7 @@ export type SpecType =
   | { parse: (dbValue: any) => any; stringify: (jsValue: any) => string };
 
 // { type: ..., ... } - one attribute spec
-type Spec = {
+export type Spec = {
   type: SpecType;
   allowNull?: true;
   autoInsert?: string;
@@ -54,19 +54,20 @@ export type Table = {
 };
 
 // SpecType -> Value deduction (always deduces non-nullable type)
-type ValueRequired<TSpec extends Spec> = TSpec["type"] extends typeof Number
-  ? number
-  : TSpec["type"] extends typeof String
-  ? string
-  : TSpec["type"] extends typeof Boolean
-  ? boolean
-  : TSpec["type"] extends typeof ID
-  ? string
-  : TSpec["type"] extends typeof Date
-  ? Date
-  : TSpec["type"] extends { parse: (dbValue: any) => infer TJSValue }
-  ? TJSValue
-  : never;
+export type ValueRequired<TSpec extends Spec> =
+  TSpec["type"] extends typeof Number
+    ? number
+    : TSpec["type"] extends typeof String
+    ? string
+    : TSpec["type"] extends typeof Boolean
+    ? boolean
+    : TSpec["type"] extends typeof ID
+    ? string
+    : TSpec["type"] extends typeof Date
+    ? Date
+    : TSpec["type"] extends { parse: (dbValue: any) => infer TJSValue }
+    ? TJSValue
+    : never;
 
 // Spec -> nullable Value or non-nullable Value
 export type Value<TSpec extends Spec> = TSpec extends { allowNull: true }
@@ -95,7 +96,7 @@ export type InsertFieldsRequired<TTable extends Table> = {
 }[keyof TTable];
 
 // Insert: Table -> "created_at" | "field2" |  ... deduction (optional fields)
-type InsertFieldsOptional<TTable extends Table> = {
+export type InsertFieldsOptional<TTable extends Table> = {
   [K in keyof TTable]: TTable[K] extends { autoInsert: any }
     ? K
     : TTable[K] extends { autoUpdate: any }
@@ -121,7 +122,7 @@ export type InsertInputPartialSymbols<TTable extends Table> = {
 };
 
 // Update: Table -> "field1" | "created_at" | "updated_at" | ... deduction
-type UpdateFields<TTable extends Table> = Exclude<
+export type UpdateFields<TTable extends Table> = Exclude<
   keyof TTable,
   keyof RowWithID
 >;
@@ -150,7 +151,7 @@ export type UniqueKey<TTable extends Table> = ReadonlyArray<
 // (Table, TConcreteUniqueKey) -> "field1" | "field2" | ...
 // where fields are from the concrete table and from the concrete unique key
 // passed to the constructor.
-type UniqueKeyFields<
+export type UniqueKeyFields<
   TConcreteTable extends Table,
   TConcreteUniqueKey extends UniqueKey<TConcreteTable>
 > = TConcreteUniqueKey[number];
@@ -178,7 +179,7 @@ export type IDFieldsRequired<TTable extends Table> =
   InsertFieldsRequired<TTable> & IDFields<TTable>;
 
 // A hack (see comments below).
-type WhereWithoutNot<TTable extends Table> = {
+export type WhereWithoutNot<TTable extends Table> = {
   [$and]?: ReadonlyArray<Where<TTable>>;
   [$or]?: ReadonlyArray<Where<TTable>>;
   //[$not]?: Where<TTable>; - DO NOT put it here, it crashes TS > v3.5.3

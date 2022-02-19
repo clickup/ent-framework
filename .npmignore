@@ -1,0 +1,10 @@
+node_modules
+src
+dist/__tests__
+tsconfig.tsbuildinfo
+*tsc-atomic*
+jest.config.js
+.eslintrc.js
+*.tgz
+tsconfig.*
+yarn-error.log

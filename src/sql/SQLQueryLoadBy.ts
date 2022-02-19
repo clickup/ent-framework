@@ -17,7 +17,7 @@ export class SQLQueryLoadBy<
   protected readonly RUNNER_CLASS = SQLRunnerLoadBy;
 }
 
-class SQLRunnerLoadBy<
+export class SQLRunnerLoadBy<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>
 > extends SQLRunner<

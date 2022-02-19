@@ -13,7 +13,7 @@ export class SQLQueryDelete<TTable extends Table> extends QueryBase<
   protected readonly RUNNER_CLASS = SQLRunnerDelete;
 }
 
-class SQLRunnerDelete<TTable extends Table> extends SQLRunner<
+export class SQLRunnerDelete<TTable extends Table> extends SQLRunner<
   TTable,
   string,
   boolean
