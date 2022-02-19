@@ -1,7 +1,7 @@
 {
   "name": "@slapdash/ent-framework",
   "description": "Graph database library",
-  "version": "2.9.20",
+  "version": "2.9.21-1",
   "license": "UNLICENSED",
   "scripts": {
     "build": "tsc.sh && && yarn docs",

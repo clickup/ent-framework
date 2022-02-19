@@ -28,7 +28,7 @@ Error.constructor
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLError.ts:6](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLError.ts#L6)
+[packages/ent-framework/src/sql/SQLError.ts:4](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLError.ts#L4)
 
 ## Properties
 
@@ -63,6 +63,12 @@ ___
 ### origError
 
 • `Readonly` **origError**: `any`
+
+___
+
+### sql
+
+• `Readonly` **sql**: `string`
 
 ___
 
@@ -140,25 +146,6 @@ node_modules/@types/node/globals.d.ts:13
 #### Returns
 
 `boolean`
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLError.ts:31](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLError.ts#L31)
-
-___
-
-### sql
-
-▸ **sql**(): `string`
-
-We could've just make this.sql a readonly property (and not #sql) instead,
-but then it'd be exposed when printing the error via inspect() or
-console.log(), which we don't want to. So instead, we define it as a getter
-function (which is "invisible" when using e.g. console.log()).
-
-#### Returns
-
-`string`
 
 #### Defined in
 
