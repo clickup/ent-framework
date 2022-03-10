@@ -273,7 +273,7 @@ export class VC {
    */
   withNewTrace(prefix?: string) {
     return new VC(
-      new VCTrace(prefix),
+      new VCTrace(prefix ?? this.trace.prefix),
       this.userID,
       this.freshness,
       this.timelines,

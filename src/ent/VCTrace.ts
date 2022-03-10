@@ -7,7 +7,7 @@ import uniqid from "uniqid";
 export class VCTrace {
   readonly trace: string;
 
-  constructor(prefix: string = "") {
+  constructor(readonly prefix = "") {
     this.trace = (prefix ? prefix + "-" : "") + uniqid();
   }
 }
