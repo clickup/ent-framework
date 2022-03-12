@@ -43,7 +43,7 @@ export abstract class SQLRunner<
   TInput,
   TOutput
 > extends Runner<TInput, TOutput> {
-  override ["constructor"]: typeof SQLRunner;
+  override ["constructor"]!: typeof SQLRunner;
 
   abstract readonly op: string;
 

@@ -22,7 +22,7 @@ export function CacheMixin<
   TClient extends Client
 >(Base: PrimitiveClass<TTable, TUniqueKey, TClient>) {
   class CacheMixin extends Base {
-    override ["constructor"]: typeof CacheMixin;
+    override ["constructor"]!: typeof CacheMixin;
 
     static override async insertIfNotExists(
       vc: VC,
