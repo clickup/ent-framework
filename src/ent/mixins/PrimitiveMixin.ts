@@ -159,7 +159,7 @@ export function PrimitiveMixin<
   TClient extends Client
 >(Base: ConfigClass<TTable, TUniqueKey, TClient>) {
   class PrimitiveMixin extends Base {
-    override ["constructor"]: typeof PrimitiveMixin;
+    override ["constructor"]!: typeof PrimitiveMixin;
 
     readonly vc!: VC;
 

@@ -94,5 +94,5 @@ export abstract class Schema<
    * static methods and `new` semantic (TS doesn't do it by default; for TS,
    * x.constructor is Function).
    */
-  ["constructor"]: SchemaClass;
+  ["constructor"]!: SchemaClass;
 }

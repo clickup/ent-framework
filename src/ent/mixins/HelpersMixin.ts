@@ -120,7 +120,7 @@ export function HelpersMixin<
   TClient extends Client
 >(Base: PrimitiveClass<TTable, TUniqueKey, TClient>) {
   class HelpersMixin extends Base {
-    override ["constructor"]: typeof HelpersMixin;
+    override ["constructor"]!: typeof HelpersMixin;
 
     static async insert(vc: VC, input: InsertInput<TTable>) {
       const id = await this.insertIfNotExists(vc, input);
