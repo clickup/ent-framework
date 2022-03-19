@@ -8,3 +8,4 @@ jest.config.js
 *.tgz
 tsconfig.*
 yarn-error.log
+*.prev
