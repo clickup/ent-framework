@@ -154,10 +154,15 @@ export class Cluster<TClient extends Client> {
   }
 
   throwOnBadShardNo(shardNo: number): never {
+    const masterNames = [...this.islands.values()]
+      .map((island) => island.master.name)
+      .join(", ");
     if (shardNo >= this.numReadShards) {
-      throw Error(`Shard ${shardNo} does not exist`);
+      throw Error(`Shard ${shardNo} does not exist on [${masterNames}]`);
     } else {
-      throw Error(`Shard ${shardNo} is not discoverable (DB down?)`);
+      throw Error(
+        `Shard ${shardNo} is not discoverable (DB down or connections limit?) on [${masterNames}]`
+      );
     }
   }
 }
