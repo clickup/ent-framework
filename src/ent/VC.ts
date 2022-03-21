@@ -339,7 +339,8 @@ export class VC {
       ...[...this.flavors.values()].map((flavor) => flavor.toDebugString()),
     ]).join(",");
     return (
-      `vc:${this.userID}(${flavorsStr})` +
+      `vc:${this.userID}` +
+      (flavorsStr ? `(${flavorsStr})` : "") +
       (this.freshness === MASTER
         ? ":master"
         : this.freshness === STALE_REPLICA
