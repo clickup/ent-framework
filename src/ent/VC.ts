@@ -333,9 +333,9 @@ export class VC {
   /**
    * Used for debugging purposes.
    */
-  toString() {
+  toString(withInstanceNumber = false) {
     const flavorsStr = compact([
-      this.instanceNumber.toString(),
+      withInstanceNumber && this.instanceNumber.toString(),
       ...[...this.flavors.values()].map((flavor) => flavor.toDebugString()),
     ]).join(",");
     return (
