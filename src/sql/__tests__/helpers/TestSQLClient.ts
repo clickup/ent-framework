@@ -6,11 +6,15 @@ import { escapeIdent, escapeString, SQLClient } from "../../SQLClient";
 import { SQLClientPool } from "../../SQLClientPool";
 
 /**
- * A proxy for an SQLClient which records all the queries
- * passing through and has some other helper methods.
+ * A proxy for an SQLClient which records all the queries passing through and
+ * has some other helper methods.
  */
-export class TestSQLClient extends Client implements SQLClient {
+export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
   readonly queries: string[] = [];
+
+  constructor(private client: SQLClient) {
+    super("test", client.isMaster, client.loggers);
+  }
 
   get shardName() {
     return this.client.shardName;
@@ -18,10 +22,6 @@ export class TestSQLClient extends Client implements SQLClient {
 
   get timelineManager() {
     return this.client.timelineManager;
-  }
-
-  constructor(private client: SQLClient) {
-    super("test", client.isMaster, client.loggers);
   }
 
   async query<TRes>(

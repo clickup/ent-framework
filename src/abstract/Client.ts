@@ -42,7 +42,18 @@ export interface Loggers {
   entInputLogger?: (props: EntInputLoggerProps) => void;
 }
 
+/**
+ * Client is a shard-name aware abstraction which sends an actual query and
+ * tracks the master/replica timeline. The concrete query sending implementation
+ * (including required arguments) is up to the derived classes.
+ */
 export abstract class Client {
+  constructor(
+    public readonly name: string,
+    public readonly isMaster: boolean,
+    public readonly loggers: Loggers
+  ) {}
+
   /**
    * Each Client may be bound to some shard, so the queries executed via it will
    * be namespaced to this shard. E.g. in PostgreSQL, shard name is schema name
@@ -55,12 +66,6 @@ export abstract class Client {
    * the clients within the same island.
    */
   abstract readonly timelineManager: TimelineManager;
-
-  constructor(
-    public readonly name: string,
-    public readonly isMaster: boolean,
-    public readonly loggers: Loggers
-  ) {}
 
   /**
    * Batcher is per-client per-query-type per-table-name-and-shape:
