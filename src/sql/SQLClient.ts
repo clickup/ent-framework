@@ -17,7 +17,7 @@ export interface SQLClientConn {
   id?: number;
   processID?: number | null;
   query<R extends QueryResultRow = any>(
-    queryTextOrConfig: string
+    query: string
   ): Promise<Array<QueryResult<R>>>;
   release(err?: Error | boolean): void;
 }
