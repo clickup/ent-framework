@@ -20,7 +20,7 @@ import { buildNewRow } from "./Triggers";
 import { VC } from "./VC";
 
 export type ValidationRules<TTable extends Table> = {
-  readonly tenantUserIDField?: InsertFieldsRequired<TTable>;
+  readonly tenantUserIDField?: InsertFieldsRequired<TTable> & string;
   readonly load: Validation<TTable>["load"];
   readonly insert: Validation<TTable>["insert"];
   readonly update?: Validation<TTable>["update"];
@@ -29,7 +29,7 @@ export type ValidationRules<TTable extends Table> = {
 };
 
 export class Validation<TTable extends Table> {
-  readonly tenantUserIDField?: InsertFieldsRequired<TTable>;
+  readonly tenantUserIDField?: InsertFieldsRequired<TTable> & string;
   readonly load: Array<Rule<Row<TTable>>>;
   readonly insert: Array<Rule<InsertInput<TTable>>>;
   readonly update: Array<Rule<Row<TTable>>>;

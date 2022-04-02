@@ -51,7 +51,7 @@ export default class ValidationTester {
       if (method === "validateUpdate") {
         await validation.validateUpdate(vc, row, {});
       } else {
-        await validation[method](vc, row);
+        await validation[method](vc, row as any);
       }
 
       res = "success";

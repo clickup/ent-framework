@@ -1,7 +1,6 @@
 import { Flatten, join } from "../helpers";
 import {
   InsertInput,
-  InsertInputPartialSymbols,
   Row,
   RowWithID,
   Table,
@@ -63,7 +62,7 @@ export type BeforeUpdateTrigger<TTable extends Table> = (
   vc: VC,
   args: {
     newRow: Flatten<Readonly<TriggerRow<TTable>>>;
-    oldRow: Flatten<Readonly<TriggerRow<TTable>>>;
+    oldRow: Flatten<Readonly<Row<TTable>>>;
     input: Flatten<UpdateInput<TTable>>;
   }
 ) => Promise<unknown>;
@@ -72,7 +71,7 @@ export type AfterUpdateTrigger<TTable extends Table> = (
   vc: VC,
   args: {
     newRow: Flatten<Readonly<TriggerRow<TTable>>>;
-    oldRow: Flatten<Readonly<TriggerRow<TTable>>>;
+    oldRow: Flatten<Readonly<Row<TTable>>>;
   }
 ) => Promise<unknown>;
 
@@ -87,15 +86,20 @@ export type AfterMutationTrigger<TTable extends Table> = (
   vc: VC,
   args: {
     // We don't know if it's called after INSERT, UPDATE or DELETE, so use the
-    // most narrow list of fields which is InsertInputPartialSymbols.
-    newOrOldRow: Flatten<InsertInputPartialSymbols<TTable> & RowWithID>;
+    // most narrow list of fields.
+    newOrOldRow: Flatten<
+      Readonly<
+        | (InsertInput<TTable> & RowWithID) // on insert
+        | TriggerRow<TTable> // on update or delete
+      >
+    >;
     op: "INSERT" | "UPDATE" | "DELETE";
   }
 ) => Promise<unknown>;
 
 export type DepsBuilder<TTable extends Table> = (
   vc: VC,
-  row: Flatten<Readonly<InsertInputPartialSymbols<TTable> & RowWithID>>
+  row: Flatten<Readonly<Row<TTable>>>
 ) => string | Promise<string>;
 
 export class Triggers<TTable extends Table> {
@@ -244,7 +248,10 @@ export class Triggers<TTable extends Table> {
     }
 
     for (const [_, triggerAfterMutation] of this.afterMutation) {
-      await triggerAfterMutation(vc, { newOrOldRow: oldRow, op: "DELETE" });
+      await triggerAfterMutation(vc, {
+        newOrOldRow: oldRow as TriggerRow<TTable>,
+        op: "DELETE",
+      });
     }
 
     return output;
@@ -258,7 +265,7 @@ export function buildNewRow<TTable extends Table>(
   oldRow: Row<TTable>,
   input: UpdateInput<TTable>
 ) {
-  const newRow = { ...oldRow };
+  const newRow = { ...oldRow } as TriggerRow<TTable>;
 
   for (const k of Object.getOwnPropertyNames(input)) {
     if (input[k] !== undefined) {
