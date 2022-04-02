@@ -102,7 +102,7 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
   }
 }
 
-const master = new SQLClientPool(
+export const master = new SQLClientPool(
   {
     name: "test-pool",
     shards: {
