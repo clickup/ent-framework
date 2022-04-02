@@ -15,6 +15,7 @@ import {
   $not,
   $or,
   $overlap,
+  Field,
   ID,
   Literal,
   Table,
@@ -50,9 +51,9 @@ export abstract class SQLRunner<
   readonly shardName = this.client.shardName;
   readonly isMaster = this.client.isMaster;
 
-  private escapers: Partial<Record<keyof TTable, (value: any) => string>> = {};
-  private parsers: Array<[keyof TTable, (value: any) => any]> = [];
-  private stringifiers: Partial<Record<keyof TTable, (value: any) => string>> =
+  private escapers: Partial<Record<Field<TTable>, (value: any) => string>> = {};
+  private parsers: Array<[Field<TTable>, (value: any) => any]> = [];
+  private stringifiers: Partial<Record<Field<TTable>, (value: any) => string>> =
     {};
 
   constructor(
@@ -63,7 +64,7 @@ export abstract class SQLRunner<
 
     for (const field of Object.keys(this.schema.table)) {
       const body = "return " + this.createEscapeCode(field, "$value");
-      this.escapers[field as keyof TTable] = this.newFunction("$value", body);
+      this.escapers[field as Field<TTable>] = this.newFunction("$value", body);
     }
 
     for (const [field, { type }] of Object.entries(this.schema.table)) {
@@ -71,7 +72,7 @@ export abstract class SQLRunner<
       // BOTH parse() and stringify() to be presented in custom types.
       if (hasKey("parse", type) && hasKey("stringify", type)) {
         this.parsers.push([field, type.parse.bind(type)]);
-        this.stringifiers[field as keyof TTable] = type.stringify.bind(type);
+        this.stringifiers[field as Field<TTable>] = type.stringify.bind(type);
       }
     }
   }
@@ -172,7 +173,7 @@ export abstract class SQLRunner<
    * 2. We want to make createEscapeCode() the single source of truth about
    *    fields escaping.
    */
-  protected escape(field: keyof TTable, value: any): string {
+  protected escape(field: Field<TTable>, value: any): string {
     const escaper = this.escapers[field];
     if (!escaper) {
       throw Error(
@@ -280,9 +281,9 @@ export abstract class SQLRunner<
    * If $subField is passed, then $f is "$subField.$field"
    */
   protected createInBuilder(
-    field: keyof TTable,
+    field: Field<TTable>,
     fieldCode = "value"
-  ): (values: Iterable<any>) => string {
+  ): (values: Iterable<unknown>) => string {
     const escapedFieldCode = JSON.stringify(sqlClientMod.escapeIdent(field));
     const valueCode = this.createEscapeCode(field, fieldCode);
     const body = `
@@ -327,7 +328,8 @@ export abstract class SQLRunner<
     isTopLevel: boolean = false
   ) {
     const pieces: string[] = [];
-    for (const [key, value] of Object.entries(where)) {
+    for (const key of Object.keys(where)) {
+      const value = where[key];
       if (value === undefined) {
         continue;
       }
@@ -372,7 +374,7 @@ export abstract class SQLRunner<
       }
 
       if (!foundOp) {
-        pieces.push(this.buildFieldEq(key, value as any));
+        pieces.push(this.buildFieldEq(key, value));
       }
     }
 
@@ -411,19 +413,17 @@ export abstract class SQLRunner<
     return pieces.length > 1 && !isTopLevel ? "(" + sql + ")" : sql;
   }
 
-  protected buildFieldBinOp(
-    field: keyof TTable,
+  protected buildFieldBinOp<TField extends Field<TTable>>(
+    field: TField,
     binOp: string,
-    value: NonNullable<Value<TTable[keyof TTable]>>
+    value: NonNullable<Value<TTable[TField]>>
   ) {
     return field + binOp + this.escape(field, value);
   }
 
-  private buildFieldNe(
-    field: keyof TTable,
-    value:
-      | Value<TTable[typeof field]>
-      | ReadonlyArray<Value<TTable[typeof field]>>
+  private buildFieldNe<TField extends Field<TTable>>(
+    field: TField,
+    value: Value<TTable[TField]> | ReadonlyArray<Value<TTable[TField]>>
   ) {
     if (value === null) {
       return field + " IS NOT NULL";
@@ -447,9 +447,9 @@ export abstract class SQLRunner<
     }
   }
 
-  protected buildFieldEq(
-    field: keyof TTable,
-    value: Where<TTable>[keyof TTable]
+  protected buildFieldEq<TField extends Field<TTable>>(
+    field: TField,
+    value: Where<TTable>[TField]
   ) {
     if (value === null) {
       return field + " IS NULL";
@@ -525,7 +525,7 @@ export abstract class SQLRunner<
    * the table fields custom stringifiers.
    */
   private createEscapeCode(
-    field: keyof TTable,
+    field: Field<TTable>,
     valueCode: string,
     defSQL?: string
   ) {

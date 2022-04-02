@@ -53,7 +53,7 @@ export class Configuration<TTable extends Table> {
   readonly inverses?: {
     [k in IDFieldsRequired<TTable>]?: { name: string; type: string };
   };
-  readonly privacyTenantUserIDField?: InsertFieldsRequired<TTable>;
+  readonly privacyTenantUserIDField?: InsertFieldsRequired<TTable> & string;
   readonly privacyLoad!: ValidationRules<TTable>["load"];
   readonly privacyInsert!: ValidationRules<TTable>["insert"];
   readonly privacyUpdate?: ValidationRules<TTable>["update"];
