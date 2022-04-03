@@ -39,11 +39,11 @@ export type RowWithID = {
  * Spec (metadata) of some field.
  */
 export type SpecType =
+  | typeof Boolean
+  | typeof Date
+  | typeof ID
   | typeof Number
   | typeof String
-  | typeof Boolean
-  | typeof ID
-  | typeof Date
   | { parse: (dbValue: any) => any; stringify: (jsValue: any) => string };
 
 /**
