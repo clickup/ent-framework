@@ -51,10 +51,9 @@ export abstract class SQLRunner<
   readonly shardName = this.client.shardName;
   readonly isMaster = this.client.isMaster;
 
-  private escapers: Partial<Record<Field<TTable>, (value: any) => string>> = {};
-  private parsers: Array<[Field<TTable>, (value: any) => any]> = [];
-  private stringifiers: Partial<Record<Field<TTable>, (value: any) => string>> =
-    {};
+  private runtimeEscapers: Partial<Record<string, (value: any) => string>> = {};
+  private runtimeParsers: Array<[string, (value: any) => any]> = [];
+  private stringifiers: Partial<Record<string, (value: any) => string>> = {};
 
   constructor(
     public readonly schema: Schema<TTable>,
@@ -64,15 +63,15 @@ export abstract class SQLRunner<
 
     for (const field of Object.keys(this.schema.table)) {
       const body = "return " + this.createEscapeCode(field, "$value");
-      this.escapers[field as Field<TTable>] = this.newFunction("$value", body);
+      this.runtimeEscapers[field] = this.newFunction("$value", body);
     }
 
     for (const [field, { type }] of Object.entries(this.schema.table)) {
       // Notice that e.g. Date type has parse() static method, so we require
       // BOTH parse() and stringify() to be presented in custom types.
       if (hasKey("parse", type) && hasKey("stringify", type)) {
-        this.parsers.push([field, type.parse.bind(type)]);
-        this.stringifiers[field as Field<TTable>] = type.stringify.bind(type);
+        this.runtimeParsers.push([field, type.parse.bind(type)]);
+        this.stringifiers[field] = type.stringify.bind(type);
       }
     }
   }
@@ -115,7 +114,7 @@ export abstract class SQLRunner<
     // necessarily a type of the table's row, it can be something else (in e.g.
     // INSERT or DELETE operations).
     if (rows.length > 0) {
-      for (const [field, parser] of this.parsers) {
+      for (const [field, parser] of this.runtimeParsers) {
         if (field in rows[0]) {
           for (const row of rows) {
             const dbValue = row[field as keyof TOutput];
@@ -166,20 +165,18 @@ export abstract class SQLRunner<
   }
 
   /**
-   * Does escaping at runtime using the codegen above. We use escapers table for
-   * the following reasons:
+   * Does escaping at runtime using the codegen above. We use escapers table and
+   * the codegen for the following reasons:
    * 1. We want to be sure that we know in advance, how to escape all table
    *    fields (and not fail in run-time).
    * 2. We want to make createEscapeCode() the single source of truth about
-   *    fields escaping.
+   *    fields escaping, even in run-time.
    */
   protected escape(field: Field<TTable>, value: any): string {
-    const escaper = this.escapers[field];
+    const escaper = this.runtimeEscapers[field];
     if (!escaper) {
       throw Error(
-        "Unknown field name: " +
-          field +
-          "; allowed fields are: " +
+        `Unknown field name: ${field}; allowed fields are: ` +
           Object.keys(this.schema.table).join(", ")
       );
     }
@@ -531,16 +528,16 @@ export abstract class SQLRunner<
   ) {
     const valueType = this.schema.table[field].type;
     const escapeCode =
-      valueType === Date
-        ? `this.escapeDate(${valueCode}, ${JSON.stringify(field)})`
-        : valueType === Boolean
+      valueType === Boolean
         ? `this.escapeBoolean(${valueCode})`
+        : valueType === Date
+        ? `this.escapeDate(${valueCode}, ${JSON.stringify(field)})`
+        : valueType === ID
+        ? `this.escapeID(${valueCode})`
         : valueType === Number
         ? `this.escapeString(${valueCode})`
         : valueType === String
         ? `this.escapeString(${valueCode})`
-        : valueType === ID
-        ? `this.escapeID(${valueCode})`
         : hasKey("stringify", valueType)
         ? `this.escapeStringify(${valueCode}, this.stringifiers.${field})`
         : (() => {
