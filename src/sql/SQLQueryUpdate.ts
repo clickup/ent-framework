@@ -4,7 +4,7 @@ import { Query } from "../abstract/Query";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { Schema } from "../abstract/Schema";
 import { $literal, ID, Table, UpdateInput } from "../types";
-import { escapeID, SQLClient } from "./SQLClient";
+import { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
 export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
@@ -119,7 +119,7 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
       this.kvsBuilder(input) +
       (literal ? ", " + this.buildLiteral(literal) : "") +
       this.midfixSimple +
-      escapeID(input[ID]) +
+      this.escape(ID, input[ID]) +
       this.suffixSimple;
     const rows = await this.clientQuery<{ [ID]: string }>(sql, annotations, 1);
     return rows.length > 0 ? true : false;
