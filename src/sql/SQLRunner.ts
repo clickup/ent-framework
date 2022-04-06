@@ -1,5 +1,7 @@
+import assert from "assert";
 import { inspect } from "util";
 import random from "lodash/random";
+import uniq from "lodash/uniq";
 import { Runner } from "../abstract/Batcher";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { Schema } from "../abstract/Schema";
@@ -22,12 +24,14 @@ import {
   Value,
   Where,
 } from "../types";
+import parseCompositeRow from "./helpers/parseCompositeRow";
 import * as sqlClientMod from "./SQLClient";
 import { SQLError } from "./SQLError";
 
 const DEADLOCK_RETRY_MS_MIN = 2000;
 const DEADLOCK_RETRY_MS_MAX = 5000;
 const ERROR_DEADLOCK = "deadlock detected";
+const ERROR_FK = "violates foreign key constraint ";
 const ERROR_CONFLICT_RECOVERY =
   "canceling statement due to conflict with recovery";
 
@@ -61,7 +65,9 @@ export abstract class SQLRunner<
   ) {
     super(sqlClientMod.escapeIdent(schema.name));
 
-    for (const field of Object.keys(this.schema.table)) {
+    // For tables with composite primary key and no explicit "id" column, we
+    // still need an ID escaper (where id looks like "(1,2)" anonymous row).
+    for (const field of [ID, ...Object.keys(this.schema.table)]) {
       const body = "return " + this.createEscapeCode(field, "$value");
       this.runtimeEscapers[field] = this.newFunction("$value", body);
     }
@@ -89,8 +95,9 @@ export abstract class SQLRunner<
 
   shouldDebatchOnError(e: any) {
     return (
-      // Debatch ALL SQL WRITE query errors (FK errors, deadlocks etc.)
-      (e instanceof SQLError && this.constructor.IS_WRITE) ||
+      // Debatch some of SQL WRITE query errors.
+      (e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)) ||
+      (e instanceof SQLError && e.message.includes(ERROR_FK)) ||
       // Debatch "conflict with recovery" errors (we support retries only after
       // debatching, so have to return true here).
       (e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY))
@@ -130,115 +137,223 @@ export abstract class SQLRunner<
   }
 
   /**
-   * Formats the prefixes/suffixes of various compound SQL clauses.
-   * Don't use on performance-critical path!
+   * Formats prefixes/suffixes of various compound SQL clauses. Don't use on
+   * performance-critical path!
    */
-  protected fmt(template: string, args: { specs?: Partial<Table> } = {}) {
+  protected fmt(
+    template: string,
+    args: { fields?: Array<Field<TTable>> } = {}
+  ) {
     return template.replace(
-      /%(?:T|F|ID|KV\((\w+)\))/g,
+      /%(?:T|SELECT_FIELDS|INSERT_FIELDS|UPDATE_FIELD_VALUE_PAIRS|PK)(?:\(([%\w]+)\))?/g,
       (c: string, a?: string) => {
+        // Table name.
         if (c === "%T") {
-          // Table name
           return this.name;
-        } else if (c === "%F") {
-          // Comma-separated list of Fields of a Table
-          return Object.keys(
-            nullthrows(args.specs, "no args.spec passed in " + template)
-          ).join(", ");
-        } else if (c === "%ID") {
-          // id
-          return ID;
-        } else if (c.startsWith("%KV")) {
-          // %KV(X) -> field1=X.field1, field2=X.field2, ...
-          // If empty list of fields, we emit id=X.id
-          const fields = Object.keys(
-            nullthrows(args.specs, "no args.specs passed in " + template)
-          );
-          return (fields.length ? fields : [ID])
-            .map((field) => field + "=" + a + "." + field)
-            .join(", ");
-        } else {
-          throw Error("Unknown format spec: " + c);
         }
+
+        // Comma-separated list of ALL fields in the table to be used in
+        // SELECT clauses (always includes ID field).
+        if (c === "%SELECT_FIELDS") {
+          return uniq([...Object.keys(this.schema.table), ID])
+            .map((field) => this.escapeField(field, undefined, true))
+            .join(", ");
+        }
+
+        // Comma-separated list of ALL fields in the table (never with AS
+        // clause). Always includes primary key fields in the beginning.
+        if (c === "%INSERT_FIELDS") {
+          return this.prependPK(Object.keys(this.schema.table))
+            .map((field) => this.escapeField(field))
+            .join(", ");
+        }
+
+        // field1=X.field1, field2=X.field2, ...
+        if (c.startsWith("%UPDATE_FIELD_VALUE_PAIRS")) {
+          assert(args.fields, `BUG: no args.fields passed in ${template}`);
+          assert(a, `BUG: you must pass an argument, alias name`);
+          return args.fields
+            .map(
+              (field) =>
+                `${this.escapeField(field)}=${a}.${this.escapeField(field)}`
+            )
+            .join(", ");
+        }
+
+        // Primary key (simple or composite).
+        if (c.startsWith("%PK")) {
+          return this.escapeField(ID, a?.replace(/%T/g, this.name));
+        }
+
+        throw Error(`Unknown format spec: ${c}`);
       }
     );
   }
 
   /**
-   * Does escaping at runtime using the codegen above. We use escapers table and
-   * the codegen for the following reasons:
+   * Escapes a value at runtime using the codegen functions created above. We
+   * use escapers table and the codegen for the following reasons:
    * 1. We want to be sure that we know in advance, how to escape all table
-   *    fields (and not fail in run-time).
+   *    fields (and not fail at runtime).
    * 2. We want to make createEscapeCode() the single source of truth about
-   *    fields escaping, even in run-time.
+   *    fields escaping, even at runtime.
    */
-  protected escape(field: Field<TTable>, value: any): string {
+  protected escapeValue(field: Field<TTable>, value: any): string {
     const escaper = this.runtimeEscapers[field];
     if (!escaper) {
-      throw Error(
-        `Unknown field name: ${field}; allowed fields are: ` +
-          Object.keys(this.schema.table).join(", ")
-      );
+      throw Error(`Unknown field: ${field}`);
     }
 
     return escaper(value);
   }
 
   /**
+   * Escapes field name identifier. In case it's a composite primary key,
+   * returns its `ROW(f1,f2,...)` representation.
+   */
+  protected escapeField(
+    field: Field<TTable>,
+    table?: string,
+    withAs?: boolean
+  ) {
+    if (this.schema.table[field]) {
+      return (table ? `${table}.` : "") + sqlClientMod.escapeIdent(field);
+    }
+
+    if (field === ID) {
+      return (
+        "ROW(" +
+        this.schema.uniqueKey
+          .map((k) => (table ? `${table}.` : "") + sqlClientMod.escapeIdent(k))
+          .join(",") +
+        ")" +
+        (withAs ? ` AS ${sqlClientMod.escapeIdent(field)}` : "")
+      );
+    }
+
+    throw Error(`Unknown field: ${field}`);
+  }
+
+  /**
    * Returns a newly created JS function which, when called with a row set,
    * returns the following SQL clause:
    *
+   * ```
    * WITH rows(id, a, b, _key) AS (VALUES
    *   ((NULL::tbl).id, (NULL::tbl).a, (NULL::tbl).b, 'k0'),
    *   ('123',          'xyz',         'nn',          'kSome'),
    *   ('456',          'abc',         'nn',          'kOther'),
    *   ...
    * )
+   * {suffix}
+   * ```
    *
-   * The set of columns is passed in specs; if noKey is false, then no _key
-   * field is emitted in the end.
+   * For composite primary key, its parts (fields) are always prepended. The set
+   * of columns is passed in specs.
    */
-  protected createValuesBuilder<TRow>(
-    specs: Table,
-    noKey: boolean = false
-  ): {
-    prefix: string;
-    func: ($key: string, $input: TRow) => string;
+  protected createWithBuilder({
+    fields,
+    suffix,
+  }: {
+    fields: Array<Field<TTable>>;
     suffix: string;
-  } {
-    const parts: string[] = [];
-    for (const [field, spec] of Object.entries(specs)) {
-      parts.push(
-        this.createEscapeCode(
-          field,
-          `$input.${field}`,
-          spec.autoInsert !== undefined ? spec.autoInsert : spec.autoUpdate
-        )
-      );
-    }
+  }) {
+    const cols = [
+      ...this.prependPK(fields).map((field) => [
+        this.fmt(`(NULL::%T).${this.escapeField(field)}`),
+        this.escapeField(field),
+      ]),
+      ["'k0'", "_key"],
+    ];
 
-    const body =
-      'return "(" + ' +
-      parts.join(" + ', ' + ") +
-      (noKey ? "" : '+ ", " + this.escapeString($key)') +
-      '+ ")"';
-
-    // Notice that _key pseudo-column MUST be the last one, this allows
-    // us later sort the built rows for deadlocks prevention.
-    const nulls = Object.keys(specs)
-      .map((field) => this.fmt("(NULL::%T)." + field))
-      .join(", ");
-    return {
+    // We prepend VALUES with a row which consists of all NULL values, but typed
+    // to the actual table's columns types. This hints PG how to cast input.
+    return this.createValuesBuilder({
       prefix:
-        this.fmt(
-          "WITH rows(%F" + (noKey ? "" : ", _key") + ") AS (VALUES\n  (",
-          { specs }
-        ) +
-        nulls +
-        (noKey ? "" : ", 'k0'") +
-        ")",
-      func: this.newFunction("$key", "$input", body),
-      suffix: ")",
+        `WITH rows(${cols.map(([_, f]) => f).join(", ")}) AS (VALUES\n` +
+        `  (${cols.map(([n, _]) => n).join(", ")}),`,
+      fields,
+      withKey: true,
+      suffix: ")\n" + suffix,
+    });
+  }
+
+  /**
+   * Returns a newly created JS function which, when called with a row set,
+   * returns the following SQL clause (when called with withKey=true):
+   *
+   * ```
+   *   ('123', 'xyz', 'nn', 'kSome'),
+   *   ('456', 'abc', 'nn', 'kOther'),
+   *   ...
+   * )
+   * ```
+   *
+   * or (when called without withKey):
+   *
+   * ```
+   *   ('123', 'xyz', 'nn'),
+   *   ('456', 'abc', 'nn'),
+   *   ...
+   * ```
+   *
+   * The set of columns is passed in fields.
+   *
+   * Notice that either a simple primary key or a composite primary key columns
+   * are always prepended to the list of values since it makes no sense to
+   * generate VALUES clause without exact identification of the destination.
+   */
+  protected createValuesBuilder({
+    prefix,
+    fields,
+    withKey,
+    suffix,
+  }: {
+    prefix: string;
+    fields: Array<Field<TTable>>;
+    withKey?: boolean;
+    suffix: string;
+  }) {
+    const cols = this.prependPK(fields).map((field) => {
+      const spec = nullthrows(
+        this.schema.table[field],
+        `Unknown field: ${field}`
+      );
+      return this.createEscapeCode(
+        field,
+        `$input.${field}`,
+        spec.autoInsert !== undefined ? spec.autoInsert : spec.autoUpdate
+      );
+    });
+    const rowFunc = this.newFunction(
+      "$key",
+      "$input",
+      'return "(" + ' +
+        cols.join(" + ', ' + ") +
+        (withKey ? '+ ", " + this.escapeString($key)' : "") +
+        '+ ")"'
+    );
+
+    return {
+      prefix: prefix + "\n  ",
+      func: (
+        entries: Iterable<[key: string, input: object & { [ID]?: string }]>
+      ) => {
+        const parts: string[] = [];
+        for (const [key, input] of entries) {
+          parts.push(rowFunc(key, this.unfoldCompositePK(input)));
+        }
+
+        if (withKey) {
+          // To eliminate deadlocks in parallel batched inserts, we sort rows. This
+          // prevents deadlocks when two batched queries are running in different
+          // connections, and the table has some unique key.
+          parts.sort();
+        }
+
+        return parts.join(",\n  ");
+      },
+      suffix,
     };
   }
 
@@ -246,48 +361,52 @@ export abstract class SQLRunner<
    * Returns a newly created JS function which, when called with an object,
    * returns the following SQL clause:
    *
-   * id='123', a='xyz', b='nnn'
+   * id='123', a='xyz', b='nnn' [, {literal}]
    *
    * The set of columns is passed in specs, all other columns are ignored.
    */
-  protected createUpdateKVsBuilder<TInput>(
-    specs: Partial<Table>
-  ): (input: TInput) => string {
-    const parts: string[] = [];
-    for (const [field, type] of Object.entries(specs)) {
-      parts.push(
-        `"${field}=" + ` +
-          this.createEscapeCode(field, `$input.${field}`, type!.autoUpdate)
-      );
-    }
-
-    const body =
-      "return " + (parts.length ? parts.join(" + ', ' + ") : `"${ID}=${ID}"`);
-    return this.newFunction("$input", body);
+  protected createUpdateKVsBuilder(fields: Array<Field<TTable>>) {
+    const parts = fields.map(
+      (field) =>
+        JSON.stringify(this.escapeField(field) + "=") +
+        " + " +
+        this.createEscapeCode(
+          field,
+          `$input.${field}`,
+          this.schema.table[field].autoUpdate
+        )
+    );
+    const func = this.newFunction(
+      "$input",
+      "return " + (parts.length ? parts.join(" + ', ' + ") : `""`)
+    );
+    return (input: object, literal?: Literal): string => {
+      const kvs = func(input);
+      const custom = literal ? this.buildLiteral(literal) : "";
+      return kvs && custom ? `${kvs}, ${custom}` : kvs ? kvs : custom;
+    };
   }
 
   /**
-   * Returns a newly created JS function which, when called with an array
-   * of values, returns one of following SQL clause:
+   * Returns a newly created JS function which, when called with an array of
+   * values, returns one of following SQL clause:
    *
    * - $field IN('aaa', 'bbb', 'ccc')
    * - ($field IN('aaa', 'bbb') OR $field IS NULL)
    * - $field IS NULL
    * - false
-   *
-   * If $subField is passed, then $f is "$subField.$field"
    */
   protected createInBuilder(
     field: Field<TTable>,
-    fieldCode = "value"
+    fieldValCode = "$value"
   ): (values: Iterable<unknown>) => string {
-    const escapedFieldCode = JSON.stringify(sqlClientMod.escapeIdent(field));
-    const valueCode = this.createEscapeCode(field, fieldCode);
+    const escapedFieldCode = JSON.stringify(this.escapeField(field));
+    const valueCode = this.createEscapeCode(field, fieldValCode);
     const body = `
       let sql = '';
       let hasIsNull = false;
-      for (const value of $values) {
-        if (${fieldCode} != null) {
+      for (const $value of $values) {
+        if (${fieldValCode} != null) {
           if (sql) sql += ',';
           sql += ${valueCode};
         } else {
@@ -333,10 +452,6 @@ export abstract class SQLRunner<
 
       if (key[0] === "$") {
         continue;
-      }
-
-      if (!specs[key]) {
-        throw Error("Unknown field " + key);
       }
 
       let foundOp = false;
@@ -415,7 +530,7 @@ export abstract class SQLRunner<
     binOp: string,
     value: NonNullable<Value<TTable[TField]>>
   ) {
-    return field + binOp + this.escape(field, value);
+    return this.escapeField(field) + binOp + this.escapeValue(field, value);
   }
 
   private buildFieldNe<TField extends Field<TTable>>(
@@ -423,7 +538,7 @@ export abstract class SQLRunner<
     value: Value<TTable[TField]> | ReadonlyArray<Value<TTable[TField]>>
   ) {
     if (value === null) {
-      return field + " IS NOT NULL";
+      return this.escapeField(field) + " IS NOT NULL";
     } else if (value instanceof Array) {
       let andIsNotNull = false;
       const pieces: string[] = [];
@@ -431,16 +546,18 @@ export abstract class SQLRunner<
         if (v === null) {
           andIsNotNull = true;
         } else {
-          pieces.push(this.escape(field, v));
+          pieces.push(this.escapeValue(field, v));
         }
       }
 
       const sql = pieces.length
-        ? field + " NOT IN(" + pieces.join(",") + ")"
+        ? this.escapeField(field) + " NOT IN(" + pieces.join(",") + ")"
         : "true/*empty_NOT_IN*/";
-      return andIsNotNull ? "(" + sql + " AND " + field + " IS NOT NULL)" : sql;
+      return andIsNotNull
+        ? "(" + sql + " AND " + this.escapeField(field) + " IS NOT NULL)"
+        : sql;
     } else {
-      return field + "<>" + this.escape(field, value);
+      return this.escapeField(field) + "<>" + this.escapeValue(field, value);
     }
   }
 
@@ -449,7 +566,7 @@ export abstract class SQLRunner<
     value: Where<TTable>[TField]
   ) {
     if (value === null) {
-      return field + " IS NULL";
+      return this.escapeField(field) + " IS NULL";
     } else if (value instanceof Array) {
       let orIsNull = false;
       const pieces: string[] = [];
@@ -457,16 +574,18 @@ export abstract class SQLRunner<
         if (v === null) {
           orIsNull = true;
         } else {
-          pieces.push(this.escape(field, v));
+          pieces.push(this.escapeValue(field, v));
         }
       }
 
       const sql = pieces.length
-        ? field + " IN(" + pieces.join(",") + ")"
+        ? this.escapeField(field) + " IN(" + pieces.join(",") + ")"
         : "false/*empty_IN*/";
-      return orIsNull ? "(" + sql + " OR " + field + " IS NULL)" : sql;
+      return orIsNull
+        ? "(" + sql + " OR " + this.escapeField(field) + " IS NULL)"
+        : sql;
     } else {
-      return field + "=" + this.escape(field, value);
+      return this.escapeField(field) + "=" + this.escapeValue(field, value);
     }
   }
 
@@ -515,7 +634,7 @@ export abstract class SQLRunner<
   /**
    * For codegen, returns the following piece of JS code:
    *
-   * '($valueCode !== undefined ? this.escapeXyz($valueCode) : "$defSQL")'
+   * '($fieldValCode !== undefined ? this.escapeXyz($fieldValCode) : "$defSQL")'
    *
    * It's expected that, while running the generated code, `this` points to an
    * object with a) `escapeXyz()` functions, b) `stringifiers` object containing
@@ -523,37 +642,39 @@ export abstract class SQLRunner<
    */
   private createEscapeCode(
     field: Field<TTable>,
-    valueCode: string,
+    fieldValCode: string,
     defSQL?: string
   ) {
-    const valueType = this.schema.table[field].type;
+    const specType = this.schema.table[field]?.type;
+    if (!specType && field !== ID) {
+      throw Error(`BUG: cannot find the field "${field}" in the schema`);
+    }
+
     const escapeCode =
-      valueType === Boolean
-        ? `this.escapeBoolean(${valueCode})`
-        : valueType === Date
-        ? `this.escapeDate(${valueCode}, ${JSON.stringify(field)})`
-        : valueType === ID
-        ? `this.escapeID(${valueCode})`
-        : valueType === Number
-        ? `this.escapeString(${valueCode})`
-        : valueType === String
-        ? `this.escapeString(${valueCode})`
-        : hasKey("stringify", valueType)
-        ? `this.escapeStringify(${valueCode}, this.stringifiers.${field})`
+      specType === undefined && field === ID
+        ? `this.escapeComposite(${fieldValCode})`
+        : specType === Boolean
+        ? `this.escapeBoolean(${fieldValCode})`
+        : specType === Date
+        ? `this.escapeDate(${fieldValCode}, ${JSON.stringify(field)})`
+        : specType === ID
+        ? `this.escapeID(${fieldValCode})`
+        : specType === Number
+        ? `this.escapeString(${fieldValCode})`
+        : specType === String
+        ? `this.escapeString(${fieldValCode})`
+        : hasKey("stringify", specType)
+        ? `this.escapeStringify(${fieldValCode}, this.stringifiers.${field})`
         : (() => {
             throw Error(
-              `BUG: unknown spec type ${valueType} for field ${field}`
+              `BUG: unknown spec type ${specType} for field ${field}`
             );
           })();
     if (defSQL !== undefined) {
       return (
-        "(" +
-        valueCode +
-        " !== undefined ? " +
-        escapeCode +
-        " : " +
-        JSON.stringify(defSQL) +
-        ")"
+        `(${fieldValCode} !== undefined ` +
+        `? ${escapeCode} ` +
+        `: ${JSON.stringify(defSQL)})`
       );
     } else {
       return escapeCode;
@@ -566,12 +687,74 @@ export abstract class SQLRunner<
    *
    * For each table, we compile frequently accessible pieces of code which
    * serialize data in SQL format. This allows to remove lots of logic and "ifs"
-   * from run-time and speed up hot code paths.
+   * from runtime and speed up hot code paths.
    */
   private newFunction(...argsAndBody: string[]) {
     return new Function(...argsAndBody).bind({
       ...sqlClientMod,
       stringifiers: this.stringifiers,
     });
+  }
+
+  /**
+   * Prepends a primary key to the list of fields. In case the primary key is
+   * plain (i.e. "id" field), it's just added as a field; otherwise, the unique
+   * key fields are added. (Prepending the primary key fields doesn't affect
+   * logic, but minimizes deadlocks since the rows to insert/update are sorted
+   * lexicographically.)
+   */
+  private prependPK(fields: Array<Field<TTable>>) {
+    return uniq([
+      ...(this.schema.table[ID] ? [ID] : this.schema.uniqueKey),
+      ...fields,
+    ]);
+  }
+
+  /**
+   * The problem: PG is not working fine with queries like:
+   *
+   * ```
+   * WITH rows(composite_id, c) AS (
+   *   VALUES
+   *   ( ROW((NULL::tbl).x, (NULL::tbl).y), (NULL::tbl).c ),
+   *   ( ROW(1,2),                          3             ),
+   *   ( ROW(3,4),                          5             )
+   * )
+   * UPDATE tbl SET c=rows.c
+   * FROM rows WHERE ROW(tbl.x, tbl.y)=composite_id
+   * ```
+   *
+   * It cannot match the type of composite_id with the row, and even the trick
+   * with NULLs doesn't help it to infer types. It's a limitation of WITH clause
+   * (because in INSERT ... VALUES, there is no such problem).
+   *
+   * So the only solution is to parse/decompose the row string into individual
+   * unique key columns at runtime for batched UPDATEs. And yes, it's slow.
+   *
+   * ```
+   * WITH rows(x, y, c) AS (
+   *   VALUES
+   *   ( (NULL::tbl).x, (NULL::tbl).y, (NULL::tbl).c ),
+   *   ( 1,             2,             3             ),
+   *   ( 3,             4,             5             )
+   * )
+   * UPDATE tbl SET c=rows.c
+   * FROM rows WHERE ROW(tbl.x, tbl.y)=ROW(rows.x, ROW.y)
+   * ```
+   */
+  private unfoldCompositePK(input: any) {
+    if (
+      !this.schema.table[ID] &&
+      input[ID] !== null &&
+      input[ID] !== undefined
+    ) {
+      const compositePK = parseCompositeRow(input[ID]);
+      input = { ...input };
+      for (const [i, field] of this.schema.uniqueKey.entries()) {
+        input[field] = compositePK[i];
+      }
+    }
+
+    return input;
   }
 }

@@ -3,6 +3,7 @@ import { Client, Loggers } from "../abstract/Client";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { TimelineManager } from "../abstract/TimelineManager";
 import { nullthrows, sanitizeIDForDebugPrinting, toFloatMs } from "../helpers";
+import parseCompositeRow from "./helpers/parseCompositeRow";
 import { SQLError } from "./SQLError";
 
 const DEFAULT_MAX_REPLICATION_LAG_MS = 60000;
@@ -338,6 +339,21 @@ export function escapeDate(v: Date | null | undefined, field?: string): string {
 
 export function escapeBoolean(v: boolean | null | undefined): string {
   return v === null || v === undefined ? "NULL" : v ? "true" : "false";
+}
+
+/**
+ * PostgreSQL doesn't allow comparison like `WHERE (a, b) = '(1,2)'` - it throws
+ * "Input of anonymous composite types is not implemented" error. So to compare,
+ * we have to convert the stringified row representation to ROW() notation
+ * manually: `WHERE (a, b) = ROW('1', '2')`
+ */
+export function escapeComposite(v: string | null | undefined): string {
+  if (v === null || v === undefined) {
+    return "NULL";
+  }
+
+  const parts = parseCompositeRow(v);
+  return `ROW(${parts.map((v) => escapeString(v)).join(",")})`;
 }
 
 export function escapeStringify(v: any, stringify: (v: any) => string): string {

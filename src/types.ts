@@ -60,7 +60,6 @@ export type Spec = {
  * { id: Spec, name: Spec, ... } - table columns.
  */
 export type Table = {
-  [ID]: Spec;
   [K: string | symbol]: Spec;
 };
 
@@ -223,6 +222,7 @@ export type WhereWithoutNot<TTable extends Table> = {
   [$or]?: ReadonlyArray<Where<TTable>>;
   //[$not]?: Where<TTable>; - DO NOT put it here, it crashes TS > v3.5.3
   [$literal]?: Literal;
+  [ID]?: TTable extends { [ID]: unknown } ? unknown : string | string[];
 } & {
   [K in Field<TTable>]?:
     | Value<TTable[K]>

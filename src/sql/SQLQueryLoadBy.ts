@@ -1,5 +1,7 @@
+import last from "lodash/last";
 import { QueryBase } from "../abstract/Query";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { Schema } from "../abstract/Schema";
 import { nullthrows } from "../helpers";
 import { LoadByInput, Row, Table, UniqueKey } from "../types";
 import { SQLClient } from "./SQLClient";
@@ -28,23 +30,27 @@ export class SQLRunnerLoadBy<
   static override readonly IS_WRITE = false;
   readonly op = "SELECT_UNIQ";
 
-  private prefix = this.fmt("SELECT %F FROM %T WHERE ", {
-    specs: this.schema.table,
-  });
-  private suffix = this.fmt("");
-  private whereBuilder =
-    this.schema.uniqueKey.length === 1
-      ? this.oneColumnWhereBuilder.bind(this)
-      : this.multiColumnWhereBuilder.bind(this);
-  private listBuilder = this.schema.uniqueKey.length
-    ? this.createInBuilder(
-        this.schema.uniqueKey[this.schema.uniqueKey.length - 1],
-        `value.${this.schema.uniqueKey[this.schema.uniqueKey.length - 1]}`
-      )
-    : null;
-
   // If no row is found, returns null.
   readonly default = null;
+
+  private inBuilder;
+  private builder;
+
+  constructor(schema: Schema<TTable>, client: SQLClient) {
+    super(schema, client);
+    const lastUniqueKeyField = last(this.schema.uniqueKey);
+    this.inBuilder = lastUniqueKeyField
+      ? this.createInBuilder(lastUniqueKeyField, `$value.${lastUniqueKeyField}`)
+      : null;
+    this.builder = {
+      prefix: this.fmt("SELECT %SELECT_FIELDS FROM %T WHERE "),
+      func:
+        this.schema.uniqueKey.length === 1
+          ? this.oneColumnWhereBuilder.bind(this)
+          : this.multiColumnWhereBuilder.bind(this),
+      suffix: this.fmt(""),
+    };
+  }
 
   override key(input: LoadByInput<TTable, TUniqueKey>): string {
     return JSON.stringify(this.schema.uniqueKey.map((field) => input[field]));
@@ -54,7 +60,8 @@ export class SQLRunnerLoadBy<
     input: LoadByInput<TTable, TUniqueKey>,
     annotations: QueryAnnotation[]
   ): Promise<Row<TTable> | undefined> {
-    const sql = this.prefix + this.whereBuilder([input]) + this.suffix;
+    const sql =
+      this.builder.prefix + this.builder.func([input]) + this.builder.suffix;
     const rows = await this.clientQuery<Row<TTable>>(sql, annotations, 1);
     return rows[0];
   }
@@ -63,7 +70,10 @@ export class SQLRunnerLoadBy<
     inputs: Map<string, LoadByInput<TTable, TUniqueKey>>,
     annotations: QueryAnnotation[]
   ): Promise<Map<string, Row<TTable>>> {
-    const sql = this.prefix + this.whereBuilder(inputs.values()) + this.suffix;
+    const sql =
+      this.builder.prefix +
+      this.builder.func(inputs.values()) +
+      this.builder.suffix;
     const rows = await this.clientQuery<Row<TTable>>(
       sql,
       annotations,
@@ -81,7 +91,7 @@ export class SQLRunnerLoadBy<
     inputs: Iterable<LoadByInput<TTable, TUniqueKey>>
   ): string {
     // field1 IN('aa', 'bb', 'cc', ...)
-    return nullthrows(this.listBuilder, "no unique key defined")(inputs);
+    return nullthrows(this.inBuilder, "no unique key defined")(inputs);
   }
 
   private multiColumnWhereBuilder(
@@ -90,7 +100,7 @@ export class SQLRunnerLoadBy<
     // field1='aaa' AND field2='bbb' AND field3 IN('aa', 'bb', 'cc', ...) OR ...
     // ^^^^^^^^^^^^^prefix^^^^^^^^^^               ^^^^^^^^^^ins^^^^^^^^
     // In case of constant prefix, it will be one Index Scan with ANY sub-clause.
-    const listBuilder = nullthrows(this.listBuilder, "no unique key defined");
+    const inBuilder = nullthrows(this.inBuilder, "no unique key defined");
 
     const insByPrefix = new Map<
       string,
@@ -107,7 +117,7 @@ export class SQLRunnerLoadBy<
         const value = (input as any)[field];
         prefix +=
           value !== null
-            ? field + "=" + this.escape(field, value)
+            ? field + "=" + this.escapeValue(field, value)
             : field + " IS NULL";
       }
 
@@ -126,7 +136,7 @@ export class SQLRunnerLoadBy<
         sql += " OR ";
       }
 
-      const inClause = listBuilder(ins);
+      const inClause = inBuilder(ins);
       if (prefix !== "") {
         sql += "(" + prefix + " AND " + inClause + ")";
       } else {

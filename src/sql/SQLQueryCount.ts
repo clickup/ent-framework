@@ -1,5 +1,6 @@
 import { QueryBase } from "../abstract/Query";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { Schema } from "../abstract/Schema";
 import { CountInput, Table } from "../types";
 import { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
@@ -21,11 +22,19 @@ export class SQLRunnerCount<TTable extends Table> extends SQLRunner<
   static override readonly IS_WRITE = false;
   readonly op = "COUNT";
 
-  private prefix = this.fmt("SELECT ");
-  private suffix = this.fmt("COUNT(1) AS count FROM %T");
-
   // We just need something here.
   readonly default = 0;
+
+  private builder;
+
+  constructor(schema: Schema<TTable>, client: SQLClient) {
+    super(schema, client);
+    this.builder = {
+      prefix: this.fmt("SELECT COUNT(1) AS count FROM %T"),
+      func: (input: CountInput<TTable>) =>
+        this.buildOptionalWhere(this.schema.table, input),
+    };
+  }
 
   override key(input: CountInput<TTable>): string {
     // Coalesce equal queries.
@@ -36,10 +45,7 @@ export class SQLRunnerCount<TTable extends Table> extends SQLRunner<
     input: CountInput<TTable>,
     annotations: QueryAnnotation[]
   ): Promise<number> {
-    const sql =
-      this.prefix +
-      this.suffix +
-      this.buildOptionalWhere(this.schema.table, input);
+    const sql = this.builder.prefix + this.builder.func(input);
     const res = await this.clientQuery<{ count: string }>(sql, annotations, 1);
     return parseInt(res[0].count);
   }
@@ -48,31 +54,22 @@ export class SQLRunnerCount<TTable extends Table> extends SQLRunner<
     inputs: Map<string, CountInput<TTable>>,
     annotations: QueryAnnotation[]
   ): Promise<Map<string, number>> {
-    // SELECT 0 AS i, COUNT(1) FROM ... WHERE ...
-    //    UNION ALL
-    // SELECT 1 AS i, COUNT(1) FROM ... WHERE ...
-    const pieces: string[] = [];
-    const keys: string[] = [];
-    for (const [key, input] of inputs.entries()) {
-      const i = keys.length;
-      keys.push(key);
-      pieces.push(
-        this.prefix +
-          i +
-          " AS i, " +
-          this.suffix +
-          this.buildOptionalWhere(this.schema.table, input)
-      );
-    }
-
+    // SELECT COUNT(1) FROM ... WHERE ...
+    //   UNION ALL
+    // SELECT COUNT(1) FROM ... WHERE ...
+    const sql = [...inputs.values()]
+      .map((input) => this.builder.prefix + this.builder.func(input))
+      .join("\n  UNION ALL\n");
     const rows = await this.clientQuery<{ i: string; count: string }>(
-      pieces.join("\n  UNION ALL\n"),
+      sql,
       annotations,
       inputs.size
     );
     const outputs = new Map<string, number>();
-    for (const { i, count } of rows) {
-      outputs.set(keys[parseInt(i)], parseInt(count));
+    let i = 0;
+    for (const key of inputs.keys()) {
+      outputs.set(key, parseInt(rows[i].count));
+      i++;
     }
 
     return outputs;

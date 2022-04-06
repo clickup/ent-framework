@@ -24,11 +24,7 @@ export class SQLRunnerIDGen<TTable extends Table> extends SQLRunner<
 
   private readonly idAutoInsert = nullthrows(
     this.schema.table[ID].autoInsert,
-    "Schema for " +
-      this.name +
-      "." +
-      ID +
-      " must have autoInsert attribute defined"
+    `Schema for ${this.name}.${ID} must have autoInsert attribute defined`
   );
 
   readonly default = "never_happens"; // abstract property implementation
