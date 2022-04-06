@@ -1,5 +1,6 @@
 import { QueryBase } from "../abstract/Query";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { Schema } from "../abstract/Schema";
 import { hash } from "../helpers";
 import { DeleteWhereInput, ID, Table } from "../types";
 import { SQLClient } from "./SQLClient";
@@ -22,8 +23,18 @@ export class SQLRunnerDeleteWhere<TTable extends Table> extends SQLRunner<
   static override readonly IS_WRITE = true;
   readonly op = "DELETE_WHERE";
   readonly default = [];
-  private prefix = this.fmt("DELETE FROM %T");
-  private suffix = this.fmt(" RETURNING %ID");
+
+  private builder;
+
+  constructor(schema: Schema<TTable>, client: SQLClient) {
+    super(schema, client);
+    this.builder = {
+      prefix: this.fmt("DELETE FROM %T"),
+      func: (input: DeleteWhereInput<TTable>) =>
+        this.buildOptionalWhere(this.schema.table, input),
+      suffix: this.fmt(` RETURNING %PK AS ${ID}`),
+    };
+  }
 
   override key(input: DeleteWhereInput<TTable>): string {
     // Coalesce equal delete queries.
@@ -42,9 +53,7 @@ export class SQLRunnerDeleteWhere<TTable extends Table> extends SQLRunner<
     }
 
     const sql =
-      this.prefix +
-      this.buildOptionalWhere(this.schema.table, input) +
-      this.suffix;
+      this.builder.prefix + this.builder.func(input) + this.builder.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(
       sql,
       annotations,

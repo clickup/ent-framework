@@ -22,30 +22,31 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
   static override readonly IS_WRITE = true;
   readonly op = "INSERT";
 
-  private valuesBuilder = this.createValuesBuilder(this.schema.table);
-  private valuesBuilderSimple = this.createValuesBuilder(
-    this.schema.table,
-    true
-  );
+  private singleBuilder;
+  private batchBuilder;
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);
 
-    this.valuesBuilder.suffix += this.fmt(
-      "\n" +
-        "  INSERT INTO %T (%F)\n" +
-        "  SELECT %F FROM rows OFFSET 1\n" +
-        "  ON CONFLICT DO NOTHING RETURNING " +
-        "(SELECT _key FROM rows WHERE rows.%ID=%T.%ID), %ID",
-      { specs: this.schema.table }
-    );
-    this.valuesBuilderSimple.prefix = this.fmt(
-      "INSERT INTO %T (%F) VALUES\n  ",
-      { specs: this.schema.table }
-    );
-    this.valuesBuilderSimple.suffix = this.fmt(
-      " ON CONFLICT DO NOTHING RETURNING %ID"
-    );
+    this.singleBuilder = this.createValuesBuilder({
+      prefix: this.fmt("INSERT INTO %T (%INSERT_FIELDS) VALUES"),
+      fields: Object.keys(this.schema.table),
+      suffix: this.fmt(` ON CONFLICT DO NOTHING RETURNING %PK AS ${ID}`),
+    });
+
+    // We use WITH clause in INSERT, because "ON CONFLICT DO NOTHING" clause
+    // doesn't emit anything in "RETURNING" clause, so we could've not
+    // distinguish rows which were inserted from the rows which were not. Having
+    // WITH solves this (see RETURNING below).
+    this.batchBuilder = this.createWithBuilder({
+      fields: Object.keys(this.schema.table),
+      suffix: this.fmt(
+        "  INSERT INTO %T (%INSERT_FIELDS)\n" +
+          "  SELECT %INSERT_FIELDS FROM rows OFFSET 1\n" +
+          "  ON CONFLICT DO NOTHING " +
+          `RETURNING (SELECT _key FROM rows WHERE %PK(rows)=%PK(%T)), %PK AS ${ID}`
+      ),
+    });
   }
 
   // In case of duplicate key error, returns null.
@@ -67,9 +68,9 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
     annotations: QueryAnnotation[]
   ): Promise<string | undefined> {
     const sql =
-      this.valuesBuilderSimple.prefix +
-      this.valuesBuilderSimple.func("", input) +
-      this.valuesBuilderSimple.suffix;
+      this.singleBuilder.prefix +
+      this.singleBuilder.func([["", input]]) +
+      this.singleBuilder.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(sql, annotations, 1);
     if (!rows.length) {
       return undefined;
@@ -82,22 +83,10 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
     inputs: Map<string, InsertInput<TTable>>,
     annotations: QueryAnnotation[]
   ): Promise<Map<string, string>> {
-    const pieces: string[] = [];
-    for (const [key, input] of inputs) {
-      pieces.push(this.valuesBuilder.func(key, input));
-    }
-
-    // To eliminate deadlocks in parallel batched inserts, we sort rows. This
-    // prevents deadlocks when two batched queries are running in different
-    // connections, and the table has some unique key.
-    pieces.sort();
-
     const sql =
-      this.valuesBuilder.prefix +
-      ",\n  " +
-      pieces.join(",\n  ") +
-      this.valuesBuilder.suffix;
-
+      this.batchBuilder.prefix +
+      this.batchBuilder.func(inputs) +
+      this.batchBuilder.suffix;
     const rows = await this.clientQuery<{ _key: string; [ID]: string }>(
       sql,
       annotations,

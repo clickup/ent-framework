@@ -29,40 +29,35 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
   static override readonly IS_WRITE = true;
   readonly op = "UPSERT";
 
-  private valuesBuilder = this.createValuesBuilder(this.schema.table, true);
-  private prefixSimple: string;
-  private suffixSimple: string;
+  private builder;
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);
 
-    // TODO: there is a bug here, autoInsert fields are NOT updated during
-    // the upsert (they are only inserted). Not clear how to fix this,
-    // because we don't want e.g. created_at to be updated (and it's an
-    // autoInsert field).
-    const conflictTarget = this.schema.uniqueKey.join(",");
-    this.prefixSimple = this.fmt("INSERT INTO %T (%F) VALUES\n  ", {
-      specs: this.schema.table,
-    });
-    this.suffixSimple = this.fmt(
-      "\n" +
-        `  ON CONFLICT (${conflictTarget}) DO UPDATE ` +
-        `SET %KV(EXCLUDED) RETURNING %ID`,
-      {
-        specs: pickBy(
-          this.schema.table,
-          ({ autoInsert }) => autoInsert === undefined
-        ) as Partial<TTable>,
-      }
-    );
+    // TODO: there is a bug here, autoInsert fields are NOT updated during the
+    // upsert (they are only inserted). Not clear how to fix this, because we
+    // don't want e.g. created_at to be updated (and it's an autoInsert field).
 
-    this.valuesBuilder.suffix += this.fmt(
-      "\n" +
-        "  INSERT INTO %T (%F)\n" +
-        "  SELECT %F FROM rows OFFSET 1" +
-        this.suffixSimple,
-      { specs: this.schema.table }
-    );
+    const uniqueKeyFields = this.schema.uniqueKey
+      .map((field) => this.escapeField(field))
+      .join(",");
+    this.builder = this.createValuesBuilder({
+      prefix: this.fmt("INSERT INTO %T (%INSERT_FIELDS) VALUES"),
+      fields: Object.keys(this.schema.table),
+      suffix: this.fmt(
+        "\n" +
+          `  ON CONFLICT (${uniqueKeyFields}) DO UPDATE ` +
+          `SET %UPDATE_FIELD_VALUE_PAIRS(EXCLUDED) RETURNING %PK AS ${ID}`,
+        {
+          fields: Object.keys(
+            pickBy(
+              this.schema.table,
+              ({ autoInsert }) => autoInsert === undefined
+            )
+          ),
+        }
+      ),
+    });
   }
 
   // Upsert always succeed, or if it fails, we have troubles with the whole batch!
@@ -94,9 +89,9 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
     annotations: QueryAnnotation[]
   ): Promise<string | undefined> {
     const sql =
-      this.prefixSimple +
-      this.valuesBuilder.func("", input) +
-      this.suffixSimple;
+      this.builder.prefix +
+      this.builder.func([["", input]]) +
+      this.builder.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(sql, annotations, 1);
     return nullthrows(rows[0], sql)[ID];
   }
@@ -105,42 +100,31 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
     inputs: Map<string, InsertInput<TTable>>,
     annotations: QueryAnnotation[]
   ): Promise<Map<string, string>> {
-    // In "WITH ... VALUES ... INSERT ... ON CONFLICT UPDATE ... RETURNING ..." in
-    // case insert didn't happen we can't match the updated row id with the WITH id.
-    // Luckily, the order of rows returned is the same as the input rows order, and
-    // "ON CONFLICT UPDATE" update always succeeds entirely (or fails entirely).
-    const tuples: Array<{ key: string; sql: string }> = [];
-    for (const [key, input] of inputs) {
-      tuples.push({ key: key, sql: this.valuesBuilder.func(key, input) });
-    }
-
-    // Sorting values tuples at the client to eliminate deadlocks.
-    tuples.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
-
-    let sql = this.valuesBuilder.prefix;
-    sql += ",\n  " + tuples.map((tuple) => tuple.sql).join(",\n  ");
-    sql += this.valuesBuilder.suffix;
-
+    const sql =
+      this.builder.prefix + this.builder.func(inputs) + this.builder.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(
       sql,
       annotations,
       inputs.size
     );
+
+    // In "INSERT ... VALUES ... ON CONFLICT DO UPDATE ... RETURNING ..." in
+    // case insert didn't happen we can't match the updated row id with the key.
+    // Luckily, the order of rows returned is the same as the input rows order,
+    // and "ON CONFLICT DO UPDATE" update always succeeds entirely (or fails
+    // entirely).
     if (rows.length !== inputs.size) {
       throw Error(
-        "Number of rows returned from upsert (" +
-          rows.length +
-          ") is different from the number of input rows (" +
-          inputs.size +
-          "): " +
-          sql
+        `BUG: number of rows returned from upsert (${rows.length}) ` +
+          `is different from the number of input rows (${inputs.size}): ${sql}`
       );
     }
 
     const outputs = new Map<string, string>();
     let i = 0;
-    for (const row of rows) {
-      outputs.set(tuples[i++].key, row[ID]);
+    for (const key of inputs.keys()) {
+      outputs.set(key, rows[i][ID]);
+      i++;
     }
 
     return outputs;

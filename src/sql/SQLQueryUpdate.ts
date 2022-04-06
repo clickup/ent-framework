@@ -1,15 +1,16 @@
-import omit from "lodash/omit";
-import pick from "lodash/pick";
+import uniq from "lodash/uniq";
 import { Query } from "../abstract/Query";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { Schema } from "../abstract/Schema";
-import { $literal, ID, Table, UpdateInput } from "../types";
+import { $literal, Field, ID, Table, UpdateInput } from "../types";
 import { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
 export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
   readonly input: UpdateInput<TTable> & { [ID]: string };
   readonly IS_WRITE = true;
+
+  private readonly allFields = Object.keys(this.schema.table);
 
   constructor(
     public readonly schema: Schema<TTable>,
@@ -24,7 +25,7 @@ export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
     // Treat undefined as an absent key. This will hopefully be JITed very
     // efficiently, but could still be that it won't since we enumerate object
     // keys and use [] to access the values.
-    const fields = Object.keys(this.schema.table).filter(
+    const fields = this.allFields.filter(
       (field) => field !== ID && this.input[field] !== undefined
     );
 
@@ -54,15 +55,7 @@ export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
           new SQLRunnerUpdate<TTable>(
             this.schema,
             client,
-            pick(
-              this.schema.table,
-              [ID], // ID must be in the beginning (we re-sort rows for deadlock prevention)
-              fields,
-              Object.keys(this.schema.table).filter(
-                // also add autoUpdate fields
-                (field) => this.schema.table[field].autoUpdate !== undefined
-              )
-            ) as TTable,
+            fields,
             disableBatching
           )
       )
@@ -78,28 +71,43 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
   static override readonly IS_WRITE = true;
   readonly op = "UPDATE";
 
-  private batchValuesBuilder = this.createValuesBuilder(this.specs);
-  private prefixSimple = this.fmt("UPDATE %T SET ");
-  private kvsBuilder = this.createUpdateKVsBuilder(omit(this.specs, ID));
-  private midfixSimple = this.fmt(" WHERE %ID=");
-  private suffixSimple = this.fmt(" RETURNING %ID");
+  private singleBuilder;
+  private batchBuilder;
 
   constructor(
     schema: Schema<TTable>,
     client: SQLClient,
-    private specs: TTable,
+    fields: Array<Field<TTable>>,
     private disableBatching: boolean
   ) {
     super(schema, client);
 
-    // We could have many updates for same id (due to batching), so returning
-    // all keys.
-    this.batchValuesBuilder.suffix += this.fmt(
-      "\n" +
-        "  UPDATE %T SET %KV(rows)\n" +
-        "  FROM rows WHERE %T.%ID=rows.%ID RETURNING (SELECT _key FROM rows WHERE rows.%ID=%T.%ID)",
-      { specs: omit(specs, ID) }
-    );
+    // Always include all autoUpdate fields.
+    fields = uniq([
+      ...fields,
+      ...Object.keys(this.schema.table).filter(
+        (field) => this.schema.table[field].autoUpdate !== undefined
+      ),
+    ]);
+
+    this.singleBuilder = {
+      prefix: this.fmt("UPDATE %T SET "),
+      func1: this.createUpdateKVsBuilder(fields),
+      midfix: this.fmt(" WHERE %PK="),
+      func2: (input: { [ID]: string }) => this.escapeValue(ID, input[ID]),
+      suffix: this.fmt(` RETURNING %PK AS ${ID}`),
+    };
+
+    // There can be several updates for same id (due to batching), so returning
+    // all keys here.
+    this.batchBuilder = this.createWithBuilder({
+      fields,
+      suffix: this.fmt(
+        "  UPDATE %T SET %UPDATE_FIELD_VALUE_PAIRS(rows)\n" +
+          `  FROM rows WHERE %PK(%T)=%PK(rows) RETURNING (SELECT _key FROM rows WHERE %PK(rows)=%PK(%T))`,
+        { fields }
+      ),
+    });
   }
 
   // If nothing is updated, we return false.
@@ -115,12 +123,11 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
   ): Promise<boolean> {
     const literal = input[$literal];
     const sql =
-      this.prefixSimple +
-      this.kvsBuilder(input) +
-      (literal ? ", " + this.buildLiteral(literal) : "") +
-      this.midfixSimple +
-      this.escape(ID, input[ID]) +
-      this.suffixSimple;
+      this.singleBuilder.prefix +
+      this.singleBuilder.func1(input, literal) +
+      this.singleBuilder.midfix +
+      this.singleBuilder.func2(input) +
+      this.singleBuilder.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(sql, annotations, 1);
     return rows.length > 0 ? true : false;
   }
@@ -131,24 +138,10 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
         inputs: Map<string, UpdateInput<TTable> & { [ID]: string }>,
         annotations: QueryAnnotation[]
       ): Promise<Map<string, boolean>> => {
-        const pieces: string[] = [];
-        for (const [key, input] of inputs) {
-          pieces.push(this.batchValuesBuilder.func(key, input));
-        }
-
-        // To eliminate deadlocks in parallel batched updates, we sort rows.
-        // This prevents deadlocks when two batched queries are running in
-        // different connections and update the same rows in different order.
-        // Notice that SQLQueryUpdate.run() puts the rows ID value to the
-        // beginning of the string, and thus, we order by ID in practice.
-        pieces.sort();
-
         const sql =
-          this.batchValuesBuilder.prefix +
-          ",\n  " +
-          pieces.join(",\n  ") +
-          this.batchValuesBuilder.suffix;
-
+          this.batchBuilder.prefix +
+          this.batchBuilder.func(inputs) +
+          this.batchBuilder.suffix;
         const rows = await this.clientQuery<{ _key: string; [ID]: string }>(
           sql,
           annotations,

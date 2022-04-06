@@ -1,5 +1,6 @@
 import { QueryBase } from "../abstract/Query";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { Schema } from "../abstract/Schema";
 import { ID, Table } from "../types";
 import { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
@@ -21,12 +22,19 @@ export class SQLRunnerDelete<TTable extends Table> extends SQLRunner<
   static override readonly IS_WRITE = true;
   readonly op = "DELETE";
 
-  private prefix = this.fmt("DELETE FROM %T WHERE ");
-  private suffix = this.fmt(" RETURNING %ID");
-  private listBuilder = this.createInBuilder(ID);
-
   // If no delete happened, returns false.
   readonly default = false;
+
+  private builder;
+
+  constructor(schema: Schema<TTable>, client: SQLClient) {
+    super(schema, client);
+    this.builder = {
+      prefix: this.fmt("DELETE FROM %T WHERE "),
+      func: this.createInBuilder(ID),
+      suffix: this.fmt(` RETURNING %PK AS ${ID}`),
+    };
+  }
 
   override key(input: string): string {
     return input;
@@ -36,7 +44,8 @@ export class SQLRunnerDelete<TTable extends Table> extends SQLRunner<
     input: string,
     annotations: QueryAnnotation[]
   ): Promise<boolean> {
-    const sql = this.prefix + this.listBuilder([input]) + this.suffix;
+    const sql =
+      this.builder.prefix + this.builder.func([input]) + this.builder.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(sql, annotations, 1);
     return rows.length > 0 ? true : false;
   }
@@ -45,7 +54,10 @@ export class SQLRunnerDelete<TTable extends Table> extends SQLRunner<
     inputs: Map<string, string>,
     annotations: QueryAnnotation[]
   ): Promise<Map<string, boolean>> {
-    const sql = this.prefix + this.listBuilder(inputs.values()) + this.suffix;
+    const sql =
+      this.builder.prefix +
+      this.builder.func(inputs.values()) +
+      this.builder.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(
       sql,
       annotations,

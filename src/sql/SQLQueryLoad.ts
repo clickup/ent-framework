@@ -1,5 +1,6 @@
 import { QueryBase } from "../abstract/Query";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { Schema } from "../abstract/Schema";
 import { ID, Row, Table } from "../types";
 import { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
@@ -21,17 +22,22 @@ export class SQLRunnerLoad<TTable extends Table> extends SQLRunner<
   static override readonly IS_WRITE = false;
   readonly op = "SELECT_BY_ID";
 
-  private prefix = this.fmt("SELECT %F FROM %T WHERE ", {
-    specs: this.schema.table,
-  });
-  private suffix = this.fmt("");
-  private listBuilder = this.createInBuilder(ID);
-
   // Select by ID is cheap, so we can have much bigger load batches.
   override readonly maxBatchSize = 1000;
 
   // If no row is found, returns null.
   readonly default = null;
+
+  private builder;
+
+  constructor(schema: Schema<TTable>, client: SQLClient) {
+    super(schema, client);
+    this.builder = {
+      prefix: this.fmt("SELECT %SELECT_FIELDS FROM %T WHERE "),
+      func: this.createInBuilder(ID),
+      suffix: this.fmt(""),
+    };
+  }
 
   override key(input: string): string {
     return input;
@@ -41,7 +47,8 @@ export class SQLRunnerLoad<TTable extends Table> extends SQLRunner<
     input: string,
     annotations: QueryAnnotation[]
   ): Promise<Row<TTable> | undefined> {
-    const sql = this.prefix + this.listBuilder([input]) + this.suffix;
+    const sql =
+      this.builder.prefix + this.builder.func([input]) + this.builder.suffix;
     const rows = await this.clientQuery<Row<TTable>>(sql, annotations, 1);
     return rows[0];
   }
@@ -50,7 +57,10 @@ export class SQLRunnerLoad<TTable extends Table> extends SQLRunner<
     inputs: Map<string, string>,
     annotations: QueryAnnotation[]
   ): Promise<Map<string, Row<TTable>>> {
-    const sql = this.prefix + this.listBuilder(inputs.values()) + this.suffix;
+    const sql =
+      this.builder.prefix +
+      this.builder.func(inputs.values()) +
+      this.builder.suffix;
     const rows = await this.clientQuery<Row<TTable>>(
       sql,
       annotations,
