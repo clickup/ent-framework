@@ -160,7 +160,9 @@ export class Validation<TTable extends Table> {
 
     const failedPredicates = results
       .filter((result) => result.decision === RuleDecision.DENY)
-      .map((result) => result.rule.predicate as any as EntValidationErrorInfo);
+      .map(
+        (result) => result.rule.predicate as unknown as EntValidationErrorInfo
+      );
     if (failedPredicates.length > 0) {
       throw new EntValidationError(this.entName, failedPredicates);
     }
