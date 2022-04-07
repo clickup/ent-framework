@@ -5,15 +5,14 @@ import { SQLSchema } from "../../sql/SQLSchema";
 import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
 import { ID } from "../../types";
 import { BaseEnt } from "../BaseEnt";
-import { RANDOM_SHARD } from "../Configuration";
 import { EntCannotDetectShardError } from "../errors/EntCannotDetectShardError";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { VC } from "../VC";
 import { createVC } from "./helpers/test-objects";
 
-const TABLE_USER = "inv_test_user";
-const TABLE_INVERSE = "inv_test_inverse";
+const TABLE_USER = 'inv"test_user';
+const TABLE_INVERSE = 'inv"test_inverse';
 
 const schemaTestUser = new SQLSchema(TABLE_USER, {
   id: { type: ID, autoInsert: "id_gen()" },
@@ -25,7 +24,7 @@ const schemaTestUser = new SQLSchema(TABLE_USER, {
 class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
   static override configure() {
     return new this.Configuration({
-      shardAffinity: RANDOM_SHARD,
+      shardAffinity: ["id"],
       inverses: {
         company_id: { name: TABLE_INVERSE, type: "company2user" },
         team_id: { name: TABLE_INVERSE, type: "team2user" },

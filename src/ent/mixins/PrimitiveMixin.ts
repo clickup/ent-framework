@@ -243,7 +243,11 @@ export function PrimitiveMixin<
         await this.VALIDATION.validateInsert(vc, input);
       }
 
-      const shard = this.SHARD_LOCATOR.singleShardFromInput(input, "upsert");
+      const shard = this.SHARD_LOCATOR.singleShardFromInput(
+        input,
+        "upsert",
+        false // allowRandomShard
+      );
       const query = this.SCHEMA.upsert(input);
       const id = await shard.run(
         query,
@@ -275,7 +279,11 @@ export function PrimitiveMixin<
       vc: VC,
       input: LoadByInput<TTable, TUniqueKey>
     ) {
-      const shard = this.SHARD_LOCATOR.singleShardFromInput(input, "loadBy");
+      const shard = this.SHARD_LOCATOR.singleShardFromInput(
+        input,
+        "loadBy",
+        false // allowRandomShard
+      );
       const query = this.SCHEMA.loadBy(input);
       const row = await shard.run(
         query,
@@ -325,7 +333,8 @@ export function PrimitiveMixin<
     ) {
       const shard = this.SHARD_LOCATOR.singleShardFromInput(
         where,
-        "selectChunked"
+        "selectChunked",
+        false // allowRandomShard
       );
 
       let idCursor: string = "0";
@@ -347,7 +356,7 @@ export function PrimitiveMixin<
           this.SCHEMA.select({
             where: cursoredWhere,
             limit: chunkSize,
-            order: [{ id: "ASC" }], // IMPORTANT for idCursor
+            order: [{ [ID]: "ASC" }], // IMPORTANT for idCursor
             custom,
           }),
           vc.toAnnotation(),

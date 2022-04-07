@@ -159,26 +159,15 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
 
         pieces.push(this.buildLiteral(item[$literal]));
       } else {
-        for (const field of Object.keys(item)) {
-          if (this.schema.table[field] === undefined) {
+        for (const [field, dir] of Object.entries(item)) {
+          if (!ALLOWED_ORDER.includes("" + dir)) {
             throw Error(
-              "Unknown field name: " +
-                field +
-                "; allowed fields: " +
-                Object.keys(this.schema.table).join(", ")
-            );
-          }
-
-          if (!ALLOWED_ORDER.includes("" + item[field])) {
-            throw Error(
-              "Invalid order specifier: " +
-                item[field] +
-                "; allowed specifiers: " +
+              `Invalid order specifier: ${dir}; allowed specifiers: ` +
                 ALLOWED_ORDER.join(", ")
             );
           }
 
-          pieces.push(field + " " + item[field]);
+          pieces.push(`${this.escapeField(field)} ${dir}`);
         }
       }
     }

@@ -233,15 +233,46 @@ export abstract class SQLClient extends Client {
   }
 
   shardNoByID(id: string): number {
+    // An installation without sharding enabled.
     if (!this.shards) {
       return 0;
     }
 
+    // Just a historical exception for id="1".
     if (id === "1") {
-      // Just a historical exception.
       return 1;
     }
 
+    // Composite ID: `(100008888888,1023499999999)` - try extracting non-zero
+    // shard from parts (left to right) first, and if there is none, allow shard
+    // zero too.
+    if (typeof id === "string" && id.startsWith("(") && id.endsWith(")")) {
+      let no = NaN;
+      for (const subID of parseCompositeRow(id)) {
+        const tryNo =
+          subID && subID.length >= this.shardNoPadLen + 1
+            ? parseInt(subID.substring(1, this.shardNoPadLen + 1))
+            : NaN;
+        if (!isNaN(tryNo)) {
+          if (tryNo > 0) {
+            return tryNo;
+          } else if (isNaN(no)) {
+            no = tryNo;
+          }
+        }
+      }
+
+      if (isNaN(no)) {
+        const idSafe = sanitizeIDForDebugPrinting(id);
+        throw Error(
+          `Cannot extract shard number from the composite ID ${idSafe}`
+        );
+      }
+
+      return no;
+    }
+
+    // Plain ID.
     const no =
       typeof id === "string" && id.length >= this.shardNoPadLen + 1
         ? parseInt(id.substring(1, this.shardNoPadLen + 1))

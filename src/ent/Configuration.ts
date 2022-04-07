@@ -20,18 +20,12 @@ import { ValidationRules } from "./Validation";
 export const GLOBAL_SHARD = "global_shard";
 
 /**
- * The record is put in a random shard's table when inserted.
- */
-export const RANDOM_SHARD = "random_shard";
-
-/**
  * Defines Ent shard collocation to some Ent's field when this Ent is inserted.
  * The shard can either be picked randomly, be always shard 0 or be inferred
  * based on the value in other Ent fields during the insertion.
  */
 export type ShardAffinity<TField extends string> =
-  | readonly TField[]
-  | typeof RANDOM_SHARD
+  | readonly [TField, ...TField[]]
   | typeof GLOBAL_SHARD;
 
 /**
