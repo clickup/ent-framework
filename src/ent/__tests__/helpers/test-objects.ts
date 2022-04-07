@@ -4,7 +4,7 @@ import { SQLSchema } from "../../../sql/SQLSchema";
 import { testCluster } from "../../../sql/__tests__/helpers/TestSQLClient";
 import { ID } from "../../../types";
 import { BaseEnt } from "../../BaseEnt";
-import { GLOBAL_SHARD, RANDOM_SHARD } from "../../Configuration";
+import { GLOBAL_SHARD } from "../../Configuration";
 import { CanReadOutgoingEdge } from "../../predicates/CanReadOutgoingEdge";
 import { CanUpdateOutgoingEdge } from "../../predicates/CanUpdateOutgoingEdge";
 import { IncomingEdgeFromVCExists } from "../../predicates/IncomingEdgeFromVCExists";
@@ -90,17 +90,21 @@ export class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
 
 // Post -> User -> Company
 
-const schemaTestPost = new SQLSchema(TABLE_POST, {
-  id: { type: String, autoInsert: "id_gen()" },
-  user_id: { type: ID },
-  title: { type: String },
-  created_at: { type: Date, autoInsert: "now()" },
-});
+const schemaTestPost = new SQLSchema(
+  TABLE_POST,
+  {
+    post_id: { type: ID, autoInsert: "id_gen()" },
+    user_id: { type: ID },
+    title: { type: String },
+    created_at: { type: Date, autoInsert: "now()" },
+  },
+  ["post_id"]
+);
 
 export class EntTestPost extends BaseEnt(testCluster, schemaTestPost) {
   static override configure() {
     return new this.Configuration({
-      shardAffinity: RANDOM_SHARD,
+      shardAffinity: ["post_id"],
       privacyLoad: [
         new AllowIf(new CanReadOutgoingEdge("user_id", EntTestUser)),
       ],
@@ -129,11 +133,15 @@ export class EntTestPost extends BaseEnt(testCluster, schemaTestPost) {
 
 // Comment -> Post -> User -> Company
 
-const schemaTestComment = new SQLSchema(TABLE_COMMENT, {
-  id: { type: String, autoInsert: "id_gen()" },
-  post_id: { type: ID },
-  text: { type: String },
-});
+const schemaTestComment = new SQLSchema(
+  TABLE_COMMENT,
+  {
+    comment_id: { type: String, autoInsert: "id_gen()" },
+    post_id: { type: ID },
+    text: { type: String },
+  },
+  ["comment_id"]
+);
 
 export class EntTestComment extends BaseEnt(testCluster, schemaTestComment) {
   static override configure() {
@@ -159,7 +167,7 @@ export const $EPHEMERAL = Symbol("$EPHEMERAL");
 export const $EPHEMERAL2 = Symbol("$EPHEMERAL2");
 
 const schemaTestHeadline = new SQLSchema(TABLE_HEADLINE, {
-  id: { type: String, autoInsert: "id_gen()" },
+  id: { type: ID, autoInsert: "id_gen()" },
   user_id: { type: ID },
   headline: { type: String },
   name: { type: String, allowNull: true, autoInsert: "NULL" },
@@ -177,7 +185,7 @@ export class EntTestHeadline extends BaseEnt(testCluster, schemaTestHeadline) {
 
   static override configure() {
     return new this.Configuration({
-      shardAffinity: RANDOM_SHARD,
+      shardAffinity: ["id"],
       privacyLoad: [
         new AllowIf(new CanReadOutgoingEdge("user_id", EntTestUser)),
       ],
@@ -305,7 +313,7 @@ export class EntTestCountry extends BaseEnt(testCluster, schemaTestCountry) {
       privacyInsert: [new Require(new True())],
       beforeInsert: [
         async (_vc, { input }) => {
-          EntTestCountry.TRIGGER_CALLS.push({
+          this.TRIGGER_CALLS.push({
             type: "beforeInsert",
             input: { ...input },
           });
@@ -313,7 +321,7 @@ export class EntTestCountry extends BaseEnt(testCluster, schemaTestCountry) {
       ],
       beforeUpdate: [
         async (_vc, { newRow, oldRow, input }) => {
-          EntTestCountry.TRIGGER_CALLS.push({
+          this.TRIGGER_CALLS.push({
             type: "beforeUpdate",
             old: oldRow,
             new: newRow,
@@ -323,7 +331,7 @@ export class EntTestCountry extends BaseEnt(testCluster, schemaTestCountry) {
       ],
       beforeDelete: [
         async (_vc, { oldRow }) => {
-          EntTestCountry.TRIGGER_CALLS.push({
+          this.TRIGGER_CALLS.push({
             type: "beforeDelete",
             old: oldRow,
           });
@@ -331,7 +339,7 @@ export class EntTestCountry extends BaseEnt(testCluster, schemaTestCountry) {
       ],
       afterInsert: [
         async (_vc, { input }) => {
-          EntTestCountry.TRIGGER_CALLS.push({
+          this.TRIGGER_CALLS.push({
             type: "afterInsert",
             input: { ...input },
           });
@@ -339,7 +347,7 @@ export class EntTestCountry extends BaseEnt(testCluster, schemaTestCountry) {
       ],
       afterUpdate: [
         async (_vc, { newRow, oldRow }) => {
-          EntTestCountry.TRIGGER_CALLS.push({
+          this.TRIGGER_CALLS.push({
             type: "afterUpdate",
             old: oldRow,
             new: newRow,
@@ -348,7 +356,7 @@ export class EntTestCountry extends BaseEnt(testCluster, schemaTestCountry) {
       ],
       afterDelete: [
         async (_vc, { oldRow }) => {
-          EntTestCountry.TRIGGER_CALLS.push({
+          this.TRIGGER_CALLS.push({
             type: "afterDelete",
             old: oldRow,
           });
@@ -356,7 +364,7 @@ export class EntTestCountry extends BaseEnt(testCluster, schemaTestCountry) {
       ],
       afterMutation: [
         async (_vc, { newOrOldRow }) => {
-          EntTestCountry.TRIGGER_CALLS.push({
+          this.TRIGGER_CALLS.push({
             type: "afterMutation",
             input: newOrOldRow,
           });
@@ -410,7 +418,7 @@ export async function init(): Promise<[VC, VC]> {
     ),
     master.rows(
       `CREATE TABLE %T(
-        id bigint NOT NULL PRIMARY KEY, 
+        post_id bigint NOT NULL PRIMARY KEY, 
         user_id bigint NOT NULL,
         title text NOT NULL, 
         created_at timestamptz NOT NULL
@@ -419,7 +427,7 @@ export async function init(): Promise<[VC, VC]> {
     ),
     master.rows(
       `CREATE TABLE %T(
-        id bigint NOT NULL PRIMARY KEY, 
+        comment_id bigint NOT NULL PRIMARY KEY, 
         post_id bigint NOT NULL,
         text text NOT NULL
       )`,
@@ -460,4 +468,11 @@ export function createVC() {
   const vc = vcTestGuest.withFlavor(new VCWithQueryCache({ maxQueries: 1000 }));
   (vc as any).freshness = null;
   return vc;
+}
+
+export function expectToMatchSnapshot(str: string, snapshotName?: string) {
+  const exp = expect(
+    str.replace(/\b(vc:\w+)\(\d+\)/g, "$1").replace(/\d{10,}/g, "<id>")
+  );
+  snapshotName ? exp.toMatchSnapshot(snapshotName) : exp.toMatchSnapshot();
 }

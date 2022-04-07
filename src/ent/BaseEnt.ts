@@ -2,13 +2,13 @@ import { Client } from "../abstract/Client";
 import { Cluster } from "../abstract/Cluster";
 import { Schema } from "../abstract/Schema";
 import { Table, UniqueKey } from "../types";
-import { GLOBAL_SHARD, RANDOM_SHARD } from "./Configuration";
+import { GLOBAL_SHARD } from "./Configuration";
 import { CacheMixin } from "./mixins/CacheMixin";
 import { ConfigMixin } from "./mixins/ConfigMixin";
 import { HelpersMixin } from "./mixins/HelpersMixin";
 import { PrimitiveMixin } from "./mixins/PrimitiveMixin";
 
-export { GLOBAL_SHARD, RANDOM_SHARD };
+export { GLOBAL_SHARD };
 
 /**
  * This is a helper function to create new Ent classes. Run once per each

@@ -3,7 +3,7 @@ import { Cluster } from "../abstract/Cluster";
 import { Shard } from "../abstract/Shard";
 import { copyStack, mapJoin, nullthrows } from "../helpers";
 import { ID } from "../types";
-import { GLOBAL_SHARD, RANDOM_SHARD, ShardAffinity } from "./Configuration";
+import { GLOBAL_SHARD, ShardAffinity } from "./Configuration";
 import { EntCannotDetectShardError } from "./errors/EntCannotDetectShardError";
 import { EntNotFoundError } from "./errors/EntNotFoundError";
 import { Inverse } from "./Inverse";
@@ -29,7 +29,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
   singleShardFromInput(
     input: Record<string, any>,
     op: string,
-    allowRandomShard = false
+    allowRandomShard: boolean
   ): Shard<TClient> {
     const shard = this.shardFromAffinity(input, allowRandomShard);
     if (!shard) {
@@ -56,7 +56,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     input: Record<string, any>,
     op: string
   ): Promise<Array<Shard<TClient>>> {
-    const singleShard = this.shardFromAffinity(input);
+    const singleShard = this.shardFromAffinity(input, false);
     if (singleShard) {
       return [singleShard];
     }
@@ -142,7 +142,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
 
   private shardFromAffinity(
     input: Record<string, any>,
-    allowRandomShard = false
+    allowRandomShard: boolean
   ): Shard<TClient> | null {
     // For a low number of a very global objects only. ATTENTION: GLOBAL_SHARD
     // has precedence over a shard number from ID! This allows to move some
@@ -157,16 +157,6 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       return this.singleShardFromID(ID, input[ID].toString());
     }
 
-    // RANDOM_SHARD works for INSERT only; for other operations, we must know
-    // the shard in advance (either from ID or by deducing by affinity).
-    if (this.shardAffinity === RANDOM_SHARD) {
-      if (!allowRandomShard) {
-        return null;
-      }
-
-      return this.cluster.randomShard();
-    }
-
     // An explicit list of fields is passed in SHARD_AFFINITY.
     if (this.shardAffinity instanceof Array) {
       for (const fromField of this.shardAffinity) {
@@ -175,7 +165,9 @@ export class ShardLocator<TClient extends Client, TField extends string> {
         }
       }
 
-      return null;
+      // RANDOM_SHARD works for INSERT only; for other operations, we must know
+      // the shard in advance (either from ID or by deducing by affinity).
+      return allowRandomShard ? this.cluster.randomShard() : null;
     }
 
     // Something weird, should never happen.

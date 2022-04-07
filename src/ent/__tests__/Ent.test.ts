@@ -17,6 +17,7 @@ import {
   EntTestHeadline,
   EntTestPost,
   EntTestUser,
+  expectToMatchSnapshot,
   init,
 } from "./helpers/test-objects";
 
@@ -411,10 +412,3 @@ test("skipAfterTriggersIfOperationSoftFails", async () => {
     "4: delete soft-failed on non-existing row"
   );
 });
-
-function expectToMatchSnapshot(str: string, snapshotName?: string) {
-  const exp = expect(
-    str.replace(/\b(vc:\w+)\(\d+\)/g, "$1").replace(/\d{10,}/g, "<id>")
-  );
-  snapshotName ? exp.toMatchSnapshot(snapshotName) : exp.toMatchSnapshot();
-}

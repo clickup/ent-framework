@@ -5,7 +5,7 @@ import uniq from "lodash/uniq";
 import { Runner } from "../abstract/Batcher";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { Schema } from "../abstract/Schema";
-import { hasKey, nullthrows } from "../helpers";
+import { hasKey } from "../helpers";
 import {
   $and,
   $gt,
@@ -201,7 +201,7 @@ export abstract class SQLRunner<
   protected escapeValue(field: Field<TTable>, value: any): string {
     const escaper = this.runtimeEscapers[field];
     if (!escaper) {
-      throw Error(`Unknown field: ${field}`);
+      this.throwUnknownField(field);
     }
 
     return escaper(value);
@@ -227,7 +227,7 @@ export abstract class SQLRunner<
       );
     }
 
-    throw Error(`Unknown field: ${field}`);
+    this.throwUnknownField(field);
   }
 
   /**
@@ -311,10 +311,11 @@ export abstract class SQLRunner<
     suffix: string;
   }) {
     const cols = this.prependPK(fields).map((field) => {
-      const spec = nullthrows(
-        this.schema.table[field],
-        `Unknown field: ${field}`
-      );
+      const spec = this.schema.table[field];
+      if (!spec) {
+        this.throwUnknownField(field);
+      }
+
       return this.createEscapeCode(
         field,
         `$input.${field}`,
@@ -752,5 +753,16 @@ export abstract class SQLRunner<
     }
 
     return input;
+  }
+
+  /**
+   * Throws an exception about some field being not mentioned in the table
+   * schema. Notice that ID is treated as always available.
+   */
+  private throwUnknownField(field: Field<TTable>): never {
+    throw Error(
+      `Unknown field: ${field}; allowed fields: ` +
+        [ID, ...Object.keys(this.schema.table)]
+    );
   }
 }

@@ -143,7 +143,7 @@ beforeEach(async () => {
   );
   await master.rows(
     `CREATE TABLE %T(
-      id bigint NOT NULL PRIMARY KEY,
+      date_id bigint NOT NULL PRIMARY KEY,
       name text, 
       some_date timestamptz
     )`,
@@ -250,11 +250,11 @@ const schema2ColNullableUniqueKey = new SQLSchema(
 const schemaDate = new SQLSchema(
   TABLE_DATE,
   {
-    id: { type: String, autoInsert: "id_gen()" },
+    date_id: { type: String, autoInsert: "id_gen()" },
     name: { type: String },
     some_date: { type: Date, allowNull: true, autoInsert: "NULL" },
   },
-  []
+  ["date_id"]
 );
 
 test("id_gen_single", async () => {

@@ -267,7 +267,7 @@ WITH rows(id, name, url_name, updated_at, _key) AS (VALUES
   FROM rows WHERE \\"schema\\"\\"test\\".id=rows.id RETURNING (SELECT _key FROM rows WHERE rows.id=\\"schema\\"\\"test\\".id)"
 `;
 
-exports[`update_date 1`] = `"UPDATE \\"schema-te[st],_date\\" SET name='bb' WHERE id='<id>' RETURNING id"`;
+exports[`update_date 1`] = `"UPDATE \\"schema-te[st],_date\\" SET name='bb' WHERE date_id='<id>' RETURNING date_id AS id"`;
 
 exports[`update_literal 1`] = `
 "UPDATE \\"schema\\"\\"test\\" SET updated_at=now(), name = name || 42 WHERE id='<id>' RETURNING id
@@ -276,7 +276,7 @@ UPDATE \\"schema\\"\\"test\\" SET updated_at=now(), name = name || 42 WHERE id='
 
 UPDATE \\"schema\\"\\"test\\" SET name='bbb', updated_at=now() WHERE id='<id>' RETURNING id
 
-UPDATE \\"schema-te[st],_date\\" SET name = name || 42 WHERE id='42' RETURNING id"
+UPDATE \\"schema-te[st],_date\\" SET name = name || 42 WHERE date_id='42' RETURNING date_id AS id"
 `;
 
 exports[`update_single 1`] = `

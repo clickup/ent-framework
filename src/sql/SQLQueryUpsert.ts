@@ -68,7 +68,7 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
   override key(inputIn: InsertInput<TTable>): string {
     // This is not fast. Upsert is not fast and is ugly in general.
     if (!this.schema.uniqueKey.length) {
-      throw Error("Define unique key fields to use upsert");
+      throw Error(`Define unique key fields to use upsert for ${this.name}`);
     }
 
     const input: Partial<Record<string, any>> = inputIn;

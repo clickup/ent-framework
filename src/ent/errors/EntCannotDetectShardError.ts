@@ -14,23 +14,16 @@ export class EntCannotDetectShardError extends Error {
     public readonly inverseFields?: string[]
   ) {
     super(
-      schemaName +
-        ': to detect shard in "' +
-        op +
-        '" query, ' +
+      `${schemaName}: to detect shard in "${op}" query, ` +
         (fields.length > 1 ? "at least one of " : "") +
-        '"' +
-        fields.join(", ") +
-        '" field' +
+        `"${fields.join(", ")}" field` +
         (fields.length !== 1 ? "s" : "") +
         " must be present at TOP LEVEL of the input, but got " +
         inspect(input, { breakLength: Infinity }) +
-        "; " +
-        schemaName +
-        ".SHARD_AFFINITY=" +
+        `; ${schemaName}.SHARD_AFFINITY=` +
         inspect(shardAffinity, { compact: true, breakLength: Infinity }) +
         (inverseFields
-          ? "; " + schemaName + ".INVERSES=" + inverseFields.join(",")
+          ? `; ${schemaName}.INVERSES=${inverseFields.join(",")}`
           : "")
     );
     this.name = this.constructor.name;
