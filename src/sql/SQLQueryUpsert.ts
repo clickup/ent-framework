@@ -44,6 +44,7 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
     this.builder = this.createValuesBuilder({
       prefix: this.fmt("INSERT INTO %T (%INSERT_FIELDS) VALUES"),
       fields: Object.keys(this.schema.table),
+      rowsReorderingIsSafe: true, // because ON CONFLICT DO UPDATE has input:output rows as N:N
       suffix: this.fmt(
         "\n" +
           `  ON CONFLICT (${uniqueKeyFields}) DO UPDATE ` +
@@ -72,7 +73,7 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
     }
 
     const input: Partial<Record<string, any>> = inputIn;
-    const key: any[] = [];
+    const key: unknown[] = [];
     for (const field of this.schema.uniqueKey as readonly string[]) {
       key.push(
         input[field] === null || input[field] === undefined
@@ -100,9 +101,6 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
     inputs: Map<string, InsertInput<TTable>>,
     annotations: QueryAnnotation[]
   ): Promise<Map<string, string>> {
-    // Order the input rows by primary key to lower the chances of deadlocks.
-    inputs = new Map([...inputs].sort());
-
     const sql =
       this.builder.prefix + this.builder.func(inputs) + this.builder.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(
