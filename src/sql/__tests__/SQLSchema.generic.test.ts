@@ -1,6 +1,5 @@
 import delay from "delay";
 import { Query } from "../../abstract/Query";
-import { QueryAnnotation } from "../../abstract/QueryAnnotation";
 import { MASTER, Shard, STALE_REPLICA } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
 import { join, nullthrows } from "../../helpers";
@@ -16,15 +15,10 @@ const TABLE_2COL = 'schema"test_2col';
 const TABLE_2COL_NULLABLE_UNIQUE_KEY = "schema_test_2col_nullable_unique_key";
 const TABLE_DATE = "schema-te[st],_date";
 const timeline = new Timeline();
-const annotation: QueryAnnotation = {
-  trace: "some-trace",
-  debugStack: "",
-  vc: "some-vc",
-  whyClient: undefined,
-};
+
+let shard: Shard<TestSQLClient>;
 let master: TestSQLClient;
 let replica: TestSQLClient;
-let shard: Shard<TestSQLClient>;
 
 // Overcomplicated a little, but after a 2h struggle with TS & static methods
 // typechecking, let it be like this for now.
@@ -58,8 +52,21 @@ class EncryptedValue {
   }
 }
 
-async function shardRun<TOutput>(query: Query<TOutput>) {
-  return shard.run(query, annotation, timeline, null);
+async function shardRun<TOutput>(
+  query: Query<TOutput>,
+  freshness: typeof STALE_REPLICA | null = null
+) {
+  return shard.run(
+    query,
+    {
+      trace: "some-trace",
+      debugStack: "",
+      vc: "some-vc",
+      whyClient: undefined,
+    },
+    timeline,
+    freshness
+  );
 }
 
 beforeEach(async () => {
@@ -725,12 +732,7 @@ test("loadby_single_one_column", async () => {
     shardRun(schema.insert({ name: "b", url_name: "bbb" })),
   ]);
 
-  const row = await shard.run(
-    schema.loadBy({ name: "b" }),
-    annotation,
-    timeline,
-    STALE_REPLICA
-  );
+  const row = await shardRun(schema.loadBy({ name: "b" }), STALE_REPLICA);
   replica.toMatchSnapshot();
   expect(row).toMatchObject({ id: id2, name: "b" });
 });

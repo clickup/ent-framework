@@ -346,14 +346,41 @@ export function escapeBoolean(v: boolean | null | undefined): string {
  * "Input of anonymous composite types is not implemented" error. So to compare,
  * we have to convert the stringified row representation to ROW() notation
  * manually: `WHERE (a, b) = ROW('1', '2')`
+ *
+ * Notice that we don't work with ROWs consisting of 1 element; instead, we
+ * treat them as the element itself. I.e. instead of emitting "(123)" or
+ * "ROW(123)", we always emit just "123".
+ *
+ * - "1" => "1"
+ * - "(1)" => "1"
+ * - "(1,2)" => "ROW('1','2')"
  */
 export function escapeComposite(v: string | null | undefined): string {
   if (v === null || v === undefined) {
     return "NULL";
   }
 
-  const parts = parseCompositeRow(v);
-  return `ROW(${parts.map((v) => escapeString(v)).join(",")})`;
+  const parts =
+    v.startsWith("(") && v.endsWith(")") ? parseCompositeRow(v) : [v];
+  const list = parts.map((v) => escapeString(v)).join(",");
+  return parts.length > 1 ? `ROW(${list})` : list;
+}
+
+/**
+ * A pair for escapeComposite(), but works with a list of identifiers (e.g. list
+ * of unique key fields), not with values.
+ *
+ * - fields=["some_id"], table="tbl"  => "tbl.some_id"
+ * - fields=["f1", "f2"], table="tbl" => "(tbl.f1,tbl.f2)"
+ */
+export function escapeIdentComposite(
+  fields: readonly string[],
+  table?: string
+): string {
+  const list = fields
+    .map((k) => (table ? `${table}.` : "") + escapeIdent(k))
+    .join(",");
+  return fields.length > 1 ? `ROW(${list})` : list;
 }
 
 export function escapeStringify(v: any, stringify: (v: any) => string): string {
