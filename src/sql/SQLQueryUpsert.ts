@@ -100,6 +100,9 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
     inputs: Map<string, InsertInput<TTable>>,
     annotations: QueryAnnotation[]
   ): Promise<Map<string, string>> {
+    // Order the input rows by primary key to lower the chances of deadlocks.
+    inputs = new Map([...inputs].sort());
+
     const sql =
       this.builder.prefix + this.builder.func(inputs) + this.builder.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(
