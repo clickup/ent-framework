@@ -249,9 +249,11 @@ export abstract class SQLRunner<
    */
   protected createWithBuilder({
     fields,
+    rowsReorderingIsSafe,
     suffix,
   }: {
     fields: Array<Field<TTable>>;
+    rowsReorderingIsSafe: boolean;
     suffix: string;
   }) {
     const cols = [
@@ -270,6 +272,7 @@ export abstract class SQLRunner<
         `  (${cols.map(([n, _]) => n).join(", ")}),`,
       fields,
       withKey: true,
+      rowsReorderingIsSafe,
       suffix: ")\n" + suffix,
     });
   }
@@ -303,11 +306,13 @@ export abstract class SQLRunner<
     prefix,
     fields,
     withKey,
+    rowsReorderingIsSafe,
     suffix,
   }: {
     prefix: string;
     fields: Array<Field<TTable>>;
     withKey?: boolean;
+    rowsReorderingIsSafe: boolean;
     suffix: string;
   }) {
     const cols = this.prependPK(fields).map((field) => {
@@ -341,7 +346,7 @@ export abstract class SQLRunner<
           parts.push(rowFunc(key, this.unfoldCompositePK(input)));
         }
 
-        if (withKey) {
+        if (rowsReorderingIsSafe) {
           // To eliminate deadlocks in parallel batched inserts, we sort rows. This
           // prevents deadlocks when two batched queries are running in different
           // connections, and the table has some unique key.
