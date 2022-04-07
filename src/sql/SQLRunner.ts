@@ -222,11 +222,7 @@ export abstract class SQLRunner<
 
     if (field === ID) {
       return (
-        "ROW(" +
-        this.schema.uniqueKey
-          .map((k) => (table ? `${table}.` : "") + sqlClientMod.escapeIdent(k))
-          .join(",") +
-        ")" +
+        sqlClientMod.escapeIdentComposite(this.schema.uniqueKey, table) +
         (withAs ? ` AS ${sqlClientMod.escapeIdent(field)}` : "")
       );
     }

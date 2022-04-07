@@ -1,5 +1,4 @@
 import { Query } from "../../abstract/Query";
-import { QueryAnnotation } from "../../abstract/QueryAnnotation";
 import { MASTER, Shard } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
 import { join, nullthrows } from "../../helpers";
@@ -8,22 +7,15 @@ import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
 import { SQLSchema } from "../SQLSchema";
 import { testCluster, TestSQLClient } from "./helpers/TestSQLClient";
 
-const TABLE = "schema_test";
+const TABLE = 'schema"test_composite';
 const timeline = new Timeline();
-const annotation: QueryAnnotation = {
-  trace: "some-trace",
-  debugStack: "",
-  vc: "some-vc",
-  whyClient: undefined,
-};
-let master: TestSQLClient;
 let shard: Shard<TestSQLClient>;
+let master: TestSQLClient;
 
 beforeEach(async () => {
   timeline.reset();
   shard = testCluster.randomShard();
   master = await shard.client(MASTER);
-
   await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE);
   await master.rows(
     `CREATE TABLE %T(
@@ -47,7 +39,17 @@ const schema = new SQLSchema(
 );
 
 async function shardRun<TOutput>(query: Query<TOutput>) {
-  return shard.run(query, annotation, timeline, null);
+  return shard.run(
+    query,
+    {
+      trace: "some-trace",
+      debugStack: "",
+      vc: "some-vc",
+      whyClient: undefined,
+    },
+    timeline,
+    null
+  );
 }
 
 test("ops_single", async () => {
