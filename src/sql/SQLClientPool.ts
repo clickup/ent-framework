@@ -15,6 +15,7 @@ export interface SQLClientDest {
     discoverQuery: string;
   };
   isMaster: boolean;
+  hints?: Record<string, string>;
   config: PoolConfig & {
     maxConnLifetimeMs?: number;
     maxConnLifetimeJitter?: number;
@@ -44,6 +45,7 @@ export class SQLClientPool extends SQLClient {
       dest.name,
       dest.isMaster,
       loggers,
+      dest.hints,
       dest.shards,
       dest.config.maxReplicationLagMs
     );

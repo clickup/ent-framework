@@ -50,6 +50,7 @@ export abstract class SQLClient extends Client {
     name: string,
     isMaster: boolean,
     loggers: Loggers,
+    private hints?: Record<string, string>,
     private shards?: {
       nameFormat: string;
       discoverQuery: string;
@@ -90,8 +91,30 @@ export abstract class SQLClient extends Client {
         : [];
 
     query = (typeof query === "object" ? query.query : query).trimEnd();
-    const queryWithHints = // this is what's logged as a string
+
+    // The query which is logged to the logging infra. For more brief messages,
+    // we don't log internal hints (see below).
+    const debugQueryWithHints =
       `/*${this.shardName}*/` + [...queriesSet, query].join("; ");
+
+    // We must always have "public" in search_path, because extensions
+    // are by default installed in "public" schema. Some extensions may
+    // expose operators (e.g. "citext" exposes comparison operators)
+    // which must be available in all shards by default, so they should
+    // live in "public". (There is a way to install an extension to a
+    // particular schema, but a) there can be only one such schema, and
+    // b) there are be problems running pg_dump to migrate this shard to
+    // another machine since pg_dump doesn't emit CREATE EXTENSION
+    // statement when filtering by schema name).
+    queriesSet.unshift(`SET search_path TO ${this.shardName}, public`);
+    queriesReset.push("RESET search_path");
+
+    if (this.hints) {
+      queriesSet.unshift(
+        ...Object.entries(this.hints).map(([k, v]) => `SET ${k} TO ${v}`)
+      );
+      queriesReset.push(...Object.keys(this.hints).map((k) => `RESET ${k}`));
+    }
 
     try {
       const startTime = process.hrtime();
@@ -116,33 +139,25 @@ export abstract class SQLClient extends Client {
           // TS typing is doomed for multi-queries:
           // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/33297
           const resMulti = await conn.query(
-            // We must always have "public" in search_path, because extensions
-            // are by default installed in "public" schema. Some extensions may
-            // expose operators (e.g. "citext" exposes comparison operators)
-            // which must be available in all shards by default, so they should
-            // live in "public". (There is a way to install an extension to a
-            // particular schema, but a) there can be only one such schema, and
-            // b) there are be problems running pg_dump to migrate this shard to
-            // another machine since pg_dump doesn't emit CREATE EXTENSION
-            // statement when filtering by schema name).
-            [
-              `SET search_path TO ${this.shardName}, public`,
-              queryWithHints,
-              ...queriesReset,
-              "SELECT " +
-                (this.isMaster
-                  ? "pg_current_wal_insert_lsn()" // on master
-                  : "pg_last_wal_replay_lsn()"), // on replica
-            ].join("; ")
+            `/*${this.shardName}*/` +
+              [
+                ...queriesSet,
+                query,
+                ...queriesReset,
+                "SELECT " +
+                  (this.isMaster
+                    ? "pg_current_wal_insert_lsn()" // on master
+                    : "pg_last_wal_replay_lsn()"), // on replica
+              ].join("; ")
           );
 
-          if (resMulti.length !== 3 + queriesSet.length + queriesReset.length) {
+          if (resMulti.length !== 2 + queriesSet.length + queriesReset.length) {
             throw Error(
-              `Multi-query (with semicolons) is not allowed as an input to query(); got ${queryWithHints}`
+              `Multi-query (with semicolons) is not allowed as an input to query(); got ${debugQueryWithHints}`
             );
           }
 
-          res = resMulti[1 + queriesSet.length].rows;
+          res = resMulti[queriesSet.length].rows;
 
           const lsn = resMulti[resMulti.length - 1].rows[0] as {
             pg_current_wal_insert_lsn?: string | null;
@@ -178,7 +193,7 @@ export abstract class SQLClient extends Client {
           shard: this.shardName,
           table,
           batchFactor,
-          msg: queryWithHints,
+          msg: debugQueryWithHints,
           output: res ? res : undefined,
           elapsed: toFloatMs(process.hrtime(startTime)),
           error,
@@ -191,7 +206,7 @@ export abstract class SQLClient extends Client {
       if (origError instanceof Error && (origError as any).severity) {
         // Only wrap the errors which PG sent to us explicitly. Those errors
         // mean that there was some aborted transaction.
-        throw new SQLError(origError, this.name, queryWithHints.trim());
+        throw new SQLError(origError, this.name, debugQueryWithHints.trim());
       } else {
         // Some other error (hard to reproduce; possibly a connection error?).
         throw origError;
