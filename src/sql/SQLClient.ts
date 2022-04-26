@@ -83,11 +83,7 @@ export abstract class SQLClient extends Client {
   ): Promise<TRow[]> {
     const queriesSet =
       typeof query === "object"
-        ? Object.entries(query.hints).map(([k, v]) => `SET ${k} TO ${v}`)
-        : [];
-    const queriesReset =
-      typeof query === "object"
-        ? Object.keys(query.hints).map((k) => `RESET ${k}`)
+        ? Object.entries(query.hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
         : [];
 
     query = (typeof query === "object" ? query.query : query).trimEnd();
@@ -106,14 +102,12 @@ export abstract class SQLClient extends Client {
     // b) there are be problems running pg_dump to migrate this shard to
     // another machine since pg_dump doesn't emit CREATE EXTENSION
     // statement when filtering by schema name).
-    queriesSet.unshift(`SET search_path TO ${this.shardName}, public`);
-    queriesReset.push("RESET search_path");
+    queriesSet.unshift(`SET LOCAL search_path TO ${this.shardName}, public`);
 
     if (this.hints) {
       queriesSet.unshift(
-        ...Object.entries(this.hints).map(([k, v]) => `SET ${k} TO ${v}`)
+        ...Object.entries(this.hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
       );
-      queriesReset.push(...Object.keys(this.hints).map((k) => `RESET ${k}`));
     }
 
     try {
@@ -143,7 +137,6 @@ export abstract class SQLClient extends Client {
               [
                 ...queriesSet,
                 query,
-                ...queriesReset,
                 "SELECT " +
                   (this.isMaster
                     ? "pg_current_wal_insert_lsn()" // on master
@@ -151,7 +144,7 @@ export abstract class SQLClient extends Client {
               ].join("; ")
           );
 
-          if (resMulti.length !== 2 + queriesSet.length + queriesReset.length) {
+          if (resMulti.length !== 2 + queriesSet.length) {
             throw Error(
               `Multi-query (with semicolons) is not allowed as an input to query(); got ${debugQueryWithHints}`
             );
