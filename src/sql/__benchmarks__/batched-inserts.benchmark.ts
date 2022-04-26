@@ -7,7 +7,7 @@ const MAX_TIME_MS = 20000;
 
 const TBL = "batched_bench";
 
-const COMMON_HEADER = "SET search_path TO public";
+const COMMON_HEADER = "SET LOCAL search_path TO public";
 
 const TEMPLATE_BATCHED = [
   `WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES\n` +
@@ -39,6 +39,7 @@ export default async function* () {
     func: async () => {
       seq = 0;
       await pool.query(`
+        BEGIN;
         ${COMMON_HEADER};
         DROP TABLE IF EXISTS ${TBL};
         CREATE TABLE ${TBL}(
@@ -57,6 +58,7 @@ export default async function* () {
         );
         CREATE INDEX ${TBL}_json_text_field ON ${TBL}(json_text_field);
         CREATE INDEX ${TBL}_jsonb_field ON ${TBL} USING gin (jsonb_field);
+        COMMIT;
       `);
       await pool.query(`CHECKPOINT`);
       await delay(2000);
