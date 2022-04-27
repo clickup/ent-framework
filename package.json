@@ -1,14 +1,15 @@
 {
   "name": "@slapdash/ent-framework",
   "description": "Graph database library",
-  "version": "2.10.67",
+  "version": "2.10.69",
   "license": "UNLICENSED",
   "scripts": {
     "build": "tsc.sh",
     "dev": "tight-loop.sh tsc.sh --watch",
     "lint": "lint.sh",
     "test": "test.sh",
-    "docs": "rm -rf docs; typedoc 2>&1 | grep -v 'unsupported TypeScript version' || true"
+    "docs": "rm -rf docs; typedoc 2>&1 | grep -v 'unsupported TypeScript version' || true",
+    "prepack": "yarn build"
   },
   "dependencies": {
     "delay": "^4.4.1",
