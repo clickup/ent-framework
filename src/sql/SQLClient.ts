@@ -426,7 +426,7 @@ export function escapeStringify(v: any, stringify: (v: any) => string): string {
   return v === null || v === undefined ? "NULL" : escapeString(stringify(v));
 }
 
-export function parseLsn(lsn: string | null | undefined) {
+function parseLsn(lsn: string | null | undefined) {
   if (!lsn) {
     return null;
   }
