@@ -1,8 +1,8 @@
 {
-  "name": "@slapdash/ent-framework",
+  "name": "@time-loop/ent-framework",
   "description": "Graph database library",
-  "version": "2.10.94",
-  "license": "UNLICENSED",
+  "version": "2.10.124",
+  "license": "MIT",
   "scripts": {
     "build": "tsc.sh",
     "dev": "tight-loop.sh tsc.sh --watch",
@@ -27,5 +27,13 @@
   "peerDependencies": {
     "lodash": "^4.13.1",
     "pg": "^8.7.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/time-loop/github-packages"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "gitHead": "4c10b6c60fd7aa00eadfca6a6b9bbda16b9bd8d0"
 }
