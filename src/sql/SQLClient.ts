@@ -313,9 +313,9 @@ export abstract class SQLClient extends Client {
       : this.shardName;
   }
 
-  protected logGlobalError(where: string, e: any) {
+  protected logGlobalError(where: string, e: unknown) {
     // eslint-disable-next-line no-console
-    console.log(`SQLClient: ${where}: ${e}`);
+    console.log(`SQLClient(${this.name}): ${where}: ${e}`);
   }
 }
 
