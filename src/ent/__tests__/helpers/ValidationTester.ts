@@ -14,11 +14,8 @@ import { vcTestGuest } from "./test-objects";
 export default class ValidationTester {
   private log: string[] = [];
 
-  respond(response: boolean | Error, row?: any): boolean {
-    const stack = Error().stack || "";
-    const predName =
-      (stack.match(/at FuncToPredicate.(\w+)/) ? RegExp.$1 : "lambda") +
-      (row ? " " + inspect(row) : "");
+  respond(predName: string, response: boolean | Error, row?: any): boolean {
+    predName += row ? " " + inspect(row) : "";
     if (response instanceof Error) {
       this.log.push(predName + " threw " + response.message);
       throw response;
