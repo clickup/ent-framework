@@ -22,10 +22,10 @@ test("0000_load_succeeds_when_first_rule_allows", async () => {
     new Validation<typeof companyTable>("table", {
       load: [
         new AllowIf(async function First(_vc, _row) {
-          return tester.respond(true);
+          return tester.respond("First", true);
         }),
         new AllowIf(async function Second(_vc, _row) {
-          return tester.respond(false);
+          return tester.respond("Second", false);
         }),
       ],
       insert: [],
@@ -42,10 +42,10 @@ test("0010_load_succeeds_when_any_rule_allows", async () => {
     new Validation<typeof companyTable>("table", {
       load: [
         new AllowIf(async function First(_vc, _row) {
-          return tester.respond(false);
+          return tester.respond("First", false);
         }),
         new AllowIf(async function Second(_vc, _row) {
-          return tester.respond(true);
+          return tester.respond("Second", true);
         }),
       ],
       insert: [],
@@ -60,7 +60,7 @@ test("0020_load_fails_when_first_rule_throws", async () => {
     new Validation<typeof companyTable>("table", {
       load: [
         new AllowIf(async function First(_vc, _row) {
-          return tester.respond(Error("wild"));
+          return tester.respond("First", Error("wild"));
         }),
       ],
       insert: [],
@@ -76,10 +76,10 @@ test("0030_insert_succeeds_when_all_require_allow", async () => {
       load: [],
       insert: [
         new Require(async function First(_vc, row) {
-          return tester.respond(true, row);
+          return tester.respond("First", true, row);
         }),
         new Require(async function Second(_vc, row) {
-          return tester.respond(true, row);
+          return tester.respond("Second", true, row);
         }),
       ],
     }),
@@ -96,10 +96,10 @@ test("0040_insert_fails_when_any_require_denies", async () => {
       load: [],
       insert: [
         new Require(async function First(_vc, _row) {
-          return tester.respond(true);
+          return tester.respond("First", true);
         }),
         new Require(async function Second(_vc, _row) {
-          return tester.respond(false);
+          return tester.respond("Second", false);
         }),
       ],
     }),
@@ -115,10 +115,10 @@ test("0041_update_fails_when_any_require_denies", async () => {
       insert: [],
       update: [
         new Require(async function First(_vc, _row) {
-          return tester.respond(true);
+          return tester.respond("First", true);
         }),
         new Require(async function Second(_vc, _row) {
-          return tester.respond(false);
+          return tester.respond("Second", false);
         }),
       ],
     }),
@@ -136,10 +136,10 @@ test("0042_delete_fails_when_any_require_denies", async () => {
       insert: [],
       delete: [
         new Require(async function First(_vc, _row) {
-          return tester.respond(true);
+          return tester.respond("First", true);
         }),
         new Require(async function Second(_vc, _row) {
-          return tester.respond(false);
+          return tester.respond("Second", false);
         }),
       ],
     }),
@@ -172,10 +172,10 @@ test("0050_insert_fails_when_any_require_throws", async () => {
       load: [],
       insert: [
         new Require(async function First(_vc, _row) {
-          return tester.respond(true);
+          return tester.respond("First", true);
         }),
         new Require(async function Second(_vc, _row) {
-          return tester.respond(Error("wild"));
+          return tester.respond("Second", Error("wild"));
         }),
       ],
     }),
@@ -190,6 +190,7 @@ test("0060_load_succeeds_when_any_rule_allows_even_if_another_rule_throws_not_re
       load: [
         new AllowIf(async function First(vc, _row) {
           return tester.respond(
+            "First",
             // Not a "wild" exception (since derived from EntAccessError).
             new EntNotReadableError(
               "other_table",
@@ -200,7 +201,7 @@ test("0060_load_succeeds_when_any_rule_allows_even_if_another_rule_throws_not_re
           );
         }),
         new AllowIf(async function Second(_vc, _row) {
-          return tester.respond(true);
+          return tester.respond("Second", true);
         }),
       ],
       insert: [],
@@ -216,10 +217,10 @@ test("0070_load_fails_when_any_rule_allows_but_another_rule_throws_any_wild_exce
       load: [
         new AllowIf(async function First(_vc, _row) {
           // "Wild" means "not derived from EntAccessError"
-          return tester.respond(Error("wild"));
+          return tester.respond("First", Error("wild"));
         }),
         new AllowIf(async function Second(_vc, _row) {
-          return tester.respond(true);
+          return tester.respond("Second", true);
         }),
       ],
       insert: [],
@@ -254,7 +255,7 @@ test("0090_load_fails_with_nice_error_message_if_only_one_rule", async () => {
     new Validation<typeof companyTable>("table", {
       load: [
         new AllowIf(async function First(_vc, _row) {
-          return tester.respond(Error("wild"));
+          return tester.respond("First", Error("wild"));
         }),
       ],
       insert: [],
@@ -265,7 +266,7 @@ test("0090_load_fails_with_nice_error_message_if_only_one_rule", async () => {
     new Validation<typeof companyTable>("table", {
       load: [
         new AllowIf(async function First(_vc, _row) {
-          return tester.respond(false);
+          return tester.respond("First", false);
         }),
       ],
       insert: [],
@@ -281,7 +282,7 @@ test("0100_insert_fails_with_nice_error_message_if_only_one_rule", async () => {
       load: [],
       insert: [
         new AllowIf(async function First(_vc, _row) {
-          return tester.respond(Error("wild"));
+          return tester.respond("First", Error("wild"));
         }),
       ],
     }),
@@ -292,7 +293,7 @@ test("0100_insert_fails_with_nice_error_message_if_only_one_rule", async () => {
       load: [],
       insert: [
         new AllowIf(async function First(_vc, _row) {
-          return tester.respond(false);
+          return tester.respond("First", false);
         }),
       ],
     }),
@@ -307,7 +308,7 @@ test("0110_insert_succeeds_when_deny_if_rule_evaluates", async () => {
       load: [],
       insert: [
         new DenyIf(async function First(_vc, _row) {
-          return tester.respond(false);
+          return tester.respond("First", false);
         }),
         new AllowIf(new True()),
       ],
@@ -323,6 +324,7 @@ test("0120_load_fails_when_deny_if_rule_throws", async () => {
       load: [
         new DenyIf(async function First(vc, _row) {
           return tester.respond(
+            "First",
             new EntNotReadableError(
               "other_table",
               vc.toString(),
