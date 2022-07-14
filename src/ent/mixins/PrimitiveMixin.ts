@@ -166,6 +166,8 @@ export function PrimitiveMixin<
     readonly [ID]: string;
 
     static async insertIfNotExists(vc: VC, input: InsertInput<TTable>) {
+      await vc.heartbeater.heartbeat();
+
       if (!vc.isOmni()) {
         await this.VALIDATION.validateInsert(vc, input);
       }
@@ -218,6 +220,8 @@ export function PrimitiveMixin<
     }
 
     static async upsert(vc: VC, input: InsertInput<TTable>) {
+      await vc.heartbeater.heartbeat();
+
       if (
         this.TRIGGERS.hasInsertTriggers() ||
         this.TRIGGERS.hasUpdateTriggers()
@@ -260,6 +264,8 @@ export function PrimitiveMixin<
     }
 
     static async loadNullable(vc: VC, id: string) {
+      await vc.heartbeater.heartbeat();
+
       const shard = this.SHARD_LOCATOR.singleShardFromID(ID, id);
       const query = this.SCHEMA.load(id);
       const row = await shard.run(
@@ -279,6 +285,8 @@ export function PrimitiveMixin<
       vc: VC,
       input: LoadByInput<TTable, TUniqueKey>
     ) {
+      await vc.heartbeater.heartbeat();
+
       const shard = this.SHARD_LOCATOR.singleShardFromInput(
         input,
         "loadBy",
@@ -305,6 +313,8 @@ export function PrimitiveMixin<
       order?: Order<TTable>,
       custom?: {}
     ) {
+      await vc.heartbeater.heartbeat();
+
       const shards = await this.SHARD_LOCATOR.multiShardsFromInput(
         vc,
         where,
@@ -352,6 +362,7 @@ export function PrimitiveMixin<
           [$and]: [{ [ID]: { [$gt]: idCursor } }, ...(where[$and] ?? [])],
         };
 
+        await vc.heartbeater.heartbeat();
         const rows = await shard.run(
           this.SCHEMA.select({
             where: cursoredWhere,
@@ -384,6 +395,8 @@ export function PrimitiveMixin<
     }
 
     static async count(vc: VC, where: CountInput<TTable>) {
+      await vc.heartbeater.heartbeat();
+
       const shards = await this.SHARD_LOCATOR.multiShardsFromInput(
         vc,
         where,
@@ -403,6 +416,8 @@ export function PrimitiveMixin<
     }
 
     async updateOriginal(input: UpdateInput<TTable>) {
+      await this.vc.heartbeater.heartbeat();
+
       if (!this.vc.isOmni()) {
         await this.constructor.VALIDATION.validateUpdate(
           this.vc,
@@ -449,6 +464,8 @@ export function PrimitiveMixin<
     }
 
     async deleteOriginal() {
+      await this.vc.heartbeater.heartbeat();
+
       if (!this.vc.isOmni()) {
         await this.constructor.VALIDATION.validateDelete(
           this.vc,

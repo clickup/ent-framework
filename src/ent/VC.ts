@@ -1,4 +1,5 @@
 import { inspect } from "util";
+import delay from "delay";
 import compact from "lodash/compact";
 import { Client } from "../abstract/Client";
 import { Handler, Loader } from "../abstract/Loader";
@@ -80,6 +81,12 @@ export class VC {
     private timelines: Map<string, Timeline>,
     /** Sticky objects attached to the VC (and inherited when deriving). */
     private flavors: ReadonlyMap<Function, VCFlavor>,
+    /** The heartbeat callback is called before each primitive operation; delay
+     * callback can also be passed. */
+    public readonly heartbeater: {
+      readonly heartbeat: () => Promise<void>;
+      readonly delay: (ms: number) => Promise<void>;
+    },
     /** If true, it's the initial "root" VC which is not yet derived to any
      * user's VC. */
     private isRoot: boolean
@@ -207,6 +214,7 @@ export class VC {
       this.freshness,
       this.timelines,
       this.flavors,
+      this.heartbeater,
       this.isRoot
     );
   }
@@ -226,6 +234,7 @@ export class VC {
       MASTER,
       this.timelines,
       this.flavors,
+      this.heartbeater,
       this.isRoot
     );
   }
@@ -247,6 +256,7 @@ export class VC {
       STALE_REPLICA,
       this.timelines,
       this.flavors,
+      this.heartbeater,
       this.isRoot
     );
   }
@@ -263,6 +273,7 @@ export class VC {
           this.freshness,
           this.timelines,
           new Map([...this.flavors.entries(), [flavor.constructor, flavor]]),
+          this.heartbeater,
           this.isRoot
         )
       : this;
@@ -278,6 +289,22 @@ export class VC {
       this.freshness,
       this.timelines,
       this.flavors,
+      this.heartbeater,
+      this.isRoot
+    );
+  }
+
+  /**
+   * De
+   */
+  withHeartbeater(heartbeater: VC["heartbeater"]) {
+    return new VC(
+      this.trace,
+      this.userID,
+      this.freshness,
+      this.timelines,
+      this.flavors,
+      heartbeater,
       this.isRoot
     );
   }
@@ -296,6 +323,7 @@ export class VC {
       this.freshness,
       this.timelines,
       this.flavors,
+      this.heartbeater,
       this.isRoot
     );
   }
@@ -413,6 +441,7 @@ export class VC {
       newFreshness,
       newTimelines,
       this.flavors,
+      this.heartbeater,
       newIsRoot
     );
   }
@@ -425,6 +454,14 @@ export class VC {
    * of calls and reasons, why some object was accessed.
    */
   static createGuestPleaseDoNotUseCreationPointsMustBeLimited() {
-    return new VC(new VCTrace(), GUEST_ID, null, new Map(), new Map(), true);
+    return new VC(
+      new VCTrace(),
+      GUEST_ID,
+      null,
+      new Map(),
+      new Map(),
+      { heartbeat: async () => {}, delay },
+      true
+    );
   }
 }
