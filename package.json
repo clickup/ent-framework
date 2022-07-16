@@ -1,7 +1,7 @@
 {
   "name": "@time-loop/ent-framework",
   "description": "Graph database library",
-  "version": "2.10.161",
+  "version": "2.10.192",
   "license": "MIT",
   "scripts": {
     "build": "tsc.sh",
@@ -12,6 +12,7 @@
     "prepack": "yarn build"
   },
   "dependencies": {
+    "@swc/helpers": "^0.4.3",
     "delay": "^4.4.1",
     "object-hash": "^2.2.0",
     "p-defer": "^3.0.0",
@@ -35,5 +36,5 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
-  "gitHead": "4c10b6c60fd7aa00eadfca6a6b9bbda16b9bd8d0"
+  "gitHead": "309d173c6d5c4f2506cc4c182700ca727d4a4db6"
 }
