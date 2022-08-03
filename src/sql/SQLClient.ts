@@ -81,36 +81,57 @@ export abstract class SQLClient extends Client {
     annotations: QueryAnnotation[],
     batchFactor: number
   ): Promise<TRow[]> {
-    const queriesPreamble =
-      typeof query === "object"
-        ? Object.entries(query.hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
-        : [];
+    const queriesPrologue: string[] = [];
+    const queriesEpilogue: string[] = [];
+    const queriesRollback: string[] = [];
 
-    query = (typeof query === "object" ? query.query : query).trimEnd();
+    // Prepend per-query hints to the prologue (if any); they will be logged.
+    if (typeof query === "object") {
+      queriesPrologue.unshift(
+        ...Object.entries(query.hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
+      );
+      query = query.query;
+    }
+
+    query = query.trimEnd();
 
     // The query which is logged to the logging infra. For more brief messages,
-    // we don't log internal hints (see below).
+    // we don't log internal hints (this.hints) and search_path; see below.
     const debugQueryWithHints =
-      `/*${this.shardName}*/` + [...queriesPreamble, query].join("; ");
+      `/*${this.shardName}*/` + [...queriesPrologue, query].join("; ");
 
-    // We must always have "public" in search_path, because extensions
-    // are by default installed in "public" schema. Some extensions may
-    // expose operators (e.g. "citext" exposes comparison operators)
-    // which must be available in all shards by default, so they should
-    // live in "public". (There is a way to install an extension to a
-    // particular schema, but a) there can be only one such schema, and
-    // b) there are be problems running pg_dump to migrate this shard to
-    // another machine since pg_dump doesn't emit CREATE EXTENSION
-    // statement when filtering by schema name).
-    queriesPreamble.unshift(
-      `SET LOCAL search_path TO ${this.shardName}, public`
-    );
-
+    // Prepend internal per-client hints to the prologue.
     if (this.hints) {
-      queriesPreamble.unshift(
+      queriesPrologue.unshift(
         ...Object.entries(this.hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
       );
     }
+
+    // We must always have "public" in search_path, because extensions are by
+    // default installed in "public" schema. Some extensions may expose
+    // operators (e.g. "citext" exposes comparison operators) which must be
+    // available in all shards by default, so they should live in "public".
+    // (There is a way to install an extension to a particular schema, but a)
+    // there can be only one such schema, and b) there are be problems running
+    // pg_dump to migrate this shard to another machine since pg_dump doesn't
+    // emit CREATE EXTENSION statement when filtering by schema name).
+    queriesPrologue.unshift(
+      `SET LOCAL search_path TO ${this.shardName}, public`
+    );
+
+    if (this.isMaster) {
+      // Why BEGIN...COMMIT for master queries? See here:
+      // https://www.postgresql.org/message-id/20220803.163217.1789690807623885906.horikyota.ntt%40gmail.com
+      queriesPrologue.unshift("BEGIN");
+      queriesRollback.push("ROLLBACK");
+      queriesEpilogue.push("COMMIT");
+      queriesEpilogue.push("SELECT pg_current_wal_insert_lsn()");
+    } else {
+      // For replica, we read its WAL LSN as a piggy pack to each query.
+      queriesEpilogue.push("SELECT pg_last_wal_replay_lsn()");
+    }
+
+    const queries = [...queriesPrologue, query, ...queriesEpilogue];
 
     try {
       const startTime = process.hrtime();
@@ -128,23 +149,27 @@ export abstract class SQLClient extends Client {
             throw Error("Empty query passed to query()");
           }
 
-          // A good and simple explanation of the protocol is here:
-          // https://www.postgresql.org/docs/13/protocol-flow.html. In short, we
-          // can't use prepared-statement-based operations even theoretically,
-          // because this mode doesn't support multi-queries. Also notice that
-          // TS typing is doomed for multi-queries:
-          // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/33297
-          const queries = [
-            ...queriesPreamble,
-            query,
-            "SELECT " +
-              (this.isMaster
-                ? "pg_current_wal_insert_lsn()" // on master
-                : "pg_last_wal_replay_lsn()"), // on replica
-          ];
-          const resMulti = await conn.query(
-            `/*${this.shardName}*/${queries.join("; ")}`
-          );
+          let resMulti: Array<QueryResult<any>>;
+          try {
+            // A good and simple explanation of the protocol is here:
+            // https://www.postgresql.org/docs/13/protocol-flow.html. In short, we
+            // can't use prepared-statement-based operations even theoretically,
+            // because this mode doesn't support multi-queries. Also notice that
+            // TS typing is doomed for multi-queries:
+            // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/33297
+            resMulti = await conn.query(
+              `/*${this.shardName}*/${queries.join("; ")}`
+            );
+          } catch (e: unknown) {
+            // We must run a ROLLBACK if we used BEGIN in the queries, because
+            // otherwise the connection is released to the pool in "aborted
+            // transaction" state (see the protocol link above).
+            if (queriesRollback.length > 0) {
+              await conn.query(queriesRollback.join("; ")).catch(() => {});
+            }
+
+            throw e;
+          }
 
           if (resMulti.length !== queries.length) {
             throw Error(
@@ -152,7 +177,7 @@ export abstract class SQLClient extends Client {
             );
           }
 
-          res = resMulti[queriesPreamble.length].rows;
+          res = resMulti[queriesPrologue.length].rows;
 
           const lsn = resMulti[resMulti.length - 1].rows[0] as {
             pg_current_wal_insert_lsn?: string | null;
@@ -175,7 +200,7 @@ export abstract class SQLClient extends Client {
         } finally {
           this.releaseConn(conn);
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         error = "" + e;
         throw e;
       } finally {
