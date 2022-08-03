@@ -81,7 +81,7 @@ export abstract class SQLClient extends Client {
     annotations: QueryAnnotation[],
     batchFactor: number
   ): Promise<TRow[]> {
-    const queriesSet =
+    const queriesPreamble =
       typeof query === "object"
         ? Object.entries(query.hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
         : [];
@@ -91,7 +91,7 @@ export abstract class SQLClient extends Client {
     // The query which is logged to the logging infra. For more brief messages,
     // we don't log internal hints (see below).
     const debugQueryWithHints =
-      `/*${this.shardName}*/` + [...queriesSet, query].join("; ");
+      `/*${this.shardName}*/` + [...queriesPreamble, query].join("; ");
 
     // We must always have "public" in search_path, because extensions
     // are by default installed in "public" schema. Some extensions may
@@ -102,10 +102,12 @@ export abstract class SQLClient extends Client {
     // b) there are be problems running pg_dump to migrate this shard to
     // another machine since pg_dump doesn't emit CREATE EXTENSION
     // statement when filtering by schema name).
-    queriesSet.unshift(`SET LOCAL search_path TO ${this.shardName}, public`);
+    queriesPreamble.unshift(
+      `SET LOCAL search_path TO ${this.shardName}, public`
+    );
 
     if (this.hints) {
-      queriesSet.unshift(
+      queriesPreamble.unshift(
         ...Object.entries(this.hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
       );
     }
@@ -132,25 +134,25 @@ export abstract class SQLClient extends Client {
           // because this mode doesn't support multi-queries. Also notice that
           // TS typing is doomed for multi-queries:
           // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/33297
+          const queries = [
+            ...queriesPreamble,
+            query,
+            "SELECT " +
+              (this.isMaster
+                ? "pg_current_wal_insert_lsn()" // on master
+                : "pg_last_wal_replay_lsn()"), // on replica
+          ];
           const resMulti = await conn.query(
-            `/*${this.shardName}*/` +
-              [
-                ...queriesSet,
-                query,
-                "SELECT " +
-                  (this.isMaster
-                    ? "pg_current_wal_insert_lsn()" // on master
-                    : "pg_last_wal_replay_lsn()"), // on replica
-              ].join("; ")
+            `/*${this.shardName}*/${queries.join("; ")}`
           );
 
-          if (resMulti.length !== 2 + queriesSet.length) {
+          if (resMulti.length !== queries.length) {
             throw Error(
               `Multi-query (with semicolons) is not allowed as an input to query(); got ${debugQueryWithHints}`
             );
           }
 
-          res = resMulti[queriesSet.length].rows;
+          res = resMulti[queriesPreamble.length].rows;
 
           const lsn = resMulti[resMulti.length - 1].rows[0] as {
             pg_current_wal_insert_lsn?: string | null;
