@@ -77,9 +77,15 @@ export class Timeline {
   }
 
   isCaughtUp(replicaPos: bigint): TimelineCaughtUpReason {
+    // HACK: with "replicaPos >= masterPos", we sometimes have stale reads for
+    // some reason, which is never the case with "replicaPos > masterPos"
+    // comparison. Luckily in real life, the databases always have some constant
+    // stream of writes (at least several writes per second), so it's not a big
+    // difference in terms of the lag increase, whether we use ">=" or ">" in
+    // the comparison.
     return this.state === "unknown"
-      ? "replica-bc-master-state-unknown" // don't know anything about master; assume the replica is caught up
-      : replicaPos >= this.state.pos
+      ? "replica-bc-master-state-unknown"
+      : replicaPos > this.state.pos
       ? "replica-bc-caught-up"
       : Date.now() >= this.state.expiresAt
       ? "replica-bc-pos-expired"
