@@ -2,7 +2,7 @@ import { Client } from "../abstract/Client";
 import { Cluster } from "../abstract/Cluster";
 import { Shard } from "../abstract/Shard";
 import { copyStack, mapJoin, nullthrows } from "../helpers";
-import { ID } from "../types";
+import { $shardOfID, ID } from "../types";
 import { GLOBAL_SHARD, ShardAffinity } from "./Configuration";
 import { EntCannotDetectShardError } from "./errors/EntCannotDetectShardError";
 import { EntNotFoundError } from "./errors/EntNotFoundError";
@@ -150,6 +150,11 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     // refactoring.
     if (this.shardAffinity === GLOBAL_SHARD) {
       return this.cluster.globalShard();
+    }
+
+    // Explicit info about which shard to use.
+    if (input[$shardOfID] !== undefined) {
+      return this.singleShardFromID($shardOfID, input[$shardOfID].toString());
     }
 
     // If we have Ent ID as a part of the request, we can just use it.

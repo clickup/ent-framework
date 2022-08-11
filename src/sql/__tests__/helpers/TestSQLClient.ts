@@ -63,7 +63,8 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
             .replace(/'[A-Za-z0-9+/]{27}='/g, "'<hash>'")
             .replace(/'k\d+'/g, "'<key>'")
             .replace(/\d{16,}/g, "<id>")
-            .replace(/ id AS id/, " id");
+            .replace(/ id AS id/g, " id")
+            .replace(/( AS k)\d+/g, "$1*");
 
           // Beautify single-lined SQL queries.
           if (query.match(/^\(?SELECT/)) {
@@ -124,8 +125,8 @@ export const master = new SQLClientPool(
 );
 
 export const testCluster = new Cluster(
-  2, // numReadShards,
-  2, // numWriteShards,
+  3, // numReadShards,
+  3, // numWriteShards,
   [
     new Island(0, new TestSQLClient(master), [
       new TestSQLClient(

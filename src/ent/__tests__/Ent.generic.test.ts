@@ -184,6 +184,23 @@ test("selectChunked", async () => {
   expect(noChunks).toEqual([]);
 });
 
+test("custom_shard", async () => {
+  const post = await EntTestPost.insertReturning(vc, {
+    user_id: vc.userID,
+    title: "something",
+  });
+  const idInOtherNonGlobalShard = post.id.replace(
+    /^(\d0+)(\d)/s,
+    (_, m1, m2) => m1 + (((parseInt(m2) - 1 + 1) % 2) + 1).toString()
+  );
+  const posts = await EntTestPost.select(
+    vc,
+    { id: post.id, $shardOfID: idInOtherNonGlobalShard },
+    Number.MAX_SAFE_INTEGER
+  );
+  expect(posts).toHaveLength(0);
+});
+
 test("upsertReturningOverwrite", async () => {
   const user = await EntTestUser.upsertReturning(vc.toOmniDangerous(), {
     name: "John",

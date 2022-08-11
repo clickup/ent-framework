@@ -12,7 +12,7 @@ DELETE FROM \\"schema\\"\\"test\\" WHERE id IS NULL RETURNING id"
 
 exports[`delete_where 1`] = `"DELETE FROM \\"schema\\"\\"test\\" WHERE id IN('<id>','<id>') AND (1=1) RETURNING id"`;
 
-exports[`id_gen_batched 1`] = `"SELECT id_gen() AS k9, id_gen() AS k12"`;
+exports[`id_gen_batched 1`] = `"SELECT id_gen() AS k*, id_gen() AS k*"`;
 
 exports[`id_gen_single 1`] = `
 "SELECT id_gen()
