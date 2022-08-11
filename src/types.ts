@@ -1,20 +1,27 @@
 // Primary key field's name is currently hardcoded for simplicity.
 export const ID = "id";
 
-// Operators for SelectInput.
-// We MUST use string versions of them and start with $, because we calculate
-// the query key by doing JSON serializations, and Symbol doesn't serialize.
-// This is a step back in some sense (in comparison to e.g. Sequelize).
+// Block operators for SelectInput. We MUST use string versions of them and
+// start with $, because we calculate the query key by doing JSON
+// serializations, and Symbol doesn't serialize. This is a step back in some
+// sense (in comparison to e.g. Sequelize).
+//
+// Example: { [$op]: { field: "value" } }
 export const $and = "$and";
 export const $or = "$or";
 export const $not = "$not";
+export const $literal = "$literal";
+export const $shardOfID = "$shardOfID";
+
+// Field comparison operators for SelectInput.
+//
+// Example: { field: { [$op]: "value" } }
 export const $lte = "$<=";
 export const $lt = "$<";
 export const $gte = "$>=";
 export const $gt = "$>";
 export const $ne = "$!=";
 export const $overlap = "$overlap";
-export const $literal = "$literal";
 
 /**
  * Literal operation with placeholders.
@@ -222,6 +229,7 @@ export type WhereWithoutNot<TTable extends Table> = {
   [$or]?: ReadonlyArray<Where<TTable>>;
   //[$not]?: Where<TTable>; - DO NOT put it here, it crashes TS > v3.5.3
   [$literal]?: Literal;
+  [$shardOfID]?: string;
   [ID]?: TTable extends { [ID]: unknown } ? unknown : string | string[];
 } & {
   [K in Field<TTable>]?:
