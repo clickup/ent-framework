@@ -100,8 +100,8 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    * is just a convenience for debugging.
    */
   singleShardFromID(field: string, id: string | null | undefined) {
-    // ATTENTION: GLOBAL_SHARD has precedence over a shard number from ID
-    // (or any other fields, since global tables may refer to global tables only).
+    // ATTENTION: GLOBAL_SHARD has precedence over a shard number from ID (or
+    // any other fields, since global tables may refer to global tables only).
     // This allows to move some previously sharded objects to the global shard
     // while doing some refactoring.
     if (this.shardAffinity === GLOBAL_SHARD) {
