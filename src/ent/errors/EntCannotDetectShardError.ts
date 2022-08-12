@@ -23,7 +23,8 @@ export class EntCannotDetectShardError extends Error {
         `; ${schemaName}.SHARD_AFFINITY=` +
         inspect(shardAffinity, { compact: true, breakLength: Infinity }) +
         (inverseFields
-          ? `; ${schemaName}.INVERSES=${inverseFields.join(",")}`
+          ? `; ${schemaName}.INVERSES=` +
+            inspect(inverseFields, { compact: true, breakLength: Infinity })
           : "")
     );
     this.name = this.constructor.name;

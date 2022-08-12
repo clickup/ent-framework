@@ -175,7 +175,7 @@ export function PrimitiveMixin<
       const shard = this.SHARD_LOCATOR.singleShardFromInput(
         input,
         "insert",
-        true // allowRandomShard
+        true // fallbackToRandomShard
       );
 
       const insertEntAndInverses = async (input: InsertInput<TTable>) => {
@@ -250,7 +250,7 @@ export function PrimitiveMixin<
       const shard = this.SHARD_LOCATOR.singleShardFromInput(
         input,
         "upsert",
-        false // allowRandomShard
+        false // fallbackToRandomShard
       );
       const query = this.SCHEMA.upsert(input);
       const id = await shard.run(
@@ -267,6 +267,10 @@ export function PrimitiveMixin<
       await vc.heartbeater.heartbeat();
 
       const shard = this.SHARD_LOCATOR.singleShardFromID(ID, id);
+      if (!shard) {
+        return null;
+      }
+
       const query = this.SCHEMA.load(id);
       const row = await shard.run(
         query,
@@ -286,7 +290,7 @@ export function PrimitiveMixin<
       const shard = this.SHARD_LOCATOR.singleShardFromInput(
         input,
         "loadBy",
-        false // allowRandomShard
+        false // fallbackToRandomShard
       );
       const query = this.SCHEMA.loadBy(input);
       const row = await shard.run(
@@ -336,7 +340,7 @@ export function PrimitiveMixin<
       const shard = this.SHARD_LOCATOR.singleShardFromInput(
         where,
         "selectChunked",
-        false // allowRandomShard
+        false // fallbackToRandomShard
       );
 
       let idCursor: string = "0";
@@ -422,6 +426,9 @@ export function PrimitiveMixin<
         ID,
         this[ID]
       );
+      if (!shard) {
+        return false;
+      }
 
       return this.constructor.TRIGGERS.wrapUpdate(
         async (input) => {
@@ -469,6 +476,9 @@ export function PrimitiveMixin<
         ID,
         this[ID]
       );
+      if (!shard) {
+        return false;
+      }
 
       return this.constructor.TRIGGERS.wrapDelete(
         async () => {
