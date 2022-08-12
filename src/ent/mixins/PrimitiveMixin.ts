@@ -200,23 +200,23 @@ export function PrimitiveMixin<
         return id;
       };
 
-      if (!this.TRIGGERS.hasInsertTriggers()) {
+      if (this.TRIGGERS.hasInsertTriggers()) {
+        // We have some triggers; that means we must generate an ID separately to
+        // let the before-triggers see it before the actual db operation happens.
+        const id = await shard.run(
+          this.SCHEMA.idGen(),
+          vc.toAnnotation(),
+          vc.timeline(shard, this.SCHEMA.name),
+          vc.freshness
+        );
+        vc.cache(IDsCacheUpdatable).add(id); // to enable privacy checks in beforeInsert triggers
+        return this.TRIGGERS.wrapInsert(insertEntAndInverses, vc, {
+          ...input,
+          [ID]: id,
+        });
+      } else {
         return insertEntAndInverses(input);
       }
-
-      // We have some triggers; that means we must generate an ID separately to
-      // let the before-triggers see it before the actual db operation happens.
-      const id = await shard.run(
-        this.SCHEMA.idGen(),
-        vc.toAnnotation(),
-        vc.timeline(shard, this.SCHEMA.name),
-        vc.freshness
-      );
-      vc.cache(IDsCacheUpdatable).add(id); // to enable privacy checks in beforeInsert triggers
-      return this.TRIGGERS.wrapInsert(insertEntAndInverses, vc, {
-        ...input,
-        [ID]: id,
-      });
     }
 
     static async upsert(vc: VC, input: InsertInput<TTable>) {
@@ -274,11 +274,7 @@ export function PrimitiveMixin<
         vc.timeline(shard, this.SCHEMA.name),
         vc.freshness
       );
-      if (!row) {
-        return null;
-      }
-
-      return this.createEnt(vc, row);
+      return row ? this.createEnt(vc, row) : null;
     }
 
     static async loadByNullable(
@@ -299,11 +295,7 @@ export function PrimitiveMixin<
         vc.timeline(shard, this.SCHEMA.name),
         vc.freshness
       );
-      if (!row) {
-        return null;
-      }
-
-      return this.createEnt(vc, row);
+      return row ? this.createEnt(vc, row) : null;
     }
 
     static async select(
