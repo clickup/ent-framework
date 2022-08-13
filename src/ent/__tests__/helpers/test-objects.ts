@@ -1,5 +1,5 @@
 import { MASTER } from "../../../abstract/Shard";
-import { join } from "../../../helpers";
+import { join, mapJoin } from "../../../helpers";
 import { SQLSchema } from "../../../sql/SQLSchema";
 import { testCluster } from "../../../sql/__tests__/helpers/TestSQLClient";
 import { ID } from "../../../types";
@@ -378,31 +378,27 @@ export class EntTestCountry extends BaseEnt(testCluster, schemaTestCountry) {
 
 export async function init(): Promise<[VC, VC]> {
   const globalMaster = await testCluster.globalShard().client(MASTER);
-  const master = await testCluster.randomShard().client(MASTER);
   await join([
+    globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COUNTRY),
     globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_USER),
     globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMPANY),
-    globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COUNTRY),
-    master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_HEADLINE),
-    master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMMENT),
-    master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_POST),
   ]);
   await join([
     globalMaster.rows(
       `CREATE TABLE %T(
-        id bigint NOT NULL PRIMARY KEY, 
+        id bigint NOT NULL PRIMARY KEY,
         name text NOT NULL
       )`,
       TABLE_COMPANY
     ),
     globalMaster.rows(
       `CREATE TABLE %T(
-        id bigint NOT NULL PRIMARY KEY, 
+        id bigint NOT NULL PRIMARY KEY,
         company_id BIGINT DEFAULT NULL,
-        name text NOT NULL, 
+        name text NOT NULL,
         url_name text,
         is_alseeing boolean,
-        created_at timestamptz NOT NULL, 
+        created_at timestamptz NOT NULL,
         updated_at timestamptz NOT NULL,
         UNIQUE (name)
       )`,
@@ -410,39 +406,50 @@ export async function init(): Promise<[VC, VC]> {
     ),
     globalMaster.rows(
       `CREATE TABLE %T(
-        id bigint NOT NULL PRIMARY KEY, 
+        id bigint NOT NULL PRIMARY KEY,
         name text,
         UNIQUE(name)
       )`,
       TABLE_COUNTRY
     ),
-    master.rows(
-      `CREATE TABLE %T(
-        post_id bigint NOT NULL PRIMARY KEY, 
-        user_id bigint NOT NULL,
-        title text NOT NULL, 
-        created_at timestamptz NOT NULL
-      )`,
-      TABLE_POST
-    ),
-    master.rows(
-      `CREATE TABLE %T(
-        comment_id bigint NOT NULL PRIMARY KEY, 
-        post_id bigint NOT NULL,
-        text text NOT NULL
-      )`,
-      TABLE_COMMENT
-    ),
-    master.rows(
-      `CREATE TABLE %T(
-        id bigint NOT NULL PRIMARY KEY, 
-        user_id bigint NOT NULL,
-        headline text NOT NULL,
-        name text
-      )`,
-      TABLE_HEADLINE
-    ),
   ]);
+
+  await mapJoin([...testCluster.shards.values()], async (shard) => {
+    const master = await shard.client(MASTER);
+    await join([
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_HEADLINE),
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMMENT),
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_POST),
+    ]);
+    await join([
+      master.rows(
+        `CREATE TABLE %T(
+          post_id bigint NOT NULL PRIMARY KEY,
+          user_id bigint NOT NULL,
+          title text NOT NULL,
+          created_at timestamptz NOT NULL
+        )`,
+        TABLE_POST
+      ),
+      master.rows(
+        `CREATE TABLE %T(
+          comment_id bigint NOT NULL PRIMARY KEY,
+          post_id bigint NOT NULL,
+          text text NOT NULL
+        )`,
+        TABLE_COMMENT
+      ),
+      master.rows(
+        `CREATE TABLE %T(
+          id bigint NOT NULL PRIMARY KEY,
+          user_id bigint NOT NULL,
+          headline text NOT NULL,
+          name text
+        )`,
+        TABLE_HEADLINE
+      ),
+    ]);
+  });
 
   const company = await EntTestCompany.insertReturning(
     createVC().toOmniDangerous(),
