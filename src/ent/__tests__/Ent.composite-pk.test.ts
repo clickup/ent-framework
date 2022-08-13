@@ -1,5 +1,5 @@
 import { MASTER } from "../../abstract/Shard";
-import { join } from "../../helpers";
+import { join, mapJoin } from "../../helpers";
 import { SQLSchema } from "../../sql/SQLSchema";
 import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
 import { ID } from "../../types";
@@ -63,14 +63,6 @@ export class EntTestComposite extends BaseEnt(
         new AllowIf(new CanReadOutgoingEdge("user_id", EntTestUser)),
       ],
       privacyInsert: [new Require(new True())],
-      /*beforeInsert: [
-        async (_vc, { input }) => {
-          this.TRIGGER_CALLS.push({
-            type: "beforeInsert",
-            input: { ...input },
-          });
-        },
-      ],*/
     });
   }
 }
@@ -79,10 +71,8 @@ let user: EntTestUser;
 
 beforeEach(async () => {
   const globalMaster = await testCluster.globalShard().client(MASTER);
-  const master = await testCluster.randomShard().client(MASTER);
   await join([
     globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_USER),
-    master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMPOSITE),
   ]);
   await join([
     globalMaster.rows(
@@ -92,16 +82,25 @@ beforeEach(async () => {
       )`,
       TABLE_USER
     ),
-    master.rows(
-      `CREATE TABLE %T(
-        user_id bigint NOT NULL,
-        some_id bigint NOT NULL,
-        name text,
-        UNIQUE(user_id, some_id)
-      )`,
-      TABLE_COMPOSITE
-    ),
   ]);
+
+  await mapJoin([...testCluster.shards.values()], async (shard) => {
+    const master = await shard.client(MASTER);
+    await join([
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMPOSITE),
+    ]);
+    await join([
+      master.rows(
+        `CREATE TABLE %T(
+          user_id bigint NOT NULL,
+          some_id bigint NOT NULL,
+          name text,
+          UNIQUE(user_id, some_id)
+        )`,
+        TABLE_COMPOSITE
+      ),
+    ]);
+  });
 
   user = await EntTestUser.insertReturning(createVC().toOmniDangerous(), {
     name: "my-name",
