@@ -3,7 +3,7 @@ import { collect } from "streaming-iterables";
 import { join } from "../../helpers";
 import { SQLSchema } from "../../sql/SQLSchema";
 import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
-import { $not, ID } from "../../types";
+import { ID } from "../../types";
 import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
@@ -178,7 +178,7 @@ test("selectChunked", async () => {
   const commentChunks = await collect(
     EntTestComment.selectChunked(
       vc,
-      { post_id: post.id, [$not]: { text: "c4" } },
+      { post_id: post.id, $not: { text: "c4" } },
       2,
       Number.MAX_SAFE_INTEGER
     )

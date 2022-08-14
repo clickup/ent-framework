@@ -3,7 +3,7 @@ import { Query } from "../../abstract/Query";
 import { MASTER, Shard, STALE_REPLICA } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
 import { join, nullthrows } from "../../helpers";
-import { $and, $gte, $literal, $lte, $ne, $not, $or, ID } from "../../types";
+import { ID } from "../../types";
 import { SQLError } from "../SQLError";
 import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
 import { SQLSchema } from "../SQLSchema";
@@ -624,10 +624,10 @@ test("update_literal", async () => {
   master.resetSnapshot();
 
   await join([
-    shardRun(schema.update(id1!, { [$literal]: ["name = name || ?", 42] })),
+    shardRun(schema.update(id1!, { $literal: ["name = name || ?", 42] })),
     shardRun(schema.update(id2!, { name: "bbb" })),
-    shardRun(schema.update(id1!, { [$literal]: ["name = name || ?", 42] })),
-    shardRun(schemaDate.update("42", { [$literal]: ["name = name || ?", 42] })),
+    shardRun(schema.update(id1!, { $literal: ["name = name || ?", 42] })),
+    shardRun(schemaDate.update("42", { $literal: ["name = name || ?", 42] })),
   ]);
   master.toMatchSnapshot();
 
@@ -698,7 +698,7 @@ test("delete_where", async () => {
   master.resetSnapshot();
 
   const res = await shardRun(
-    new SQLQueryDeleteWhere(schema, { id: [id1!, id2!], [$literal]: ["1=1"] })
+    new SQLQueryDeleteWhere(schema, { id: [id1!, id2!], $literal: ["1=1"] })
   );
   master.toMatchSnapshot();
   expect(res.length).toEqual(2);
@@ -859,25 +859,25 @@ test("select_and_count_batched", async () => {
   master.resetSnapshot();
 
   const input: Parameters<typeof schema.select>[0] = {
-    order: [{ name: "ASC" }, { url_name: "DESC" }, { [$literal]: ["1=?", 2] }],
+    order: [{ name: "ASC" }, { url_name: "DESC" }, { $literal: ["1=?", 2] }],
     where: {
       name: ["a", "aa"],
       some_flag: true,
-      [$or]: [
+      $or: [
         { name: "a" },
         { name: "aa" },
         { url_name: [] },
         { url_name: [null, "zzz"] },
       ],
-      [$and]: [
+      $and: [
         { name: ["a", "aa"] },
-        { name: { [$ne]: "kk" } },
-        { url_name: { [$ne]: ["kk", null] } },
-        { url_name: { [$ne]: [] } },
-        { [$literal]: ["? > '2'", "5"] },
-        { name: { [$lte]: "z", [$gte]: "a" } },
+        { name: { $ne: "kk" } },
+        { url_name: { $ne: ["kk", null] } },
+        { url_name: { $ne: [] } },
+        { $literal: ["? > '2'", "5"] },
+        { name: { $lte: "z", $gte: "a" } },
       ],
-      [$not]: { name: "zz", [$literal]: ["? < '2'", 5] },
+      $not: { name: "zz", $literal: ["? < '2'", 5] },
     },
     limit: 10,
   };
@@ -912,9 +912,9 @@ test("select_custom", async () => {
   const input: Parameters<typeof schema.select>[0] = {
     where: {
       name: ["a", "aa"],
-      [$literal]: ["? > '2'", "5"],
+      $literal: ["? > '2'", "5"],
     },
-    order: [{ name: "ASC" }, { [$literal]: ["cte1_v"] }],
+    order: [{ name: "ASC" }, { $literal: ["cte1_v"] }],
     limit: 10,
     custom: {
       ctes: [
@@ -949,8 +949,8 @@ test("test_empty_$or_and_$and", async () => {
 
   const [all, emptyOR, emptyAND] = await join([
     shardRun(schema.select({ where: {}, limit: 2 })),
-    shardRun(schema.select({ where: { [$or]: [] }, limit: 2 })),
-    shardRun(schema.select({ where: { [$and]: [] }, limit: 2 })),
+    shardRun(schema.select({ where: { $or: [] }, limit: 2 })),
+    shardRun(schema.select({ where: { $and: [] }, limit: 2 })),
   ]);
   expect(all.length).toBe(2);
   expect(emptyOR.length).toBe(0);

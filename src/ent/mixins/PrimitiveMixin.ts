@@ -4,8 +4,6 @@ import { Client } from "../../abstract/Client";
 import { hasKey, mapJoin, OmitNew } from "../../helpers";
 import memoize2 from "../../memoize2";
 import {
-  $and,
-  $gt,
   CountInput,
   ID,
   InsertInput,
@@ -355,7 +353,7 @@ export function PrimitiveMixin<
 
         const cursoredWhere = {
           ...where,
-          [$and]: [{ [ID]: { [$gt]: idCursor } }, ...(where[$and] ?? [])],
+          $and: [{ [ID]: { $gt: idCursor } }, ...(where.$and ?? [])],
         };
 
         await vc.heartbeater.heartbeat();

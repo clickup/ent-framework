@@ -2,7 +2,7 @@ import { inspect } from "util";
 import { QueryBase } from "../abstract/Query";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { hash, hasKey } from "../helpers";
-import { $literal, Order, Row, SelectInput, Table } from "../types";
+import { Order, Row, SelectInput, Table } from "../types";
 import { escapeString, SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
@@ -149,7 +149,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
     // checks around the data passed.
     const pieces: string[] = [];
     for (const item of order) {
-      if (hasKey($literal, item)) {
+      if (hasKey("$literal", item)) {
         if (Object.keys(item).length > 1) {
           throw Error(
             "Invalid order specification - $literal must be the only key: " +
@@ -157,7 +157,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
           );
         }
 
-        pieces.push(this.buildLiteral(item[$literal]));
+        pieces.push(this.buildLiteral(item.$literal));
       } else {
         for (const [field, dir] of Object.entries(item)) {
           if (!ALLOWED_ORDER.includes("" + dir)) {

@@ -2,7 +2,7 @@ import { Query } from "../../abstract/Query";
 import { MASTER, Shard } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
 import { join, nullthrows } from "../../helpers";
-import { $literal, ID } from "../../types";
+import { ID } from "../../types";
 import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
 import { SQLSchema } from "../SQLSchema";
 import { testCluster, TestSQLClient } from "./helpers/TestSQLClient";
@@ -101,7 +101,7 @@ test("ops_single", async () => {
 
   {
     const res = await shardRun(
-      new SQLQueryDeleteWhere(schema, { id: [id2!], [$literal]: ["1=1"] })
+      new SQLQueryDeleteWhere(schema, { id: [id2!], $literal: ["1=1"] })
     );
     master.toMatchSnapshot();
     expect(res).toEqual([id2]);
