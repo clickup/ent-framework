@@ -3,7 +3,7 @@ import { Client } from "../../abstract/Client";
 import { Cluster } from "../../abstract/Cluster";
 import { Schema } from "../../abstract/Schema";
 import { entries } from "../../helpers";
-import { ID, IDFields, IDFieldsRequired, Table, UniqueKey } from "../../types";
+import { ID, IDFields, Table, UniqueKey } from "../../types";
 import { Configuration, GLOBAL_SHARD, ShardAffinity } from "../Configuration";
 import { Inverse } from "../Inverse";
 import { ShardLocator } from "../ShardLocator";
@@ -169,18 +169,8 @@ export function ConfigMixin<
         value: compact(
           entries(cfg.inverses ?? {}).map(([field, { name, type }]) => {
             if (this.SHARD_AFFINITY === GLOBAL_SHARD) {
-              // Most likely we'll revisit it in the future.
               throw Error(
                 `It's useless to define a ${field} inverse for GLOBAL_SHARD schemas; use just a DB index`
-              );
-            }
-
-            if (
-              this.SHARD_AFFINITY instanceof Array &&
-              this.SHARD_AFFINITY.includes(field as IDFieldsRequired<TTable>)
-            ) {
-              throw Error(
-                `It's useless to define a ${field} inverse since ${field} is mentioned in SHARD_AFFINITY`
               );
             }
 

@@ -1,4 +1,5 @@
 import {
+  ID,
   IDFields,
   IDFieldsRequired,
   InsertFieldsRequired,
@@ -21,12 +22,18 @@ export const GLOBAL_SHARD = "global_shard";
 
 /**
  * Defines Ent shard collocation to some Ent's field when this Ent is inserted.
- * The shard can either be picked randomly, be always shard 0 or be inferred
- * based on the value in other Ent fields during the insertion.
+ * The shard can always be shard 0 ("global shard"), be inferred based on the
+ * value in other Ent field during the insertion ("colocation"), or, in case
+ * colocation inference didn't succeed, be chosen randomly at insertion time
+ * ("random shard"). E.g. a random shard can also be chosen in case an empty
+ * array is passed to shard affinity (like "always fallback").
  */
-export type ShardAffinity<TField extends string> =
-  | readonly [TField, ...TField[]]
-  | typeof GLOBAL_SHARD;
+export type ShardAffinity<
+  TField extends string,
+  TF = Exclude<TField, typeof ID>
+> =
+  | typeof GLOBAL_SHARD
+  | (TField extends typeof ID ? readonly TF[] : readonly [TF, ...TF[]]);
 
 /**
  * Strongly typed configuration framework to force TS auto-infer privacy

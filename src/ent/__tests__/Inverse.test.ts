@@ -24,7 +24,7 @@ const schemaTestUser = new SQLSchema(TABLE_USER, {
 class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
   static override configure() {
     return new this.Configuration({
-      shardAffinity: ["id"],
+      shardAffinity: [],
       inverses: {
         company_id: { name: TABLE_INVERSE, type: "company2user" },
         team_id: { name: TABLE_INVERSE, type: "team2user" },

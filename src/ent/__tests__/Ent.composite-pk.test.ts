@@ -120,4 +120,18 @@ test("simple", async () => {
     id: `(${user.vc.userID},${composite.some_id})`,
     user_id: user.vc.userID,
   });
+
+  const rows = await EntTestComposite.select(
+    user.vc,
+    { user_id: composite.user_id, some_id: composite.some_id },
+    1
+  );
+  expect(rows).toHaveLength(1);
+
+  await EntTestComposite.loadByX(user.vc, {
+    user_id: composite.user_id,
+    some_id: composite.some_id,
+  });
+
+  await EntTestComposite.loadX(user.vc, composite.id);
 });
