@@ -15,7 +15,7 @@ export class EntNotFoundError extends EntAccessError {
       entName +
         " not found: " +
         (typeof idOrUniqueKey === "string"
-          ? sanitizeIDForDebugPrinting(idOrUniqueKey)
+          ? `"${sanitizeIDForDebugPrinting(idOrUniqueKey)}"`
           : inspect(idOrUniqueKey, { breakLength: Infinity })) +
         (messageSuffix ? ": " + messageSuffix : "")
     );

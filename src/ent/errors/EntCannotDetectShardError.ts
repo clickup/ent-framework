@@ -16,7 +16,7 @@ export class EntCannotDetectShardError extends Error {
     super(
       `${schemaName}: to detect shard in "${op}" query, ` +
         (fields.length > 1 ? "at least one of " : "") +
-        `"${fields.join(", ")}" field` +
+        `non-empty "${fields.join(", ")}" field` +
         (fields.length !== 1 ? "s" : "") +
         " must be present at TOP LEVEL of the input, but got " +
         inspect(input, { breakLength: Infinity }) +
