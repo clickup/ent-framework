@@ -185,7 +185,7 @@ export class EntTestHeadline extends BaseEnt(testCluster, schemaTestHeadline) {
 
   static override configure() {
     return new this.Configuration({
-      shardAffinity: ["id"],
+      shardAffinity: [],
       privacyLoad: [
         new AllowIf(new CanReadOutgoingEdge("user_id", EntTestUser)),
       ],
