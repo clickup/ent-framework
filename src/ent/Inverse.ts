@@ -5,6 +5,7 @@ import { Schema } from "../abstract/Schema";
 import { join } from "../helpers";
 import Memoize from "../Memoize";
 import { ID, IDFieldsRequired, Table } from "../types";
+import { GLOBAL_SHARD, ShardAffinity } from "./Configuration";
 import { VC } from "./VC";
 
 // For perf reasons, we return no more than that number of id2s per each id1.
@@ -18,14 +19,16 @@ const ZERO_NULL = "0";
 /**
  * Represents an inverse assoc manager which knows how to modify/query/fix
  * inverses. Parameter `name` is the inverse's schema name (in SQL like
- * databases, most likely a table name), and `type` defines which schema refers
- * another schema (e.g. "org2user").
+ * databases, most likely a table name), and `type` holds both the name of the
+ * "parent" entity and the field name of the child (e.g. "org2users" when a
+ * field "org_id" in EntUser refers an EntOrg row).
  */
 export class Inverse<TClient extends Client, TTable extends Table> {
   private inverseSchema = Inverse.buildInverseSchema(this.id2Schema, this.name);
 
   constructor(
     public readonly cluster: Cluster<TClient>,
+    public readonly shardAffinity: ShardAffinity<string>,
     public readonly id2Schema: Schema<TTable>,
     public readonly id2Field: IDFieldsRequired<TTable>,
     public readonly name: string,
@@ -36,6 +39,10 @@ export class Inverse<TClient extends Client, TTable extends Table> {
    * Runs after a row was inserted to the main schema.
    */
   async afterInsert(vc: VC, id1: string | null, id2: string) {
+    if (this.id2ShardIsInferrableFromShardAffinity(id1)) {
+      return;
+    }
+
     await this.run(
       vc,
       id1,
@@ -66,6 +73,10 @@ export class Inverse<TClient extends Client, TTable extends Table> {
    * Runs after a row was deleted in the main schema.
    */
   async afterDelete(vc: VC, id1: string | null, id2: string) {
+    if (this.id2ShardIsInferrableFromShardAffinity(id1)) {
+      return;
+    }
+
     const row = await this.run(
       vc,
       id1,
@@ -90,6 +101,25 @@ export class Inverse<TClient extends Client, TTable extends Table> {
       })
     );
     return rows.map((row) => row.id2).sort();
+  }
+
+  /**
+   * If the field is already mentioned in shardAffinity, and the referred parent
+   * object (id1) exists, we won't need to create an inverse, because the engine
+   * will be able to infer the target shard from shardAffinity. This method
+   * would return true in such a case. In fact, we could've still create an
+   * inverse for this case, but in sake of keeping the database lean, we don't
+   * do it (useful when a field holds a reference to an "optionally sharded"
+   * Ent, like sometimes it point so an Ent which is sharded, and sometimes on
+   * an Ent in the global shard).
+   */
+  private id2ShardIsInferrableFromShardAffinity(id1: string | null) {
+    return (
+      id1 !== null &&
+      this.cluster.shard(id1) !== this.cluster.globalShard() &&
+      this.shardAffinity !== GLOBAL_SHARD &&
+      this.shardAffinity.includes(this.id2Field)
+    );
   }
 
   /**
