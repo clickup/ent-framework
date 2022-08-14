@@ -7,6 +7,8 @@ exports[`cannotCreatePostsForDifferentUsers 1`] = `
       Rule Require:OutgoingEdgePointsToVC(id) returned DENY"
 `;
 
+exports[`custom_shard 1`] = `"EntNotFoundError: ent\\"post.$shardOfID not found: \\"\\": Cannot parse ID \\"\\" to detect shard number"`;
+
 exports[`loadByNoAccess 1`] = `
 "EntTestUser:<id> is not readable in vc:<id>, because:
   Rule AllowIf:OutgoingEdgePointsToVC(id) returned SKIP
@@ -37,6 +39,10 @@ exports[`loadNullableNoAccess 1`] = `
       Rule AllowIf:VCIsAllSeeing returned SKIP
       Rule AllowIf:IncomingEdgeFromVCExists(EntTestUser[id=vc, company_id=row.id]) returned SKIP"
 `;
+
+exports[`select_and_count 1`] = `"EntCannotDetectShardError: ent\\"comment: to detect shard in \\"select\\" query, non-empty \\"post_id\\" field must be present at TOP LEVEL of the input, but got { post_id: [] }; ent\\"comment.SHARD_AFFINITY=[ 'post_id' ]; ent\\"comment.INVERSES=[]"`;
+
+exports[`select_and_count 2`] = `"EntCannotDetectShardError: ent\\"comment: to detect shard in \\"select\\" query, non-empty \\"post_id\\" field must be present at TOP LEVEL of the input, but got { post_id: '' }; ent\\"comment.SHARD_AFFINITY=[ 'post_id' ]; ent\\"comment.INVERSES=[]"`;
 
 exports[`skipAfterTriggersIfOperationSoftFails: 1: insert happened 1`] = `
 "[

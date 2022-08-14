@@ -185,7 +185,11 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     // An explicit list of fields is passed in SHARD_AFFINITY.
     if (this.shardAffinity instanceof Array) {
       for (const fromField of this.shardAffinity) {
-        if (input[fromField]) {
+        const value =
+          input[fromField] instanceof Array
+            ? input[fromField][0]
+            : input[fromField];
+        if (value) {
           return this.singleShardFromID(fromField, input[fromField].toString());
         }
       }

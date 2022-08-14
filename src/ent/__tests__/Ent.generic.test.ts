@@ -142,6 +142,20 @@ test("select_and_count", async () => {
   );
   expect(comments2.length).toEqual(2);
 
+  const error1 = await EntTestComment.select(
+    vc,
+    { post_id: [] },
+    Number.MAX_SAFE_INTEGER
+  ).catch((e) => e.toString());
+  expect(error1).toMatchSnapshot();
+
+  const error2 = await EntTestComment.select(
+    vc,
+    { post_id: "" },
+    Number.MAX_SAFE_INTEGER
+  ).catch((e) => e.toString());
+  expect(error2).toMatchSnapshot();
+
   const count = await EntTestComment.count(vc, {
     post_id: post.id,
     text: ["c1", "c2", "c3"],
@@ -193,12 +207,20 @@ test("custom_shard", async () => {
     /^(\d0+)(\d)/s,
     (_, m1, m2) => m1 + (((parseInt(m2) - 1 + 1) % 2) + 1).toString()
   );
+
   const posts = await EntTestPost.select(
     vc,
     { id: post.id, $shardOfID: idInOtherNonGlobalShard },
     Number.MAX_SAFE_INTEGER
   );
   expect(posts).toHaveLength(0);
+
+  const error = await EntTestPost.select(
+    vc,
+    { id: post.id, $shardOfID: "" },
+    Number.MAX_SAFE_INTEGER
+  ).catch((e) => e.toString());
+  expect(error).toMatchSnapshot();
 });
 
 test("upsertReturningOverwrite", async () => {
