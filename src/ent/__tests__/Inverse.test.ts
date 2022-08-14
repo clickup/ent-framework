@@ -4,7 +4,7 @@ import { join, mapJoin } from "../../helpers";
 import { SQLSchema } from "../../sql/SQLSchema";
 import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
 import { ID } from "../../types";
-import { BaseEnt } from "../BaseEnt";
+import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
 import { EntCannotDetectShardError } from "../errors/EntCannotDetectShardError";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
@@ -12,6 +12,8 @@ import { VC } from "../VC";
 import { createVC } from "./helpers/test-objects";
 
 const TABLE_USER = 'inv"test_user';
+const TABLE_TOPIC = 'inv"test_topic';
+const TABLE_COMPANY = 'inv"test_company';
 const TABLE_INVERSE = 'inv"test_inverse';
 
 const schemaTestUser = new SQLSchema(TABLE_USER, {
@@ -26,7 +28,7 @@ class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
     return new this.Configuration({
       shardAffinity: [],
       inverses: {
-        company_id: { name: TABLE_INVERSE, type: "company2user" },
+        company_id: { name: TABLE_INVERSE, type: "company2users" },
         team_id: { name: TABLE_INVERSE, type: "team2user" },
       },
       privacyLoad: [new AllowIf(new True())],
@@ -35,34 +37,114 @@ class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
   }
 }
 
+const schemaTestCompany = new SQLSchema(
+  TABLE_COMPANY,
+  {
+    id: { type: String, autoInsert: "id_gen()" },
+    name: { type: String },
+  },
+  ["name"]
+);
+
+class EntTestCompany extends BaseEnt(testCluster, schemaTestCompany) {
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: GLOBAL_SHARD,
+      privacyLoad: [new AllowIf(new True())],
+      privacyInsert: [new AllowIf(new True())],
+    });
+  }
+}
+
+const schemaTestTopic = new SQLSchema(
+  TABLE_TOPIC,
+  {
+    id: { type: ID, autoInsert: "id_gen()" },
+    owner_id: { type: ID }, // either EntTestUser (sharded) or EntTestCompany (global)
+    slug: { type: String },
+  },
+  ["owner_id", "slug"]
+);
+
+class EntTestTopic extends BaseEnt(testCluster, schemaTestTopic) {
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: ["owner_id"],
+      inverses: {
+        owner_id: { name: TABLE_INVERSE, type: "owner2topics" },
+      },
+      privacyLoad: [new AllowIf(new True())],
+      privacyInsert: [new AllowIf(new True())],
+    });
+  }
+}
+
 async function init() {
-  await mapJoin([...testCluster.shards.values()], async (shard) => {
-    const client = await shard.client(MASTER);
-    await join([
-      client.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_USER),
-      client.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_INVERSE),
-    ]);
-    await join([
-      client.rows(
-        `CREATE TABLE %T(
-          id bigint NOT NULL PRIMARY KEY,
-          company_id BIGINT,
-          team_id BIGINT,
-          name text NOT NULL
-        )`,
-        TABLE_USER
-      ),
-      client.rows(
-        `CREATE TABLE %T(
-          id bigint NOT NULL PRIMARY KEY,
-          id1 bigint,
-          type varchar(32) NOT NULL,
-          id2 bigint NOT NULL
-        )`,
-        TABLE_INVERSE
-      ),
-    ]);
-  });
+  const globalMaster = await testCluster.globalShard().client(MASTER);
+  await join([
+    globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_INVERSE),
+    globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMPANY),
+  ]);
+  await join([
+    globalMaster.rows(
+      `CREATE TABLE %T(
+        id bigint NOT NULL PRIMARY KEY,
+        name text NOT NULL
+      )`,
+      TABLE_COMPANY
+    ),
+    globalMaster.rows(
+      `CREATE TABLE %T(
+        id bigint NOT NULL PRIMARY KEY,
+        id1 bigint,
+        type varchar(32) NOT NULL,
+        id2 bigint NOT NULL
+      )`,
+      TABLE_INVERSE
+    ),
+  ]);
+
+  await mapJoin(
+    [...testCluster.shards.values()].filter(
+      (shard) => shard !== testCluster.globalShard()
+    ),
+    async (shard) => {
+      const master = await shard.client(MASTER);
+      await join([
+        master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_INVERSE),
+        master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_TOPIC),
+        master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_USER),
+      ]);
+      await join([
+        master.rows(
+          `CREATE TABLE %T(
+            id bigint NOT NULL PRIMARY KEY,
+            company_id BIGINT,
+            team_id BIGINT,
+            name text NOT NULL
+          )`,
+          TABLE_USER
+        ),
+        master.rows(
+          `CREATE TABLE %T(
+            id bigint NOT NULL PRIMARY KEY,
+            owner_id bigint NOT NULL,
+            slug text NOT NULL
+          )`,
+          TABLE_TOPIC
+        ),
+        master.rows(
+          `CREATE TABLE %T(
+            id bigint NOT NULL PRIMARY KEY,
+            id1 bigint,
+            type varchar(32) NOT NULL,
+            id2 bigint NOT NULL
+          )`,
+          TABLE_INVERSE
+        ),
+      ]);
+    }
+  );
 }
 
 let vc: VC;
@@ -160,6 +242,37 @@ test("cross-shard select", async () => {
     { id: user.id, name: "u1" },
     { id: user2.id, name: "u2" },
   ]);
+});
+
+test("optionally sharded colocation", async () => {
+  const user = await EntTestUser.insertReturning(vc, {
+    company_id: null,
+    team_id: null,
+    name: "u1",
+  });
+  const inverse = EntTestTopic.INVERSES[0];
+
+  const company = await EntTestCompany.insertReturning(vc, {
+    name: "c1",
+  });
+
+  const topic1 = await EntTestTopic.insertReturning(vc, {
+    owner_id: user.id,
+    slug: "topic1",
+  });
+  expect(await inverse.id2s(vc, user.id)).toEqual([topic1.id]);
+  expect(await EntTestTopic.select(vc, { owner_id: user.id }, 1)).toMatchObject(
+    [{ id: topic1.id }]
+  );
+
+  const topic2 = await EntTestTopic.insertReturning(vc, {
+    owner_id: company.id,
+    slug: "topic1",
+  });
+  expect(await inverse.id2s(vc, company.id)).toEqual([topic2.id]);
+  expect(
+    await EntTestTopic.select(vc, { owner_id: company.id }, 1)
+  ).toMatchObject([{ id: topic2.id }]);
 });
 
 test("exception", async () => {
