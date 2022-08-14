@@ -185,7 +185,14 @@ export function ConfigMixin<
               );
             }
 
-            return new Inverse(cluster, schema, field, name, type);
+            return new Inverse(
+              cluster,
+              this.SHARD_AFFINITY,
+              schema,
+              field,
+              name,
+              type
+            );
           })
         ),
         writable: false,

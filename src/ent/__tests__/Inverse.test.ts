@@ -260,19 +260,30 @@ test("optionally sharded colocation", async () => {
     owner_id: user.id,
     slug: "topic1",
   });
-  expect(await inverse.id2s(vc, user.id)).toEqual([topic1.id]);
+  expect(await inverse.id2s(vc, user.id)).toEqual([]); // no inverse created since it's in shardAffinity
   expect(await EntTestTopic.select(vc, { owner_id: user.id }, 1)).toMatchObject(
     [{ id: topic1.id }]
   );
+  await EntTestTopic.loadByX(vc, { owner_id: user.id, slug: "topic1" });
 
   const topic2 = await EntTestTopic.insertReturning(vc, {
     owner_id: company.id,
-    slug: "topic1",
+    slug: "topic2",
   });
   expect(await inverse.id2s(vc, company.id)).toEqual([topic2.id]);
   expect(
     await EntTestTopic.select(vc, { owner_id: company.id }, 1)
   ).toMatchObject([{ id: topic2.id }]);
+
+  // When a leading part of unique key points to an object in different shard
+  // (e.g. in a global shard), loadBy() logic can't work at the moment: it is
+  // not able to guarantee uniqueness of the key. If we need to work it around
+  // in the future, we'll need to change the logic in inverses ("fbkey"): add
+  // unique key to the inverse table (like key2 field) and implement some
+  // machinery to process it.
+  await expect(
+    EntTestTopic.loadByX(vc, { owner_id: company.id, slug: "topic2" })
+  ).rejects.toThrow(EntCannotDetectShardError);
 });
 
 test("exception", async () => {
