@@ -2,7 +2,7 @@ import uniq from "lodash/uniq";
 import { Query } from "../abstract/Query";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { Schema } from "../abstract/Schema";
-import { $literal, Field, ID, Table, UpdateInput } from "../types";
+import { Field, ID, Table, UpdateInput } from "../types";
 import { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
@@ -32,7 +32,7 @@ export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
     // If there are no known fields to update, skip the entire operation. We
     // return true since we don't know whether the row is in the DB or not, so
     // we assume it is.
-    if (fields.length === 0 && !this.input[$literal]) {
+    if (fields.length === 0 && !this.input.$literal) {
       return true;
     }
 
@@ -40,7 +40,7 @@ export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
     // because we can't guarantee that the SET clause in  "WITH ... VALUES ...
     // UPDATE ... SET ... FROM rows" batched query will be identical for all
     // input rows.
-    const disableBatching = !!this.input[$literal];
+    const disableBatching = !!this.input.$literal;
 
     // Since UPDATE has partial list of fields, we have to cache runners per
     // updating fields list. Else we'd not be able to do a partial batched update.
@@ -122,7 +122,7 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
     input: UpdateInput<TTable> & { [ID]: string },
     annotations: QueryAnnotation[]
   ): Promise<boolean> {
-    const literal = input[$literal];
+    const literal = input.$literal;
     const sql =
       this.singleBuilder.prefix +
       this.singleBuilder.func1(input, literal) +

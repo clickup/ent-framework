@@ -1,28 +1,6 @@
 // Primary key field's name is currently hardcoded for simplicity.
 export const ID = "id";
 
-// Block operators for SelectInput. We MUST use string versions of them and
-// start with $, because we calculate the query key by doing JSON
-// serializations, and Symbol doesn't serialize. This is a step back in some
-// sense (in comparison to e.g. Sequelize).
-//
-// Example: { [$op]: { field: "value" } }
-export const $and = "$and";
-export const $or = "$or";
-export const $not = "$not";
-export const $literal = "$literal";
-export const $shardOfID = "$shardOfID";
-
-// Field comparison operators for SelectInput.
-//
-// Example: { field: { [$op]: "value" } }
-export const $lte = "$<=";
-export const $lt = "$<";
-export const $gte = "$>=";
-export const $gt = "$>";
-export const $ne = "$!=";
-export const $overlap = "$overlap";
-
 /**
  * Literal operation with placeholders.
  */
@@ -165,7 +143,7 @@ export type UpdateFields<TTable extends Table> = Exclude<
 export type UpdateInput<TTable extends Table> = {
   [K in UpdateFields<TTable>]?: Value<TTable[K]>;
 } & {
-  [$literal]?: Literal;
+  $literal?: Literal;
 };
 
 /**
@@ -222,48 +200,43 @@ export type IDFieldsRequired<TTable extends Table> =
   InsertFieldsRequired<TTable> & IDFields<TTable>;
 
 /**
- * A hack (see comments below).
+ * Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
  */
-export type WhereWithoutNot<TTable extends Table> = {
-  [$and]?: ReadonlyArray<Where<TTable>>;
-  [$or]?: ReadonlyArray<Where<TTable>>;
-  //[$not]?: Where<TTable>; - DO NOT put it here, it crashes TS > v3.5.3
-  [$literal]?: Literal;
-  [$shardOfID]?: string;
+export type Where<TTable extends Table> = {
+  // Block operators for SelectInput. We MUST use string versions of them and
+  // start with $, because we calculate the query key by doing JSON
+  // serializations, and Symbol doesn't serialize. This is a step back in some
+  // sense (in comparison to e.g. Sequelize).
+  //
+  // Example: { $op: { field: "value" } }
+  $and?: ReadonlyArray<Where<TTable>>;
+  $or?: ReadonlyArray<Where<TTable>>;
+  $not?: Where<TTable>;
+  $literal?: Literal;
+  $shardOfID?: string;
+} & {
   [ID]?: TTable extends { [ID]: unknown } ? unknown : string | string[];
 } & {
   [K in Field<TTable>]?:
     | Value<TTable[K]>
     | ReadonlyArray<Value<TTable[K]>>
-    | { [$lte]: NonNullable<Value<TTable[K]>> }
-    | { [$lt]: NonNullable<Value<TTable[K]>> }
-    | { [$gte]: NonNullable<Value<TTable[K]>> }
-    | { [$gt]: NonNullable<Value<TTable[K]>> }
-    | { [$overlap]: NonNullable<Value<TTable[K]>> }
-    | { [$ne]: Value<TTable[K]> | ReadonlyArray<Value<TTable[K]>> };
+    // Field comparison operators for SelectInput.
+    //
+    // Example: { field: { $op: "value" } }
+    | { $lte: NonNullable<Value<TTable[K]>> }
+    | { $lt: NonNullable<Value<TTable[K]>> }
+    | { $gte: NonNullable<Value<TTable[K]>> }
+    | { $gt: NonNullable<Value<TTable[K]>> }
+    | { $overlap: NonNullable<Value<TTable[K]>> }
+    | { $ne: Value<TTable[K]> | ReadonlyArray<Value<TTable[K]>> };
 };
-
-/**
- * Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
- */
-export type Where<TTable extends Table> = {
-  /** There is a bug in TS > v3.5.3 which they don't fix for a long time,
-   * because they (and we) don't know how to reproduce it in a wild. Although TS
-   * perfectly supports recursive types, if we just put "[$not]?: Where<TTable>"
-   * to here, we'll get a "Maximum call stack size exceeded" error. Removing "?"
-   * stops the crash (but it's not what we want).
-   *
-   * So it's a little trade-off hack for now: we may not have $not inside a
-   * $not. It's still better than saying e.g. "[$not]?: any". */
-  [$not]?: WhereWithoutNot<TTable>;
-} & WhereWithoutNot<TTable>;
 
 /**
  * Table -> [["f1", "ASC"], ["f2", "DESC"]] or [ [{[$literal]: ["a=?", 10]},
  * "ASC"], ["b", "DESC"] ]
  */
 export type Order<TTable extends Table> = ReadonlyArray<
-  { [K in Field<TTable>]?: string } & { [$literal]?: Literal }
+  { [K in Field<TTable>]?: string } & { $literal?: Literal }
 >;
 
 /**

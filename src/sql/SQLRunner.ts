@@ -6,24 +6,7 @@ import { Runner } from "../abstract/Batcher";
 import { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { Schema } from "../abstract/Schema";
 import { hasKey } from "../helpers";
-import {
-  $and,
-  $gt,
-  $gte,
-  $literal,
-  $lt,
-  $lte,
-  $ne,
-  $not,
-  $or,
-  $overlap,
-  Field,
-  ID,
-  Literal,
-  Table,
-  Value,
-  Where,
-} from "../types";
+import { Field, ID, Literal, Table, Value, Where } from "../types";
 import parseCompositeRow from "./helpers/parseCompositeRow";
 import * as sqlClientMod from "./SQLClient";
 import { SQLError } from "./SQLError";
@@ -457,33 +440,33 @@ export abstract class SQLRunner<
       }
 
       let foundOp = false;
-      if (hasKey($gte, value)) {
-        pieces.push(this.buildFieldBinOp(key, ">=", value[$gte]));
+      if (hasKey("$gte", value)) {
+        pieces.push(this.buildFieldBinOp(key, ">=", value.$gte));
         foundOp = true;
       }
 
-      if (hasKey($gt, value)) {
-        pieces.push(this.buildFieldBinOp(key, ">", value[$gt]));
+      if (hasKey("$gt", value)) {
+        pieces.push(this.buildFieldBinOp(key, ">", value.$gt));
         foundOp = true;
       }
 
-      if (hasKey($lte, value)) {
-        pieces.push(this.buildFieldBinOp(key, "<=", value[$lte]));
+      if (hasKey("$lte", value)) {
+        pieces.push(this.buildFieldBinOp(key, "<=", value.$lte));
         foundOp = true;
       }
 
-      if (hasKey($lt, value)) {
-        pieces.push(this.buildFieldBinOp(key, "<", value[$lt]));
+      if (hasKey("$lt", value)) {
+        pieces.push(this.buildFieldBinOp(key, "<", value.$lt));
         foundOp = true;
       }
 
-      if (hasKey($ne, value)) {
-        pieces.push(this.buildFieldNe(key, value[$ne]));
+      if (hasKey("$ne", value)) {
+        pieces.push(this.buildFieldNe(key, value.$ne));
         foundOp = true;
       }
 
-      if (hasKey($overlap, value)) {
-        pieces.push(this.buildFieldBinOp(key, "&&", value[$overlap]));
+      if (hasKey("$overlap", value)) {
+        pieces.push(this.buildFieldBinOp(key, "&&", value.$overlap));
         foundOp = true;
       }
 
@@ -492,30 +475,30 @@ export abstract class SQLRunner<
       }
     }
 
-    if (hasKey($and, where)) {
-      const clause = this.buildLogical(specs, "AND", where[$and]);
+    if (hasKey("$and", where)) {
+      const clause = this.buildLogical(specs, "AND", where.$and);
       if (clause.length) {
         pieces.push(clause);
       }
     }
 
-    if (hasKey($or, where)) {
-      const clause = this.buildLogical(specs, "OR", where[$or]);
+    if (hasKey("$or", where)) {
+      const clause = this.buildLogical(specs, "OR", where.$or);
       if (clause.length) {
         pieces.push(clause);
       }
     }
 
-    if (hasKey($not, where)) {
-      pieces.push(this.buildNot(specs, where[$not]));
+    if (hasKey("$not", where)) {
+      pieces.push(this.buildNot(specs, where.$not));
     }
 
-    if (hasKey($literal, where)) {
+    if (hasKey("$literal", where)) {
       // $literal clause in WHERE may look like "abc OR def", and to make sure
       // this OR doesn't interfere with priorities of other operators around, we
       // always wrap the literal with (). We must wrap in WHERE only, not in
       // e.g. ORDER BY or CTEs.
-      pieces.push("(" + this.buildLiteral(where[$literal]) + ")");
+      pieces.push("(" + this.buildLiteral(where.$literal) + ")");
     }
 
     if (!pieces.length) {
