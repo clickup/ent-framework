@@ -1,3 +1,4 @@
+import first from "lodash/first";
 import flatten from "lodash/flatten";
 import sum from "lodash/sum";
 import { Client } from "../../abstract/Client";
@@ -285,18 +286,20 @@ export function PrimitiveMixin<
     ) {
       await vc.heartbeater.heartbeat();
 
-      const shard = this.SHARD_LOCATOR.singleShardFromInput(
+      const shards = this.SHARD_LOCATOR.multiShardsFromInput(
+        vc,
         input,
-        "loadBy",
-        false // fallbackToRandomShard
+        "loadBy"
       );
-      const query = this.SCHEMA.loadBy(input);
-      const row = await shard.run(
-        query,
-        vc.toAnnotation(),
-        vc.timeline(shard, this.SCHEMA.name),
-        vc.freshness
+      const rows = await mapJoin(shards, async (shard) =>
+        shard.run(
+          this.SCHEMA.loadBy(input),
+          vc.toAnnotation(),
+          vc.timeline(shard, this.SCHEMA.name),
+          vc.freshness
+        )
       );
+      const row = first(rows);
       return row ? this.createEnt(vc, row) : null;
     }
 
