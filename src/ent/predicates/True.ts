@@ -7,7 +7,7 @@ import { Predicate } from "./Predicate";
 export class True implements Predicate<never> {
   readonly name = this.constructor.name;
 
-  async check(_vc: VC, _row: object): Promise<boolean> {
+  async check(_vc: VC): Promise<boolean> {
     return true;
   }
 }
