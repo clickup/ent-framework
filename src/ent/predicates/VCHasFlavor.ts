@@ -10,7 +10,7 @@ export class VCHasFlavor implements Predicate<never> {
 
   constructor(private Flavor: new (...args: any[]) => VCFlavor) {}
 
-  async check(vc: VC, _row: never): Promise<boolean> {
+  async check(vc: VC): Promise<boolean> {
     return !!vc.flavor(this.Flavor);
   }
 }
