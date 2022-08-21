@@ -1,10 +1,4 @@
-import {
-  ID,
-  IDFields,
-  IDFieldsRequired,
-  InsertFieldsRequired,
-  Table,
-} from "../types";
+import { ID, IDFields, IDFieldsRequired, Table } from "../types";
 import {
   AfterMutationTrigger,
   AfterUpdateTrigger,
@@ -13,7 +7,7 @@ import {
   DepsBuilder,
   InsertTrigger,
 } from "./Triggers";
-import { ValidationRules } from "./Validation";
+import { Validation, ValidationRules } from "./Validation";
 
 /**
  * The table is located in the global shard (shard 0).
@@ -38,9 +32,11 @@ export type ShardAffinity<
 /**
  * Strongly typed configuration framework to force TS auto-infer privacy
  * callbacks arguments types (which are not Ents, but row-like inputs).
- * 1. We MUST resolve privacyXyz rules below lazily, at actual operation; else
- *    in case of cyclic Ent dependencies between EntA and EntB, one of them will
- *    be magically undefined.
+ *
+ * Motivation:
+ * 1. We MUST resolve privacyXyz rules below lazily, at actual operation;
+ *    otherwise in case of cyclic Ent dependencies between EntA and EntB, one of
+ *    them will be magically undefined.
  * 2. We can’t define these parameter as BaseEnt arguments: privacy rules may
  *    refer the derived Ent itself and other Ents and thus produce cyclic
  *    dependencies. TS doesn't allow to work with such cyclic dependencies
@@ -50,29 +46,58 @@ export type ShardAffinity<
  *    https://github.com/Microsoft/TypeScript/issues/31273
  */
 export class Configuration<TTable extends Table> {
+  /** Defines how to locate a shard at Ent insert time. See ShardAffinity. */
   readonly shardAffinity!: ShardAffinity<IDFields<TTable>>;
+  /** Inverses allow cross-shard foreign keys & cross-shard selection. If a
+   * field points to an Ent in another shard, and we're e.g. selecting by a
+   * value in this field, inverses allow to locate shard(s) of the Ent. */
   readonly inverses?: {
     [k in IDFieldsRequired<TTable>]?: { name: string; type: string };
   };
-  readonly privacyTenantUserIDField?: InsertFieldsRequired<TTable> & string;
+  /** If defined, forces all Ents of this class to have the value of that field
+   * equal to VC's principal at load time. This is a very 1st unavoidable check
+   * in the privacy rules chain, thus it's bullet-proof. */
+  readonly privacyTenantPrincipalField?: Validation<TTable>["tenantPrincipalField"];
+  /** If defined, an attempt to load this Ent using an omni VC will "lower" that
+   * VC to the principal returned by this callback. Omni VC is always lowered,
+   * even if the callback is not set (to a guest VC in such cases). */
+  readonly privacyInferPrincipal?: Validation<TTable>["inferPrincipal"];
+  /** Privacy rules checked on every row loaded from the DB. */
   readonly privacyLoad!: ValidationRules<TTable>["load"];
+  /** Privacy rules checked before a row is inserted to the DB. If no
+   * update/delete rules are defined, then these rules are also run on
+   * update/delete by default. */
   readonly privacyInsert!: ValidationRules<TTable>["insert"];
+  /** Privacy rules checked before a row is updated in the DB. If not defined,
+   * privacyInsert rules are used.  */
   readonly privacyUpdate?: ValidationRules<TTable>["update"];
+  /** Privacy rules checked before a row is deleted in the DB. If not defined,
+   * privacyUpdate (or privacyInsert) rules are used.  */
   readonly privacyDelete?: ValidationRules<TTable>["delete"];
+  /** Custom field values validators run before any insert/update. */
   readonly validators?: ValidationRules<TTable>["validate"];
+  /** Triggers run before every insert. */
   readonly beforeInsert?: Array<InsertTrigger<TTable>>;
+  /** Triggers run before every update. */
   readonly beforeUpdate?: Array<BeforeUpdateTrigger<TTable>>;
+  /** Triggers run before every delete. */
   readonly beforeDelete?: Array<DeleteTrigger<TTable>>;
+  /** Triggers run after every delete. */
   readonly afterInsert?: Array<InsertTrigger<TTable>>;
+  /** Triggers run after every update. */
   readonly afterUpdate?: Array<
     | AfterUpdateTrigger<TTable>
     | [DepsBuilder<TTable>, AfterUpdateTrigger<TTable>]
   >;
+  /** Triggers run after every delete. */
   readonly afterDelete?: Array<DeleteTrigger<TTable>>;
+  /** Triggers run after every insert/update/delete. Each trigger may also be
+   * passed as "React useEffect-like" tuple where the callback is executed only
+   * if the deps are modified. */
   readonly afterMutation?: Array<
     | AfterMutationTrigger<TTable>
     | [DepsBuilder<TTable>, AfterMutationTrigger<TTable>]
-  >; // called after insert/update/delete
+  >;
 
   constructor(cfg: Configuration<TTable>) {
     Object.assign(this, cfg);

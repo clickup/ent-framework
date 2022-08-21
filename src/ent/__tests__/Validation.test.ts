@@ -343,7 +343,7 @@ test("0120_load_fails_when_deny_if_rule_throws", async () => {
 test("0130_fail_when_tenant_user_id_mismatches", async () => {
   const tester = new ValidationTester();
   const validation = new Validation<typeof companyTable>("table", {
-    tenantUserIDField: "tenant_id",
+    tenantPrincipalField: "tenant_id",
     load: [],
     insert: [],
   });

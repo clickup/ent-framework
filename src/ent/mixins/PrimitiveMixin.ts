@@ -17,7 +17,6 @@ import {
   Where,
 } from "../../types";
 import { EntNotInsertableError } from "../errors/EntNotInsertableError";
-import { OutgoingEdgePointsToVC } from "../predicates/OutgoingEdgePointsToVC";
 import { IDsCacheReadable, IDsCacheUpdatable } from "../predicates/Predicate";
 import { VC } from "../VC";
 import { ConfigClass, ConfigInstance } from "./ConfigMixin";
@@ -530,7 +529,7 @@ export function PrimitiveMixin<
           // turn the omni VC into an user-owning VC (or a guest). For most of
           // cases, this call is a no-op (we rarely upgrade/downgrade VCs).
           const wasOmniVC = vc.isOmni();
-          vc = this.createLowerVC(vc, row);
+          vc = await this.createLowerVC(vc, row);
 
           // Cloning is important here. Due to possible deduplication of exactly
           // same requests, the same row object can be returned twice, while we
@@ -562,33 +561,28 @@ export function PrimitiveMixin<
 
     /**
      * We never create an Ent with ent.vc = omni; instead, we lower permissions
-     * to either the Ent's owner (if tenantUserIDField is used, or if it has a
+     * to either the Ent's owner (if tenantPrincipalField is used, or if it has a
      * field pointing to VC) or to a guest VC.
      */
-    private static createLowerVC(vc: VC, row: Row<TTable>) {
-      let rowUserID: string | null = null;
+    private static async createLowerVC(vc: VC, row: Row<TTable>) {
+      let newRowPrincipal: string | null;
       if (vc.isOmni()) {
-        if (this.VALIDATION.tenantUserIDField) {
-          rowUserID =
-            (row[this.VALIDATION.tenantUserIDField as any] as any) ?? null;
+        newRowPrincipal = null;
+
+        if (this.VALIDATION.tenantPrincipalField) {
+          newRowPrincipal =
+            (row[this.VALIDATION.tenantPrincipalField as any] as any) ?? null;
         }
 
-        if (!rowUserID) {
-          for (const rule of this.VALIDATION.load) {
-            if (
-              rule.predicate instanceof OutgoingEdgePointsToVC &&
-              row[rule.predicate.field]
-            ) {
-              rowUserID = row[rule.predicate.field] as string;
-              break;
-            }
-          }
+        if (!newRowPrincipal) {
+          newRowPrincipal =
+            (await this.VALIDATION.inferPrincipal?.(vc, row)) ?? null;
         }
       } else {
-        rowUserID = vc.principal;
+        newRowPrincipal = vc.principal;
       }
 
-      return vc.toLowerInternal(rowUserID);
+      return vc.toLowerInternal(newRowPrincipal);
     }
 
     constructor() {
