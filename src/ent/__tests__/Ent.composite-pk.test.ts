@@ -28,6 +28,7 @@ export class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
+      privacyInferPrincipal: async (_vc, { userid }) => userid,
       privacyLoad: [new AllowIf(new OutgoingEdgePointsToVC("userid"))],
       privacyInsert: [],
       privacyUpdate: [new Require(new OutgoingEdgePointsToVC("userid"))],

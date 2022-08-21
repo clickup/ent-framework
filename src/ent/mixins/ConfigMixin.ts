@@ -130,7 +130,8 @@ export function ConfigMixin<
       const cfg = this.configure();
       Object.defineProperty(this, "VALIDATION", {
         value: new Validation(this.name, {
-          tenantUserIDField: cfg.privacyTenantUserIDField,
+          tenantPrincipalField: cfg.privacyTenantPrincipalField,
+          inferPrincipal: cfg.privacyInferPrincipal,
           load: cfg.privacyLoad,
           insert: cfg.privacyInsert,
           update: cfg.privacyUpdate,

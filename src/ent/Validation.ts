@@ -20,7 +20,11 @@ import { buildNewRow } from "./Triggers";
 import { VC } from "./VC";
 
 export type ValidationRules<TTable extends Table> = {
-  readonly tenantUserIDField?: InsertFieldsRequired<TTable> & string;
+  readonly tenantPrincipalField?: InsertFieldsRequired<TTable> & string;
+  readonly inferPrincipal?: (
+    vc: VC,
+    row: Row<TTable>
+  ) => Promise<string | null>;
   readonly load: Validation<TTable>["load"];
   readonly insert: Validation<TTable>["insert"];
   readonly update?: Validation<TTable>["update"];
@@ -29,7 +33,8 @@ export type ValidationRules<TTable extends Table> = {
 };
 
 export class Validation<TTable extends Table> {
-  readonly tenantUserIDField?: InsertFieldsRequired<TTable> & string;
+  readonly tenantPrincipalField?: ValidationRules<TTable>["tenantPrincipalField"];
+  readonly inferPrincipal?: ValidationRules<TTable>["inferPrincipal"];
   readonly load: Array<Rule<Row<TTable>>>;
   readonly insert: Array<Rule<InsertInput<TTable>>>;
   readonly update: Array<Rule<Row<TTable>>>;
@@ -37,12 +42,13 @@ export class Validation<TTable extends Table> {
   readonly validate: Array<Require<Row<TTable>>>;
 
   constructor(private entName: string, rules: ValidationRules<TTable>) {
+    this.tenantPrincipalField = rules.tenantPrincipalField;
+    this.inferPrincipal = rules.inferPrincipal;
     this.load = rules.load;
     this.insert = rules.insert;
     this.update = rules.update || (this.insert as any);
     this.delete = rules.delete || this.update;
     this.validate = (rules.validate || []).map((pred) => new Require(pred));
-    this.tenantUserIDField = rules.tenantUserIDField;
   }
 
   async validateLoad(vc: VC, row: Row<TTable>): Promise<void> {
@@ -133,18 +139,18 @@ export class Validation<TTable extends Table> {
       | typeof EntNotInsertableError
       | typeof EntNotUpdatableError
   ) {
-    if (this.tenantUserIDField === undefined) {
+    if (this.tenantPrincipalField === undefined) {
       return;
     }
 
-    const rowTenantUserID = (row as any)[this.tenantUserIDField];
+    const rowTenantUserID = (row as any)[this.tenantPrincipalField];
     if (rowTenantUserID === vc.principal) {
       return;
     }
 
     throw new ExceptionClass(this.entName, vc.toString(), row as any, {
       message:
-        this.tenantUserIDField +
+        this.tenantPrincipalField +
         " is expected to be " +
         JSON.stringify(vc.principal) +
         ", but got " +
