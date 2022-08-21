@@ -138,7 +138,7 @@ export class Validation<TTable extends Table> {
     }
 
     const rowTenantUserID = (row as any)[this.tenantUserIDField];
-    if (rowTenantUserID === vc.userID) {
+    if (rowTenantUserID === vc.principal) {
       return;
     }
 
@@ -146,7 +146,7 @@ export class Validation<TTable extends Table> {
       message:
         this.tenantUserIDField +
         " is expected to be " +
-        JSON.stringify(vc.userID) +
+        JSON.stringify(vc.principal) +
         ", but got " +
         JSON.stringify(rowTenantUserID),
     });

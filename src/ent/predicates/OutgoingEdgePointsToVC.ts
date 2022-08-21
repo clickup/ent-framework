@@ -2,9 +2,9 @@ import { VC } from "../VC";
 import { Predicate } from "./Predicate";
 
 /**
- * Checks that the field's value is the same as VC's userID:
+ * Checks that the field's value is the same as VC's principal:
  *
- * EntOur[user_id] ---> vc.userID
+ * EntOur[user_id] ---> vc.principal
  */
 export class OutgoingEdgePointsToVC<TField extends string>
   implements Predicate<Record<TField, string | null>>
@@ -19,6 +19,6 @@ export class OutgoingEdgePointsToVC<TField extends string>
       return false;
     }
 
-    return toID === vc.userID;
+    return toID === vc.principal;
   }
 }

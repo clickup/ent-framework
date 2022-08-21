@@ -585,7 +585,7 @@ export function PrimitiveMixin<
           }
         }
       } else {
-        rowUserID = vc.userID;
+        rowUserID = vc.principal;
       }
 
       return vc.toLowerInternal(rowUserID);

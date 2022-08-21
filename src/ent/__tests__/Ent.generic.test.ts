@@ -35,7 +35,7 @@ beforeEach(async () => {
 });
 
 test("simple", async () => {
-  const user = await EntTestUser.loadX(vc, vc.userID);
+  const user = await EntTestUser.loadX(vc, vc.principal);
   expect(user.url_name).toEqual("john");
 
   const post = await EntTestPost.insertReturning(vc, {
@@ -49,14 +49,14 @@ test("simple", async () => {
 });
 
 test("loadX", async () => {
-  const user = await EntTestUser.loadX(vc, vc.userID);
+  const user = await EntTestUser.loadX(vc, vc.principal);
   expect(user.nameUpper()).toEqual("JOHN");
 });
 
 test("loadX_coalesce_produce_same_objects", async () => {
   const [user1, user2] = await join([
-    EntTestUser.loadX(vc, vc.userID),
-    EntTestUser.loadX(vc, vc.userID),
+    EntTestUser.loadX(vc, vc.principal),
+    EntTestUser.loadX(vc, vc.principal),
   ]);
   (user1 as any).some = 10;
   expect((user2 as any).some).toEqual(10);
@@ -64,8 +64,8 @@ test("loadX_coalesce_produce_same_objects", async () => {
 
 test("loadX_coalesce_produce_different_objects_for_different_vc", async () => {
   const [user1, user2] = await join([
-    EntTestUser.loadX(vc, vc.userID),
-    EntTestUser.loadX(vc.withNewTrace(), vc.userID),
+    EntTestUser.loadX(vc, vc.principal),
+    EntTestUser.loadX(vc.withNewTrace(), vc.principal),
   ]);
   (user1 as any).some = 10;
   expect((user2 as any).some).toBeUndefined();
@@ -73,7 +73,7 @@ test("loadX_coalesce_produce_different_objects_for_different_vc", async () => {
 
 test("loadNullableNoAccess", async () => {
   try {
-    await EntTestUser.loadNullable(vcOther, vc.userID);
+    await EntTestUser.loadNullable(vcOther, vc.principal);
     fail("must throw an exception");
   } catch (e: any) {
     expectToMatchSnapshot(e.message);
@@ -82,7 +82,7 @@ test("loadNullableNoAccess", async () => {
 
 test("loadChildNoAccess", async () => {
   const post = await EntTestPost.insertReturning(vc, {
-    user_id: vc.userID,
+    user_id: vc.principal,
     title: "some_post",
   });
   const comment = await EntTestComment.insertReturning(vc, {
@@ -116,7 +116,7 @@ test("loadByNoAccess", async () => {
 
 test("select_and_count", async () => {
   const post = await EntTestPost.insertReturning(vc, {
-    user_id: vc.userID,
+    user_id: vc.principal,
     title: "post",
   });
   await join([
@@ -165,7 +165,7 @@ test("select_and_count", async () => {
 
 test("selectChunked", async () => {
   const post = await EntTestPost.insertReturning(vc, {
-    user_id: vc.userID,
+    user_id: vc.principal,
     title: "post",
   });
   await join([
@@ -200,7 +200,7 @@ test("selectChunked", async () => {
 
 test("custom_shard", async () => {
   const post = await EntTestPost.insertReturning(vc, {
-    user_id: vc.userID,
+    user_id: vc.principal,
     title: "something",
   });
   const idInOtherNonGlobalShard = post.id.replace(
@@ -237,25 +237,25 @@ test("upsertReturningCreateNew", async () => {
     url_name: "someone",
   });
   expect(newUser).toMatchObject({ name: "Someone", url_name: "someone" });
-  expect(newUser.vc.userID).toEqual(newUser.id);
+  expect(newUser.vc.principal).toEqual(newUser.id);
 });
 
 test("updateReturningX", async () => {
-  const user = await EntTestUser.loadX(vc, vc.userID);
+  const user = await EntTestUser.loadX(vc, vc.principal);
   const newUser = await user.updateReturningX({ url_name: "new" });
   expect(newUser).toMatchObject({ name: "John", url_name: "new" });
   expect(newUser.nameUpper()).toEqual("JOHN");
 });
 
 test("delete", async () => {
-  const user = await EntTestUser.loadX(vc, vc.userID);
+  const user = await EntTestUser.loadX(vc, vc.principal);
   expect(await user.deleteOriginal()).toBeTruthy();
-  expect(await EntTestUser.loadNullable(vc, vc.userID)).toBeNull();
+  expect(await EntTestUser.loadNullable(vc, vc.principal)).toBeNull();
   expect(await user.deleteOriginal()).toBeFalsy();
 });
 
 test("canReadPostOfSameCompanyUser", async () => {
-  const user = await EntTestUser.loadX(vc, vc.userID);
+  const user = await EntTestUser.loadX(vc, vc.principal);
   const post = await EntTestPost.insertReturning(vc, {
     user_id: user.id,
     title: "something",
@@ -271,7 +271,7 @@ test("canReadPostOfSameCompanyUser", async () => {
 });
 
 test("canUpdateCommentOfSameCompanyUser", async () => {
-  const user = await EntTestUser.loadX(vc, vc.userID);
+  const user = await EntTestUser.loadX(vc, vc.principal);
   const post = await EntTestPost.insertReturning(vc, {
     user_id: user.id,
     title: "something",
@@ -301,7 +301,7 @@ test("cannotCreatePostsForDifferentUsers", async () => {
   );
   try {
     await EntTestPost.insertReturning(userAllseeing.vc, {
-      user_id: vc.userID,
+      user_id: vc.principal,
       title: "something",
     });
     fail("must throw an exception");
@@ -343,8 +343,8 @@ test("heisenbugTwoDifferentSchemaFieldSetsMakeSchemaHashDifferent", async () => 
     }
   }
 
-  const row1 = await Ent1.loadX(vc, vc.userID);
-  const row2 = await Ent2.loadX(vc, vc.userID);
+  const row1 = await Ent1.loadX(vc, vc.principal);
+  const row2 = await Ent2.loadX(vc, vc.principal);
   expect(row1.company_id).toBeTruthy();
   expect((row2 as any).company_id).toBeUndefined(); // heisenbug was here
 });
@@ -352,7 +352,7 @@ test("heisenbugTwoDifferentSchemaFieldSetsMakeSchemaHashDifferent", async () => 
 test("triggers", async () => {
   EntTestHeadline.TRIGGER_CALLS = [];
   await EntTestHeadline.insertReturning(vc, {
-    user_id: vc.userID,
+    user_id: vc.principal,
     headline: "xyz",
     [$EPHEMERAL]: null,
   });
@@ -363,7 +363,7 @@ test("triggers", async () => {
 
   EntTestHeadline.TRIGGER_CALLS = [];
   const headline = await EntTestHeadline.insertReturning(vc, {
-    user_id: vc.userID,
+    user_id: vc.principal,
     headline: "abc",
     [$EPHEMERAL]: "eph",
     [$EPHEMERAL2]: 42,

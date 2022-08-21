@@ -70,8 +70,8 @@ export class VC {
     /** Trace information to quickly find all the requests done by this VC in
      * debug logs. Trace is inherited once VC is derived. */
     private readonly trace: VCTrace,
-    /** ID of the "user" represented by this VC. */
-    public readonly userID: string,
+    /** A principal (typically user ID) represented by this VC. */
+    public readonly principal: string,
     /** Allows to set VC to always use either a master or a replica DB. E.g. if
      * freshness=MASTER, then all the timeline data is ignored, and all the
      * requests are sent to master. */
@@ -181,11 +181,11 @@ export class VC {
    * This method also has a side effect, because it reflects the changes in the
    * global DB state as seen by the current VC's user. It restores previously
    * serialized timelines to the existing VC and all its parent VCs which share
-   * the same userID. (The latter happens, because `this.timelines` map is
+   * the same principal. (The latter happens, because `this.timelines` map is
    * passed by reference to all derived VCs starting from the one which sets
-   * userID; see `new VC(...)` clauses all around and toLowerInternal() logic.)
-   * The timelines are merged according to wal position (greater wal position
-   * wins).
+   * principal; see `new VC(...)` clauses all around and toLowerInternal()
+   * logic.) The timelines are merged according to wal position (greater wal
+   * position wins).
    */
   withDeserializedTimelines(...dataStrs: ReadonlyArray<string | undefined>) {
     for (const dataStr of dataStrs) {
@@ -210,7 +210,7 @@ export class VC {
   withEmptyCache() {
     return new VC(
       this.trace,
-      this.userID,
+      this.principal,
       this.freshness,
       this.timelines,
       this.flavors,
@@ -230,7 +230,7 @@ export class VC {
 
     return new VC(
       this.trace,
-      this.userID,
+      this.principal,
       MASTER,
       this.timelines,
       this.flavors,
@@ -252,7 +252,7 @@ export class VC {
 
     return new VC(
       this.trace,
-      this.userID,
+      this.principal,
       STALE_REPLICA,
       this.timelines,
       this.flavors,
@@ -269,7 +269,7 @@ export class VC {
     return flavor
       ? new VC(
           this.trace,
-          this.userID,
+          this.principal,
           this.freshness,
           this.timelines,
           new Map([...this.flavors.entries(), [flavor.constructor, flavor]]),
@@ -285,7 +285,7 @@ export class VC {
   withNewTrace(prefix?: string) {
     return new VC(
       new VCTrace(prefix ?? this.trace.prefix),
-      this.userID,
+      this.principal,
       this.freshness,
       this.timelines,
       this.flavors,
@@ -300,7 +300,7 @@ export class VC {
   withHeartbeater(heartbeater: VC["heartbeater"]) {
     return new VC(
       this.trace,
-      this.userID,
+      this.principal,
       this.freshness,
       this.timelines,
       this.flavors,
@@ -332,14 +332,14 @@ export class VC {
    * Checks if it's an omni VC.
    */
   isOmni(): boolean {
-    return this.userID === OMNI_ID;
+    return this.principal === OMNI_ID;
   }
 
   /**
    * Checks if it's a guest VC.
    */
   isGuest(): boolean {
-    return this.userID === GUEST_ID;
+    return this.principal === GUEST_ID;
   }
 
   /**
@@ -367,7 +367,7 @@ export class VC {
       ...[...this.flavors.values()].map((flavor) => flavor.toDebugString()),
     ]).join(",");
     return (
-      `vc:${this.userID}` +
+      `vc:${this.principal}` +
       (flavorsStr ? `(${flavorsStr})` : "") +
       (this.freshness === MASTER
         ? ":master"
@@ -405,27 +405,27 @@ export class VC {
 
   /**
    * Used internally by Ent framework to lower permissions of an injected VC.
-   * For guest, userID === null.
+   * For guest, principal === null.
    * - freshness is always reset to default one it VC is demoted
    * - isRoot is changed to false once a root VC is switched to a per-user VC
    */
   @Memoize()
-  public toLowerInternal(userID: string | null) {
-    const newUserID = userID ? userID.toString() : GUEST_ID;
+  public toLowerInternal(principal: string | null) {
+    const newPrincipal = principal ? principal.toString() : GUEST_ID;
 
-    if (this.userID === newUserID && this.freshness !== STALE_REPLICA) {
+    if (this.principal === newPrincipal && this.freshness !== STALE_REPLICA) {
       // Speed optimization (this happens most of the time): a VC is already
       // user-owned, and freshness is default or MASTER.
       return this;
     }
 
-    const switchesToUserFirstTime =
-      this.isRoot && newUserID !== GUEST_ID && newUserID !== OMNI_ID;
-    const newIsRoot = this.isRoot && !switchesToUserFirstTime;
+    const switchesToPrincipalFirstTime =
+      this.isRoot && newPrincipal !== GUEST_ID && newPrincipal !== OMNI_ID;
+    const newIsRoot = this.isRoot && !switchesToPrincipalFirstTime;
 
     // Create an independent timelines map only when we switch to a non-root VC
     // the 1st time (e.g. in the beginning of HTTP connection).
-    const newTimelines = switchesToUserFirstTime
+    const newTimelines = switchesToPrincipalFirstTime
       ? Timeline.cloneMap(this.timelines)
       : this.timelines;
 
@@ -434,10 +434,10 @@ export class VC {
     const newFreshness =
       this.freshness === STALE_REPLICA ? null : this.freshness;
 
-    // Something has changed (most commonly omni->userID or omni->guest).
+    // Something has changed (most commonly omni->principal or omni->guest).
     return new VC(
       this.trace,
-      newUserID,
+      newPrincipal,
       newFreshness,
       newTimelines,
       this.flavors,

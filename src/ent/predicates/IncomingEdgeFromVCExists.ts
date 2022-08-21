@@ -8,7 +8,7 @@ import { IDsCacheCanReadIncomingEdge, Predicate } from "./Predicate";
  * An ent may represent not necessarily a node in the graph, but also an edge
  * between two nodes. Consider EntMember in the below example:
  *
- * vc.userID <--- EntMember[user_id, company_id] ---> EntCompany
+ * vc.principal <--- EntMember[user_id, company_id] ---> EntCompany
  *
  * This predicate verifies that for a e.g. given EntCompany row and a given VC,
  * an EntMember row exists (and optionally matches some criterion) in the
@@ -49,7 +49,7 @@ export class IncomingEdgeFromVCExists<TEdgeTable extends Table>
 
     const where = {
       [this.entEdgeFKField]: row[ID],
-      [this.entEdgeVCField]: vc.userID,
+      [this.entEdgeVCField]: vc.principal,
     } as Where<TEdgeTable>;
 
     let allow: boolean;
@@ -58,7 +58,7 @@ export class IncomingEdgeFromVCExists<TEdgeTable extends Table>
       // delegates permission checks to the row ent, and row ent loads the edge
       // ent to run the edgeEntFilter function. It's safe, because:
       // 1. Omni VC is always demoted to the current user's VC (which is vc
-      //    since we filter by vc.userID above) or to a guest VC if it cannot
+      //    since we filter by vc.principal above) or to a guest VC if it cannot
       //    find a user_id field in the edge ent (which also never happens).
       // 2. The edgeEntFilter function is synchronous, so it can't physically
       //    access the database anyway.
