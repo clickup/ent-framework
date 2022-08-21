@@ -111,19 +111,19 @@ beforeEach(async () => {
     name: "my-name",
   });
   expect(user).toMatchObject({
-    id: user.vc.userID,
-    userid: user.vc.userID,
+    id: user.vc.principal,
+    userid: user.vc.principal,
   });
 });
 
 test("simple", async () => {
   const composite = await EntTestComposite.insertReturning(user.vc, {
-    user_id: user.vc.userID,
+    user_id: user.vc.principal,
     name: "my-name",
   });
   expect(composite).toMatchObject({
-    id: `(${user.vc.userID},${composite.some_id})`,
-    user_id: user.vc.userID,
+    id: `(${user.vc.principal},${composite.some_id})`,
+    user_id: user.vc.principal,
   });
 
   const rows = await EntTestComposite.select(

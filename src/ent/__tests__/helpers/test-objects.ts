@@ -42,7 +42,7 @@ export class EntTestCompany extends BaseEnt(testCluster, schemaTestCompany) {
       shardAffinity: GLOBAL_SHARD,
       privacyLoad: [
         new AllowIf(async function VCIsAllSeeing(vc, _company) {
-          const vcUser = await EntTestUser.loadX(vc, vc.userID);
+          const vcUser = await EntTestUser.loadX(vc, vc.principal);
           return vcUser.is_alseeing;
         }),
         new AllowIf(
@@ -115,7 +115,7 @@ export class EntTestPost extends BaseEnt(testCluster, schemaTestPost) {
         new Require(async function VCInSameCompany(vc, post) {
           // A post can be updated by anyone in the same company.
           const postUser = await EntTestUser.loadX(vc, post.user_id);
-          const vcUser = await EntTestUser.loadX(vc, vc.userID);
+          const vcUser = await EntTestUser.loadX(vc, vc.principal);
           return postUser.company_id === vcUser.company_id;
         }),
       ],
@@ -466,7 +466,7 @@ export async function init(): Promise<[VC, VC]> {
     name: "John",
     url_name: "john",
   });
-  expect(user.vc.userID).toEqual(user.id);
+  expect(user.vc.principal).toEqual(user.id);
 
   const otherUser = await EntTestUser.insertReturning(
     company.vc.toOmniDangerous(),
