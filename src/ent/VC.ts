@@ -282,9 +282,9 @@ export class VC {
   /**
    * Derives the VC with new trace ID.
    */
-  withNewTrace(prefix?: string) {
+  withNewTrace(rawTrace: string | undefined, prefix: string = "") {
     return new VC(
-      new VCTrace(prefix ?? this.trace.prefix),
+      new VCTrace(rawTrace, prefix),
       this.principal,
       this.freshness,
       this.timelines,
@@ -385,6 +385,7 @@ export class VC {
       this.annotationCache = {
         // DON'T alter trace here anyhow, or it would break the debugging chain.
         trace: this.trace.trace,
+        rawTrace: this.trace.rawTrace,
         debugStack: "",
         // vc has all flavors mixed in
         vc: this.toString(),

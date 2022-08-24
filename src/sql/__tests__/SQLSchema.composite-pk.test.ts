@@ -43,6 +43,7 @@ async function shardRun<TOutput>(query: Query<TOutput>) {
     query,
     {
       trace: "some-trace",
+      rawTrace: "123456434",
       debugStack: "",
       vc: "some-vc",
       whyClient: undefined,
