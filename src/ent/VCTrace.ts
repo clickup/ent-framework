@@ -14,7 +14,7 @@ export class VCTrace {
     // rawTrace will be missing if DD is logging disabled or there is no "root" span.
     // We don't need to fake it if it is not provided.
     this.trace =
-      (prefix ? prefix + "-" : "") + this.rawTrace || createRandomRawTrace();
+      (prefix ? prefix + "-" : "") + (this.rawTrace || createRandomRawTrace());
   }
 }
 
