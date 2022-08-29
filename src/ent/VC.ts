@@ -329,6 +329,21 @@ export class VC {
   }
 
   /**
+   * Creates a new VC downgraded to guest permissions.
+   */
+  @Memoize()
+  public toGuest() {
+    return new VC(
+      this.trace,
+      GUEST_ID,
+      this.freshness,
+      this.timelines,
+      this.flavors,
+      this.heartbeater,
+      this.isRoot
+    );
+  }
+  /**
    * Checks if it's an omni VC.
    */
   isOmni(): boolean {

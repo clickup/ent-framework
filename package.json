@@ -1,7 +1,7 @@
 {
   "name": "@time-loop/ent-framework",
   "description": "Graph database library",
-  "version": "2.10.223",
+  "version": "2.10.224",
   "license": "MIT",
   "scripts": {
     "build": "tsc.sh",
