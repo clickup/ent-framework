@@ -15,12 +15,25 @@ import { VC } from "./VC";
  * okay.
  */
 export class ShardLocator<TClient extends Client, TField extends string> {
-  constructor(
-    private cluster: Cluster<TClient>,
-    private schemaName: string,
-    private shardAffinity: ShardAffinity<TField>,
-    private inverses: Array<Inverse<TClient, any>>
-  ) {}
+  private cluster;
+  private schemaName;
+  private shardAffinity;
+  private uniqueKey;
+  private inverses;
+
+  constructor(options: {
+    cluster: Cluster<TClient>;
+    schemaName: string;
+    shardAffinity: ShardAffinity<TField>;
+    uniqueKey: readonly string[] | undefined;
+    inverses: ReadonlyArray<Inverse<TClient, any>>;
+  }) {
+    this.cluster = options.cluster;
+    this.schemaName = options.schemaName;
+    this.shardAffinity = options.shardAffinity;
+    this.uniqueKey = options.uniqueKey;
+    this.inverses = options.inverses;
+  }
 
   /**
    * Called in a context when we must know exactly 1 shard to work with (e.g.
@@ -28,6 +41,13 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    * random shard in case when it can't infer the shard number from the input
    * (used in e.g. INSERT operations); otherwise throws
    * EntCannotDetectShardError (happens in e.g. upsert, loadBy etc.).
+   *
+   * The "randomness" of the "random shard" is deterministic by the Ent's unique
+   * key (if it's defined), so Ents with the same unique key will map to the
+   * same "random" shard. Notice that this logic mainly applies at creation
+   * time: since we often times add shared to the cluster, we can't rely on it
+   * consistently at select time (but relying at insert time is fine: it
+   * protects against most of "unique key violation" problems).
    */
   singleShardFromInput(
     input: Record<string, any>,
@@ -37,7 +57,11 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     let shard = this.shardFromAffinity(input);
 
     if (!shard && fallbackToRandomShard) {
-      shard = this.cluster.randomShard();
+      shard = this.cluster.randomShard(
+        this.uniqueKey?.length
+          ? this.uniqueKey.map((field) => input[field])
+          : undefined
+      );
     }
 
     if (!shard) {

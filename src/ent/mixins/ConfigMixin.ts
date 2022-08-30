@@ -115,12 +115,13 @@ export function ConfigMixin<
 
     static get SHARD_LOCATOR(): ShardLocator<TClient, IDFields<TTable>> {
       Object.defineProperty(this, "SHARD_LOCATOR", {
-        value: new ShardLocator(
+        value: new ShardLocator({
           cluster,
-          schema.name,
-          this.SHARD_AFFINITY,
-          this.INVERSES
-        ),
+          schemaName: schema.name,
+          shardAffinity: this.SHARD_AFFINITY,
+          uniqueKey: schema.uniqueKey,
+          inverses: this.INVERSES,
+        }),
         writable: false,
       });
       return this.SHARD_LOCATOR;

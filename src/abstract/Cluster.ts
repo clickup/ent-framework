@@ -2,6 +2,7 @@ import delay from "delay";
 import compact from "lodash/compact";
 import random from "lodash/random";
 import range from "lodash/range";
+import hash from "object-hash";
 import { mapJoin, runInVoid } from "../helpers";
 import { Client } from "./Client";
 import { Shard } from "./Shard";
@@ -76,9 +77,19 @@ export class Cluster<TClient extends Client> {
     return this.shards.get(0)!;
   }
 
-  randomShard(): Shard<TClient> {
-    // TODO: implement power-of-two algorithm to pick the shard smallest in size.
-    const noFromOne = random(1, this.numWriteShards - 1);
+  randomShard(seed?: object): Shard<TClient> {
+    let noFromOne;
+    if (seed) {
+      const numHash = hash(seed, {
+        algorithm: "md5",
+        encoding: "buffer",
+      }).readInt32BE();
+      noFromOne = 1 + (numHash % (this.numWriteShards - 1));
+    } else {
+      // TODO: implement power-of-two algorithm to pick the shard smallest in size.
+      noFromOne = random(1, this.numWriteShards - 1);
+    }
+
     return this.shards.get(noFromOne)!;
   }
 
