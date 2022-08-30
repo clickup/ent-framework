@@ -79,11 +79,11 @@ export class Cluster<TClient extends Client> {
 
   randomShard(seed?: object): Shard<TClient> {
     let noFromOne;
-    if (seed) {
+    if (seed !== undefined) {
       const numHash = hash(seed, {
         algorithm: "md5",
         encoding: "buffer",
-      }).readInt32BE();
+      }).readUInt32BE();
       noFromOne = 1 + (numHash % (this.numWriteShards - 1));
     } else {
       // TODO: implement power-of-two algorithm to pick the shard smallest in size.
