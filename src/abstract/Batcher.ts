@@ -173,7 +173,17 @@ export class Batcher<TInput, TOutput> {
       if (this.queuedInputs.size >= this.maxBatchSize) {
         runInVoid(this.flushQueue);
       } else if (this.queuedInputs.size === 1) {
-        runInVoid(RESOLVED_PROMISE.then(this.flushQueueCaller));
+        // Defer calling of flushQueue() to the "end of the event loop's spin",
+        // to have a chance to collect more run() calls for it to execute. We
+        // actually defer twice (to the end of microtasks sub-loop and then once
+        // again), just in case: the original DataLoader library wraps the
+        // nextTick() call into a "global resolved Promise" object, so we do the
+        // same here blindly. See some of details here:
+        // https://github.com/graphql/dataloader/blob/fae38f14702e925d1e59051d7e5cb3a9a78bfde8/src/index.js#L234-L241
+        // https://stackoverflow.com/a/27648394
+        runInVoid(
+          RESOLVED_PROMISE.then(() => process.nextTick(this.flushQueue))
+        );
       }
     });
   }
@@ -251,10 +261,6 @@ export class Batcher<TInput, TOutput> {
         }
       }
     }
-  };
-
-  protected flushQueueCaller = () => {
-    process.nextTick(this.flushQueue);
   };
 
   private async runSingleForEach(
