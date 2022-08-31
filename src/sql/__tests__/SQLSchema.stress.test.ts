@@ -1,11 +1,13 @@
 import delay from "delay";
 import hash from "object-hash";
-import { Query } from "../../abstract/Query";
-import { MASTER, Shard } from "../../abstract/Shard";
+import type { Query } from "../../abstract/Query";
+import type { Shard } from "../../abstract/Shard";
+import { MASTER } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
 import { join, mapJoin, nullthrows } from "../../helpers";
 import { SQLSchema } from "../SQLSchema";
-import { testCluster, TestSQLClient } from "./helpers/TestSQLClient";
+import type { TestSQLClient } from "./helpers/TestSQLClient";
+import { testCluster } from "./helpers/TestSQLClient";
 
 const TABLE = 'schema"stress_test';
 const timeline = new Timeline();

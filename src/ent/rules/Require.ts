@@ -1,5 +1,6 @@
-import { VC } from "../VC";
-import { Rule, RuleDecision, RuleResult } from "./Rule";
+import type { VC } from "../VC";
+import type { RuleResult } from "./Rule";
+import { Rule, RuleDecision } from "./Rule";
 
 /**
  * Returns TOLERATE if the predicate succeeds, otherwise DENY.

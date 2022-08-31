@@ -1,5 +1,5 @@
-import { VC } from "../VC";
-import { Predicate } from "./Predicate";
+import type { VC } from "../VC";
+import type { Predicate } from "./Predicate";
 
 /**
  * Always passes; used for e.g. globally accessed objects.

@@ -1,8 +1,10 @@
 import { localUniqueInt, nullthrows } from "../../helpers";
-import { ID, Row, RowWithID, Table, Where } from "../../types";
-import { EntClass } from "../types";
-import { VC } from "../VC";
-import { IDsCacheCanReadIncomingEdge, Predicate } from "./Predicate";
+import type { Row, RowWithID, Table, Where } from "../../types";
+import { ID } from "../../types";
+import type { EntClass } from "../types";
+import type { VC } from "../VC";
+import type { Predicate } from "./Predicate";
+import { IDsCacheCanReadIncomingEdge } from "./Predicate";
 
 /**
  * An ent may represent not necessarily a node in the graph, but also an edge

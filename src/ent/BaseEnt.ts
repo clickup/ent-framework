@@ -1,7 +1,7 @@
-import { Client } from "../abstract/Client";
-import { Cluster } from "../abstract/Cluster";
-import { Schema } from "../abstract/Schema";
-import { Table, UniqueKey } from "../types";
+import type { Client } from "../abstract/Client";
+import type { Cluster } from "../abstract/Cluster";
+import type { Schema } from "../abstract/Schema";
+import type { Table, UniqueKey } from "../types";
 import { GLOBAL_SHARD } from "./Configuration";
 import { CacheMixin } from "./mixins/CacheMixin";
 import { ConfigMixin } from "./mixins/ConfigMixin";

@@ -1,6 +1,7 @@
-import { EntClass } from "../types";
-import { VC } from "../VC";
-import { IDsCacheReadable, Predicate } from "./Predicate";
+import type { EntClass } from "../types";
+import type { VC } from "../VC";
+import type { Predicate } from "./Predicate";
+import { IDsCacheReadable } from "./Predicate";
 
 /**
  * Checks that an ent which a field is pointing to is readable:

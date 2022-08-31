@@ -1,8 +1,9 @@
 import { QueryBase } from "../abstract/Query";
-import { QueryAnnotation } from "../abstract/QueryAnnotation";
-import { Schema } from "../abstract/Schema";
-import { ID, Table } from "../types";
-import { SQLClient } from "./SQLClient";
+import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import type { Schema } from "../abstract/Schema";
+import type { Table } from "../types";
+import { ID } from "../types";
+import type { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
 export class SQLQueryDelete<TTable extends Table> extends QueryBase<

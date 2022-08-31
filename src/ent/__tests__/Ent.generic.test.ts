@@ -8,7 +8,7 @@ import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
-import { VC } from "../VC";
+import type { VC } from "../VC";
 import {
   $EPHEMERAL,
   $EPHEMERAL2,

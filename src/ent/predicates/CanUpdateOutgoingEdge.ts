@@ -1,6 +1,7 @@
-import { EntClass } from "../types";
-import { VC } from "../VC";
-import { IDsCacheUpdatable, Predicate } from "./Predicate";
+import type { EntClass } from "../types";
+import type { VC } from "../VC";
+import type { Predicate } from "./Predicate";
+import { IDsCacheUpdatable } from "./Predicate";
 
 /**
  * Checks that an Ent available via a field is updatable. See

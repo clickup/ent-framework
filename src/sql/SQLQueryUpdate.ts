@@ -1,9 +1,10 @@
 import uniq from "lodash/uniq";
-import { Query } from "../abstract/Query";
-import { QueryAnnotation } from "../abstract/QueryAnnotation";
-import { Schema } from "../abstract/Schema";
-import { Field, ID, Table, UpdateInput } from "../types";
-import { SQLClient } from "./SQLClient";
+import type { Query } from "../abstract/Query";
+import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import type { Schema } from "../abstract/Schema";
+import type { Field, Table, UpdateInput } from "../types";
+import { ID } from "../types";
+import type { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
 export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {

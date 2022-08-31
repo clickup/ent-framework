@@ -8,7 +8,7 @@ import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
 import { EntCannotDetectShardError } from "../errors/EntCannotDetectShardError";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
-import { VC } from "../VC";
+import type { VC } from "../VC";
 import { createVC } from "./helpers/test-objects";
 
 const TABLE_USER = 'inv"test_user';

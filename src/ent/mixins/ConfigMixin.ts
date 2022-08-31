@@ -1,10 +1,12 @@
 import compact from "lodash/compact";
-import { Client } from "../../abstract/Client";
-import { Cluster } from "../../abstract/Cluster";
-import { Schema } from "../../abstract/Schema";
+import type { Client } from "../../abstract/Client";
+import type { Cluster } from "../../abstract/Cluster";
+import type { Schema } from "../../abstract/Schema";
 import { entries } from "../../helpers";
-import { ID, IDFields, Table, UniqueKey } from "../../types";
-import { Configuration, GLOBAL_SHARD, ShardAffinity } from "../Configuration";
+import type { IDFields, Table, UniqueKey } from "../../types";
+import { ID } from "../../types";
+import type { ShardAffinity } from "../Configuration";
+import { Configuration, GLOBAL_SHARD } from "../Configuration";
 import { Inverse } from "../Inverse";
 import { ShardLocator } from "../ShardLocator";
 import { Triggers } from "../Triggers";

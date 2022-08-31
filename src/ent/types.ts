@@ -1,5 +1,5 @@
-import { Schema } from "../abstract/Schema";
-import {
+import type { Schema } from "../abstract/Schema";
+import type {
   CountInput,
   LoadByInput,
   Order,
@@ -7,8 +7,8 @@ import {
   UniqueKey,
   Where,
 } from "../types";
-import { Validation } from "./Validation";
-import { VC } from "./VC";
+import type { Validation } from "./Validation";
+import type { VC } from "./VC";
 
 /**
  * A very shallow interface of Ent class (as a collection of static methods).

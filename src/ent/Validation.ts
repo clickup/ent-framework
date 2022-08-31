@@ -1,5 +1,5 @@
 import { indent } from "../helpers";
-import {
+import type {
   InsertFieldsRequired,
   InsertInput,
   Row,
@@ -9,15 +9,14 @@ import {
 import { EntNotInsertableError } from "./errors/EntNotInsertableError";
 import { EntNotReadableError } from "./errors/EntNotReadableError";
 import { EntNotUpdatableError } from "./errors/EntNotUpdatableError";
-import {
-  EntValidationError,
-  EntValidationErrorInfo,
-} from "./errors/EntValidationError";
-import { Predicate } from "./predicates/Predicate";
+import type { EntValidationErrorInfo } from "./errors/EntValidationError";
+import { EntValidationError } from "./errors/EntValidationError";
+import type { Predicate } from "./predicates/Predicate";
 import { Require } from "./rules/Require";
-import { evaluate, Rule, RuleDecision, RuleResult } from "./rules/Rule";
+import type { Rule, RuleResult } from "./rules/Rule";
+import { evaluate, RuleDecision } from "./rules/Rule";
 import { buildNewRow } from "./Triggers";
-import { VC } from "./VC";
+import type { VC } from "./VC";
 
 export type ValidationRules<TTable extends Table> = {
   readonly tenantPrincipalField?: InsertFieldsRequired<TTable> & string;

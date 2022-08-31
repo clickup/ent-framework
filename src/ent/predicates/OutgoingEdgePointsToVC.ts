@@ -1,5 +1,5 @@
-import { VC } from "../VC";
-import { Predicate } from "./Predicate";
+import type { VC } from "../VC";
+import type { Predicate } from "./Predicate";
 
 /**
  * Checks that the field's value is the same as VC's principal:

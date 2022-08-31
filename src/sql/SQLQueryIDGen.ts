@@ -1,8 +1,10 @@
 import { QueryBase } from "../abstract/Query";
-import { QueryAnnotation } from "../abstract/QueryAnnotation";
+import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { nullthrows } from "../helpers";
-import { ID, Table } from "../types";
-import { escapeIdent, SQLClient } from "./SQLClient";
+import type { Table } from "../types";
+import { ID } from "../types";
+import type { SQLClient } from "./SQLClient";
+import { escapeIdent } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
 export class SQLQueryIDGen<TTable extends Table> extends QueryBase<

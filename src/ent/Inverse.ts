@@ -1,12 +1,14 @@
-import { Client } from "../abstract/Client";
-import { Cluster } from "../abstract/Cluster";
-import { Query } from "../abstract/Query";
-import { Schema } from "../abstract/Schema";
+import type { Client } from "../abstract/Client";
+import type { Cluster } from "../abstract/Cluster";
+import type { Query } from "../abstract/Query";
+import type { Schema } from "../abstract/Schema";
 import { join } from "../helpers";
 import Memoize from "../Memoize";
-import { ID, IDFieldsRequired, Table } from "../types";
-import { GLOBAL_SHARD, ShardAffinity } from "./Configuration";
-import { VC } from "./VC";
+import type { IDFieldsRequired, Table } from "../types";
+import { ID } from "../types";
+import type { ShardAffinity } from "./Configuration";
+import { GLOBAL_SHARD } from "./Configuration";
+import type { VC } from "./VC";
 
 // For perf reasons, we return no more than that number of id2s per each id1.
 const MAX_ID2_PER_ID1 = 1000;

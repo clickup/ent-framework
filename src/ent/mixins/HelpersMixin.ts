@@ -1,7 +1,6 @@
-import { Client } from "../../abstract/Client";
-import { AddNew, OmitNew } from "../../helpers";
-import {
-  ID,
+import type { Client } from "../../abstract/Client";
+import type { AddNew, OmitNew } from "../../helpers";
+import type {
   InsertInput,
   LoadByInput,
   Row,
@@ -9,11 +8,12 @@ import {
   UniqueKey,
   UpdateInput,
 } from "../../types";
+import { ID } from "../../types";
 import { EntAccessError } from "../errors/EntAccessError";
 import { EntNotFoundError } from "../errors/EntNotFoundError";
 import { EntUniqueKeyError } from "../errors/EntUniqueKeyError";
-import { VC } from "../VC";
-import { PrimitiveClass, PrimitiveInstance } from "./PrimitiveMixin";
+import type { VC } from "../VC";
+import type { PrimitiveClass, PrimitiveInstance } from "./PrimitiveMixin";
 
 export interface HelpersInstance<TTable extends Table>
   extends PrimitiveInstance<TTable> {

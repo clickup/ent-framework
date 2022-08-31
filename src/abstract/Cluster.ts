@@ -4,7 +4,7 @@ import random from "lodash/random";
 import range from "lodash/range";
 import hash from "object-hash";
 import { mapJoin, runInVoid } from "../helpers";
-import { Client } from "./Client";
+import type { Client } from "./Client";
 import { Shard } from "./Shard";
 
 const DISCOVER_ERROR_RETRY_ATTEMPTS = 1;

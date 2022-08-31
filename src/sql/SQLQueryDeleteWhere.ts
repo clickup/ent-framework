@@ -1,9 +1,10 @@
 import { QueryBase } from "../abstract/Query";
-import { QueryAnnotation } from "../abstract/QueryAnnotation";
-import { Schema } from "../abstract/Schema";
+import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import type { Schema } from "../abstract/Schema";
 import { hash } from "../helpers";
-import { DeleteWhereInput, ID, Table } from "../types";
-import { SQLClient } from "./SQLClient";
+import type { DeleteWhereInput, Table } from "../types";
+import { ID } from "../types";
+import type { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
 export class SQLQueryDeleteWhere<TTable extends Table> extends QueryBase<

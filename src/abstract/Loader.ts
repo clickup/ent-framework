@@ -1,4 +1,5 @@
-import pDefer, { DeferredPromise } from "p-defer";
+import type { DeferredPromise } from "p-defer";
+import pDefer from "p-defer";
 
 export interface Handler<TLoadArgs extends any[], TReturn> {
   onCollect: (...args: TLoadArgs) => void;

@@ -1,7 +1,7 @@
 import delay from "delay";
 import { runInVoid, toFloatMs } from "../helpers";
-import { Loggers } from "./Client";
-import { QueryAnnotation } from "./QueryAnnotation";
+import type { Loggers } from "./Client";
+import type { QueryAnnotation } from "./QueryAnnotation";
 
 export const DEFAULT_MAX_BATCH_SIZE = 100;
 

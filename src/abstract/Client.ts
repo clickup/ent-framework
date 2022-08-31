@@ -1,8 +1,9 @@
 import Memoize from "../Memoize";
-import { Batcher, Runner } from "./Batcher";
-import { QueryAnnotation } from "./QueryAnnotation";
-import { Schema } from "./Schema";
-import { TimelineManager } from "./TimelineManager";
+import type { Runner } from "./Batcher";
+import { Batcher } from "./Batcher";
+import type { QueryAnnotation } from "./QueryAnnotation";
+import type { Schema } from "./Schema";
+import type { TimelineManager } from "./TimelineManager";
 
 export interface ClientQueryLoggerProps {
   annotations: QueryAnnotation[];
