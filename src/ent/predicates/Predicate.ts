@@ -1,5 +1,5 @@
 import { IDsCache } from "../IDsCache";
-import { VC } from "../VC";
+import type { VC } from "../VC";
 
 /**
  * A predicate evaluates against some input (typically a row) and returns true

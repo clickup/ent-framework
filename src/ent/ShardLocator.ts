@@ -1,13 +1,14 @@
-import { Client } from "../abstract/Client";
-import { Cluster } from "../abstract/Cluster";
-import { Shard } from "../abstract/Shard";
+import type { Client } from "../abstract/Client";
+import type { Cluster } from "../abstract/Cluster";
+import type { Shard } from "../abstract/Shard";
 import { copyStack, mapJoin, nullthrows } from "../helpers";
 import { ID } from "../types";
-import { GLOBAL_SHARD, ShardAffinity } from "./Configuration";
+import type { ShardAffinity } from "./Configuration";
+import { GLOBAL_SHARD } from "./Configuration";
 import { EntCannotDetectShardError } from "./errors/EntCannotDetectShardError";
 import { EntNotFoundError } from "./errors/EntNotFoundError";
-import { Inverse } from "./Inverse";
-import { VC } from "./VC";
+import type { Inverse } from "./Inverse";
+import type { VC } from "./VC";
 
 /**
  * Knows how to locate shard(s) based on various inputs. In some contexts, we

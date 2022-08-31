@@ -1,6 +1,7 @@
 import { EntAccessError } from "../errors/EntAccessError";
-import { VC } from "../VC";
-import { Rule, RuleDecision, RuleResult } from "./Rule";
+import type { VC } from "../VC";
+import type { RuleResult } from "./Rule";
+import { Rule, RuleDecision } from "./Rule";
 
 /**
  * Returns ALLOW if the predicate succeeds, otherwise SKIP.

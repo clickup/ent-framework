@@ -1,6 +1,6 @@
 import { inspect } from "util";
-import { Row, Table } from "../../../types";
-import { Validation } from "../../Validation";
+import type { Row, Table } from "../../../types";
+import type { Validation } from "../../Validation";
 import { vcTestGuest } from "./test-objects";
 
 /**

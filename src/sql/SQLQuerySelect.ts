@@ -1,9 +1,10 @@
 import { inspect } from "util";
 import { QueryBase } from "../abstract/Query";
-import { QueryAnnotation } from "../abstract/QueryAnnotation";
+import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { hash, hasKey } from "../helpers";
-import { Order, Row, SelectInput, Table } from "../types";
-import { escapeString, SQLClient } from "./SQLClient";
+import type { Order, Row, SelectInput, Table } from "../types";
+import type { SQLClient } from "./SQLClient";
+import { escapeString } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
 export class SQLQuerySelect<TTable extends Table> extends QueryBase<

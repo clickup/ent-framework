@@ -1,8 +1,8 @@
-import { Table } from "../types";
-import { Runner } from "./Batcher";
-import { Client } from "./Client";
-import { QueryAnnotation } from "./QueryAnnotation";
-import { Schema } from "./Schema";
+import type { Table } from "../types";
+import type { Runner } from "./Batcher";
+import type { Client } from "./Client";
+import type { QueryAnnotation } from "./QueryAnnotation";
+import type { Schema } from "./Schema";
 
 /**
  * A very lean interface for a Query. In practice each query is so different

@@ -1,5 +1,5 @@
-import { ID, IDFields, IDFieldsRequired, Table } from "../types";
-import {
+import type { ID, IDFields, IDFieldsRequired, Table } from "../types";
+import type {
   AfterMutationTrigger,
   AfterUpdateTrigger,
   BeforeUpdateTrigger,
@@ -7,7 +7,7 @@ import {
   DepsBuilder,
   InsertTrigger,
 } from "./Triggers";
-import { Validation, ValidationRules } from "./Validation";
+import type { Validation, ValidationRules } from "./Validation";
 
 /**
  * The table is located in the global shard (shard 0).

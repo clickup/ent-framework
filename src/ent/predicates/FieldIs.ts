@@ -1,6 +1,6 @@
-import { EntValidationErrorInfo } from "../errors/EntValidationError";
-import { VC } from "../VC";
-import { Predicate } from "./Predicate";
+import type { EntValidationErrorInfo } from "../errors/EntValidationError";
+import type { VC } from "../VC";
+import type { Predicate } from "./Predicate";
 
 /**
  * Checks that the validator function returns true for the value in some field.

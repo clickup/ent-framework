@@ -1,5 +1,5 @@
 import hash from "object-hash";
-import {
+import type {
   CountInput,
   InsertInput,
   LoadByInput,
@@ -9,7 +9,7 @@ import {
   UniqueKey,
   UpdateInput,
 } from "../types";
-import { Query } from "./Query";
+import type { Query } from "./Query";
 
 export interface SchemaClass {
   new <

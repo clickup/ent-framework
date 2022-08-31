@@ -1,6 +1,6 @@
-import { Query } from "../abstract/Query";
+import type { Query } from "../abstract/Query";
 import { Schema } from "../abstract/Schema";
-import {
+import type {
   CountInput,
   InsertInput,
   LoadByInput,

@@ -1,10 +1,11 @@
 import pickBy from "lodash/pickBy";
 import { QueryBase } from "../abstract/Query";
-import { QueryAnnotation } from "../abstract/QueryAnnotation";
-import { Schema } from "../abstract/Schema";
+import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import type { Schema } from "../abstract/Schema";
 import { nullthrows } from "../helpers";
-import { ID, InsertInput, Table } from "../types";
-import { SQLClient } from "./SQLClient";
+import type { InsertInput, Table } from "../types";
+import { ID } from "../types";
+import type { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
 export class SQLQueryUpsert<TTable extends Table> extends QueryBase<

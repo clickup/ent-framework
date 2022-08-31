@@ -1,11 +1,13 @@
-import { Query } from "../../abstract/Query";
-import { MASTER, Shard } from "../../abstract/Shard";
+import type { Query } from "../../abstract/Query";
+import type { Shard } from "../../abstract/Shard";
+import { MASTER } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
 import { nullthrows } from "../../helpers";
 import { ID } from "../../types";
 import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
 import { SQLSchema } from "../SQLSchema";
-import { testCluster, TestSQLClient } from "./helpers/TestSQLClient";
+import type { TestSQLClient } from "./helpers/TestSQLClient";
+import { testCluster } from "./helpers/TestSQLClient";
 
 const TABLE = 'schema"test_alias';
 const timeline = new Timeline();

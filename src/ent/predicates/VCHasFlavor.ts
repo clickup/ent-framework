@@ -1,6 +1,6 @@
-import { VC } from "../VC";
-import { VCFlavor } from "../VCFlavor";
-import { Predicate } from "./Predicate";
+import type { VC } from "../VC";
+import type { VCFlavor } from "../VCFlavor";
+import type { Predicate } from "./Predicate";
 
 /**
  * Checks if the VC has some flavor.

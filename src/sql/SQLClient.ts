@@ -1,6 +1,7 @@
-import { QueryResult, QueryResultRow } from "pg";
-import { Client, Loggers } from "../abstract/Client";
-import { QueryAnnotation } from "../abstract/QueryAnnotation";
+import type { QueryResult, QueryResultRow } from "pg";
+import type { Loggers } from "../abstract/Client";
+import { Client } from "../abstract/Client";
+import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { TimelineManager } from "../abstract/TimelineManager";
 import { nullthrows, sanitizeIDForDebugPrinting, toFloatMs } from "../helpers";
 import parseCompositeRow from "./helpers/parseCompositeRow";

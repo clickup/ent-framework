@@ -1,8 +1,9 @@
 import { inspect } from "util";
 import { mapJoin } from "../../helpers";
 import { EntAccessError } from "../errors/EntAccessError";
-import { FuncToPredicate, Predicate } from "../predicates/Predicate";
-import { VC } from "../VC";
+import type { Predicate } from "../predicates/Predicate";
+import { FuncToPredicate } from "../predicates/Predicate";
+import type { VC } from "../VC";
 
 /**
  * Each Rule evaluates to some Decision (or throws).

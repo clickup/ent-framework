@@ -1,9 +1,9 @@
 import Memoize from "../Memoize";
-import { Client } from "./Client";
-import { Island } from "./Cluster";
-import { Query } from "./Query";
-import { QueryAnnotation, WhyClient } from "./QueryAnnotation";
-import { Timeline } from "./Timeline";
+import type { Client } from "./Client";
+import type { Island } from "./Cluster";
+import type { Query } from "./Query";
+import type { QueryAnnotation, WhyClient } from "./QueryAnnotation";
+import type { Timeline } from "./Timeline";
 
 /**
  * Master freshness: reads always go to master.

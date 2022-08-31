@@ -1,6 +1,6 @@
 import QuickLRU from "quick-lru";
 import { MASTER } from "../abstract/Shard";
-import { VC } from "./VC";
+import type { VC } from "./VC";
 import { VCWithQueryCache } from "./VCFlavor";
 
 const OPS = ["loadNullable", "loadByNullable", "select", "count"] as const;

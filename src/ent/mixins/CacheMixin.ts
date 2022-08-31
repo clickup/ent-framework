@@ -1,5 +1,5 @@
-import { Client } from "../../abstract/Client";
-import {
+import type { Client } from "../../abstract/Client";
+import type {
   CountInput,
   InsertInput,
   LoadByInput,
@@ -10,8 +10,8 @@ import {
   Where,
 } from "../../types";
 import { QueryCache } from "../QueryCache";
-import { VC } from "../VC";
-import { PrimitiveClass, PrimitiveInstance } from "./PrimitiveMixin";
+import type { VC } from "../VC";
+import type { PrimitiveClass, PrimitiveInstance } from "./PrimitiveMixin";
 
 /**
  * Modifies the passed class adding VC-stored cache layer to it.

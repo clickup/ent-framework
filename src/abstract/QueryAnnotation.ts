@@ -1,4 +1,4 @@
-import { TimelineCaughtUpReason } from "./Timeline";
+import type { TimelineCaughtUpReason } from "./Timeline";
 
 /**
  * A reason why master or replica was chosen to send the query too. The most

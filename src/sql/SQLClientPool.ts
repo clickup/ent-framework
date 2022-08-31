@@ -1,5 +1,6 @@
-import { Pool, PoolClient, PoolConfig } from "pg";
-import { Loggers } from "../abstract/Client";
+import type { PoolClient, PoolConfig } from "pg";
+import { Pool } from "pg";
+import type { Loggers } from "../abstract/Client";
 import { runInVoid } from "../helpers";
 import { SQLClient } from "./SQLClient";
 

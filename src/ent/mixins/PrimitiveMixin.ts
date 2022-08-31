@@ -1,12 +1,12 @@
 import first from "lodash/first";
 import flatten from "lodash/flatten";
 import sum from "lodash/sum";
-import { Client } from "../../abstract/Client";
-import { hasKey, mapJoin, OmitNew } from "../../helpers";
+import type { Client } from "../../abstract/Client";
+import type { OmitNew } from "../../helpers";
+import { hasKey, mapJoin } from "../../helpers";
 import memoize2 from "../../memoize2";
-import {
+import type {
   CountInput,
-  ID,
   InsertInput,
   LoadByInput,
   Order,
@@ -16,10 +16,11 @@ import {
   UpdateInput,
   Where,
 } from "../../types";
+import { ID } from "../../types";
 import { EntNotInsertableError } from "../errors/EntNotInsertableError";
 import { IDsCacheReadable, IDsCacheUpdatable } from "../predicates/Predicate";
-import { VC } from "../VC";
-import { ConfigClass, ConfigInstance } from "./ConfigMixin";
+import type { VC } from "../VC";
+import type { ConfigClass, ConfigInstance } from "./ConfigMixin";
 
 export interface PrimitiveInstance<TTable extends Table>
   extends ConfigInstance {

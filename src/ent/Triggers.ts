@@ -1,5 +1,6 @@
-import { Flatten, join } from "../helpers";
-import {
+import type { Flatten } from "../helpers";
+import { join } from "../helpers";
+import type {
   InsertInput,
   Row,
   RowWithID,
@@ -7,7 +8,7 @@ import {
   TriggerRow,
   UpdateInput,
 } from "../types";
-import { VC } from "./VC";
+import type { VC } from "./VC";
 
 /**
  * Triggers could be used to simulate "transactional best-effort behavior" in a
