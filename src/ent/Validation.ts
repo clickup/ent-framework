@@ -1,3 +1,4 @@
+import pickBy from "lodash/pickBy";
 import { indent } from "../helpers";
 import type {
   InsertFieldsRequired,
@@ -62,7 +63,7 @@ export class Validation<TTable extends Table> {
   }
 
   async validateInsert(vc: VC, input: InsertInput<TTable>): Promise<void> {
-    await this.validateUserInputImpl(vc, input as Row<TTable>);
+    await this.validateUserInputImpl(vc, input as Row<TTable>, input);
     await this.validatePrivacyImpl(
       "insert",
       this.insert,
@@ -83,7 +84,7 @@ export class Validation<TTable extends Table> {
     const newRow = buildNewRow(old, input);
 
     if (!privacyOnly) {
-      await this.validateUserInputImpl(vc, newRow);
+      await this.validateUserInputImpl(vc, newRow, input);
     }
 
     await this.validatePrivacyImpl(
@@ -157,17 +158,25 @@ export class Validation<TTable extends Table> {
     });
   }
 
-  private async validateUserInputImpl(vc: VC, row: Row<TTable>) {
-    const { allow, results } = await evaluate(this.validate, vc, row, true);
+  private async validateUserInputImpl(
+    vc: VC,
+    newRow: Row<TTable>,
+    input: object
+  ) {
+    const { allow, results } = await evaluate(this.validate, vc, newRow, true);
     if (allow) {
+      // Quick path (expected to fire most of the time).
       return;
     }
 
+    // If some predicates failed, we ensure that they relate to the fields which
+    // we actually touched. This makes sense for e.g. UPDATE: if we don't update
+    // some field, it doesn't make sense to user-validate it.
+    const touchedFields = Object.keys(pickBy(input, (v) => v !== undefined));
     const failedPredicates = results
-      .filter((result) => result.decision === RuleDecision.DENY)
-      .map(
-        (result) => result.rule.predicate as unknown as EntValidationErrorInfo
-      );
+      .filter(({ decision }) => decision === RuleDecision.DENY)
+      .map(({ rule }) => rule.predicate as unknown as EntValidationErrorInfo)
+      .filter(({ field }) => field === null || touchedFields.includes(field));
     if (failedPredicates.length > 0) {
       throw new EntValidationError(this.entName, failedPredicates);
     }

@@ -32,6 +32,7 @@ test("0000_load_succeeds_when_first_rule_allows", async () => {
     }),
     { id: "123", tenant_id: "42" },
     "validateLoad",
+    undefined,
     vc.toLowerInternal("42")
   );
 });
@@ -85,6 +86,7 @@ test("0030_insert_succeeds_when_all_require_allow", async () => {
     }),
     { id: "123", tenant_id: "42" },
     "validateInsert",
+    undefined,
     vc.toLowerInternal("42")
   );
 });
@@ -124,6 +126,7 @@ test("0041_update_fails_when_any_require_denies", async () => {
     }),
     { id: "123", tenant_id: "42" },
     "validateUpdate",
+    undefined,
     vc.toLowerInternal("42")
   );
 });
@@ -145,6 +148,7 @@ test("0042_delete_fails_when_any_require_denies", async () => {
     }),
     { id: "123", tenant_id: "42" },
     "validateDelete",
+    undefined,
     vc.toLowerInternal("42")
   );
 });
@@ -156,12 +160,27 @@ test("0043_update_fails_when_user_errors", async () => {
       load: [],
       insert: [new AllowIf(new True())],
       validate: [
-        new FieldIs("id", (_value) => false, "some one"),
-        new FieldIs("id", (_value) => false, "some two"),
+        new FieldIs("tenant_id", (_value) => false, "some one"),
+        new FieldIs("tenant_id", (_value) => false, "some two"),
       ],
     }),
     { id: "123", tenant_id: "42" },
-    "validateUpdate"
+    "validateUpdate",
+    { tenant_id: "42" }
+  );
+});
+
+test("0044_update_succeeds_user_validation_when_field_untouched", async () => {
+  const tester = new ValidationTester();
+  await tester.matchSnapshot(
+    new Validation<typeof companyTable>("table", {
+      load: [],
+      insert: [new AllowIf(new True())],
+      validate: [new FieldIs("id", (_value) => false, "some one")],
+    }),
+    { id: "123", tenant_id: "42" },
+    "validateUpdate",
+    { tenant_id: "101" }
   );
 });
 
@@ -351,30 +370,35 @@ test("0130_fail_when_tenant_user_id_mismatches", async () => {
     validation,
     { id: "123", tenant_id: "42" },
     "validateLoad",
+    undefined,
     vc.toLowerInternal("999")
   );
   await tester.matchSnapshot(
     validation,
     { id: "123", tenant_id: "42" },
     "validateInsert",
+    undefined,
     vc.toLowerInternal("999")
   );
   await tester.matchSnapshot(
     validation,
     { id: "123" } as any,
     "validateInsert",
+    undefined,
     vc.toLowerInternal("999")
   );
   await tester.matchSnapshot(
     validation,
     { id: "123", tenant_id: "42" },
     "validateUpdate",
+    undefined,
     vc.toLowerInternal("999")
   );
   await tester.matchSnapshot(
     validation,
     { id: "123", tenant_id: "42" },
     "validateDelete",
+    undefined,
     vc.toLowerInternal("999")
   );
 });

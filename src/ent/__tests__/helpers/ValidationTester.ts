@@ -1,5 +1,5 @@
 import { inspect } from "util";
-import type { Row, Table } from "../../../types";
+import type { Row, Table, UpdateInput } from "../../../types";
 import type { Validation } from "../../Validation";
 import { vcTestGuest } from "./test-objects";
 
@@ -33,6 +33,7 @@ export default class ValidationTester {
       | "validateInsert"
       | "validateUpdate"
       | "validateDelete",
+    updateInput: UpdateInput<TTable> = {},
     vc = vcTestGuest
   ) {
     let res = "";
@@ -46,7 +47,7 @@ export default class ValidationTester {
       }
 
       if (method === "validateUpdate") {
-        await validation.validateUpdate(vc, row, {});
+        await validation.validateUpdate(vc, row, updateInput);
       } else {
         await validation[method](vc, row as any);
       }

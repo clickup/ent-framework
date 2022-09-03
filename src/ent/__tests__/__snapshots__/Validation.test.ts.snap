@@ -47,7 +47,12 @@ Second returned false"
 `;
 
 exports[`0043_update_fails_when_user_errors 1`] = `
-"failure: table: id: \\"some one\\", id: \\"some two\\"
+"failure: table: tenant_id: \\"some one\\", tenant_id: \\"some two\\"
+"
+`;
+
+exports[`0044_update_succeeds_user_validation_when_field_untouched 1`] = `
+"success
 "
 `;
 
