@@ -1,20 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": [
-    "src/**/*",
-  ],
+  "include": ["src/**/*"],
   "compilerOptions": {
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "emitDeclarationOnly": true, // turns on SWC
     "rootDir": "src",
     "outDir": "dist",
-    "lib": [
-      "es2019",
-    ],
-    "types": [
-      "node",
-      "jest"
-    ],
-    "module": "commonjs",
+    "lib": ["es2019"],
+    "types": ["node", "jest"],
+    "module": "commonjs"
   },
   "typedocOptions": {
     "entryPoints": "src",
@@ -28,9 +22,6 @@
     "categorizeByGroup": true,
     "hideInPageTOC": true,
     "gitRevision": "master",
-    "exclude": [
-      "src/internal/**",
-      "src/__tests__/**",
-    ]
+    "exclude": ["src/internal/**", "src/__tests__/**"]
   }
 }
