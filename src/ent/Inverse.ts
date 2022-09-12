@@ -38,9 +38,9 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   ) {}
 
   /**
-   * Runs after a row was inserted to the main schema.
+   * Runs before a row with a pre-generated id2 was inserted to the main schema.
    */
-  async afterInsert(vc: VC, id1: string | null, id2: string) {
+  async beforeInsert(vc: VC, id1: string | null, id2: string) {
     if (this.id2ShardIsInferrableFromShardAffinity(id1)) {
       return;
     }
@@ -67,7 +67,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
 
     await join([
       this.afterDelete(vc, oldID1, id2),
-      this.afterInsert(vc, id1, id2),
+      this.beforeInsert(vc, id1, id2),
     ]);
   }
 

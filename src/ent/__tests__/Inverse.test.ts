@@ -1,4 +1,6 @@
+import range from "lodash/range";
 import sortBy from "lodash/sortBy";
+import uniq from "lodash/uniq";
 import { MASTER } from "../../abstract/Shard";
 import { join, mapJoin } from "../../helpers";
 import { SQLSchema } from "../../sql/SQLSchema";
@@ -23,6 +25,7 @@ const schemaTestUser = new SQLSchema(TABLE_USER, {
   name: { type: String },
 });
 
+// Sharded Ent.
 class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
   static override configure() {
     return new this.Configuration({
@@ -46,6 +49,7 @@ const schemaTestCompany = new SQLSchema(
   ["name"]
 );
 
+// An Ent in GLOBAL_SHARD.
 class EntTestCompany extends BaseEnt(testCluster, schemaTestCompany) {
   static override configure() {
     return new this.Configuration({
@@ -66,6 +70,8 @@ const schemaTestTopic = new SQLSchema(
   ["owner_id", "slug"]
 );
 
+// An Ent which is either sharded (if owner_id points to EntTestUser) or in
+// GLOBAL_SHARD (if owner_id points to EntTestCompany).
 class EntTestTopic extends BaseEnt(testCluster, schemaTestTopic) {
   static override configure() {
     return new this.Configuration({
@@ -129,7 +135,8 @@ async function init() {
           `CREATE TABLE %T(
             id bigint NOT NULL PRIMARY KEY,
             owner_id bigint NOT NULL,
-            slug text NOT NULL
+            slug text NOT NULL,
+            UNIQUE (owner_id, slug)
           )`,
           TABLE_TOPIC
         ),
@@ -286,6 +293,30 @@ test("optionally sharded colocation", async () => {
       slug: "topic2",
     })
   ).toBeNull();
+});
+
+test("race condition in insert/loadBy", async () => {
+  for (let i = 0; i < 5; i++) {
+    const COUNT = 2;
+    const company = await EntTestCompany.insertReturning(vc, {
+      name: "c" + i,
+    });
+    const insertedTopicIDs = uniq(
+      await mapJoin(range(0, COUNT), async () => {
+        const key = {
+          owner_id: company.id,
+          slug: "topic",
+        };
+        const id = await EntTestTopic.insertIfNotExists(vc, key);
+        if (id) {
+          return id;
+        }
+
+        return (await EntTestTopic.loadByX(vc, key)).id;
+      })
+    );
+    expect(insertedTopicIDs).toHaveLength(1);
+  }
 });
 
 test("exception", async () => {

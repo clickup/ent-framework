@@ -177,44 +177,81 @@ export function PrimitiveMixin<
         true // fallbackToRandomShard
       );
 
-      const insertEntAndInverses = async (input: InsertInput<TTable>) => {
-        const id = await shard.run(
-          this.SCHEMA.insert(input),
-          vc.toAnnotation(),
-          vc.timeline(shard, this.SCHEMA.name),
-          vc.freshness
-        );
-
-        if (id) {
-          vc.cache(IDsCacheUpdatable).add(id);
-          await mapJoin(this.INVERSES, async (inverse) =>
-            inverse.afterInsert(
-              vc,
-              input[inverse.id2Field] as string | null,
-              id
-            )
-          );
-        }
-
-        return id;
-      };
-
-      if (this.TRIGGERS.hasInsertTriggers()) {
-        // We have some triggers; that means we must generate an ID separately to
-        // let the before-triggers see it before the actual db operation happens.
-        const id = await shard.run(
+      if (this.TRIGGERS.hasInsertTriggers() || this.INVERSES.length > 0) {
+        // We have some triggers or inverses; that means we must generate an ID
+        // separately to let the before-triggers see it before the actual db
+        // operation happens.
+        const id2 = await shard.run(
           this.SCHEMA.idGen(),
           vc.toAnnotation(),
           vc.timeline(shard, this.SCHEMA.name),
           vc.freshness
         );
-        vc.cache(IDsCacheUpdatable).add(id); // to enable privacy checks in beforeInsert triggers
-        return this.TRIGGERS.wrapInsert(insertEntAndInverses, vc, {
-          ...input,
-          [ID]: id,
-        });
+        vc.cache(IDsCacheUpdatable).add(id2); // to enable privacy checks in beforeInsert triggers
+
+        // Inverses which we're going to create.
+        const inverseRows = this.INVERSES.map((inverse) => ({
+          inverse,
+          id1: input[inverse.id2Field] as string | null,
+          id2,
+        }));
+
+        // Preliminarily insert inverse rows to inverses table, even before we
+        // insert the main Ent. This avoids race conditions for cases when
+        // multiple clients insert and load the main Ent simultaneously: in
+        // terms of business logic, there is nothing too bad in having some
+        // "extra" inverses in the database since they're also used to resolve
+        // shard CANDIDATES.
+        await mapJoin(inverseRows, async ({ inverse, id1, id2 }) =>
+          inverse.beforeInsert(vc, id1, id2)
+        );
+
+        let insertSucceeded = false;
+        let error = undefined;
+        try {
+          insertSucceeded =
+            (await this.TRIGGERS.wrapInsert(
+              async (input) =>
+                shard.run(
+                  this.SCHEMA.insert(input),
+                  vc.toAnnotation(),
+                  vc.timeline(shard, this.SCHEMA.name),
+                  vc.freshness
+                ),
+              vc,
+              { ...input, [ID]: id2 }
+            )) !== null;
+        } catch (e: unknown) {
+          error = e;
+        }
+
+        if (!insertSucceeded) {
+          // We couldn't insert the Ent due to an unique key violation or some
+          // other DB error. Try to undo the inverse row creation (but if we
+          // fail to undo, it's not a big deal to have a stale inverse since it
+          // only affects shard candidates locating). This logic looks scary,
+          // but it's exactly how the code looked like in FB; in real lifer,
+          // there is always an "inverses fixer" service which removes orphaned
+          // inverses asynchronously.
+          await mapJoin(inverseRows, async ({ inverse, id1, id2 }) =>
+            inverse.afterDelete(vc, id1, id2)
+          ).catch(() => {});
+          return null;
+        }
+
+        if (error) {
+          throw error;
+        }
+
+        return id2;
       } else {
-        return insertEntAndInverses(input);
+        // No insert triggers and no inverses: do just a plain insert.
+        return shard.run(
+          this.SCHEMA.insert(input),
+          vc.toAnnotation(),
+          vc.timeline(shard, this.SCHEMA.name),
+          vc.freshness
+        );
       }
     }
 
