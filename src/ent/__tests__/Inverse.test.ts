@@ -18,12 +18,16 @@ const TABLE_TOPIC = 'inv"test_topic';
 const TABLE_COMPANY = 'inv"test_company';
 const TABLE_INVERSE = 'inv"test_inverse';
 
-const schemaTestUser = new SQLSchema(TABLE_USER, {
-  id: { type: ID, autoInsert: "id_gen()" },
-  company_id: { type: ID, allowNull: true },
-  team_id: { type: ID, allowNull: true },
-  name: { type: String },
-});
+const schemaTestUser = new SQLSchema(
+  TABLE_USER,
+  {
+    id: { type: ID, autoInsert: "id_gen()" },
+    company_id: { type: ID, allowNull: true },
+    team_id: { type: ID, allowNull: true },
+    name: { type: String },
+  },
+  ["company_id", "team_id"]
+);
 
 // Sharded Ent.
 class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
@@ -319,8 +323,60 @@ test("race condition in insert/loadBy", async () => {
   }
 });
 
+test("loadBy with multiple shard candidates", async () => {
+  const companyID = "1000000000000000001";
+  // Creates an inverse from companyID to shard 1.
+  await createUserInShard({
+    vc,
+    shardNo: 1,
+    companyID,
+    teamID: "1000000000000000001",
+  });
+  // Creates an inverse from companyID to shard 2.
+  const user2 = await createUserInShard({
+    vc,
+    shardNo: 2,
+    companyID,
+    teamID: "1000000000000000002",
+  });
+  // Now for companyID, we'll have 2 shard candidates (1 and 2), and they'll
+  // both be rechecked. Shard 1 will return empty results, and shard 2 will
+  // return the user. Make sure that we really get a first non-empty response.
+  await EntTestUser.loadByX(vc, {
+    company_id: companyID,
+    team_id: user2.team_id,
+  });
+});
+
 test("exception", async () => {
   await expect(EntTestUser.select(vc, { name: "u2" }, 42)).rejects.toThrow(
     EntCannotDetectShardError
   );
 });
+
+async function createUserInShard({
+  vc,
+  shardNo,
+  companyID,
+  teamID,
+}: {
+  vc: VC;
+  shardNo: number;
+  companyID: string;
+  teamID: string;
+}) {
+  for (let i = 1; i <= 100; i++) {
+    const user = await EntTestUser.insertReturning(vc, {
+      company_id: companyID,
+      team_id: (BigInt(teamID) + BigInt(i)).toString(),
+      name: "u" + i,
+    });
+    if (testCluster.shard(user.id).no === shardNo) {
+      return user;
+    } else {
+      await user.deleteOriginal();
+    }
+  }
+
+  throw Error(`Weird: couldn't create an EntTestUser in shard ${shardNo}`);
+}
