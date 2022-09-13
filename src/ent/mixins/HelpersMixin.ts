@@ -25,6 +25,15 @@ export interface HelpersInstance<TTable extends Table>
   updateChanged(input: UpdateInput<TTable>): Promise<boolean>;
 
   /**
+   * Same as updateChanged(), returns the updated Ent (or the original one if no
+   * fields were updated).
+   */
+  updateChangedReturningX<TEnt extends HelpersInstance<TTable>>(
+    this: TEnt,
+    input: UpdateInput<TTable>
+  ): Promise<TEnt>;
+
+  /**
    * Same as updateOriginal(), but returns the updated Ent (or null of there
    * was no such Ent in the database).
    */
@@ -220,6 +229,12 @@ export function HelpersMixin<
       }
 
       return false;
+    }
+
+    async updateChangedReturningX(input: UpdateInput<TTable>) {
+      return (await this.updateChanged(input))
+        ? this.constructor.loadX(this.vc, this[ID])
+        : this;
     }
 
     async updateReturningNullable(input: UpdateInput<TTable>) {
