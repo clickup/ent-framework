@@ -1,3 +1,4 @@
+import compact from "lodash/compact";
 import first from "lodash/first";
 import flatten from "lodash/flatten";
 import sum from "lodash/sum";
@@ -328,12 +329,14 @@ export function PrimitiveMixin<
         input,
         "loadBy"
       );
-      const rows = await mapJoin(shards, async (shard) =>
-        shard.run(
-          this.SCHEMA.loadBy(input),
-          vc.toAnnotation(),
-          vc.timeline(shard, this.SCHEMA.name),
-          vc.freshness
+      const rows = compact(
+        await mapJoin(shards, async (shard) =>
+          shard.run(
+            this.SCHEMA.loadBy(input),
+            vc.toAnnotation(),
+            vc.timeline(shard, this.SCHEMA.name),
+            vc.freshness
+          )
         )
       );
       const row = first(rows);
