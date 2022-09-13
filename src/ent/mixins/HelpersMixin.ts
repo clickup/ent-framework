@@ -25,8 +25,8 @@ export interface HelpersInstance<TTable extends Table>
   updateChanged(input: UpdateInput<TTable>): Promise<boolean>;
 
   /**
-   * Same as updateChanged(), returns the updated Ent (or the original one if no
-   * fields were updated).
+   * Same as updateChanged(), but returns the updated Ent (or the original one
+   * if no fields were updated).
    */
   updateChangedReturningX<TEnt extends HelpersInstance<TTable>>(
     this: TEnt,
