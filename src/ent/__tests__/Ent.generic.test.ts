@@ -247,6 +247,15 @@ test("updateReturningX", async () => {
   expect(newUser.nameUpper()).toEqual("JOHN");
 });
 
+test("updateChangedReturningX", async () => {
+  const user = await EntTestUser.loadX(vc, vc.principal);
+  const newUser1 = await user.updateChangedReturningX({ url_name: "new" });
+  expect(newUser1).toMatchObject({ name: "John", url_name: "new" });
+  expect(newUser1 === user).toBeFalsy();
+  const newUser2 = await newUser1.updateChangedReturningX({ url_name: "new" });
+  expect(newUser2 === newUser1).toBeTruthy();
+});
+
 test("delete", async () => {
   const user = await EntTestUser.loadX(vc, vc.principal);
   expect(await user.deleteOriginal()).toBeTruthy();
