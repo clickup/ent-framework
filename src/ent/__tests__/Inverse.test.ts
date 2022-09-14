@@ -36,7 +36,7 @@ class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
       shardAffinity: [],
       inverses: {
         company_id: { name: TABLE_INVERSE, type: "company2users" },
-        team_id: { name: TABLE_INVERSE, type: "team2user" },
+        team_id: { name: TABLE_INVERSE, type: "team2users" },
       },
       privacyLoad: [new AllowIf(new True())],
       privacyInsert: [new AllowIf(new True())],
@@ -329,15 +329,17 @@ test("loadBy with multiple shard candidates", async () => {
   await createUserInShard({
     vc,
     shardNo: 1,
-    companyID,
-    teamID: "1000000000000000001",
+    startCompanyID: companyID,
+    startTeamID: "1000000000000000001",
+    increment: "teamID",
   });
   // Creates an inverse from companyID to shard 2.
   const user2 = await createUserInShard({
     vc,
     shardNo: 2,
-    companyID,
-    teamID: "1000000000000000002",
+    startCompanyID: companyID,
+    startTeamID: "1000000000000010001",
+    increment: "teamID",
   });
   // Now for companyID, we'll have 2 shard candidates (1 and 2), and they'll
   // both be rechecked. Shard 1 will return empty results, and shard 2 will
@@ -348,27 +350,71 @@ test("loadBy with multiple shard candidates", async () => {
   });
 });
 
+test("multiShardsFromInput returns minimal number of shard candidates", async () => {
+  const sharedTeamID = "1000000000000000011";
+  // Add the 1st inverse to the 1st shard.
+  const user1 = await createUserInShard({
+    vc,
+    shardNo: 1,
+    startCompanyID: "1000000000000000001",
+    startTeamID: sharedTeamID,
+    increment: "companyID",
+  });
+  // Add the 2nd inverse to the 2nd shard from the same sharedTeamID
+  const user2 = await createUserInShard({
+    vc,
+    shardNo: 2,
+    startCompanyID: "1000000000000100001",
+    startTeamID: sharedTeamID,
+    increment: "companyID",
+  });
+  // Since company_id is mentioned earlier in the list of fields with inverses,
+  // and we filter by it, ShardLocator should only resolve shard candidates
+  // based on company_id and never based on team_id. And we know that only one
+  // user (= one shard) is associated with a user1.company_id.
+  expect(user1.company_id).not.toEqual(user2.company_id);
+  const shards = await EntTestUser.SHARD_LOCATOR.multiShardsFromInput(
+    vc,
+    { company_id: user1.company_id, team_id: sharedTeamID },
+    "loadBy"
+  );
+  expect(shards).toHaveLength(1);
+});
+
 test("exception", async () => {
   await expect(EntTestUser.select(vc, { name: "u2" }, 42)).rejects.toThrow(
     EntCannotDetectShardError
   );
 });
 
+/**
+ * Tries to insert EntTestUser multiple times until it succeeds inserting it to
+ * shardNo. Since shard number generation is randomly-deterministic by unique
+ * key fields (which are [company_id, team_id] in this case), we need to vary
+ * either company_id or team_id when inserting more users: we allow the caller
+ * to specify, which one to increment.
+ */
 async function createUserInShard({
   vc,
   shardNo,
-  companyID,
-  teamID,
+  startCompanyID,
+  startTeamID,
+  increment,
 }: {
   vc: VC;
   shardNo: number;
-  companyID: string;
-  teamID: string;
+  startCompanyID: string;
+  startTeamID: string;
+  increment: "companyID" | "teamID";
 }) {
   for (let i = 1; i <= 100; i++) {
     const user = await EntTestUser.insertReturning(vc, {
-      company_id: companyID,
-      team_id: (BigInt(teamID) + BigInt(i)).toString(),
+      company_id: (
+        BigInt(startCompanyID) + BigInt(increment === "companyID" ? i : 0)
+      ).toString(),
+      team_id: (
+        BigInt(startTeamID) + BigInt(increment === "teamID" ? i : 0)
+      ).toString(),
       name: "u" + i,
     });
     if (testCluster.shard(user.id).no === shardNo) {

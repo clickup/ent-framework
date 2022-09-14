@@ -26,16 +26,35 @@ const ZERO_NULL = "0";
  * field "org_id" in EntUser refers an EntOrg row).
  */
 export class Inverse<TClient extends Client, TTable extends Table> {
-  private inverseSchema = Inverse.buildInverseSchema(this.id2Schema, this.name);
+  public readonly cluster;
+  public readonly shardAffinity;
+  public readonly inverseSchema;
+  public readonly id2Field;
+  public readonly name;
+  public readonly type;
 
-  constructor(
-    public readonly cluster: Cluster<TClient>,
-    public readonly shardAffinity: ShardAffinity<string>,
-    public readonly id2Schema: Schema<TTable>,
-    public readonly id2Field: IDFieldsRequired<TTable>,
-    public readonly name: string,
-    public readonly type: string
-  ) {}
+  constructor({
+    cluster,
+    shardAffinity,
+    id2Schema,
+    id2Field,
+    name,
+    type,
+  }: {
+    cluster: Cluster<TClient>;
+    shardAffinity: ShardAffinity<string>;
+    id2Schema: Schema<TTable>;
+    id2Field: IDFieldsRequired<TTable>;
+    name: string;
+    type: string;
+  }) {
+    this.cluster = cluster;
+    this.shardAffinity = shardAffinity;
+    this.inverseSchema = Inverse.buildInverseSchema(id2Schema, name);
+    this.id2Field = id2Field;
+    this.name = name;
+    this.type = type;
+  }
 
   /**
    * Runs before a row with a pre-generated id2 was inserted to the main schema.
