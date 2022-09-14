@@ -94,13 +94,18 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       return [singleShard];
     }
 
+    // Scan inverses from left to right (assuming the leftmost inverses are
+    // lower in cardinality) and check whether our input has a filtering field
+    // defined for that inverse. If so, locate shards based on that 1st found
+    // field only (because it makes no sense to move to the next inverse if we
+    // can use a previous inverse already).
+    let hadInputFieldWithInverse = false;
     const shards = new Set<Shard<TClient>>();
-    let hadInputFieldsWithInverse = false;
-    await mapJoin(this.inverses, async (inverse) => {
+    for (const inverse of this.inverses) {
       const field = inverse.id2Field;
       const id1 = input[field];
       if (id1 !== undefined) {
-        hadInputFieldsWithInverse = true;
+        hadInputFieldWithInverse = true;
         await mapJoin(id1 instanceof Array ? id1 : [id1], async (id1) => {
           const id2s = await inverse.id2s(vc, id1);
           for (const id2 of id2s) {
@@ -110,10 +115,11 @@ export class ShardLocator<TClient extends Client, TField extends string> {
             }
           }
         });
+        break;
       }
-    });
+    }
 
-    if (!hadInputFieldsWithInverse) {
+    if (!hadInputFieldWithInverse) {
       const inverseFields = this.inverses.map(({ id2Field }) => id2Field);
       throw new EntCannotDetectShardError(
         this.schemaName,
@@ -128,7 +134,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       );
     }
 
-    return [...shards.keys()];
+    return [...shards];
   }
 
   /**

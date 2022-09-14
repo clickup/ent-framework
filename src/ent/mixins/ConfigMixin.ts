@@ -189,14 +189,14 @@ export function ConfigMixin<
               );
             }
 
-            return new Inverse(
+            return new Inverse({
               cluster,
-              this.SHARD_AFFINITY,
-              schema,
-              field,
+              shardAffinity: this.SHARD_AFFINITY,
+              id2Schema: schema,
+              id2Field: field,
               name,
-              type
-            );
+              type,
+            });
           })
         ),
         writable: false,
