@@ -119,7 +119,7 @@ export function ConfigMixin<
       Object.defineProperty(this, "SHARD_LOCATOR", {
         value: new ShardLocator({
           cluster,
-          schemaName: schema.name,
+          entName: this.name,
           shardAffinity: this.SHARD_AFFINITY,
           uniqueKey: schema.uniqueKey,
           inverses: this.INVERSES,

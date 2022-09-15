@@ -6,7 +6,7 @@ import { inspect } from "util";
  */
 export class EntCannotDetectShardError extends Error {
   constructor(
-    public readonly schemaName: string,
+    public readonly entName: string,
     public readonly op: string,
     public readonly fields: readonly string[],
     public readonly input: any,
@@ -14,16 +14,16 @@ export class EntCannotDetectShardError extends Error {
     public readonly inverseFields?: string[]
   ) {
     super(
-      `${schemaName}: to detect shard in "${op}" query, ` +
+      `${entName}: to detect shard in "${op}" query, ` +
         (fields.length > 1 ? "at least one of " : "") +
         `non-empty "${fields.join(", ")}" field` +
         (fields.length !== 1 ? "s" : "") +
         " must be present at TOP LEVEL of the input, but got " +
         inspect(input, { breakLength: Infinity }) +
-        `; ${schemaName}.SHARD_AFFINITY=` +
+        `; ${entName}.SHARD_AFFINITY=` +
         inspect(shardAffinity, { compact: true, breakLength: Infinity }) +
         (inverseFields
-          ? `; ${schemaName}.INVERSES=` +
+          ? `; ${entName}.INVERSES=` +
             inspect(inverseFields, { compact: true, breakLength: Infinity })
           : "")
     );

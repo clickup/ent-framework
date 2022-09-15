@@ -7,7 +7,7 @@ exports[`cannot create posts for different users 1`] = `
       Rule Require:OutgoingEdgePointsToVC(id) returned DENY"
 `;
 
-exports[`custom shard 1`] = `"EntNotFoundError: ent\\"post.$shardOfID not found: \\"\\": Cannot parse ID \\"\\" to detect shard number"`;
+exports[`custom shard 1`] = `"EntNotFoundError: EntTestPost not found: $shardOfID=\\"\\": Cannot parse ID \\"\\" to detect shard number"`;
 
 exports[`load child with no access 1`] = `
 "EntTestComment:<id> is not readable in vc:<id>, because:
@@ -40,9 +40,9 @@ exports[`loadNullable with no access 1`] = `
       Rule AllowIf:IncomingEdgeFromVCExists(EntTestUser[id=vc, company_id=row.id]) returned SKIP"
 `;
 
-exports[`select and count 1`] = `"EntCannotDetectShardError: ent\\"comment: to detect shard in \\"select\\" query, non-empty \\"post_id\\" field must be present at TOP LEVEL of the input, but got { post_id: [] }; ent\\"comment.SHARD_AFFINITY=[ 'post_id' ]; ent\\"comment.INVERSES=[]"`;
+exports[`select and count 1`] = `"EntCannotDetectShardError: EntTestComment: to detect shard in \\"select\\" query, non-empty \\"post_id\\" field must be present at TOP LEVEL of the input, but got { post_id: [] }; EntTestComment.SHARD_AFFINITY=[ 'post_id' ]; EntTestComment.INVERSES=[]"`;
 
-exports[`select and count 2`] = `"EntCannotDetectShardError: ent\\"comment: to detect shard in \\"select\\" query, non-empty \\"post_id\\" field must be present at TOP LEVEL of the input, but got { post_id: '' }; ent\\"comment.SHARD_AFFINITY=[ 'post_id' ]; ent\\"comment.INVERSES=[]"`;
+exports[`select and count 2`] = `"EntCannotDetectShardError: EntTestComment: to detect shard in \\"select\\" query, non-empty \\"post_id\\" field must be present at TOP LEVEL of the input, but got { post_id: '' }; EntTestComment.SHARD_AFFINITY=[ 'post_id' ]; EntTestComment.INVERSES=[]"`;
 
 exports[`skip after triggers if operation soft fails: 1: insert happened 1`] = `
 "[

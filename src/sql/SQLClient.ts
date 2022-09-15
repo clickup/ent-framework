@@ -315,7 +315,7 @@ export abstract class SQLClient extends Client {
         : NaN;
     if (isNaN(no)) {
       const idSafe = sanitizeIDForDebugPrinting(id);
-      throw Error(`Cannot parse ID "${idSafe}" to detect shard number`);
+      throw Error(`Cannot parse ID ${idSafe} to detect shard number`);
     }
 
     return no;

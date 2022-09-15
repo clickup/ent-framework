@@ -14,11 +14,7 @@ export class EntNotReadableError extends EntAccessError {
     public readonly cause: { message: string } | null = null
   ) {
     super(
-      entName +
-        ":" +
-        row[ID] +
-        " is not readable in " +
-        vc +
+      `${entName}:${row[ID]} is not readable in ${vc}` +
         (cause ? ", because:\n" + indent(cause.message) : "")
     );
   }

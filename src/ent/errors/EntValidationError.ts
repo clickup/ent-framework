@@ -11,8 +11,7 @@ export class EntValidationError extends EntAccessError {
   ) {
     super(
       // The below string is just for debugging purposes.
-      entName +
-        ": " +
+      `${entName}: ` +
         errors
           .map((error) => error.field + ": " + JSON.stringify(error.message))
           .join(", ")

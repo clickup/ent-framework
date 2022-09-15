@@ -460,3 +460,16 @@ test("skip after triggers if operation soft fails", async () => {
     "4: delete soft-failed on non-existing row"
   );
 });
+
+test("attempt to use guest VC to load Ents", async () => {
+  const ERROR_RE = /locate the Ent/;
+  await expect(
+    EntTestPost.loadNullable(vc.toGuest(), vc.toGuest().principal)
+  ).rejects.toThrow(ERROR_RE);
+  await expect(
+    EntTestPost.loadX(vc.toGuest(), vc.toGuest().principal)
+  ).rejects.toThrow(ERROR_RE);
+  await expect(
+    EntTestPost.select(vc.toGuest(), { post_id: vc.toGuest().principal }, 1)
+  ).rejects.toThrow(ERROR_RE);
+});

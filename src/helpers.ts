@@ -112,14 +112,17 @@ export function indent(message: string) {
  * exception messages. We replace all non-ASCII characters to their \u
  * representations.
  */
-export function sanitizeIDForDebugPrinting(id: any) {
-  return (
-    ("" + id)
-      .substring(0, 32)
+export function sanitizeIDForDebugPrinting(idIn: any) {
+  const MAX_LEN = 32;
+  const id = "" + idIn;
+  const value =
+    id
+      .substring(0, MAX_LEN)
       // We want to use control characters in this regex.
       // eslint-disable-next-line no-control-regex
-      .replace(/[^\x1F-\x7F]/g, (v) => "\\u" + v.charCodeAt(0))
-  );
+      .replace(/[^\x1F-\x7F]/g, (v) => "\\u" + v.charCodeAt(0)) +
+    (id.length > MAX_LEN ? "..." : "");
+  return value === "" ? '""' : value;
 }
 
 export async function join<T1, T2, T3, T4, T5, T6>(
