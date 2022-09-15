@@ -165,7 +165,7 @@ export function HelpersMixin<
     static async loadX(vc: VC, id: string) {
       const ent = await this.loadNullable(vc, id);
       if (!ent) {
-        throw new EntNotFoundError(this.name, id);
+        throw new EntNotFoundError(this.name, { [ID]: id });
       }
 
       return ent;
@@ -245,7 +245,7 @@ export function HelpersMixin<
     async updateReturningX(input: UpdateInput<TTable>) {
       const res = await this.updateReturningNullable(input);
       if (!res) {
-        throw new EntNotFoundError(this.constructor.name, this[ID]);
+        throw new EntNotFoundError(this.constructor.name, { [ID]: this[ID] });
       }
 
       return res;

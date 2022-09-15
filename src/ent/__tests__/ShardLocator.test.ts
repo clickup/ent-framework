@@ -7,7 +7,7 @@ import { ShardLocator } from "../ShardLocator";
 test("singleShardFromInput with colocation affinity", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
-    schemaName: "post",
+    entName: "post",
     shardAffinity: ["user_id"],
     uniqueKey: ["user_id", "title"],
     inverses: [],
@@ -23,7 +23,7 @@ test("singleShardFromInput with colocation affinity", async () => {
 test("singleShardFromInput with GLOBAL_SHARD affinity", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
-    schemaName: "test",
+    entName: "test",
     shardAffinity: GLOBAL_SHARD,
     uniqueKey: ["user_id", "title"],
     inverses: [],
@@ -39,7 +39,7 @@ test("singleShardFromInput with GLOBAL_SHARD affinity", async () => {
 test("singleShardFromInput with by-unique-key random shard", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
-    schemaName: "test",
+    entName: "test",
     shardAffinity: ["company_id"],
     uniqueKey: ["user_id", "title"],
     inverses: [],
@@ -62,7 +62,7 @@ test("singleShardFromInput with by-unique-key random shard", async () => {
 test("singleShardFromInput with truly random shard", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
-    schemaName: "test",
+    entName: "test",
     shardAffinity: ["user_id"],
     uniqueKey: undefined,
     inverses: [],

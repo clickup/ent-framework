@@ -12,9 +12,7 @@ export class EntNotInsertableError extends EntAccessError {
     public readonly cause: string | { message: string } | null = null
   ) {
     super(
-      entName +
-        ": cannot insert in " +
-        vc +
+      `${entName}: cannot insert in ${vc}` +
         (cause
           ? ", because:\n" +
             indent(typeof cause === "string" ? cause : cause.message)

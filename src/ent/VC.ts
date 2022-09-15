@@ -18,7 +18,7 @@ import { VCTrace } from "./VCTrace";
  * Guest VC: has minimum permissions. Typically if the user is not logged in,
  * this VC is used.
  */
-const GUEST_ID = "guest";
+export const GUEST_ID = "guest";
 
 /**
  * Temporary "omniscient" VC. Any Ent can be loaded with it, but this VC is
@@ -26,7 +26,7 @@ const GUEST_ID = "guest";
  * with omni VC, its ent.vc is assigned to either this Ent's "owner" VC
  * (accessible via VC pointing field) or, if not detected, to guest VC.
  */
-const OMNI_ID = "omni";
+export const OMNI_ID = "omni";
 
 /**
  * Useful for debugging, to identify unique VC objects.

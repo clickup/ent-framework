@@ -7,8 +7,7 @@ import { inspect } from "util";
 export class EntUniqueKeyError extends Error {
   constructor(public readonly entName: string, public readonly input: any) {
     super(
-      entName +
-        " mutation violates unique key constraint: " +
+      `${entName} mutation violates unique key constraint: ` +
         inspect(input, { breakLength: Infinity })
     );
     this.name = this.constructor.name;

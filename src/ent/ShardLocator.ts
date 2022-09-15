@@ -9,6 +9,7 @@ import { EntCannotDetectShardError } from "./errors/EntCannotDetectShardError";
 import { EntNotFoundError } from "./errors/EntNotFoundError";
 import type { Inverse } from "./Inverse";
 import type { VC } from "./VC";
+import { GUEST_ID } from "./VC";
 
 /**
  * Knows how to locate shard(s) based on various inputs. In some contexts, we
@@ -17,23 +18,29 @@ import type { VC } from "./VC";
  */
 export class ShardLocator<TClient extends Client, TField extends string> {
   private cluster;
-  private schemaName;
+  private entName;
   private shardAffinity;
   private uniqueKey;
   private inverses;
 
-  constructor(options: {
+  constructor({
+    cluster,
+    entName,
+    shardAffinity,
+    uniqueKey,
+    inverses,
+  }: {
     cluster: Cluster<TClient>;
-    schemaName: string;
+    entName: string;
     shardAffinity: ShardAffinity<TField>;
     uniqueKey: readonly string[] | undefined;
     inverses: ReadonlyArray<Inverse<TClient, any>>;
   }) {
-    this.cluster = options.cluster;
-    this.schemaName = options.schemaName;
-    this.shardAffinity = options.shardAffinity;
-    this.uniqueKey = options.uniqueKey;
-    this.inverses = options.inverses;
+    this.cluster = cluster;
+    this.entName = entName;
+    this.shardAffinity = shardAffinity;
+    this.uniqueKey = uniqueKey;
+    this.inverses = inverses;
   }
 
   /**
@@ -67,7 +74,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
 
     if (!shard) {
       throw new EntCannotDetectShardError(
-        this.schemaName,
+        this.entName,
         op,
         this.shardAffinity instanceof Array ? this.shardAffinity : [ID],
         input,
@@ -122,7 +129,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     if (!hadInputFieldWithInverse) {
       const inverseFields = this.inverses.map(({ id2Field }) => id2Field);
       throw new EntCannotDetectShardError(
-        this.schemaName,
+        this.entName,
         op,
         [
           ...(this.shardAffinity instanceof Array ? this.shardAffinity : [ID]),
@@ -157,6 +164,12 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     }
 
     try {
+      if (id === GUEST_ID) {
+        throw Error(
+          `this value can't be used to locate the Ent; most likely you're trying to use a guest VC's principal instead of an ID`
+        );
+      }
+
       const shard = this.cluster.shard(nullthrows(id));
       if (shard.no === this.cluster.globalShard().no) {
         // We're trying to load a sharded Ent using an ID from the global shard.
@@ -169,8 +182,8 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       // E.g. "shard does not exist" error; we don't want to mute it.
       if (origError instanceof Error) {
         const error = new EntNotFoundError(
-          this.schemaName + (field !== ID ? "." + field : ""),
-          id,
+          this.entName,
+          { [field]: id },
           origError.message
         );
         throw copyStack(error, origError);

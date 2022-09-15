@@ -14,11 +14,7 @@ export class EntNotUpdatableError extends EntAccessError {
     public readonly cause: { message: string } | null = null
   ) {
     super(
-      entName +
-        ":" +
-        row[ID] +
-        " is not updatable/deletable in " +
-        vc +
+      `${entName}:${row[ID]} is not updatable/deletable in ${vc}` +
         (cause ? ", because:\n" + indent(cause.message) : "")
     );
   }

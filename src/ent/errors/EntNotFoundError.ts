@@ -1,4 +1,3 @@
-import { inspect } from "util";
 import { sanitizeIDForDebugPrinting } from "../../helpers";
 import { EntAccessError } from "./EntAccessError";
 
@@ -8,16 +7,27 @@ import { EntAccessError } from "./EntAccessError";
 export class EntNotFoundError extends EntAccessError {
   constructor(
     public readonly entName: string,
-    public readonly idOrUniqueKey: any,
+    public readonly where: Record<string, any>,
     messageSuffix?: string
   ) {
     super(
-      entName +
-        " not found: " +
-        (typeof idOrUniqueKey === "string"
-          ? `"${sanitizeIDForDebugPrinting(idOrUniqueKey)}"`
-          : inspect(idOrUniqueKey, { breakLength: Infinity })) +
+      `${entName} not found: ${whereToText(where)}` +
         (messageSuffix ? ": " + messageSuffix : "")
     );
   }
+}
+
+function whereToText(where: Record<string, any>) {
+  if (Object.keys(where).length === 1) {
+    const [k, v] = Object.entries(where)[0];
+    return `${k}=${sanitizeIDForDebugPrinting(v)}`;
+  }
+
+  return (
+    "(" +
+    Object.keys(where).join(",") +
+    ")=(" +
+    Object.values(where).map(sanitizeIDForDebugPrinting).join(",") +
+    ")"
+  );
 }
