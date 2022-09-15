@@ -8,7 +8,7 @@ function createVC() {
   return vc;
 }
 
-test("simple delete works", async () => {
+test("simple deletion", async () => {
   const vc = createVC();
   const cache = vc.cache(QueryCache);
 

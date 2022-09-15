@@ -16,7 +16,7 @@ const companyTable = {
 
 const vc = createVC();
 
-test("0000_load_succeeds_when_first_rule_allows", async () => {
+test("0000: load succeeds when first rule allows", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -37,7 +37,7 @@ test("0000_load_succeeds_when_first_rule_allows", async () => {
   );
 });
 
-test("0010_load_succeeds_when_any_rule_allows", async () => {
+test("0010: load succeeds when any rule allows", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -55,7 +55,7 @@ test("0010_load_succeeds_when_any_rule_allows", async () => {
   );
 });
 
-test("0020_load_fails_when_first_rule_throws", async () => {
+test("0020: load fails when first rule throws", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -70,7 +70,7 @@ test("0020_load_fails_when_first_rule_throws", async () => {
   );
 });
 
-test("0030_insert_succeeds_when_all_require_allow", async () => {
+test("0030: insert succeeds when all require allow", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -91,7 +91,7 @@ test("0030_insert_succeeds_when_all_require_allow", async () => {
   );
 });
 
-test("0040_insert_fails_when_any_require_denies", async () => {
+test("0040: insert fails when any require denies", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -109,7 +109,7 @@ test("0040_insert_fails_when_any_require_denies", async () => {
   );
 });
 
-test("0041_update_fails_when_any_require_denies", async () => {
+test("0041: update fails when any require denies", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -131,7 +131,7 @@ test("0041_update_fails_when_any_require_denies", async () => {
   );
 });
 
-test("0042_delete_fails_when_any_require_denies", async () => {
+test("0042: delete fails when any require denies", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -153,7 +153,7 @@ test("0042_delete_fails_when_any_require_denies", async () => {
   );
 });
 
-test("0043_update_fails_when_user_errors", async () => {
+test("0043: update fails when user errors", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -170,7 +170,7 @@ test("0043_update_fails_when_user_errors", async () => {
   );
 });
 
-test("0044_update_succeeds_user_validation_when_field_untouched", async () => {
+test("0044: update succeeds user validation when field untouched", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -184,7 +184,7 @@ test("0044_update_succeeds_user_validation_when_field_untouched", async () => {
   );
 });
 
-test("0050_insert_fails_when_any_require_throws", async () => {
+test("0050: insert fails when any require throws", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -202,7 +202,7 @@ test("0050_insert_fails_when_any_require_throws", async () => {
   );
 });
 
-test("0060_load_succeeds_when_any_rule_allows_even_if_another_rule_throws_not_readable_error", async () => {
+test("0060: load succeeds when any rule allows even if another rule throws EntNotReadableError", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -229,7 +229,7 @@ test("0060_load_succeeds_when_any_rule_allows_even_if_another_rule_throws_not_re
   );
 });
 
-test("0070_load_fails_when_any_rule_allows_but_another_rule_throws_any_wild_exception", async () => {
+test("0070: load fails when any rule allows but another rule throws any wild exception", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -248,7 +248,7 @@ test("0070_load_fails_when_any_rule_allows_but_another_rule_throws_any_wild_exce
   );
 });
 
-test("0080_validations_fail_when_no_rules_defined", async () => {
+test("0080: validations fail when no rules defined", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -268,7 +268,7 @@ test("0080_validations_fail_when_no_rules_defined", async () => {
   );
 });
 
-test("0090_load_fails_with_nice_error_message_if_only_one_rule", async () => {
+test("0090: load fails with nice error message if only one rule", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -294,7 +294,7 @@ test("0090_load_fails_with_nice_error_message_if_only_one_rule", async () => {
   );
 });
 
-test("0100_insert_fails_with_nice_error_message_if_only_one_rule", async () => {
+test("0100: insert fails with nice error message if only one rule", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -320,7 +320,7 @@ test("0100_insert_fails_with_nice_error_message_if_only_one_rule", async () => {
   );
 });
 
-test("0110_insert_succeeds_when_deny_if_rule_evaluates", async () => {
+test("0110: insert succeeds when DenyIf rule evaluates", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -336,7 +336,7 @@ test("0110_insert_succeeds_when_deny_if_rule_evaluates", async () => {
   );
 });
 
-test("0120_load_fails_when_deny_if_rule_throws", async () => {
+test("0120: load fails when DenyIf rule throws", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -359,7 +359,7 @@ test("0120_load_fails_when_deny_if_rule_throws", async () => {
   );
 });
 
-test("0130_fail_when_tenant_user_id_mismatches", async () => {
+test("0130: fail when tenant user id mismatches", async () => {
   const tester = new ValidationTester();
   const validation = new Validation<typeof companyTable>("table", {
     tenantPrincipalField: "tenant_id",

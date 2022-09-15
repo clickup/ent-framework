@@ -14,7 +14,7 @@ test("VC should be able to clone", () => {
   expect(vc2.cache(Cache).get("test")).toEqual(42);
 });
 
-test("Root flag of the VC is changed", () => {
+test("root flag of the VC is changed", () => {
   const vc1root = createVC();
   expect((vc1root as any).isRoot).toBeTruthy();
 

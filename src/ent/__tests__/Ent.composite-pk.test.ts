@@ -117,7 +117,7 @@ beforeEach(async () => {
   });
 });
 
-test("simple", async () => {
+test("simple use case", async () => {
   const composite = await EntTestComposite.insertReturning(user.vc, {
     user_id: user.vc.principal,
     name: "my-name",
