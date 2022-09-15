@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`delete_batched 1`] = `"DELETE FROM \\"schema\\"\\"test\\" WHERE (id IN('<id>','<id>','42') OR id IS NULL) RETURNING id"`;
+exports[`delete batched 1`] = `"DELETE FROM \\"schema\\"\\"test\\" WHERE (id IN('<id>','<id>','42') OR id IS NULL) RETURNING id"`;
 
-exports[`delete_single 1`] = `
+exports[`delete single 1`] = `
 "DELETE FROM \\"schema\\"\\"test\\" WHERE id IN('<id>') RETURNING id
 
 DELETE FROM \\"schema\\"\\"test\\" WHERE id IN('42') RETURNING id
@@ -10,17 +10,17 @@ DELETE FROM \\"schema\\"\\"test\\" WHERE id IN('42') RETURNING id
 DELETE FROM \\"schema\\"\\"test\\" WHERE id IS NULL RETURNING id"
 `;
 
-exports[`delete_where 1`] = `"DELETE FROM \\"schema\\"\\"test\\" WHERE id IN('<id>','<id>') AND (1=1) RETURNING id"`;
+exports[`delete where 1`] = `"DELETE FROM \\"schema\\"\\"test\\" WHERE id IN('<id>','<id>') AND (1=1) RETURNING id"`;
 
-exports[`id_gen_batched 1`] = `"SELECT id_gen() AS k*, id_gen() AS k*"`;
+exports[`idGen batched 1`] = `"SELECT id_gen() AS k*, id_gen() AS k*"`;
 
-exports[`id_gen_single 1`] = `
+exports[`idGen single 1`] = `
 "SELECT id_gen()
 
 SELECT id_gen()"
 `;
 
-exports[`insert_batched 1`] = `
+exports[`insert batched 1`] = `
 "SELECT id_gen()
 
 WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
@@ -33,17 +33,7 @@ WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_fi
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id=\\"schema\\"\\"test\\".id), id"
 `;
 
-exports[`insert_is_never_dedupped 1`] = `
-"WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
-  ((NULL::\\"schema\\"\\"test\\").id, (NULL::\\"schema\\"\\"test\\").name, (NULL::\\"schema\\"\\"test\\").url_name, (NULL::\\"schema\\"\\"test\\").some_flag, (NULL::\\"schema\\"\\"test\\").json_text_field, (NULL::\\"schema\\"\\"test\\").json_strongly_typed_field, (NULL::\\"schema\\"\\"test\\").jsonb_field, (NULL::\\"schema\\"\\"test\\").encrypted_field, (NULL::\\"schema\\"\\"test\\").created_at, (NULL::\\"schema\\"\\"test\\").updated_at, (NULL::\\"schema\\"\\"test\\").parent_id, '<key>'),
-  (id_gen(), 'aaa', 'uuu', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'),
-  (id_gen(), 'aaa', 'uuu', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'))
-  INSERT INTO \\"schema\\"\\"test\\" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id)
-  SELECT id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id FROM rows OFFSET 1
-  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id=\\"schema\\"\\"test\\".id), id"
-`;
-
-exports[`insert_pg_error_debatch 1`] = `
+exports[`insert de-batches pg error 1`] = `
 "WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
   ((NULL::\\"schema\\"\\"test\\").id, (NULL::\\"schema\\"\\"test\\").name, (NULL::\\"schema\\"\\"test\\").url_name, (NULL::\\"schema\\"\\"test\\").some_flag, (NULL::\\"schema\\"\\"test\\").json_text_field, (NULL::\\"schema\\"\\"test\\").json_strongly_typed_field, (NULL::\\"schema\\"\\"test\\").jsonb_field, (NULL::\\"schema\\"\\"test\\").encrypted_field, (NULL::\\"schema\\"\\"test\\").created_at, (NULL::\\"schema\\"\\"test\\").updated_at, (NULL::\\"schema\\"\\"test\\").parent_id, '<key>'),
   (id_gen(), 'other', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '0', '<key>'),
@@ -59,7 +49,17 @@ INSERT INTO \\"schema\\"\\"test\\" (id, name, url_name, some_flag, json_text_fie
   (id_gen(), 'other', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '0') ON CONFLICT DO NOTHING RETURNING id"
 `;
 
-exports[`insert_pre_generated_id_uniq_key_violation 1`] = `
+exports[`insert is never dedupped 1`] = `
+"WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
+  ((NULL::\\"schema\\"\\"test\\").id, (NULL::\\"schema\\"\\"test\\").name, (NULL::\\"schema\\"\\"test\\").url_name, (NULL::\\"schema\\"\\"test\\").some_flag, (NULL::\\"schema\\"\\"test\\").json_text_field, (NULL::\\"schema\\"\\"test\\").json_strongly_typed_field, (NULL::\\"schema\\"\\"test\\").jsonb_field, (NULL::\\"schema\\"\\"test\\").encrypted_field, (NULL::\\"schema\\"\\"test\\").created_at, (NULL::\\"schema\\"\\"test\\").updated_at, (NULL::\\"schema\\"\\"test\\").parent_id, '<key>'),
+  (id_gen(), 'aaa', 'uuu', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'),
+  (id_gen(), 'aaa', 'uuu', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'))
+  INSERT INTO \\"schema\\"\\"test\\" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id)
+  SELECT id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id FROM rows OFFSET 1
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id=\\"schema\\"\\"test\\".id), id"
+`;
+
+exports[`insert pre-generated id with uniq key violation 1`] = `
 "SELECT id_gen()
 
 SELECT id_gen()
@@ -73,7 +73,7 @@ WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_fi
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id=\\"schema\\"\\"test\\".id), id"
 `;
 
-exports[`insert_single 1`] = `
+exports[`insert single 1`] = `
 "SELECT id_gen()
 
 INSERT INTO \\"schema\\"\\"test\\" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
@@ -83,17 +83,17 @@ INSERT INTO \\"schema\\"\\"test\\" (id, name, url_name, some_flag, json_text_fie
   (id_gen(), 'a''b''c', 'aaa_dup', false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id"
 `;
 
-exports[`load_batched 1`] = `
+exports[`load batched 1`] = `
 "SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
   WHERE id IN('<id>','<id>')"
 `;
 
-exports[`loadby_batched_one_column 1`] = `
+exports[`loadBy batched one column 1`] = `
 "SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
   WHERE name IN('a','b','no')"
 `;
 
-exports[`loadby_batched_two_columns 1`] = `
+exports[`loadBy batched two columns 1`] = `
 "SELECT id, name, url_name, created_at, updated_at FROM \\"schema\\"\\"test_2col\\"
   WHERE (name='z'
     AND url_name IN('z1','z2'))
@@ -105,7 +105,7 @@ exports[`loadby_batched_two_columns 1`] = `
     AND url_name IN('c1','c2'))"
 `;
 
-exports[`loadby_batched_two_columns_nullable_unique_key 1`] = `
+exports[`loadBy batched with two columns nullable unique key 1`] = `
 "SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable_unique_key
   WHERE (name='z'
     AND url_name IN('z1','z2'))
@@ -118,18 +118,13 @@ exports[`loadby_batched_two_columns_nullable_unique_key 1`] = `
     OR url_name IS NULL))"
 `;
 
-exports[`loadby_single_one_column 1`] = `
-"SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
-  WHERE name IN('b')"
-`;
-
-exports[`loadby_single_two_columns 1`] = `
+exports[`loadBy single two columns 1`] = `
 "SELECT id, name, url_name, created_at, updated_at FROM \\"schema\\"\\"test_2col\\"
   WHERE (name='b'
     AND url_name IN('bbb'))"
 `;
 
-exports[`loadby_single_two_columns_nullable_unique_key 1`] = `
+exports[`loadBy single two columns with nullable unique key 1`] = `
 "SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable_unique_key
   WHERE (name='b'
     AND url_name IS NULL)
@@ -143,7 +138,12 @@ SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable
     AND url_name IS NULL)"
 `;
 
-exports[`select_and_count_batched 1`] = `
+exports[`loadNy single one column 1`] = `
+"SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
+  WHERE name IN('b')"
+`;
+
+exports[`select and count batched 1`] = `
 "(SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
   WHERE name IN('a','aa')
     AND some_flag=true
@@ -231,7 +231,7 @@ SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
     AND (5 < '2'))"
 `;
 
-exports[`select_custom 1`] = `
+exports[`select custom 1`] = `
 "WITH
   cte1 AS (SELECT 1+'1' AS cte1_v FROM generate_series(1,1)),
   cte2 AS (SELECT 10+'10' AS cte2_v)
@@ -251,7 +251,7 @@ WHERE name IN('a','aa') AND ('5' > '2') ORDER BY name ASC, cte1_v LIMIT 10)
 (SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\" WHERE name='b' LIMIT 10)"
 `;
 
-exports[`update_batched 1`] = `
+exports[`update batched 1`] = `
 "WITH rows(id, name, some_flag, updated_at, _key) AS (VALUES
   ((NULL::\\"schema\\"\\"test\\").id, (NULL::\\"schema\\"\\"test\\").name, (NULL::\\"schema\\"\\"test\\").some_flag, (NULL::\\"schema\\"\\"test\\").updated_at, '<key>'),
   ('42', 'absent', true, now(), '42')<reordered for test>,
@@ -267,9 +267,9 @@ WITH rows(id, name, url_name, updated_at, _key) AS (VALUES
   FROM rows WHERE \\"schema\\"\\"test\\".id=rows.id RETURNING (SELECT _key FROM rows WHERE rows.id=\\"schema\\"\\"test\\".id)"
 `;
 
-exports[`update_date 1`] = `"UPDATE \\"schema-te[st],_date\\" SET name='bb' WHERE date_id='<id>' RETURNING date_id AS id"`;
+exports[`update date 1`] = `"UPDATE \\"schema-te[st],_date\\" SET name='bb' WHERE date_id='<id>' RETURNING date_id AS id"`;
 
-exports[`update_literal 1`] = `
+exports[`update literal 1`] = `
 "UPDATE \\"schema\\"\\"test\\" SET updated_at=now(), name = name || 42 WHERE id='<id>' RETURNING id
 
 UPDATE \\"schema\\"\\"test\\" SET updated_at=now(), name = name || 42 WHERE id='<id>' RETURNING id
@@ -279,7 +279,7 @@ UPDATE \\"schema\\"\\"test\\" SET name='bbb', updated_at=now() WHERE id='<id>' R
 UPDATE \\"schema-te[st],_date\\" SET name = name || 42 WHERE date_id='42' RETURNING date_id AS id"
 `;
 
-exports[`update_single 1`] = `
+exports[`update single 1`] = `
 "UPDATE \\"schema\\"\\"test\\" SET name='a''upd', updated_at=now() WHERE id='<id>' RETURNING id
 
 UPDATE \\"schema\\"\\"test\\" SET name='b''upd', url_name=NULL, some_flag=true, updated_at=now() WHERE id='<id>' RETURNING id
@@ -289,9 +289,9 @@ UPDATE \\"schema\\"\\"test\\" SET url_name='n', updated_at=now() WHERE id='<id>'
 UPDATE \\"schema\\"\\"test\\" SET name='absent', updated_at=now() WHERE id='42' RETURNING id"
 `;
 
-exports[`update_skips_if_no_known_fields_present 1`] = `"UPDATE \\"schema\\"\\"test\\" SET name='absent', updated_at=now() WHERE id='42' RETURNING id"`;
+exports[`update skips if no known fields present 1`] = `"UPDATE \\"schema\\"\\"test\\" SET name='absent', updated_at=now() WHERE id='42' RETURNING id"`;
 
-exports[`upsert_batched_normal 1`] = `
+exports[`upsert batched normal 1`] = `
 "INSERT INTO \\"schema\\"\\"test\\" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
   (id_gen(), 'a''b''c', 'aaa_new', false, NULL, NULL, NULL, NULL, now(), now(), NULL),
   (id_gen(), 'bbb', 'bbb_new', false, NULL, NULL, NULL, NULL, now(), now(), NULL),
@@ -299,7 +299,7 @@ exports[`upsert_batched_normal 1`] = `
   ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id"
 `;
 
-exports[`upsert_batched_with_nullable_unique_key 1`] = `
+exports[`upsert batched with nullable unique key 1`] = `
 "INSERT INTO \\"schema\\"\\"test_nullable_unique_key\\" (id, name, url_name, created_at, updated_at) VALUES
   (id_gen(), '000', '0', now(), now())
   ON CONFLICT (url_name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
@@ -311,7 +311,7 @@ INSERT INTO \\"schema\\"\\"test_nullable_unique_key\\" (id, name, url_name, crea
   ON CONFLICT (url_name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id"
 `;
 
-exports[`upsert_single 1`] = `
+exports[`upsert single 1`] = `
 "INSERT INTO \\"schema\\"\\"test\\" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
   (id_gen(), 'a''b''c', 'aaa', false, NULL, NULL, NULL, NULL, now(), now(), NULL)
   ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id

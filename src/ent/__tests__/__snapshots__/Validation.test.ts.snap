@@ -1,28 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`0000_load_succeeds_when_first_rule_allows 1`] = `
+exports[`0000: load succeeds when first rule allows 1`] = `
 "success
 First returned true"
 `;
 
-exports[`0010_load_succeeds_when_any_rule_allows 1`] = `
+exports[`0010: load succeeds when any rule allows 1`] = `
 "success
 First returned false
 Second returned true"
 `;
 
-exports[`0020_load_fails_when_first_rule_throws 1`] = `
+exports[`0020: load fails when first rule throws 1`] = `
 "failure: wild
 First threw wild"
 `;
 
-exports[`0030_insert_succeeds_when_all_require_allow 1`] = `
+exports[`0030: insert succeeds when all require allow 1`] = `
 "success
 First { id: '123', tenant_id: '42' } returned true
 Second { id: '123', tenant_id: '42' } returned true"
 `;
 
-exports[`0040_insert_fails_when_any_require_denies 1`] = `
+exports[`0040: insert fails when any require denies 1`] = `
 "failure: table: cannot insert in vc:guest:master, because:
   Rule Require:First returned TOLERATE
   Rule Require:Second returned DENY
@@ -30,7 +30,7 @@ First returned true
 Second returned false"
 `;
 
-exports[`0041_update_fails_when_any_require_denies 1`] = `
+exports[`0041: update fails when any require denies 1`] = `
 "failure: table:123 is not updatable/deletable in vc:42, because:
   Rule Require:First returned TOLERATE
   Rule Require:Second returned DENY
@@ -38,7 +38,7 @@ First returned true
 Second returned false"
 `;
 
-exports[`0042_delete_fails_when_any_require_denies 1`] = `
+exports[`0042: delete fails when any require denies 1`] = `
 "failure: table:123 is not updatable/deletable in vc:42, because:
   Rule Require:First returned TOLERATE
   Rule Require:Second returned DENY
@@ -46,76 +46,76 @@ First returned true
 Second returned false"
 `;
 
-exports[`0043_update_fails_when_user_errors 1`] = `
+exports[`0043: update fails when user errors 1`] = `
 "failure: table: tenant_id: \\"some one\\", tenant_id: \\"some two\\"
 "
 `;
 
-exports[`0044_update_succeeds_user_validation_when_field_untouched 1`] = `
+exports[`0044: update succeeds user validation when field untouched 1`] = `
 "success
 "
 `;
 
-exports[`0050_insert_fails_when_any_require_throws 1`] = `
+exports[`0050: insert fails when any require throws 1`] = `
 "failure: wild
 First returned true
 Second threw wild"
 `;
 
-exports[`0060_load_succeeds_when_any_rule_allows_even_if_another_rule_throws_not_readable_error 1`] = `
+exports[`0060: load succeeds when any rule allows even if another rule throws EntNotReadableError 1`] = `
 "success
 First threw other_table:987 is not readable in vc:guest:master, because:
   ent access error
 Second returned true"
 `;
 
-exports[`0070_load_fails_when_any_rule_allows_but_another_rule_throws_any_wild_exception 1`] = `
+exports[`0070: load fails when any rule allows but another rule throws any wild exception 1`] = `
 "failure: wild
 First threw wild"
 `;
 
-exports[`0080_validations_fail_when_no_rules_defined 1`] = `
+exports[`0080: validations fail when no rules defined 1`] = `
 "failure: table:123 is not readable in vc:guest:master, because:
   No \\"load\\" rules defined
 "
 `;
 
-exports[`0080_validations_fail_when_no_rules_defined 2`] = `
+exports[`0080: validations fail when no rules defined 2`] = `
 "failure: table: cannot insert in vc:guest:master, because:
   No \\"insert\\" rules defined
 "
 `;
 
-exports[`0090_load_fails_with_nice_error_message_if_only_one_rule 1`] = `
+exports[`0090: load fails with nice error message if only one rule 1`] = `
 "failure: wild
 First threw wild"
 `;
 
-exports[`0090_load_fails_with_nice_error_message_if_only_one_rule 2`] = `
+exports[`0090: load fails with nice error message if only one rule 2`] = `
 "failure: table:123 is not readable in vc:guest:master, because:
   Rule AllowIf:First returned SKIP
 First threw wild
 First returned false"
 `;
 
-exports[`0100_insert_fails_with_nice_error_message_if_only_one_rule 1`] = `
+exports[`0100: insert fails with nice error message if only one rule 1`] = `
 "failure: wild
 First threw wild"
 `;
 
-exports[`0100_insert_fails_with_nice_error_message_if_only_one_rule 2`] = `
+exports[`0100: insert fails with nice error message if only one rule 2`] = `
 "failure: table: cannot insert in vc:guest:master, because:
   Rule AllowIf:First returned SKIP
 First threw wild
 First returned false"
 `;
 
-exports[`0110_insert_succeeds_when_deny_if_rule_evaluates 1`] = `
+exports[`0110: insert succeeds when DenyIf rule evaluates 1`] = `
 "success
 First returned false"
 `;
 
-exports[`0120_load_fails_when_deny_if_rule_throws 1`] = `
+exports[`0120: load fails when DenyIf rule throws 1`] = `
 "failure: table:123 is not readable in vc:guest:master, because:
   Rule DenyIf:First returned DENY, because:
     other_table:987 is not readable in vc:guest:master, because:
@@ -124,31 +124,31 @@ First threw other_table:987 is not readable in vc:guest:master, because:
   ent access error"
 `;
 
-exports[`0130_fail_when_tenant_user_id_mismatches 1`] = `
+exports[`0130: fail when tenant user id mismatches 1`] = `
 "failure: table:123 is not readable in vc:999, because:
   tenant_id is expected to be \\"999\\", but got \\"42\\"
 "
 `;
 
-exports[`0130_fail_when_tenant_user_id_mismatches 2`] = `
+exports[`0130: fail when tenant user id mismatches 2`] = `
 "failure: table: cannot insert in vc:999, because:
   tenant_id is expected to be \\"999\\", but got \\"42\\"
 "
 `;
 
-exports[`0130_fail_when_tenant_user_id_mismatches 3`] = `
+exports[`0130: fail when tenant user id mismatches 3`] = `
 "failure: table: cannot insert in vc:999, because:
   tenant_id is expected to be \\"999\\", but got undefined
 "
 `;
 
-exports[`0130_fail_when_tenant_user_id_mismatches 4`] = `
+exports[`0130: fail when tenant user id mismatches 4`] = `
 "failure: table:123 is not updatable/deletable in vc:999, because:
   tenant_id is expected to be \\"999\\", but got \\"42\\"
 "
 `;
 
-exports[`0130_fail_when_tenant_user_id_mismatches 5`] = `
+exports[`0130: fail when tenant user id mismatches 5`] = `
 "failure: table:123 is not updatable/deletable in vc:999, because:
   tenant_id is expected to be \\"999\\", but got \\"42\\"
 "

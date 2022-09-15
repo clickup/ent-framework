@@ -52,7 +52,7 @@ async function shardRun<TOutput>(query: Query<TOutput>) {
   );
 }
 
-test("ops_single", async () => {
+test("single ops", async () => {
   const id1 = await shardRun(schema.insert({ user_id: "1", name: "n1" }));
   master.toMatchSnapshot();
   expect(id1).toEqual("1");

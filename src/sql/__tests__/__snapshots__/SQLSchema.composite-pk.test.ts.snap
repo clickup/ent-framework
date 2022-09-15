@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ops_batched 1`] = `
+exports[`batched ops 1`] = `
 "WITH rows(tenant_id, user_id, name, _key) AS (VALUES
   ((NULL::\\"schema\\"\\"test_composite\\").tenant_id, (NULL::\\"schema\\"\\"test_composite\\").user_id, (NULL::\\"schema\\"\\"test_composite\\").name, '<key>'),
   ('1', '1', 'n1', '<key>'),
@@ -12,9 +12,9 @@ exports[`ops_batched 1`] = `
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE ROW(rows.tenant_id,rows.user_id)=ROW(\\"schema\\"\\"test_composite\\".tenant_id,\\"schema\\"\\"test_composite\\".user_id)), ROW(tenant_id,user_id) AS id"
 `;
 
-exports[`ops_batched 2`] = `""`;
+exports[`batched ops 2`] = `""`;
 
-exports[`ops_batched 3`] = `
+exports[`batched ops 3`] = `
 "WITH rows(tenant_id, user_id, name, _key) AS (VALUES
   ((NULL::\\"schema\\"\\"test_composite\\").tenant_id, (NULL::\\"schema\\"\\"test_composite\\").user_id, (NULL::\\"schema\\"\\"test_composite\\").name, '<key>'),
   ('1', '1', 'new-name-1', '(1,1)')<reordered for test>,
@@ -24,27 +24,27 @@ exports[`ops_batched 3`] = `
   FROM rows WHERE ROW(\\"schema\\"\\"test_composite\\".tenant_id,\\"schema\\"\\"test_composite\\".user_id)=ROW(rows.tenant_id,rows.user_id) RETURNING (SELECT _key FROM rows WHERE ROW(rows.tenant_id,rows.user_id)=ROW(\\"schema\\"\\"test_composite\\".tenant_id,\\"schema\\"\\"test_composite\\".user_id))"
 `;
 
-exports[`ops_batched 4`] = `
+exports[`batched ops 4`] = `
 "INSERT INTO \\"schema\\"\\"test_composite\\" (tenant_id, user_id, name) VALUES
   ('1', '1', 'n11'),
   ('9', '9', 'n9')
   ON CONFLICT (tenant_id,user_id) DO UPDATE SET tenant_id=EXCLUDED.tenant_id, user_id=EXCLUDED.user_id, name=EXCLUDED.name RETURNING ROW(tenant_id,user_id) AS id"
 `;
 
-exports[`ops_batched 5`] = `"DELETE FROM \\"schema\\"\\"test_composite\\" WHERE ROW(tenant_id,user_id) IN(ROW('1','1'),ROW('1','2')) RETURNING ROW(tenant_id,user_id) AS id"`;
+exports[`batched ops 5`] = `"DELETE FROM \\"schema\\"\\"test_composite\\" WHERE ROW(tenant_id,user_id) IN(ROW('1','1'),ROW('1','2')) RETURNING ROW(tenant_id,user_id) AS id"`;
 
-exports[`ops_batched 6`] = `
+exports[`batched ops 6`] = `
 "SELECT tenant_id, user_id, name, ROW(tenant_id,user_id) AS id FROM \\"schema\\"\\"test_composite\\"
   WHERE ROW(tenant_id,user_id) IN(ROW('1','3'),ROW('1','424'))"
 `;
 
-exports[`ops_batched 7`] = `
+exports[`batched ops 7`] = `
 "SELECT tenant_id, user_id, name, ROW(tenant_id,user_id) AS id FROM \\"schema\\"\\"test_composite\\"
   WHERE (tenant_id='1'
     AND user_id IN('3','4'))"
 `;
 
-exports[`ops_batched 8`] = `
+exports[`batched ops 8`] = `
 "SELECT COUNT(1) AS count FROM \\"schema\\"\\"test_composite\\"
   WHERE user_id='3'
   UNION ALL
@@ -52,7 +52,7 @@ SELECT COUNT(1) AS count FROM \\"schema\\"\\"test_composite\\"
   WHERE tenant_id='1'"
 `;
 
-exports[`ops_batched 9`] = `
+exports[`batched ops 9`] = `
 "(SELECT '<hash>' AS _key, tenant_id, user_id, name, ROW(tenant_id,user_id) AS id FROM \\"schema\\"\\"test_composite\\"
   WHERE user_id='3'
     ORDER BY user_id ASC
@@ -64,7 +64,7 @@ exports[`ops_batched 9`] = `
   LIMIT 10)"
 `;
 
-exports[`ops_batched 10`] = `
+exports[`batched ops 10`] = `
 "(SELECT '<hash>' AS _key, tenant_id, user_id, name, ROW(tenant_id,user_id) AS id FROM \\"schema\\"\\"test_composite\\"
   WHERE ROW(tenant_id,user_id)=ROW('1','3')
     ORDER BY user_id ASC
@@ -76,33 +76,33 @@ exports[`ops_batched 10`] = `
   LIMIT 10)"
 `;
 
-exports[`ops_single 1`] = `
+exports[`single ops 1`] = `
 "INSERT INTO \\"schema\\"\\"test_composite\\" (tenant_id, user_id, name) VALUES
   ('1', '1', 'n1') ON CONFLICT DO NOTHING RETURNING ROW(tenant_id,user_id) AS id"
 `;
 
-exports[`ops_single 2`] = `""`;
+exports[`single ops 2`] = `""`;
 
-exports[`ops_single 3`] = `
+exports[`single ops 3`] = `
 "INSERT INTO \\"schema\\"\\"test_composite\\" (tenant_id, user_id, name) VALUES
   ('1', '101', 'n11')
   ON CONFLICT (tenant_id,user_id) DO UPDATE SET tenant_id=EXCLUDED.tenant_id, user_id=EXCLUDED.user_id, name=EXCLUDED.name RETURNING ROW(tenant_id,user_id) AS id"
 `;
 
-exports[`ops_single 4`] = `"UPDATE \\"schema\\"\\"test_composite\\" SET name='absent' WHERE ROW(tenant_id,user_id)=ROW('42','42') RETURNING ROW(tenant_id,user_id) AS id"`;
+exports[`single ops 4`] = `"UPDATE \\"schema\\"\\"test_composite\\" SET name='absent' WHERE ROW(tenant_id,user_id)=ROW('42','42') RETURNING ROW(tenant_id,user_id) AS id"`;
 
-exports[`ops_single 5`] = `"UPDATE \\"schema\\"\\"test_composite\\" SET name='new-name' WHERE ROW(tenant_id,user_id)=ROW('1','1') RETURNING ROW(tenant_id,user_id) AS id"`;
+exports[`single ops 5`] = `"UPDATE \\"schema\\"\\"test_composite\\" SET name='new-name' WHERE ROW(tenant_id,user_id)=ROW('1','1') RETURNING ROW(tenant_id,user_id) AS id"`;
 
-exports[`ops_single 6`] = `"DELETE FROM \\"schema\\"\\"test_composite\\" WHERE ROW(tenant_id,user_id) IN(ROW('1','1')) RETURNING ROW(tenant_id,user_id) AS id"`;
+exports[`single ops 6`] = `"DELETE FROM \\"schema\\"\\"test_composite\\" WHERE ROW(tenant_id,user_id) IN(ROW('1','1')) RETURNING ROW(tenant_id,user_id) AS id"`;
 
-exports[`ops_single 7`] = `"DELETE FROM \\"schema\\"\\"test_composite\\" WHERE ROW(tenant_id,user_id) IN(ROW('1','2')) AND (1=1) RETURNING ROW(tenant_id,user_id) AS id"`;
+exports[`single ops 7`] = `"DELETE FROM \\"schema\\"\\"test_composite\\" WHERE ROW(tenant_id,user_id) IN(ROW('1','2')) AND (1=1) RETURNING ROW(tenant_id,user_id) AS id"`;
 
-exports[`ops_single 8`] = `
+exports[`single ops 8`] = `
 "SELECT COUNT(1) AS count FROM \\"schema\\"\\"test_composite\\"
   WHERE user_id='3'"
 `;
 
-exports[`ops_single 9`] = `
+exports[`single ops 9`] = `
 "SELECT tenant_id, user_id, name, ROW(tenant_id,user_id) AS id FROM \\"schema\\"\\"test_composite\\"
   WHERE user_id='3'
   LIMIT 10"

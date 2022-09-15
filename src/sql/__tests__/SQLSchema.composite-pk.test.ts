@@ -55,7 +55,7 @@ async function shardRun<TOutput>(query: Query<TOutput>) {
   );
 }
 
-test("ops_single", async () => {
+test("single ops", async () => {
   const id1 = await shardRun(
     schema.insert({ tenant_id: "1", user_id: "1", name: "n1" })
   );
@@ -125,7 +125,7 @@ test("ops_single", async () => {
   }
 });
 
-test("ops_batched", async () => {
+test("batched ops", async () => {
   const [id1, id2, id3, id4] = await join([
     shardRun(schema.insert({ tenant_id: "1", user_id: "1", name: "n1" })),
     shardRun(schema.insert({ tenant_id: "1", user_id: "2", name: "n2" })),
