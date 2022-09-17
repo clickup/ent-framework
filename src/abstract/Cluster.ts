@@ -1,14 +1,25 @@
 import delay from "delay";
 import compact from "lodash/compact";
+import first from "lodash/first";
 import random from "lodash/random";
-import range from "lodash/range";
 import hash from "object-hash";
 import { mapJoin, runInVoid } from "../helpers";
+import Memoize from "../Memoize";
 import type { Client } from "./Client";
 import { Shard } from "./Shard";
+import ShardError from "./ShardError";
 
 const DISCOVER_ERROR_RETRY_ATTEMPTS = 1;
 const DISCOVER_ERROR_RETRY_DELAY_MS = 3000;
+
+/**
+ * Holds the complete auto-discovered map of shards to figure out, which island
+ * holds which shard.
+ */
+interface DiscoveredShards<TClient extends Client> {
+  shardNoToIsland: ReadonlyMap<number, Island<TClient>>;
+  nonGlobalShards: ReadonlyArray<Shard<TClient>>;
+}
 
 /**
  * Island is 1 master + N replicas.
@@ -32,40 +43,28 @@ export class Island<TClient extends Client> {
  * Shard 0 is a special "global" shard.
  */
 export class Cluster<TClient extends Client> {
-  readonly shards: ReadonlyMap<number, Shard<TClient>>;
+  private discoverShardsCache: Promise<DiscoveredShards<TClient>> | null = null;
+  private firstIsland;
+
   readonly islands: ReadonlyMap<number, Island<TClient>>;
-  private islandsByShardsCache:
-    | Promise<ReadonlyMap<number, Island<TClient>>>
-    | undefined;
 
   constructor(
-    public readonly numReadShards: number,
-    public readonly numWriteShards: number,
     islands: ReadonlyArray<Island<TClient>>,
     public readonly shardsRediscoverMs: number = 10000
   ) {
-    if (this.numWriteShards > this.numReadShards) {
-      throw Error(
-        "numWriteShards (" +
-          this.numWriteShards +
-          ") must be <= numReadShards (" +
-          this.numReadShards +
-          ")"
-      );
+    const firstIsland = first(islands);
+    if (!firstIsland) {
+      throw Error("The cluster has no islands");
     }
 
+    this.firstIsland = firstIsland;
     this.islands = new Map(islands.map((island) => [island.no, island]));
-    this.shards = new Map(
-      range(0, numReadShards).map((no) => [
-        no,
-        new Shard(no, async () => {
-          const islandsByShards = await this.islandsByShardsCached();
-          return islandsByShards.get(no) || this.throwOnBadShardNo(no);
-        }),
-      ])
-    );
   }
 
+  /**
+   * If called once, keeps the clients pre-warmed, e.g. open. (It's up to the
+   * particular Client's implementation, what does a "pre-warmed client" mean.)
+   */
   prewarm() {
     for (const island of this.islands.values()) {
       island.master.prewarm();
@@ -73,75 +72,134 @@ export class Cluster<TClient extends Client> {
     }
   }
 
-  globalShard(): Shard<TClient> {
-    return this.shards.get(0)!;
+  /**
+   * Returns a global Shard of the cluster. This method is made synchronous
+   * intentionally, to defer the I/O and possible errors to the moment of the
+   * actual query.
+   */
+  globalShard() {
+    return this.shardByNo(0);
   }
 
-  randomShard(seed?: object): Shard<TClient> {
-    let noFromOne;
+  /**
+   * Returns Shard of a particular id. This method is made synchronous
+   * intentionally, to defer the I/O and possible errors to the moment of the
+   * actual query.
+   *
+   * Why is it important? Because shards may go up and down temporarily at
+   * random moments of time. Imagine we made this method async and asserted that
+   * the shard is actually available at the moment when the method is called.
+   * What would happen if the Shard object was stored somewhere as "successful"
+   * by the caller, then the island went down, and then a query is sent to the
+   * shard in, say, 20 seconds? We'd get an absolutely different exception, at
+   * the moment of the query. We don't want this to happen: we want all of the
+   * exceptions to be thrown with a consistent call stack (e.g. at the moment of
+   * the query), no matter whether it was an immediate call or a deferred one.
+   */
+  shard(id: string) {
+    const shardNo = this.firstIsland.master.shardNoByID(id);
+    return this.shardByNo(shardNo);
+  }
+
+  /**
+   * The idea: for each shard number (even for non-discovered yet shard), we
+   * keep the corresponding Shard object in a Memoize cache, so shards with the
+   * same number always resolve into the same Shard object. Then, an actual
+   * island locating process happens when the caller wants to get a Client of
+   * that Shard (and it throws if such Shard hasn't been discovered actually).
+   */
+  @Memoize()
+  shardByNo(shardNo: number) {
+    return new Shard(shardNo, async () => {
+      const { shardNoToIsland } = await this.discoverShards();
+      const shard = shardNoToIsland.get(shardNo);
+      if (!shard) {
+        const masterNames = [...this.islands.values()]
+          .map((island) => island.master.name)
+          .join(", ");
+        throw new ShardError(
+          `Shard ${shardNo} is not discoverable (some islands are down? connections limit? no such shard in the cluster?) on [${masterNames}]`
+        );
+      } else {
+        return shard;
+      }
+    });
+  }
+
+  /**
+   * Returns all currently known (discovered) non-global shards in the cluster.
+   */
+  async nonGlobalShards() {
+    const { nonGlobalShards } = await this.discoverShards();
+    return nonGlobalShards;
+  }
+
+  /**
+   * Returns a random shard among the ones which are currently known
+   * (discovered) in the cluster.
+   */
+  async randomShard(seed?: object) {
+    const { nonGlobalShards } = await this.discoverShards();
+
+    let index;
     if (seed !== undefined) {
       const numHash = hash(seed, {
         algorithm: "md5",
         encoding: "buffer",
       }).readUInt32BE();
-      noFromOne = 1 + (numHash % (this.numWriteShards - 1));
+      index = numHash % nonGlobalShards.length;
     } else {
-      // TODO: implement power-of-two algorithm to pick the shard smallest in size.
-      noFromOne = random(1, this.numWriteShards - 1);
+      // TODO: implement power-of-two algorithm to pick the shard which is
+      // smallest in size.
+      index = random(0, nonGlobalShards.length - 1);
     }
 
-    return this.shards.get(noFromOne)!;
+    return nonGlobalShards[index];
   }
 
-  shard(id: string): Shard<TClient> {
-    const noMatterWhatIsland = [...this.islands.values()][0];
-    if (!noMatterWhatIsland) {
-      throw Error("The cluster has no islands");
-    }
-
-    const shardNo = noMatterWhatIsland.master.shardNoByID(id);
-    const shard = this.shards.get(shardNo);
-    if (!shard) {
-      this.throwOnBadShardNo(shardNo);
-    }
-
-    return shard;
-  }
-
+  /**
+   * Returns all currently known (discovered) shards of a particular island.
+   */
   async islandShards(islandNo: number) {
-    const islandsByShards = await this.islandsByShardsCached();
+    const { shardNoToIsland } = await this.discoverShards();
     return compact(
-      [...islandsByShards.entries()].map(([shardNo, island]) =>
-        island.no === islandNo ? this.shards.get(shardNo) : null
+      [...shardNoToIsland.entries()].map(([shardNo, island]) =>
+        island.no === islandNo ? this.shardByNo(shardNo) : null
       )
     );
   }
 
-  private async islandsByShardsCached() {
-    if (this.islandsByShardsCache === undefined) {
-      this.islandsByShardsCache = this.islandsByShardsExpensive();
+  /**
+   * Returns the cached Shard-to-Island mapping. Once called, we schedule a
+   * chain of re-discovery operations.
+   */
+  private async discoverShards() {
+    if (!this.discoverShardsCache) {
+      this.discoverShardsCache = this.islandsByShardsExpensive();
       // Schedule re-discovery in background to refresh the cache in the future.
       setTimeout(() => {
-        this.islandsByShardsCache = undefined;
-        runInVoid(this.islandsByShardsCached());
+        this.discoverShardsCache = null;
+        runInVoid(this.discoverShards());
       }, this.shardsRediscoverMs);
     }
 
-    return this.islandsByShardsCache;
+    return this.discoverShardsCache;
   }
 
+  /**
+   * Runs the actual shards discovery queries over all islands and updates the
+   * mapping from shard number to an island where it lives. These queries may be
+   * expensive, so it's expected that the return Promise is heavily cached by
+   * the caller code.
+   */
   private async islandsByShardsExpensive(
     retriesLeft = DISCOVER_ERROR_RETRY_ATTEMPTS
-  ): Promise<Map<number, Island<TClient>>> {
+  ): Promise<DiscoveredShards<TClient>> {
     try {
       const islandsByShard = new Map<number, Island<TClient>>();
       await mapJoin([...this.islands.values()], async (island) => {
         const shardNos = await island.master.shardNos();
         for (const shardNo of shardNos) {
-          if (shardNo >= this.numReadShards) {
-            continue;
-          }
-
           const otherIsland = islandsByShard.get(shardNo);
           if (otherIsland) {
             throw Error(
@@ -153,7 +211,13 @@ export class Cluster<TClient extends Client> {
           islandsByShard.set(shardNo, island);
         }
       });
-      return islandsByShard;
+      return {
+        shardNoToIsland: islandsByShard,
+        nonGlobalShards: [...islandsByShard.keys()]
+          .filter((shardNo) => shardNo !== 0)
+          .sort()
+          .map((shardNo) => this.shardByNo(shardNo)),
+      };
     } catch (e) {
       if (retriesLeft > 0) {
         await delay(DISCOVER_ERROR_RETRY_DELAY_MS);
@@ -161,19 +225,6 @@ export class Cluster<TClient extends Client> {
       } else {
         throw e;
       }
-    }
-  }
-
-  throwOnBadShardNo(shardNo: number): never {
-    const masterNames = [...this.islands.values()]
-      .map((island) => island.master.name)
-      .join(", ");
-    if (shardNo >= this.numReadShards) {
-      throw Error(`Shard ${shardNo} does not exist on [${masterNames}]`);
-    } else {
-      throw Error(
-        `Shard ${shardNo} is not discoverable (DB down or connections limit?) on [${masterNames}]`
-      );
     }
   }
 }

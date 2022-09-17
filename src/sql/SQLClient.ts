@@ -2,6 +2,7 @@ import type { QueryResult, QueryResultRow } from "pg";
 import type { Loggers } from "../abstract/Client";
 import { Client } from "../abstract/Client";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import ShardError from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
 import { nullthrows, sanitizeIDForDebugPrinting, toFloatMs } from "../helpers";
 import parseCompositeRow from "./helpers/parseCompositeRow";
@@ -315,7 +316,7 @@ export abstract class SQLClient extends Client {
         : NaN;
     if (isNaN(no)) {
       const idSafe = sanitizeIDForDebugPrinting(id);
-      throw Error(`Cannot parse ID ${idSafe} to detect shard number`);
+      throw new ShardError(`Cannot parse ID ${idSafe} to detect shard number`);
     }
 
     return no;

@@ -1,7 +1,8 @@
 import type { Client } from "../abstract/Client";
 import type { Cluster } from "../abstract/Cluster";
 import type { Shard } from "../abstract/Shard";
-import { copyStack, mapJoin, nullthrows } from "../helpers";
+import ShardError from "../abstract/ShardError";
+import { copyStack, mapJoin } from "../helpers";
 import { ID } from "../types";
 import type { ShardAffinity } from "./Configuration";
 import { GLOBAL_SHARD } from "./Configuration";
@@ -22,6 +23,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
   private shardAffinity;
   private uniqueKey;
   private inverses;
+  private globalShard;
 
   constructor({
     cluster,
@@ -41,6 +43,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     this.shardAffinity = shardAffinity;
     this.uniqueKey = uniqueKey;
     this.inverses = inverses;
+    this.globalShard = cluster.globalShard();
   }
 
   /**
@@ -57,15 +60,15 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    * consistently at select time (but relying at insert time is fine: it
    * protects against most of "unique key violation" problems).
    */
-  singleShardFromInput(
+  async singleShardFromInput(
     input: Record<string, any>,
     op: string,
     fallbackToRandomShard: boolean
-  ): Shard<TClient> {
-    let shard = this.shardFromAffinity(input);
+  ): Promise<Shard<TClient>> {
+    let shard = await this.shardFromAffinity(input);
 
     if (!shard && fallbackToRandomShard) {
-      shard = this.cluster.randomShard(
+      shard = await this.cluster.randomShard(
         this.uniqueKey?.length
           ? this.uniqueKey.map((field) => input[field])
           : undefined
@@ -96,7 +99,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     input: Record<string, any>,
     op: string
   ): Promise<Array<Shard<TClient>>> {
-    const singleShard = this.shardFromAffinity(input);
+    const singleShard = await this.shardFromAffinity(input);
     if (singleShard) {
       return [singleShard];
     }
@@ -116,7 +119,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
         await mapJoin(id1 instanceof Array ? id1 : [id1], async (id1) => {
           const id2s = await inverse.id2s(vc, id1);
           for (const id2 of id2s) {
-            const shard = this.singleShardFromID(field, id2);
+            const shard = await this.singleShardFromID(field, id2);
             if (shard) {
               shards.add(shard);
             }
@@ -154,39 +157,48 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    * try to load a sharded Ent using an ID from the global shard). This is
    * identical to the case of an Ent not existing in the database.
    */
-  singleShardFromID(field: string, id: string | null | undefined) {
-    // GLOBAL_SHARD has precedence over a shard number from ID (or any other
-    // fields, since global tables may refer to global tables only). This allows
-    // to move some previously sharded objects to the global shard while doing
-    // some refactoring.
-    if (this.shardAffinity === GLOBAL_SHARD) {
-      return this.cluster.globalShard();
-    }
-
+  async singleShardFromID(field: string, id: string | null | undefined) {
     try {
-      if (id === GUEST_ID) {
+      let shard: Shard<TClient>;
+
+      // GLOBAL_SHARD has precedence over a shard number from ID (or any other
+      // fields, since global tables may refer to global tables only). This allows
+      // to move some previously sharded objects to the global shard while doing
+      // some refactoring.
+      if (this.shardAffinity === GLOBAL_SHARD) {
+        shard = this.globalShard;
+      } else if (id === GUEST_ID) {
         throw Error(
-          `this value can't be used to locate the Ent; most likely you're trying to use a guest VC's principal instead of an ID`
+          `${field}=${id} can't be used to locate ${this.entName}; most likely you're trying to use a guest VC's principal instead of an ID`
         );
+      } else {
+        if (id === null || id === undefined) {
+          throw Error(`trying to locate a shard for ${field}=${id}`);
+        }
+
+        shard = this.cluster.shard(id);
+        if (shard.no === this.globalShard.no) {
+          // We're trying to load a sharded Ent using an ID from the global
+          // shard. We know for sure that there will be no such Ent there then.
+          return null;
+        }
       }
 
-      const shard = this.cluster.shard(nullthrows(id));
-      if (shard.no === this.cluster.globalShard().no) {
-        // We're trying to load a sharded Ent using an ID from the global shard.
-        // We know for sure that there will be no such Ent there then.
-        return null;
-      } else {
-        return shard;
-      }
+      // We want to throw early to wrap the possible exception with
+      // EntNotFoundError below.
+      await shard.assertDiscoverable();
+
+      return shard;
     } catch (origError) {
-      // E.g. "shard does not exist" error; we don't want to mute it.
-      if (origError instanceof Error) {
-        const error = new EntNotFoundError(
-          this.entName,
-          { [field]: id },
-          origError.message
+      if (origError instanceof ShardError) {
+        throw copyStack(
+          new EntNotFoundError(
+            this.entName,
+            { [field]: id },
+            origError.message
+          ),
+          origError
         );
-        throw copyStack(error, origError);
       } else {
         throw origError;
       }
@@ -196,10 +208,10 @@ export class ShardLocator<TClient extends Client, TField extends string> {
   /**
    * All shards for this particular Ent depending on its affinity.
    */
-  allShards() {
-    return [...this.cluster.shards.values()].filter((shard) =>
-      this.shardAffinity === GLOBAL_SHARD ? shard.no === 0 : shard.no !== 0
-    );
+  async allShards(): Promise<ReadonlyArray<Shard<TClient>>> {
+    return this.shardAffinity === GLOBAL_SHARD
+      ? [this.globalShard]
+      : this.cluster.nonGlobalShards();
   }
 
   /**
@@ -207,18 +219,18 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    * null if it can't do this; the caller should likely throw in this case
    * (although not always).
    */
-  private shardFromAffinity(input: Record<string, any>): Shard<TClient> | null {
+  private async shardFromAffinity(input: Record<string, any>) {
     // For a low number of a very global objects only. ATTENTION: GLOBAL_SHARD
     // has precedence over a shard number from ID! This allows to move some
     // previously sharded objects to the global shard while doing some
     // refactoring.
     if (this.shardAffinity === GLOBAL_SHARD) {
-      return this.cluster.globalShard();
+      return this.globalShard;
     }
 
     // Explicit info about which shard to use.
     if (input.$shardOfID !== undefined) {
-      return this.singleShardFromID("$shardOfID", input.$shardOfID.toString());
+      return this.singleShardFromID("$shardOfID", input.$shardOfID?.toString());
     }
 
     // If we have Ent ID as a part of the request, we can just use it.

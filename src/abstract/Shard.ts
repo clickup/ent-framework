@@ -25,7 +25,8 @@ export class Shard<TClient extends Client> {
   ) {}
 
   /**
-   * Chooses the right client to be used for this shard.
+   * Chooses the right client to be used for this shard. We don't memoize,
+   * because the Shard may relocate to another Island during re-discovery.
    */
   async client(
     timeline: Timeline | typeof MASTER | typeof STALE_REPLICA
@@ -61,8 +62,18 @@ export class Shard<TClient extends Client> {
   }
 
   /**
+   * Throws if this shard does not exist, or its island is down, or something
+   * else is wrong with it.
+   */
+  async assertDiscoverable() {
+    await this.locateIsland();
+  }
+
+  /**
    * An extended client selection logic. There are multiple reasons (8+ in total
-   * so far) why a master or a replica may be chosen to send the query to.
+   * so far) why a master or a replica may be chosen to send the query to. We
+   * don't memoize, because the Shard may relocate to another Island during
+   * re-discovery.
    */
   private async clientEx(
     timeline: Timeline | typeof MASTER | typeof STALE_REPLICA,

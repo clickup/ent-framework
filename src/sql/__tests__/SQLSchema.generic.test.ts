@@ -74,7 +74,7 @@ async function shardRun<TOutput>(
 
 beforeEach(async () => {
   timeline.reset();
-  shard = testCluster.randomShard();
+  shard = await testCluster.randomShard();
   master = await shard.client(MASTER);
   replica = await shard.client(timeline);
 

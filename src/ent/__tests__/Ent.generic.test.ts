@@ -462,7 +462,7 @@ test("skip after triggers if operation soft fails", async () => {
 });
 
 test("attempt to use guest VC to load Ents", async () => {
-  const ERROR_RE = /locate the Ent/;
+  const ERROR_RE = /locate EntTestPost/;
   await expect(
     EntTestPost.loadNullable(vc.toGuest(), vc.toGuest().principal)
   ).rejects.toThrow(ERROR_RE);
