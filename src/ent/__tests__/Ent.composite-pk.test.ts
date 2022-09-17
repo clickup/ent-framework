@@ -85,28 +85,23 @@ beforeEach(async () => {
     ),
   ]);
 
-  await mapJoin(
-    [...testCluster.shards.values()].filter(
-      (shard) => shard !== testCluster.globalShard()
-    ),
-    async (shard) => {
-      const master = await shard.client(MASTER);
-      await join([
-        master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMPOSITE),
-      ]);
-      await join([
-        master.rows(
-          `CREATE TABLE %T(
+  await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
+    const master = await shard.client(MASTER);
+    await join([
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMPOSITE),
+    ]);
+    await join([
+      master.rows(
+        `CREATE TABLE %T(
             user_id bigint NOT NULL,
             some_id bigint NOT NULL,
             name text,
             UNIQUE(user_id, some_id)
           )`,
-          TABLE_COMPOSITE
-        ),
-      ]);
-    }
-  );
+        TABLE_COMPOSITE
+      ),
+    ]);
+  });
 
   user = await EntTestUser.insertReturning(createVC().toOmniDangerous(), {
     name: "my-name",

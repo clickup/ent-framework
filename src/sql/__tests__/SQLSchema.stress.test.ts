@@ -30,7 +30,7 @@ async function shardRun<TOutput>(query: Query<TOutput>) {
 }
 
 beforeEach(async () => {
-  shard = testCluster.randomShard();
+  shard = await testCluster.randomShard();
   master = await shard.client(MASTER);
 
   await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE);

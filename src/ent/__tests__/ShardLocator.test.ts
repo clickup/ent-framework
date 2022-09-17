@@ -1,5 +1,6 @@
 import groupBy from "lodash/groupBy";
 import range from "lodash/range";
+import { mapJoin } from "../../helpers";
 import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
 import { GLOBAL_SHARD } from "../Configuration";
 import { ShardLocator } from "../ShardLocator";
@@ -12,7 +13,7 @@ test("singleShardFromInput with colocation affinity", async () => {
     uniqueKey: ["user_id", "title"],
     inverses: [],
   });
-  const s1 = shardLocator.singleShardFromInput(
+  const s1 = await shardLocator.singleShardFromInput(
     { user_id: "100020000000" },
     "INSERT",
     true
@@ -28,7 +29,7 @@ test("singleShardFromInput with GLOBAL_SHARD affinity", async () => {
     uniqueKey: ["user_id", "title"],
     inverses: [],
   });
-  const s1 = shardLocator.singleShardFromInput(
+  const s1 = await shardLocator.singleShardFromInput(
     { user_id: "100020000000" },
     "INSERT",
     true
@@ -44,13 +45,13 @@ test("singleShardFromInput with by-unique-key random shard", async () => {
     uniqueKey: ["user_id", "title"],
     inverses: [],
   });
-  const s1 = shardLocator.singleShardFromInput(
+  const s1 = await shardLocator.singleShardFromInput(
     { company_id: null, user_id: "100020000000", title: new Date(12345) },
     "INSERT",
     true
   );
   for (let i = 0; i < 10; i++) {
-    const s2 = shardLocator.singleShardFromInput(
+    const s2 = await shardLocator.singleShardFromInput(
       { company_id: null, user_id: "100020000000", title: new Date(12345) },
       "INSERT",
       true
@@ -68,10 +69,19 @@ test("singleShardFromInput with truly random shard", async () => {
     inverses: [],
   });
   const shardNos = groupBy(
-    range(0, 100).map(
-      () =>
-        shardLocator.singleShardFromInput({ user_id: null }, "INSERT", true).no
+    await mapJoin(
+      range(0, 1000),
+      async () =>
+        (
+          await shardLocator.singleShardFromInput(
+            { user_id: null },
+            "INSERT",
+            true
+          )
+        ).no
     )
   );
-  expect(Object.keys(shardNos)).toHaveLength(testCluster.numWriteShards - 1);
+  expect(Object.keys(shardNos)).toHaveLength(
+    (await testCluster.nonGlobalShards()).length
+  );
 });

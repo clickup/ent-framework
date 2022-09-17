@@ -415,47 +415,42 @@ export async function init(): Promise<[VC, VC]> {
     ),
   ]);
 
-  await mapJoin(
-    [...testCluster.shards.values()].filter(
-      (shard) => shard !== testCluster.globalShard()
-    ),
-    async (shard) => {
-      const master = await shard.client(MASTER);
-      await join([
-        master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_HEADLINE),
-        master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMMENT),
-        master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_POST),
-      ]);
-      await join([
-        master.rows(
-          `CREATE TABLE %T(
+  await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
+    const master = await shard.client(MASTER);
+    await join([
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_HEADLINE),
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMMENT),
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_POST),
+    ]);
+    await join([
+      master.rows(
+        `CREATE TABLE %T(
             post_id bigint NOT NULL PRIMARY KEY,
             user_id bigint NOT NULL,
             title text NOT NULL,
             created_at timestamptz NOT NULL
           )`,
-          TABLE_POST
-        ),
-        master.rows(
-          `CREATE TABLE %T(
+        TABLE_POST
+      ),
+      master.rows(
+        `CREATE TABLE %T(
             comment_id bigint NOT NULL PRIMARY KEY,
             post_id bigint NOT NULL,
             text text NOT NULL
           )`,
-          TABLE_COMMENT
-        ),
-        master.rows(
-          `CREATE TABLE %T(
+        TABLE_COMMENT
+      ),
+      master.rows(
+        `CREATE TABLE %T(
             id bigint NOT NULL PRIMARY KEY,
             user_id bigint NOT NULL,
             headline text NOT NULL,
             name text
           )`,
-          TABLE_HEADLINE
-        ),
-      ]);
-    }
-  );
+        TABLE_HEADLINE
+      ),
+    ]);
+  });
 
   const company = await EntTestCompany.insertReturning(
     createVC().toOmniDangerous(),

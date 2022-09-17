@@ -114,48 +114,43 @@ async function init() {
     ),
   ]);
 
-  await mapJoin(
-    [...testCluster.shards.values()].filter(
-      (shard) => shard !== testCluster.globalShard()
-    ),
-    async (shard) => {
-      const master = await shard.client(MASTER);
-      await join([
-        master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_INVERSE),
-        master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_TOPIC),
-        master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_USER),
-      ]);
-      await join([
-        master.rows(
-          `CREATE TABLE %T(
+  await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
+    const master = await shard.client(MASTER);
+    await join([
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_INVERSE),
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_TOPIC),
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_USER),
+    ]);
+    await join([
+      master.rows(
+        `CREATE TABLE %T(
             id bigint NOT NULL PRIMARY KEY,
             company_id BIGINT,
             team_id BIGINT,
             name text NOT NULL
           )`,
-          TABLE_USER
-        ),
-        master.rows(
-          `CREATE TABLE %T(
+        TABLE_USER
+      ),
+      master.rows(
+        `CREATE TABLE %T(
             id bigint NOT NULL PRIMARY KEY,
             owner_id bigint NOT NULL,
             slug text NOT NULL,
             UNIQUE (owner_id, slug)
           )`,
-          TABLE_TOPIC
-        ),
-        master.rows(
-          `CREATE TABLE %T(
+        TABLE_TOPIC
+      ),
+      master.rows(
+        `CREATE TABLE %T(
             id bigint NOT NULL PRIMARY KEY,
             id1 bigint,
             type varchar(32) NOT NULL,
             id2 bigint NOT NULL
           )`,
-          TABLE_INVERSE
-        ),
-      ]);
-    }
-  );
+        TABLE_INVERSE
+      ),
+    ]);
+  });
 }
 
 let vc: VC;

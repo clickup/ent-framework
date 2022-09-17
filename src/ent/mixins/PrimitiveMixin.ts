@@ -4,7 +4,7 @@ import flatten from "lodash/flatten";
 import sum from "lodash/sum";
 import type { Client } from "../../abstract/Client";
 import type { OmitNew } from "../../helpers";
-import { hasKey, mapJoin } from "../../helpers";
+import { hasKey, join, mapJoin } from "../../helpers";
 import memoize2 from "../../memoize2";
 import type {
   CountInput,
@@ -166,17 +166,18 @@ export function PrimitiveMixin<
     readonly [ID]: string;
 
     static async insertIfNotExists(vc: VC, input: InsertInput<TTable>) {
-      await vc.heartbeater.heartbeat();
+      const [shard] = await join([
+        this.SHARD_LOCATOR.singleShardFromInput(
+          input,
+          "insert",
+          true // fallbackToRandomShard
+        ),
+        vc.heartbeater.heartbeat(),
+      ]);
 
       if (!vc.isOmni()) {
         await this.VALIDATION.validateInsert(vc, input);
       }
-
-      const shard = this.SHARD_LOCATOR.singleShardFromInput(
-        input,
-        "insert",
-        true // fallbackToRandomShard
-      );
 
       if (this.TRIGGERS.hasInsertTriggers() || this.INVERSES.length > 0) {
         // We have some triggers or inverses; that means we must generate an ID
@@ -257,7 +258,14 @@ export function PrimitiveMixin<
     }
 
     static async upsert(vc: VC, input: InsertInput<TTable>) {
-      await vc.heartbeater.heartbeat();
+      const [shard] = await join([
+        this.SHARD_LOCATOR.singleShardFromInput(
+          input,
+          "upsert",
+          false // fallbackToRandomShard
+        ),
+        vc.heartbeater.heartbeat(),
+      ]);
 
       if (
         this.TRIGGERS.hasInsertTriggers() ||
@@ -284,11 +292,6 @@ export function PrimitiveMixin<
         await this.VALIDATION.validateInsert(vc, input);
       }
 
-      const shard = this.SHARD_LOCATOR.singleShardFromInput(
-        input,
-        "upsert",
-        false // fallbackToRandomShard
-      );
       const query = this.SCHEMA.upsert(input);
       const id = await shard.run(
         query,
@@ -301,9 +304,10 @@ export function PrimitiveMixin<
     }
 
     static async loadNullable(vc: VC, id: string) {
-      await vc.heartbeater.heartbeat();
-
-      const shard = this.SHARD_LOCATOR.singleShardFromID(ID, id);
+      const [shard] = await join([
+        this.SHARD_LOCATOR.singleShardFromID(ID, id),
+        vc.heartbeater.heartbeat(),
+      ]);
       if (!shard) {
         return null;
       }
@@ -322,13 +326,11 @@ export function PrimitiveMixin<
       vc: VC,
       input: LoadByInput<TTable, TUniqueKey>
     ) {
-      await vc.heartbeater.heartbeat();
+      const [shards] = await join([
+        this.SHARD_LOCATOR.multiShardsFromInput(vc, input, "loadBy"),
+        vc.heartbeater.heartbeat(),
+      ]);
 
-      const shards = this.SHARD_LOCATOR.multiShardsFromInput(
-        vc,
-        input,
-        "loadBy"
-      );
       const rows = compact(
         await mapJoin(shards, async (shard) =>
           shard.run(
@@ -350,13 +352,10 @@ export function PrimitiveMixin<
       order?: Order<TTable>,
       custom?: {}
     ) {
-      await vc.heartbeater.heartbeat();
-
-      const shards = await this.SHARD_LOCATOR.multiShardsFromInput(
-        vc,
-        where,
-        "select"
-      );
+      const [shards] = await join([
+        this.SHARD_LOCATOR.multiShardsFromInput(vc, where, "select"),
+        vc.heartbeater.heartbeat(),
+      ]);
 
       const ents = await mapJoin(shards, async (shard) => {
         const rows = await shard.run(
@@ -378,11 +377,14 @@ export function PrimitiveMixin<
       limit: number,
       custom?: {}
     ) {
-      const shard = this.SHARD_LOCATOR.singleShardFromInput(
-        where,
-        "selectChunked",
-        false // fallbackToRandomShard
-      );
+      const [shard] = await join([
+        this.SHARD_LOCATOR.singleShardFromInput(
+          where,
+          "selectChunked",
+          false // fallbackToRandomShard
+        ),
+        vc.heartbeater.heartbeat(),
+      ]);
 
       let idCursor: string = "0";
       for (;;) {
@@ -400,6 +402,7 @@ export function PrimitiveMixin<
         };
 
         await vc.heartbeater.heartbeat();
+
         const rows = await shard.run(
           this.SCHEMA.select({
             where: cursoredWhere,
@@ -432,13 +435,10 @@ export function PrimitiveMixin<
     }
 
     static async count(vc: VC, where: CountInput<TTable>) {
-      await vc.heartbeater.heartbeat();
-
-      const shards = await this.SHARD_LOCATOR.multiShardsFromInput(
-        vc,
-        where,
-        "count"
-      );
+      const [shards] = await join([
+        this.SHARD_LOCATOR.multiShardsFromInput(vc, where, "count"),
+        vc.heartbeater.heartbeat(),
+      ]);
 
       const counts = await mapJoin(shards, async (shard) =>
         shard.run(
@@ -453,7 +453,10 @@ export function PrimitiveMixin<
     }
 
     async updateOriginal(input: UpdateInput<TTable>) {
-      await this.vc.heartbeater.heartbeat();
+      const [shard] = await join([
+        this.constructor.SHARD_LOCATOR.singleShardFromID(ID, this[ID]),
+        this.vc.heartbeater.heartbeat(),
+      ]);
 
       if (!this.vc.isOmni()) {
         await this.constructor.VALIDATION.validateUpdate(
@@ -463,10 +466,6 @@ export function PrimitiveMixin<
         );
       }
 
-      const shard = this.constructor.SHARD_LOCATOR.singleShardFromID(
-        ID,
-        this[ID]
-      );
       if (!shard) {
         return false;
       }
@@ -504,7 +503,10 @@ export function PrimitiveMixin<
     }
 
     async deleteOriginal() {
-      await this.vc.heartbeater.heartbeat();
+      const [shard] = await join([
+        this.constructor.SHARD_LOCATOR.singleShardFromID(ID, this[ID]),
+        this.vc.heartbeater.heartbeat(),
+      ]);
 
       if (!this.vc.isOmni()) {
         await this.constructor.VALIDATION.validateDelete(
@@ -513,10 +515,6 @@ export function PrimitiveMixin<
         );
       }
 
-      const shard = this.constructor.SHARD_LOCATOR.singleShardFromID(
-        ID,
-        this[ID]
-      );
       if (!shard) {
         return false;
       }
