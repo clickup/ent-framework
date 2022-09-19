@@ -53,3 +53,369 @@ exports[`loadNullable with no access 1`] = `
 exports[`select and count 1`] = `"EntCannotDetectShardError: EntTestComment: to detect shard in \\"select\\" query, non-empty \\"post_id\\" field must be present at TOP LEVEL of the input, but got { post_id: [] }; EntTestComment.SHARD_AFFINITY=[ 'post_id' ]; EntTestComment.INVERSES=[]"`;
 
 exports[`select and count 2`] = `"EntCannotDetectShardError: EntTestComment: to detect shard in \\"select\\" query, non-empty \\"post_id\\" field must be present at TOP LEVEL of the input, but got { post_id: '' }; EntTestComment.SHARD_AFFINITY=[ 'post_id' ]; EntTestComment.INVERSES=[]"`;
+
+exports[`skip after triggers if operation soft fails: 1: insert happened 1`] = `
+"[
+  {
+    type: 'beforeInsert',
+    input: { name: 'abc', id: '<id>' }
+  },
+  {
+    type: 'afterInsert',
+    input: { name: 'abc', id: '<id>' }
+  },
+  {
+    type: 'afterMutation',
+    input: { name: 'abc', id: '<id>' }
+  }
+]"
+`;
+
+exports[`skip after triggers if operation soft fails: 2: insert soft-failed on unique key conflict 1`] = `
+"[
+  {
+    type: 'beforeInsert',
+    input: { name: 'abc', id: '<id>' }
+  }
+]"
+`;
+
+exports[`skip after triggers if operation soft fails: 3: update soft-failed on non-existing row 1`] = `
+"[
+  {
+    type: 'beforeUpdate',
+    old: EntTestCountry { id: '<id>', name: 'abc' },
+    new: { id: '<id>', name: 'zzz' },
+    input: { name: 'zzz' }
+  }
+]"
+`;
+
+exports[`skip after triggers if operation soft fails: 4: delete soft-failed on non-existing row 1`] = `
+"[
+  {
+    type: 'beforeDelete',
+    old: EntTestCountry { id: '<id>', name: 'abc' }
+  }
+]"
+`;
+
+exports[`triggers: 0: insert happened 1`] = `
+"[
+  {
+    type: 'beforeInsert1',
+    input: {
+      user_id: '<id>',
+      headline: 'xyz',
+      id: '<id>',
+      [Symbol($EPHEMERAL)]: null
+    }
+  },
+  {
+    type: 'beforeInsert2',
+    input: {
+      user_id: '<id>',
+      headline: 'xyz added-by-beforeInsert1',
+      id: '<id>',
+      [Symbol($EPHEMERAL)]: null
+    }
+  },
+  {
+    type: 'afterInsert',
+    input: {
+      user_id: '<id>',
+      headline: 'xyz added-by-beforeInsert1 added-by-beforeInsert2',
+      id: '<id>',
+      [Symbol($EPHEMERAL)]: null
+    }
+  },
+  {
+    type: 'afterMutation',
+    input: {
+      user_id: '<id>',
+      headline: 'xyz added-by-beforeInsert1 added-by-beforeInsert2',
+      id: '<id>',
+      [Symbol($EPHEMERAL)]: null
+    }
+  },
+  {
+    type: 'afterMutation (if name changed)',
+    input: {
+      user_id: '<id>',
+      headline: 'xyz added-by-beforeInsert1 added-by-beforeInsert2',
+      id: '<id>',
+      [Symbol($EPHEMERAL)]: null
+    }
+  }
+]"
+`;
+
+exports[`triggers: 1: insert happened 1`] = `
+"[
+  {
+    type: 'beforeInsert1',
+    input: {
+      user_id: '<id>',
+      headline: 'abc',
+      id: '<id>',
+      [Symbol($EPHEMERAL)]: 'eph',
+      [Symbol($EPHEMERAL2)]: 42
+    }
+  },
+  {
+    type: 'beforeInsert2',
+    input: {
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1',
+      id: '<id>',
+      [Symbol($EPHEMERAL)]: 'eph',
+      [Symbol($EPHEMERAL2)]: 1042
+    }
+  },
+  {
+    type: 'afterInsert',
+    input: {
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      id: '<id>',
+      [Symbol($EPHEMERAL)]: 'eph',
+      [Symbol($EPHEMERAL2)]: 1042
+    }
+  },
+  {
+    type: 'afterMutation',
+    input: {
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      id: '<id>',
+      [Symbol($EPHEMERAL)]: 'eph',
+      [Symbol($EPHEMERAL2)]: 1042
+    }
+  },
+  {
+    type: 'afterMutation (if name changed)',
+    input: {
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      id: '<id>',
+      [Symbol($EPHEMERAL)]: 'eph',
+      [Symbol($EPHEMERAL2)]: 1042
+    }
+  }
+]"
+`;
+
+exports[`triggers: 2: update happened 1`] = `
+"[
+  {
+    type: 'beforeUpdate',
+    old: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    },
+    new: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'xyz-updated',
+      name: 'new-name',
+      [Symbol($EPHEMERAL2)]: 101
+    },
+    input: {
+      headline: 'xyz-updated',
+      name: 'new-name',
+      [Symbol($EPHEMERAL2)]: 101
+    }
+  },
+  {
+    type: 'afterUpdate',
+    old: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    },
+    new: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'xyz-updated added-by-beforeUpdate',
+      name: 'new-name',
+      [Symbol($EPHEMERAL2)]: 1000101
+    }
+  },
+  {
+    type: 'afterUpdate (if name changed)',
+    old: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    },
+    new: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'xyz-updated added-by-beforeUpdate',
+      name: 'new-name',
+      [Symbol($EPHEMERAL2)]: 1000101
+    }
+  },
+  {
+    type: 'afterMutation',
+    input: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'xyz-updated added-by-beforeUpdate',
+      name: 'new-name',
+      [Symbol($EPHEMERAL2)]: 1000101
+    }
+  },
+  {
+    type: 'afterMutation (if name changed)',
+    input: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'xyz-updated added-by-beforeUpdate',
+      name: 'new-name',
+      [Symbol($EPHEMERAL2)]: 1000101
+    }
+  }
+]"
+`;
+
+exports[`triggers: 3: noop-update happened 1`] = `
+"[
+  {
+    type: 'beforeUpdate',
+    old: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    },
+    new: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null,
+      [Symbol($EPHEMERAL)]: 'eph3'
+    },
+    input: { [Symbol($EPHEMERAL)]: 'eph3' }
+  },
+  {
+    type: 'afterUpdate',
+    old: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    },
+    new: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2 added-by-beforeUpdate',
+      name: null,
+      [Symbol($EPHEMERAL)]: 'eph3'
+    }
+  },
+  {
+    type: 'afterMutation',
+    input: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2 added-by-beforeUpdate',
+      name: null,
+      [Symbol($EPHEMERAL)]: 'eph3'
+    }
+  }
+]"
+`;
+
+exports[`triggers: 4: updateChanged happened 1`] = `
+"[
+  {
+    type: 'beforeUpdate',
+    old: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    },
+    new: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null,
+      [Symbol($EPHEMERAL)]: 'eph4'
+    },
+    input: { [Symbol($EPHEMERAL)]: 'eph4' }
+  },
+  {
+    type: 'afterUpdate',
+    old: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    },
+    new: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2 added-by-beforeUpdate',
+      name: null,
+      [Symbol($EPHEMERAL)]: 'eph4'
+    }
+  },
+  {
+    type: 'afterMutation',
+    input: {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2 added-by-beforeUpdate',
+      name: null,
+      [Symbol($EPHEMERAL)]: 'eph4'
+    }
+  }
+]"
+`;
+
+exports[`triggers: 5: delete happened 1`] = `
+"[
+  {
+    type: 'beforeDelete',
+    old: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    }
+  },
+  {
+    type: 'afterDelete',
+    old: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    }
+  },
+  {
+    type: 'afterMutation',
+    input: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    }
+  },
+  {
+    type: 'afterMutation (if name changed)',
+    input: EntTestHeadline {
+      id: '<id>',
+      user_id: '<id>',
+      headline: 'abc added-by-beforeInsert1 added-by-beforeInsert2',
+      name: null
+    }
+  }
+]"
+`;
