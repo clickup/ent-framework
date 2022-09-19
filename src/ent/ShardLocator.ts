@@ -168,12 +168,12 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       if (this.shardAffinity === GLOBAL_SHARD) {
         shard = this.globalShard;
       } else if (id === GUEST_ID) {
-        throw Error(
-          `${field}=${id} can't be used to locate ${this.entName}; most likely you're trying to use a guest VC's principal instead of an ID`
+        throw new ShardError(
+          `can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID`
         );
       } else {
         if (id === null || id === undefined) {
-          throw Error(`trying to locate a shard for ${field}=${id}`);
+          throw new ShardError(`can't locate shard`);
         }
 
         shard = this.cluster.shard(id);
