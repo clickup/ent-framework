@@ -24,8 +24,6 @@ export type WhyClient =
 export interface QueryAnnotation {
   /** Trace ID of the series of the queries. */
   readonly trace: string;
-  /** Unique/numeric part of trace (uint64 string). */
-  readonly rawTrace: string | undefined;
   /** Something which identifies the acting user; it's named `vc` after Ent's VC
    * for simplicity, but at this layer of abstractions, there are no Ents. */
   readonly vc: string;

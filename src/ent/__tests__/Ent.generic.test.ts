@@ -65,7 +65,7 @@ test("loadX coalescing produces same objects", async () => {
 test("loadX coalescing produces different objects for different vc", async () => {
   const [user1, user2] = await join([
     EntTestUser.loadX(vc, vc.principal),
-    EntTestUser.loadX(vc.withNewTrace("4534636734"), vc.principal),
+    EntTestUser.loadX(vc.toOmniDangerous(), vc.principal),
   ]);
   (user1 as any).some = 10;
   expect((user2 as any).some).toBeUndefined();
