@@ -84,8 +84,11 @@ export class VC {
     private timelines: Map<string, Timeline>,
     /** Sticky objects attached to the VC (and inherited when deriving). */
     private flavors: ReadonlyMap<Function, VCFlavor>,
-    /** The heartbeat callback is called before each primitive operation; delay
-     * callback can also be passed. */
+    /** The heartbeat callback is called before each primitive operation. It
+     * plays the similar role as AbortController: when called, it may throw
+     * sometimes (signalled externally). Delay callback can also be passed since
+     * it's pretty common use case to wait for some time and be aborted on a
+     * heartbeat exception. */
     public readonly heartbeater: {
       readonly heartbeat: () => Promise<void>;
       readonly delay: (ms: number) => Promise<void>;
@@ -285,9 +288,9 @@ export class VC {
   /**
    * Derives the VC with new trace ID.
    */
-  withNewTrace(rawTrace: string | undefined, prefix: string = "") {
+  withNewTrace(trace: string | undefined) {
     return new VC(
-      new VCTrace(rawTrace, prefix),
+      new VCTrace(trace),
       this.principal,
       this.freshness,
       this.timelines,
@@ -298,7 +301,7 @@ export class VC {
   }
 
   /**
-   * De
+   * Derives the VC with the provided heartbeater injected.
    */
   withHeartbeater(heartbeater: VC["heartbeater"]) {
     return new VC(
@@ -403,9 +406,8 @@ export class VC {
       this.annotationCache = {
         // DON'T alter trace here anyhow, or it would break the debugging chain.
         trace: this.trace.trace,
-        rawTrace: this.trace.rawTrace,
         debugStack: "",
-        // vc has all flavors mixed in
+        // vc.toString() returns a textual VC with all flavors mixed in
         vc: this.toString(),
         whyClient: undefined,
       };

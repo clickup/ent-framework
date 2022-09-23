@@ -1,27 +1,33 @@
 import { randomBytes } from "crypto";
+
+/**
+ * The upper bound of Date.now() is Number.MAX_SAFE_INTEGER which is 2^53 - 1,
+ * so we have only 10 bits from BigInt (2^63 - 1) left to represent the random
+ * part of the trace value.
+ */
+const RANDOM_BITS = 10;
+
+const RANDOM_BITS_MASK = Math.pow(2, RANDOM_BITS) - 1;
+
 /**
  * A "trace" objects which allows to group database related stuff while logging
- * it. Traces are inherited during VC derivation.
+ * it. Traces are inherited during VC derivation, similar to flavors, but
+ * they're a part of VC core interface to allow faster access.
  */
 export class VCTrace {
   readonly trace: string;
 
-  constructor(
-    /** stringified uint64 (0 - 18446744073709551615) */
-    readonly rawTrace?: string,
-    readonly prefix = ""
-  ) {
-    // rawTrace will be missing if DD is logging disabled or there is no "root" span.
-    // We don't need to fake it if it is not provided.
-    this.trace =
-      (prefix ? prefix + "-" : "") + (this.rawTrace || createRandomRawTrace());
+  constructor(trace?: string) {
+    this.trace = trace ?? createRandomTrace();
   }
 }
 
-function createRandomRawTrace() {
-  const buf = randomBytes(8);
+/**
+ * Returns a stringified uint63 (0 - 9223372036854775807).
+ */
+function createRandomTrace() {
   return (
-    BigInt(buf.readUInt32BE(0)) +
-    (BigInt(buf.readUInt32BE(4)) << BigInt(32))
+    (BigInt(Date.now()) << BigInt(RANDOM_BITS)) |
+    BigInt(randomBytes(2).readUInt16BE() & RANDOM_BITS_MASK)
   ).toString();
 }
