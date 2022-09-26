@@ -3,6 +3,7 @@ import pDefer from "p-defer";
 
 export interface Handler<TLoadArgs extends any[], TReturn> {
   onCollect: (...args: TLoadArgs) => void;
+  onWait?: () => Promise<void>;
   onFlush: () => Promise<void>;
   onReturn: (...args: TLoadArgs) => TReturn;
 }
@@ -56,6 +57,7 @@ export class Loader<TLoadArgs extends any[], TReturn> {
         process.nextTick(async () => {
           const defer = this.defer!;
           const handler = this.handler!;
+          await handler.onWait?.();
           this.defer = null;
           this.handler = null;
           handler
