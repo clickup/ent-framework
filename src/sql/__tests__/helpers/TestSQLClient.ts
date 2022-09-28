@@ -115,11 +115,11 @@ export const master = new SQLClientPool(
     },
     isMaster: true,
     config: {
-      host: process.env.DB_HOST_DEFAULT || process.env.PGHOST,
-      port: parseInt(process.env.DB_PORT || process.env.PGPORT || "5432"),
-      database: process.env.DB_DATABASE || process.env.PGDATABASE,
-      user: process.env.DB_USER || process.env.PGUSER,
-      password: process.env.DB_PASS || process.env.PGPASSWORD,
+      host: process.env.PGHOST || process.env.DB_HOST_DEFAULT,
+      port: parseInt(process.env.PGPORT || process.env.DB_PORT || "5432"),
+      database: process.env.PGDATABASE || process.env.DB_DATABASE,
+      user: process.env.PGUSER || process.env.DB_USER,
+      password: process.env.PGPASSWORD || process.env.DB_PASS,
     },
   },
   {}
