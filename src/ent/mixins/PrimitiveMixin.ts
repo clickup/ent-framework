@@ -198,54 +198,52 @@ export function PrimitiveMixin<
           id2,
         }));
 
-        // Preliminarily insert inverse rows to inverses table, even before we
-        // insert the main Ent. This avoids race conditions for cases when
-        // multiple clients insert and load the main Ent simultaneously: in
-        // terms of business logic, there is nothing too bad in having some
-        // "extra" inverses in the database since they're also used to resolve
-        // shard CANDIDATES.
-        await mapJoin(inverseRows, async ({ inverse, id1, id2 }) =>
-          inverse.beforeInsert(vc, id1, id2)
-        );
-
-        let insertSucceeded = false;
-        let error = undefined;
+        let actuallyInsertedID = null;
         try {
-          insertSucceeded =
-            (await this.TRIGGERS.wrapInsert(
-              async (input) =>
-                shard.run(
-                  this.SCHEMA.insert(input),
-                  vc.toAnnotation(),
-                  vc.timeline(shard, this.SCHEMA.name),
-                  vc.freshness
-                ),
-              vc,
-              { ...input, [ID]: id2 }
-            )) !== null;
-        } catch (e: unknown) {
-          error = e;
-        }
-
-        if (!insertSucceeded) {
-          // We couldn't insert the Ent due to an unique key violation or some
-          // other DB error. Try to undo the inverse row creation (but if we
-          // fail to undo, it's not a big deal to have a stale inverse since it
-          // only affects shard candidates locating). This logic looks scary,
-          // but it's exactly how the code looked like in FB; in real lifer,
-          // there is always an "inverses fixer" service which removes orphaned
-          // inverses asynchronously.
+          // Preliminarily insert inverse rows to inverses table, even before we
+          // insert the main Ent. This avoids race conditions for cases when
+          // multiple clients insert and load the main Ent simultaneously: in
+          // terms of business logic, there is nothing too bad in having some
+          // "extra" inverses in the database since they're also used to resolve
+          // shard CANDIDATES.
           await mapJoin(inverseRows, async ({ inverse, id1, id2 }) =>
-            inverse.afterDelete(vc, id1, id2)
-          ).catch(() => {});
-          return null;
-        }
+            inverse.beforeInsert(vc, id1, id2)
+          );
 
-        if (error) {
-          throw error;
+          // Insert the actual Ent. On SQL error, we'll get an exception, and on
+          // a duplicate key violation (which is a business logic condition),
+          // we'll get a null returned.
+          actuallyInsertedID = await this.TRIGGERS.wrapInsert(
+            async (input) =>
+              shard.run(
+                this.SCHEMA.insert(input),
+                vc.toAnnotation(),
+                vc.timeline(shard, this.SCHEMA.name),
+                vc.freshness
+              ),
+            vc,
+            { ...input, [ID]: id2 }
+          );
+          return actuallyInsertedID;
+        } finally {
+          // There are 2 failure conditions here: 1) there can be an exception
+          // during the insert (in this case, actuallyInsertedID will be null
+          // due to the above initialization), or 2) an insert may result in a
+          // no-op due to unique constraints violation (and in this case,
+          // insert() will return null to actuallyInsertedID).
+          if (actuallyInsertedID === null) {
+            // We couldn't insert the Ent due to an unique key violation or some
+            // other DB error. Try to undo the inverses creation (but if we fail
+            // to undo, it's not a big deal to have stale inverses in the DB
+            // since they only affect shard candidates locating). This logic
+            // looks scary, but it's exactly how the code looked like in FB; in
+            // real lifer, there is always an "inverses fixer" service which
+            // removes orphaned inverses asynchronously.
+            await mapJoin(inverseRows, async ({ inverse, id1, id2 }) =>
+              inverse.afterDelete(vc, id1, id2).catch(() => {})
+            );
+          }
         }
-
-        return id2;
       } else {
         // No insert triggers and no inverses: do just a plain insert.
         return shard.run(
