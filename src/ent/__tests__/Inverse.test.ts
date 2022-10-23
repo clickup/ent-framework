@@ -3,6 +3,7 @@ import sortBy from "lodash/sortBy";
 import uniq from "lodash/uniq";
 import { MASTER } from "../../abstract/Shard";
 import { join, mapJoin } from "../../helpers";
+import { SQLError } from "../../sql/SQLError";
 import { SQLSchema } from "../../sql/SQLSchema";
 import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
 import { ID } from "../../types";
@@ -316,6 +317,24 @@ test("race condition in insert/loadBy", async () => {
     );
     expect(insertedTopicIDs).toHaveLength(1);
   }
+});
+
+test("ent creation throws", async () => {
+  const company = await EntTestCompany.insertReturning(vc, {
+    name: "my-company",
+  });
+  await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
+    const master = await shard.client(MASTER);
+    await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_TOPIC);
+  });
+  await expect(
+    EntTestTopic.insertIfNotExists(vc, {
+      owner_id: company.id,
+      slug: "topic",
+    })
+  ).rejects.toThrow(SQLError);
+  const inverse = EntTestTopic.INVERSES[0];
+  expect(await inverse.id2s(vc, company.id)).toEqual([]);
 });
 
 test("loadBy with multiple shard candidates", async () => {
