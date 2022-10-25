@@ -69,6 +69,30 @@ export abstract class Client {
   abstract readonly timelineManager: TimelineManager;
 
   /**
+   * Closes the connections to let the caller destroy the client. By default,
+   * the pending queries are awaited to finish before returning, but if you pass
+   * forceDisconnect, all of the connections will be closed immediately.
+   */
+  abstract end(forceDisconnect?: boolean): Promise<void>;
+
+  /**
+   * Returns all shard numbers discoverable via the connection to the Client's
+   * database.
+   */
+  abstract shardNos(): Promise<readonly number[]>;
+
+  /**
+   * Extracts shard number from an ID.
+   */
+  abstract shardNoByID(id: string): number;
+
+  /**
+   * Creates a new Client which is namespaced to the provided shard number. The
+   * new client will share the same connection pool with the parent's Client.
+   */
+  abstract withShard(no: number): this;
+
+  /**
    * Batcher is per-client per-query-type per-table-name-and-shape:
    * - Per-client means that batchers are removed as soon as the client is
    *   removed, i.e. the client owns all the batchers for all tables.
@@ -102,31 +126,12 @@ export abstract class Client {
     // clients) to save memory (and inject the Client via Runner.run*()
     // methods). But we don't do all that right now.
     const runner = runnerCreator();
-
     return new Batcher<TInput, TOutput>(
       runner,
       this.loggers.entInputLogger,
       runner.maxBatchSize
     );
   }
-
-  /**
-   * Returns all shard numbers discoverable via the connection to the Client's
-   * database.
-   */
-  abstract shardNos(): Promise<readonly number[]>;
-
-  /**
-   * Extracts shard number from an ID.
-   */
-  abstract shardNoByID(id: string): number;
-
-  /**
-   * Creates a new Client which is namespaced to the provided shard number. The
-   * new client will share the same connection pool with the parent's Client.
-   */
-  abstract withShard(no: number): this;
-
   /**
    * A convenience method to put connections prewarming logic to. The idea is to
    * keep the needed number of open connections and also, in each connection,

@@ -25,6 +25,10 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
     return this.client.timelineManager;
   }
 
+  async end(forceDisconnect?: boolean) {
+    return this.client.end(forceDisconnect);
+  }
+
   async query<TRes>(
     query: string,
     op: string,

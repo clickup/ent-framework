@@ -1,3 +1,4 @@
+import delay from "delay";
 import range from "lodash/range";
 import sortBy from "lodash/sortBy";
 import uniq from "lodash/uniq";
@@ -30,7 +31,9 @@ const schemaTestUser = new SQLSchema(
   ["company_id", "team_id"]
 );
 
-// Sharded Ent.
+/**
+ * A sharded Ent.
+ */
 class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
   static override configure() {
     return new this.Configuration({
@@ -54,7 +57,9 @@ const schemaTestCompany = new SQLSchema(
   ["name"]
 );
 
-// An Ent in GLOBAL_SHARD.
+/**
+ * An Ent in GLOBAL_SHARD.
+ */
 class EntTestCompany extends BaseEnt(testCluster, schemaTestCompany) {
   static override configure() {
     return new this.Configuration({
@@ -71,12 +76,15 @@ const schemaTestTopic = new SQLSchema(
     id: { type: ID, autoInsert: "id_gen()" },
     owner_id: { type: ID }, // either EntTestUser (sharded) or EntTestCompany (global)
     slug: { type: String },
+    sleep: { type: Number, allowNull: true, autoInsert: "0" },
   },
   ["owner_id", "slug"]
 );
 
-// An Ent which is either sharded (if owner_id points to EntTestUser) or in
-// GLOBAL_SHARD (if owner_id points to EntTestCompany).
+/**
+ * An Ent which is either sharded (if owner_id points to EntTestUser) or in
+ * GLOBAL_SHARD (if owner_id points to EntTestCompany).
+ */
 class EntTestTopic extends BaseEnt(testCluster, schemaTestTopic) {
   static override configure() {
     return new this.Configuration({
@@ -125,32 +133,41 @@ async function init() {
     await join([
       master.rows(
         `CREATE TABLE %T(
-            id bigint NOT NULL PRIMARY KEY,
-            company_id BIGINT,
-            team_id BIGINT,
-            name text NOT NULL
-          )`,
+          id bigint NOT NULL PRIMARY KEY,
+          company_id BIGINT,
+          team_id BIGINT,
+          name text NOT NULL
+        )`,
         TABLE_USER
       ),
       master.rows(
         `CREATE TABLE %T(
-            id bigint NOT NULL PRIMARY KEY,
-            owner_id bigint NOT NULL,
-            slug text NOT NULL,
-            UNIQUE (owner_id, slug)
-          )`,
+          id bigint NOT NULL PRIMARY KEY,
+          owner_id bigint NOT NULL,
+          slug text NOT NULL,
+          sleep integer NOT NULL,
+          UNIQUE (owner_id, slug)
+        )`,
         TABLE_TOPIC
       ),
       master.rows(
         `CREATE TABLE %T(
-            id bigint NOT NULL PRIMARY KEY,
-            id1 bigint,
-            type varchar(32) NOT NULL,
-            id2 bigint NOT NULL
-          )`,
+          id bigint NOT NULL PRIMARY KEY,
+          id1 bigint,
+          type varchar(32) NOT NULL,
+          id2 bigint NOT NULL
+        )`,
         TABLE_INVERSE
       ),
     ]);
+    await master.rows(
+      `CREATE OR REPLACE FUNCTION pg_sleep_trigger() RETURNS trigger LANGUAGE plpgsql SET search_path FROM CURRENT AS
+      $$ BEGIN PERFORM pg_sleep(NEW.sleep); RETURN NEW; END $$`
+    );
+    await master.rows(
+      `CREATE TRIGGER pg_sleep_trigger BEFORE INSERT ON %T FOR EACH ROW EXECUTE PROCEDURE pg_sleep_trigger()`,
+      TABLE_TOPIC
+    );
   });
 }
 
@@ -335,6 +352,27 @@ test("ent creation throws", async () => {
   ).rejects.toThrow(SQLError);
   const inverse = EntTestTopic.INVERSES[0];
   expect(await inverse.id2s(vc, company.id)).toEqual([]);
+});
+
+test("ent creation times out", async () => {
+  const company = await EntTestCompany.insertReturning(vc, {
+    name: "my-company",
+  });
+  const promise = EntTestTopic.insertIfNotExists(vc, {
+    owner_id: company.id,
+    slug: "pg_sleep",
+    sleep: 5,
+  }).catch((e) => e.message);
+  await delay(1000);
+  await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
+    const master = await shard.client(MASTER);
+    await master.end(true).catch(() => {});
+  });
+  expect(await promise).toContain("Connection terminated unexpectedly");
+  // On an accidental disconnect, we don't know, whether the DB applied the
+  // insert or not, so we should expect Ent Framework to NOT delete the inverse.
+  const inverse = EntTestTopic.INVERSES[0];
+  expect(await inverse.id2s(vc, company.id)).toHaveLength(1);
 });
 
 test("loadBy with multiple shard candidates", async () => {
