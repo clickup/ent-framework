@@ -3,6 +3,7 @@ import first from "lodash/first";
 import flatten from "lodash/flatten";
 import sum from "lodash/sum";
 import type { Client } from "../../abstract/Client";
+import { ServerError } from "../../abstract/ServerError";
 import type { OmitNew } from "../../helpers";
 import { hasKey, join, mapJoin } from "../../helpers";
 import memoize2 from "../../memoize2";
@@ -199,6 +200,7 @@ export function PrimitiveMixin<
         }));
 
         let actuallyInsertedID = null;
+        let gotKnownServerReply = true;
         try {
           // Preliminarily insert inverse rows to inverses table, even before we
           // insert the main Ent. This avoids race conditions for cases when
@@ -225,13 +227,25 @@ export function PrimitiveMixin<
             { ...input, [ID]: id2 }
           );
           return actuallyInsertedID;
+        } catch (e: unknown) {
+          // If it's ServerError, then we know for sure that the server did not
+          // apply the insert. Otherwise (e.g. if it's a "connection reset"
+          // error or pgbouncer timeout), we don't know: it's possible that the
+          // insert actually DID succeed internally, so we must NOT delete
+          // inverses as a cleanup action.
+          gotKnownServerReply = e instanceof ServerError;
+          throw e;
         } finally {
-          // There are 2 failure conditions here: 1) there can be an exception
-          // during the insert (in this case, actuallyInsertedID will be null
-          // due to the above initialization), or 2) an insert may result in a
-          // no-op due to unique constraints violation (and in this case,
-          // insert() will return null to actuallyInsertedID).
-          if (actuallyInsertedID === null) {
+          // There are 3 failure conditions here:
+          // 1. There was an exception, but we don't know the state of PG (it
+          //    might or might not apply the insert).
+          // 2. There was an exception during the insert (in this case,
+          //    actuallyInsertedID will be null due to the above
+          //    initialization), and we received the response from PG.
+          // 3. An insert resulted in a no-op due to unique constraints
+          //    violation (and in this case, insert() will return null to
+          //    actuallyInsertedID).
+          if (actuallyInsertedID === null && gotKnownServerReply) {
             // We couldn't insert the Ent due to an unique key violation or some
             // other DB error. Try to undo the inverses creation (but if we fail
             // to undo, it's not a big deal to have stale inverses in the DB

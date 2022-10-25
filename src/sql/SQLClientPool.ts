@@ -1,4 +1,4 @@
-import type { PoolClient, PoolConfig } from "pg";
+import type { Connection, PoolClient, PoolConfig } from "pg";
 import { Pool } from "pg";
 import type { Loggers } from "../abstract/Client";
 import { runInVoid } from "../helpers";
@@ -28,7 +28,7 @@ export interface SQLClientDest {
 // Our extension to Pool connection which adds a couple props to the connection
 // in on("connect") handler (persistent for the same connection objects, i.e.
 // across queries in the same connection).
-type SQLClientPoolConn = PoolClient & {
+type SQLClientPoolClient = PoolClient & {
   /** Implemented but not documented property, see:
    * https://github.com/brianc/node-postgres/issues/2665 */
   processID?: number | null;
@@ -39,7 +39,15 @@ type SQLClientPoolConn = PoolClient & {
 };
 
 export class SQLClientPool extends SQLClient {
-  private pool: Pool;
+  // Client.withShard() clones `this`, so we must put all of the primitive typed
+  // props to a separate object to make them shareable across all of the clones.
+  // (Another option would be to introduce a proxy, but it's an overkill.)
+  private state: {
+    pool: Pool;
+    clients: Set<PoolClient>;
+    prewarmTimeout: NodeJS.Timeout | null;
+    ended: boolean;
+  };
 
   constructor(public readonly dest: SQLClientDest, loggers: Loggers) {
     super(
@@ -51,29 +59,66 @@ export class SQLClientPool extends SQLClient {
       dest.config.maxReplicationLagMs
     );
 
-    this.pool = new Pool(dest.config)
-      .on("connect", (conn: SQLClientPoolConn) => {
-        conn.id = connNo++;
-        conn.closeAt = dest.config.maxConnLifetimeMs
-          ? Date.now() +
-            dest.config.maxConnLifetimeMs *
-              (1 +
-                (dest.config.maxConnLifetimeJitter ??
-                  DEFAULT_MAX_CONN_LIFETIME_JITTER) *
-                  Math.random())
-          : undefined;
-      })
-      .on("error", (e) => {
-        // Having this hook prevents node from crashing.
-        this.logGlobalError("SQLClientPool", e);
-      });
+    this.state = {
+      pool: new Pool(dest.config)
+        .on("connect", (client: SQLClientPoolClient) => {
+          this.state.clients.add(client);
+          client.id = connNo++;
+          client.closeAt = dest.config.maxConnLifetimeMs
+            ? Date.now() +
+              dest.config.maxConnLifetimeMs *
+                (1 +
+                  (dest.config.maxConnLifetimeJitter ??
+                    DEFAULT_MAX_CONN_LIFETIME_JITTER) *
+                    Math.random())
+            : undefined;
+          // Sets a "default error" handler to not let forceDisconnect errors
+          // leak to e.g. Jest and the outside world as "unhandled error".
+          // Appending an additional error handler to EventEmitter doesn't
+          // affect the existing error handlers anyhow, so should be safe.
+          client.on("error", () => {});
+        })
+        .on("remove", (conn) => {
+          this.state.clients.delete(conn);
+        })
+        .on("error", (e) => {
+          // Having this hook prevents node from crashing.
+          this.logGlobalError("SQLClientPool", e);
+        }),
+      clients: new Set(),
+      prewarmTimeout: null,
+      ended: false,
+    };
+  }
+
+  override async end(forceDisconnect?: boolean) {
+    if (this.state.ended) {
+      return;
+    }
+
+    this.state.ended = true;
+    this.state.prewarmTimeout && clearTimeout(this.state.prewarmTimeout);
+    if (forceDisconnect) {
+      for (const client of this.state.clients) {
+        const connection: Connection = (client as any).connection;
+        connection.stream.destroy();
+      }
+    } else {
+      return this.state.pool.end();
+    }
+  }
+
+  protected override logGlobalError(where: string, e: unknown) {
+    if (!this.state.ended) {
+      super.logGlobalError(where, e);
+    }
   }
 
   protected async acquireConn() {
-    return this.pool.connect();
+    return this.state.pool.connect();
   }
 
-  protected releaseConn(conn: SQLClientPoolConn) {
+  protected releaseConn(conn: SQLClientPoolClient) {
     const needClose = !!(conn.closeAt && Date.now() > conn.closeAt);
     conn.release(needClose);
   }
@@ -83,7 +128,7 @@ export class SQLClientPool extends SQLClient {
       return;
     }
 
-    const toPrewarm = this.dest.config.min - this.pool.waitingCount;
+    const toPrewarm = this.dest.config.min - this.state.pool.waitingCount;
     if (toPrewarm > 0) {
       const tokens = `word ${Math.floor(Date.now() / 1000)}`;
       Array.from(Array(toPrewarm).keys()).forEach(
@@ -91,14 +136,15 @@ export class SQLClientPool extends SQLClient {
         // also the 1st query in a pg-pool connection is slow.
         () =>
           runInVoid(
-            this.pool
+            this.state.pool
               .query(`SELECT 'word' @@ plainto_tsquery('english', '${tokens}')`)
-              .catch((e) => this.logGlobalError("SQLClientPool prewarm", e))
+              .catch((e) => this.logGlobalError("SQLClientPool.prewarm()", e))
           )
       );
     }
 
-    setTimeout(
+    this.state.prewarmTimeout && clearTimeout(this.state.prewarmTimeout);
+    this.state.prewarmTimeout = setTimeout(
       () => this.prewarm(),
       this.dest.config.prewarmIntervalMs ?? DEFAULT_PREWARM_INTERVAL_MS
     );

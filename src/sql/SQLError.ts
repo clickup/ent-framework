@@ -1,27 +1,16 @@
-import { copyStack } from "../helpers";
+import { ServerError } from "../abstract/ServerError";
 
-export class SQLError extends Error {
-  constructor(
-    public readonly origError: any,
-    destName: string,
-    public readonly sql: string
-  ) {
-    super(origError.message);
+export class SQLError extends ServerError {
+  constructor(origError: any, destName: string, public readonly sql: string) {
+    super(origError, destName);
 
-    Object.defineProperty(this, "name", {
-      value: this.constructor.name,
-      writable: true,
-      enumerable: false,
-    });
     Object.defineProperty(this, "sql", {
       value: sql,
       writable: false,
       enumerable: false,
     });
 
-    copyStack(this, origError);
-    this.stack += "\n" + destName + ": " + sql.replace(/\s*\n\s*/g, " ");
-    delete origError.stack;
+    this.stack += ": " + sql.replace(/\s*\n\s*/g, " ");
   }
 
   isFKError(fkName?: string) {
