@@ -271,14 +271,23 @@ export class VC {
    * Returns a new VC derived from the current one adding some more
    * flavors to it.
    */
-  withFlavor(flavor: VCFlavor | undefined) {
+  withFlavor(flavor: VCFlavor | undefined, prepend?: "prepend") {
     return flavor
       ? new VC(
           this.trace,
           this.principal,
           this.freshness,
           this.timelines,
-          new Map([...this.flavors.entries(), [flavor.constructor, flavor]]),
+          new Map(
+            prepend === "prepend"
+              ? [
+                  [flavor.constructor, flavor],
+                  ...[...this.flavors.entries()].filter(
+                    ([cons]) => cons !== flavor.constructor
+                  ),
+                ]
+              : [...this.flavors.entries(), [flavor.constructor, flavor]]
+          ),
           this.heartbeater,
           this.isRoot
         )

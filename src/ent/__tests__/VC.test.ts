@@ -1,9 +1,30 @@
 import { VC } from "../VC";
+import { VCFlavor } from "../VCFlavor";
 import { createVC } from "./helpers/test-objects";
 
 class Cache extends Map<any, any> {
   constructor() {
     super([]);
+  }
+}
+
+class VCTest1 extends VCFlavor {
+  constructor(public value: string) {
+    super();
+  }
+
+  override toDebugString() {
+    return `VCTest1:${this.value}`;
+  }
+}
+
+class VCTest2 extends VCFlavor {
+  constructor(public value: string) {
+    super();
+  }
+
+  override toDebugString() {
+    return `VCTest2:${this.value}`;
   }
 }
 
@@ -39,4 +60,16 @@ test("root flag of the VC is changed", () => {
   const vc6 = vc5.toLowerInternal("11"); // -> other user
   expect((vc6 as any).isRoot).toBeFalsy();
   expect((vc6 as any).timelines === (vc5 as any).timelines).toBeTruthy();
+});
+
+test("VC flavor prepend and append", () => {
+  const vc = createVC().withFlavor(new VCTest1("some"));
+  const vc2 = vc.withFlavor(new VCTest2("t2"));
+  expect(vc2.toString()).toEqual("vc:guest(VCTest1:some,VCTest2:t2)");
+  expect(vc2.withFlavor(new VCTest2("tNew")).toString()).toEqual(
+    "vc:guest(VCTest1:some,VCTest2:tNew)"
+  );
+  expect(vc2.withFlavor(new VCTest2("tNew"), "prepend").toString()).toEqual(
+    "vc:guest(VCTest2:tNew,VCTest1:some)"
+  );
 });
