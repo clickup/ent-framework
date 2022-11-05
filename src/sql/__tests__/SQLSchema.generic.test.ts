@@ -874,6 +874,8 @@ test("select and count batched", async () => {
       $and: [
         { name: ["a", "aa"] },
         { name: { $ne: "kk" } },
+        { name: { $isDistinctFrom: "dd" } },
+        { url_name: { $isDistinctFrom: null } },
         { url_name: { $ne: ["kk", null] } },
         { url_name: { $ne: [] } },
         { $literal: ["? > '2'", "5"] },

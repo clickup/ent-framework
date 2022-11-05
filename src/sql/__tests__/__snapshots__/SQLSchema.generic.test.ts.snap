@@ -149,6 +149,8 @@ exports[`select and count batched 1`] = `
     AND some_flag=true
     AND (name IN('a','aa')
     AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
     AND (url_name NOT IN('kk')
     AND url_name IS NOT NULL)
     AND true/*empty_NOT_IN*/
@@ -174,6 +176,8 @@ SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
     AND some_flag=true
     AND (name IN('a','aa')
     AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
     AND (url_name NOT IN('kk')
     AND url_name IS NOT NULL)
     AND true/*empty_NOT_IN*/
@@ -194,6 +198,8 @@ SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
     AND url_name='a1'
     AND (name IN('a','aa')
     AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
     AND (url_name NOT IN('kk')
     AND url_name IS NOT NULL)
     AND true/*empty_NOT_IN*/
@@ -216,6 +222,8 @@ SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
     AND some_flag=true
     AND (name IN('a','aa')
     AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
     AND (url_name NOT IN('kk')
     AND url_name IS NOT NULL)
     AND true/*empty_NOT_IN*/
