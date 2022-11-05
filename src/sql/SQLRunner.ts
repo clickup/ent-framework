@@ -466,6 +466,11 @@ export abstract class SQLRunner<
         foundOp = true;
       }
 
+      if (hasKey("$isDistinctFrom", value)) {
+        pieces.push(this.buildFieldIsDistinctFrom(key, value.$isDistinctFrom));
+        foundOp = true;
+      }
+
       if (hasKey("$overlap", value)) {
         pieces.push(this.buildFieldBinOp(key, "&&", value.$overlap));
         foundOp = true;
@@ -545,6 +550,17 @@ export abstract class SQLRunner<
     } else {
       return this.escapeField(field) + "<>" + this.escapeValue(field, value);
     }
+  }
+
+  protected buildFieldIsDistinctFrom<TField extends Field<TTable>>(
+    field: TField,
+    value: Value<TTable[TField]>
+  ) {
+    return (
+      this.escapeField(field) +
+      " IS DISTINCT FROM " +
+      this.escapeValue(field, value)
+    );
   }
 
   protected buildFieldEq<TField extends Field<TTable>>(

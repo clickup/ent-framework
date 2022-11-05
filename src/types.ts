@@ -228,7 +228,8 @@ export type Where<TTable extends Table> = {
     | { $gte: NonNullable<Value<TTable[K]>> }
     | { $gt: NonNullable<Value<TTable[K]>> }
     | { $overlap: NonNullable<Value<TTable[K]>> }
-    | { $ne: Value<TTable[K]> | ReadonlyArray<Value<TTable[K]>> };
+    | { $ne: Value<TTable[K]> | ReadonlyArray<Value<TTable[K]>> }
+    | { $isDistinctFrom: Value<TTable[K]> };
 };
 
 /**
