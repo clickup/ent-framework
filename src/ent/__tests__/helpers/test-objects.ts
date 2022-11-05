@@ -1,7 +1,7 @@
 import { MASTER } from "../../../abstract/Shard";
 import { join, mapJoin } from "../../../helpers";
-import { SQLSchema } from "../../../sql/SQLSchema";
 import { testCluster } from "../../../sql/__tests__/helpers/TestSQLClient";
+import { SQLSchema } from "../../../sql/SQLSchema";
 import { ID } from "../../../types";
 import { BaseEnt } from "../../BaseEnt";
 import { GLOBAL_SHARD } from "../../Configuration";
