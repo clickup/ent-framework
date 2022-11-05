@@ -1,8 +1,8 @@
 import { inspect } from "util";
 import { collect } from "streaming-iterables";
 import { join } from "../../helpers";
-import { SQLSchema } from "../../sql/SQLSchema";
 import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
+import { SQLSchema } from "../../sql/SQLSchema";
 import { ID } from "../../types";
 import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
 import { True } from "../predicates/True";
