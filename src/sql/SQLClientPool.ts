@@ -1,7 +1,7 @@
 import type { Connection, PoolClient, PoolConfig } from "pg";
 import { Pool } from "pg";
 import type { Loggers } from "../abstract/Client";
-import { runInVoid } from "../helpers";
+import { runInVoid } from "../helpers/misc";
 import { SQLClient } from "./SQLClient";
 
 const DEFAULT_PREWARM_INTERVAL_MS = 10000;

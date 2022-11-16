@@ -1,5 +1,5 @@
-import type { Flatten } from "../helpers";
-import { join } from "../helpers";
+import type { Flatten } from "../helpers/misc";
+import { join } from "../helpers/misc";
 import type {
   InsertInput,
   Row,

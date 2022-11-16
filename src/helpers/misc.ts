@@ -1,6 +1,95 @@
 import { createHash } from "crypto";
 
 /**
+ * Turns a list of Promises to a list of Promise resolution results.
+ */
+export async function join<TList extends readonly unknown[]>(
+  promises: TList
+): Promise<{ -readonly [P in keyof TList]: Awaited<TList[P]> }>;
+
+/**
+ * Turns an object where some values are Promises to an object with values as
+ * Promise resolution results.
+ */
+export async function join<TRec extends Readonly<Record<string, unknown>>>(
+  promises: TRec
+): Promise<{ -readonly [K in keyof TRec]: Awaited<TRec[K]> }>;
+
+/**
+ * A safe replacement for Promise-all built-in method.
+ *
+ * Works the same way as Promise-all, but additionally guarantees that ALL OTHER
+ * promises have settled in case one of them rejects. This is needed to ensure
+ * that we never have unexpected "dangling" promises continuing running in
+ * nowhere in case one of the promises rejects early (the behavior of
+ * Promise.all is to reject eagerly and let the rest of stuff running whilst the
+ * caller code unfreezes).
+ *
+ * The behavior of join() is similar to Promise.allSettled(), but it throws the
+ * 1st exception occurred; this is what's expected in most of the cases, and
+ * this is how promises are implemented in e.g. Hack.
+ *
+ * The benefits of ensuring everything is settled:
+ *
+ * 1. We never have surprising entries in our logs (e.g. imagine a request
+ *    aborted long time ago, and then some "dangling" promises continue running
+ *    and issue SQL queries as if nothing happened).
+ * 2. Predictable control flow: if we run `await join()`, we know that no side
+ *    effects from the spawned promises will appear after this await throws or
+ *    returns.
+ *
+ * "Join" is a term from parallel programming (e.g. "join threads"), it’s pretty
+ * concrete and means that after the call, multiple parallel execution flows
+ * “join” into one. It's a word to describe having "one" from "many".
+ *
+ * What’s interesting is that, besides Promise-all leaks execution flows, it
+ * still doesn’t trigger UnhandledPromiseRejection for them in case one of them
+ * throws later, it just swallows all other exceptions.
+ *
+ * I.e. Promise-all means "run all in parallel, if one throws - throw
+ * immediately and let the others continue running in nowhere; if some of THAT
+ * others throws, swallow their exceptions".
+ *
+ * And join() means "run all in parallel, if one throws - wait until everyone
+ * finishes, and then throw the 1st exception; if some of others throw, swallow
+ * their exceptions".
+ *
+ * See also https://en.wikipedia.org/wiki/Fork%E2%80%93join_model
+ */
+export async function join(promises: unknown[] | object): Promise<unknown> {
+  const promisesArray =
+    promises instanceof Array ? promises : Object.values(promises);
+  const errorsArray: unknown[] = [];
+  const resultsArray = await Promise["all"](
+    promisesArray.map(async (promise) =>
+      Promise.resolve(promise).catch((err) => {
+        errorsArray.push(err);
+        return undefined;
+      })
+    )
+  );
+  if (errorsArray.length > 0) {
+    throw errorsArray[0];
+  } else {
+    return promises instanceof Array
+      ? resultsArray
+      : Object.fromEntries(
+          Object.keys(promises).map((key, i) => [key, resultsArray[i]])
+        );
+  }
+}
+
+/**
+ * A shortcut for `await join(arr.map(async ...))`.
+ */
+export async function mapJoin<TElem, TRet>(
+  arr: readonly TElem[] | Promise<readonly TElem[]>,
+  func: (e: TElem, idx: number) => PromiseLike<TRet> | TRet
+): Promise<TRet[]> {
+  return join((await arr).map((e, idx) => func(e, idx)));
+}
+
+/**
  * Removes constructor signature from a type.
  * https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
  */
@@ -123,114 +212,6 @@ export function sanitizeIDForDebugPrinting(idIn: any) {
       .replace(/[^\x1F-\x7F]/g, (v) => "\\u" + v.charCodeAt(0)) +
     (id.length > MAX_LEN ? "..." : "");
   return value === "" ? '""' : value;
-}
-
-export async function join<T1, T2, T3, T4, T5, T6>(
-  values: [
-    T1 | PromiseLike<T1>,
-    T2 | PromiseLike<T2>,
-    T3 | PromiseLike<T3>,
-    T4 | PromiseLike<T4>,
-    T5 | PromiseLike<T5>,
-    T6 | PromiseLike<T6>
-  ]
-): Promise<[T1, T2, T3, T4, T5, T6]>;
-
-export async function join<T1, T2, T3, T4, T5>(
-  values: [
-    T1 | PromiseLike<T1>,
-    T2 | PromiseLike<T2>,
-    T3 | PromiseLike<T3>,
-    T4 | PromiseLike<T4>,
-    T5 | PromiseLike<T5>
-  ]
-): Promise<[T1, T2, T3, T4, T5]>;
-
-export async function join<T1, T2, T3, T4>(
-  values: [
-    T1 | PromiseLike<T1>,
-    T2 | PromiseLike<T2>,
-    T3 | PromiseLike<T3>,
-    T4 | PromiseLike<T4>
-  ]
-): Promise<[T1, T2, T3, T4]>;
-
-export async function join<T1, T2, T3>(
-  values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]
-): Promise<[T1, T2, T3]>;
-
-export async function join<T1, T2>(
-  values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]
-): Promise<[T1, T2]>;
-
-export async function join<T>(values: Array<T | PromiseLike<T>>): Promise<T[]>;
-
-/**
- * Works the same way as Promise-all, but additionally guarantees that ALL OTHER
- * promises have settled in case one of them rejects. This is needed to ensure
- * that we never have unexpected "dangling" promises continuing running in
- * nowhere in case one of the promises rejects early (the behavior of
- * Promise.all is to reject eagerly and let the rest of stuff running whilst the
- * caller code unfreezes).
- *
- * The behavior of join() is similar to Promise.allSettled(), but it throws the
- * 1st exception occurred; this is what's expected in most of the cases, and
- * this is how promises are implemented in e.g. Hack.
- *
- * The benefits of ensuring everything is settled:
- * 1. We never have surprising entries in our logs (e.g. imagine a request
- *    aborted long time ago, and then some "dangling" promises continue running
- *    and issue SQL queries as if nothing happened).
- * 2. Predictable control flow: if we run `await join()`, we know that no side
- *    effects from the spawned promises will appear after this await throws or
- *    returns.
- *
- * "Join" is a term from parallel programming (e.g. "join threads"), it’s pretty
- * concrete and means that after the call, multiple parallel execution flows
- * “join” into one. It's a word to describe having "one" from "many".
- *
- * What’s interesting is that, besides Promise-all leaks execution flows, it
- * still doesn’t trigger UnhandledPromiseRejection for them in case one of them
- * throws later, it just swallows all other exceptions.
- *
- * I.e. Promise-all means "run all in parallel, if one throws - throw
- * immediately and let the others continue running in nowhere; if some of THAT
- * others throws, swallow their exceptions".
- *
- * And join() means "run all in parallel, if one throws - wait until everyone
- * finishes, and then throw the 1st exception; if some of others throw, swallow
- * their exceptions".
- *
- * See also https://en.wikipedia.org/wiki/Fork%E2%80%93join_model
- */
-export async function join<TAll>(
-  promises: Iterable<TAll | PromiseLike<TAll>>
-): Promise<TAll[]> {
-  const errors: any[] = [];
-  return Promise["all"](
-    Array.from(promises).map(async (promise) =>
-      Promise.resolve(promise).catch((err) => {
-        errors.push(err);
-        return undefined as unknown as TAll;
-      })
-    )
-  ).then((result) => {
-    if (errors.length > 0) {
-      throw errors[0];
-    } else {
-      return result;
-    }
-  });
-}
-
-/**
- * A shortcut for `await join(arr.map(async ...))`.
- */
-export async function mapJoin<TElem, TRet>(
-  arr: readonly TElem[] | Promise<readonly TElem[]>,
-  func: (e: TElem, idx: number) => PromiseLike<TRet>
-) {
-  return join((await arr).map((e, idx) => func(e, idx)));
 }
 
 export function nullthrows<T>(x?: T | null, message?: string | Error): T {

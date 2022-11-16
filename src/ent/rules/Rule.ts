@@ -1,5 +1,5 @@
 import { inspect } from "util";
-import { mapJoin } from "../../helpers";
+import { mapJoin } from "../../helpers/misc";
 import { EntAccessError } from "../errors/EntAccessError";
 import type { Predicate } from "../predicates/Predicate";
 import { FuncToPredicate } from "../predicates/Predicate";

@@ -2,7 +2,7 @@ import last from "lodash/last";
 import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import type { Schema } from "../abstract/Schema";
-import { nullthrows } from "../helpers";
+import { nullthrows } from "../helpers/misc";
 import type { LoadByInput, Row, Table, UniqueKey } from "../types";
 import type { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";

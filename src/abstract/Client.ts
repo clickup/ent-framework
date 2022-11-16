@@ -1,4 +1,4 @@
-import Memoize from "../Memoize";
+import Memoize from "../helpers/Memoize";
 import type { Runner } from "./Batcher";
 import { Batcher } from "./Batcher";
 import type { QueryAnnotation } from "./QueryAnnotation";

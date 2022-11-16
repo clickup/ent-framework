@@ -2,7 +2,7 @@ import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
-import { nullthrows } from "../../helpers";
+import { nullthrows } from "../../helpers/misc";
 import { ID } from "../../types";
 import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
 import { SQLSchema } from "../SQLSchema";

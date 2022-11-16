@@ -5,7 +5,11 @@ import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 
 import ShardError from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
-import { nullthrows, sanitizeIDForDebugPrinting, toFloatMs } from "../helpers";
+import {
+  nullthrows,
+  sanitizeIDForDebugPrinting,
+  toFloatMs,
+} from "../helpers/misc";
 import parseCompositeRow from "./helpers/parseCompositeRow";
 import { SQLError } from "./SQLError";
 

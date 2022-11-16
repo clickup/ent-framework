@@ -1,4 +1,4 @@
-import { localUniqueInt, nullthrows } from "../../helpers";
+import { localUniqueInt, nullthrows } from "../../helpers/misc";
 import type { Row, RowWithID, Table, Where } from "../../types";
 import { ID } from "../../types";
 import type { EntClass } from "../types";

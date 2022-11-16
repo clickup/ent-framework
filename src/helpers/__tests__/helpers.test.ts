@@ -1,4 +1,4 @@
-import { minifyStack } from "../helpers";
+import { minifyStack } from "../misc";
 
 test("minifyStack", () => {
   expect(

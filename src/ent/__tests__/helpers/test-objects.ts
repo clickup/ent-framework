@@ -1,5 +1,5 @@
 import { MASTER } from "../../../abstract/Shard";
-import { join, mapJoin } from "../../../helpers";
+import { join, mapJoin } from "../../../helpers/misc";
 import { testCluster } from "../../../sql/__tests__/helpers/TestSQLClient";
 import { SQLSchema } from "../../../sql/SQLSchema";
 import { ID } from "../../../types";

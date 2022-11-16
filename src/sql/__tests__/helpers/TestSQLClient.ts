@@ -1,7 +1,7 @@
 import { Client } from "../../../abstract/Client";
 import { Cluster, Island } from "../../../abstract/Cluster";
 import type { QueryAnnotation } from "../../../abstract/QueryAnnotation";
-import { nullthrows } from "../../../helpers";
+import { nullthrows } from "../../../helpers/misc";
 import type { SQLClient } from "../../SQLClient";
 import { escapeIdent, escapeString } from "../../SQLClient";
 import { SQLClientPool } from "../../SQLClientPool";

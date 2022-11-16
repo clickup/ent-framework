@@ -2,7 +2,7 @@ import pickBy from "lodash/pickBy";
 import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import type { Schema } from "../abstract/Schema";
-import { nullthrows } from "../helpers";
+import { nullthrows } from "../helpers/misc";
 import type { InsertInput, Table } from "../types";
 import { ID } from "../types";
 import type { SQLClient } from "./SQLClient";

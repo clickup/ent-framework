@@ -2,7 +2,7 @@ import compact from "lodash/compact";
 import type { Client } from "../../abstract/Client";
 import type { Cluster } from "../../abstract/Cluster";
 import type { Schema } from "../../abstract/Schema";
-import { entries } from "../../helpers";
+import { entries } from "../../helpers/misc";
 import type { IDFields, Table, UniqueKey } from "../../types";
 import { ID } from "../../types";
 import type { ShardAffinity } from "../Configuration";

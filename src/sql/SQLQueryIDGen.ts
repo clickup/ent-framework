@@ -1,6 +1,6 @@
 import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
-import { nullthrows } from "../helpers";
+import { nullthrows } from "../helpers/misc";
 import type { Table } from "../types";
 import { ID } from "../types";
 import type { SQLClient } from "./SQLClient";

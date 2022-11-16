@@ -1,4 +1,4 @@
-import { indent } from "../../helpers";
+import { indent } from "../../helpers/misc";
 import { EntAccessError } from "./EntAccessError";
 
 /**

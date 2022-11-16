@@ -4,9 +4,9 @@ import flatten from "lodash/flatten";
 import sum from "lodash/sum";
 import type { Client } from "../../abstract/Client";
 import { ServerError } from "../../abstract/ServerError";
-import type { OmitNew } from "../../helpers";
-import { hasKey, join, mapJoin } from "../../helpers";
-import memoize2 from "../../memoize2";
+import memoize2 from "../../helpers/memoize2";
+import type { OmitNew } from "../../helpers/misc";
+import { hasKey, join, mapJoin } from "../../helpers/misc";
 import type {
   CountInput,
   InsertInput,

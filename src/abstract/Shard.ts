@@ -1,4 +1,4 @@
-import Memoize from "../Memoize";
+import Memoize from "../helpers/Memoize";
 import type { Client } from "./Client";
 import type { Island } from "./Cluster";
 import type { Query } from "./Query";

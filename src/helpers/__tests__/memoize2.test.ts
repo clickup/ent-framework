@@ -1,5 +1,5 @@
-import { join } from "../helpers";
 import memoize2 from "../memoize2";
+import { join } from "../misc";
 
 let sequenceValue = 1;
 
