@@ -67,7 +67,9 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
             .replace(/\d{4}-\d{2}-\d{2}T[^']+/g, "<date>")
             .replace(/'[A-Za-z0-9+/]{27}='/g, "'<hash>'")
             .replace(/'k\d+'/g, "'<key>'")
-            .replace(/\d{16,}/g, "<id>")
+            .replace(/\d{16,}/g, (m) =>
+              m === Number.MAX_SAFE_INTEGER.toString() ? m : "<id>"
+            )
             .replace(/ id AS id/g, " id")
             .replace(/( AS k)\d+/g, "$1*");
 
