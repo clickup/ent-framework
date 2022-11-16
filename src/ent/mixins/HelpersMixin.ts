@@ -1,5 +1,5 @@
 import type { Client } from "../../abstract/Client";
-import type { AddNew, OmitNew } from "../../helpers";
+import type { AddNew, OmitNew } from "../../helpers/misc";
 import type {
   InsertInput,
   LoadByInput,

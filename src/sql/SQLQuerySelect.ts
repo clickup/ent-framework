@@ -1,7 +1,7 @@
 import { inspect } from "util";
 import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
-import { hash, hasKey } from "../helpers";
+import { hash, hasKey } from "../helpers/misc";
 import type { Order, Row, SelectInput, Table } from "../types";
 import type { SQLClient } from "./SQLClient";
 import { escapeString } from "./SQLClient";

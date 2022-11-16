@@ -1,4 +1,4 @@
-import { indent } from "../../helpers";
+import { indent } from "../../helpers/misc";
 import type { RowWithID } from "../../types";
 import { ID } from "../../types";
 import { EntAccessError } from "./EntAccessError";

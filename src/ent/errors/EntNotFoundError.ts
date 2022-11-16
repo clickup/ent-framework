@@ -1,4 +1,4 @@
-import { sanitizeIDForDebugPrinting } from "../../helpers";
+import { sanitizeIDForDebugPrinting } from "../../helpers/misc";
 import { EntAccessError } from "./EntAccessError";
 
 /**

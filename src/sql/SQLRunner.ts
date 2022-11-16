@@ -5,7 +5,7 @@ import uniq from "lodash/uniq";
 import { Runner } from "../abstract/Batcher";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import type { Schema } from "../abstract/Schema";
-import { hasKey } from "../helpers";
+import { hasKey } from "../helpers/misc";
 import type { Field, Literal, Table, Value, Where } from "../types";
 import { ID } from "../types";
 import parseCompositeRow from "./helpers/parseCompositeRow";

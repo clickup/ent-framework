@@ -1,7 +1,7 @@
 import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import type { Schema } from "../abstract/Schema";
-import { hash } from "../helpers";
+import { hash } from "../helpers/misc";
 import type { DeleteWhereInput, Table } from "../types";
 import { ID } from "../types";
 import type { SQLClient } from "./SQLClient";

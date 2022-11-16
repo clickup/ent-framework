@@ -4,7 +4,7 @@ import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
-import { join, mapJoin, nullthrows } from "../../helpers";
+import { join, mapJoin, nullthrows } from "../../helpers/misc";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./helpers/TestSQLClient";
 import { testCluster } from "./helpers/TestSQLClient";

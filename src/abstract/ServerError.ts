@@ -1,4 +1,4 @@
-import { copyStack } from "../helpers";
+import { copyStack } from "../helpers/misc";
 
 /**
  * Encapsulates the error message passed from the DB server. Notice that in case

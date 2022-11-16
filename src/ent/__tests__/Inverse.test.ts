@@ -3,7 +3,7 @@ import range from "lodash/range";
 import sortBy from "lodash/sortBy";
 import uniq from "lodash/uniq";
 import { MASTER } from "../../abstract/Shard";
-import { join, mapJoin } from "../../helpers";
+import { join, mapJoin } from "../../helpers/misc";
 import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
 import { SQLError } from "../../sql/SQLError";
 import { SQLSchema } from "../../sql/SQLSchema";

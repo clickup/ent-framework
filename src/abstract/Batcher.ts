@@ -1,5 +1,5 @@
 import delay from "delay";
-import { runInVoid, toFloatMs } from "../helpers";
+import { runInVoid, toFloatMs } from "../helpers/misc";
 import type { Loggers } from "./Client";
 import type { QueryAnnotation } from "./QueryAnnotation";
 

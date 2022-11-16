@@ -3,7 +3,7 @@ import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
 import { MASTER, STALE_REPLICA } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
-import { join, nullthrows } from "../../helpers";
+import { join, nullthrows } from "../../helpers/misc";
 import { ID } from "../../types";
 import { SQLError } from "../SQLError";
 import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
