@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`id2s loader 1`] = `
+"(SELECT '<hash>' AS _key, id, type, id1, id2 FROM \\"inv\\"\\"test_inverse\\"
+  WHERE id1='<id>'
+    AND type='company2users'
+  LIMIT 1000)
+  UNION ALL
+(SELECT '<hash>' AS _key, id, type, id1, id2 FROM \\"inv\\"\\"test_inverse\\"
+  WHERE id1='<id>'
+    AND type='company2users'
+  LIMIT 1000)
+  UNION ALL
+(SELECT '<hash>' AS _key, id, type, id1, id2 FROM \\"inv\\"\\"test_inverse\\"
+  WHERE id1='0'
+    AND type='company2users'
+  LIMIT 1000)
+  UNION ALL
+(SELECT '<hash>' AS _key, id, type, id1, id2 FROM \\"inv\\"\\"test_inverse\\"
+  WHERE id1='<id>'
+    AND type='team2users'
+  LIMIT 1000)"
+`;
