@@ -185,17 +185,17 @@ beforeEach(async () => {
 });
 
 test("CRUD", async () => {
-  const companyID = "1000000000000000010";
-  const teamID = "1000100000000000020";
+  const companyID1 = "1000000000000000010";
+  const teamID1 = "1000100000000000020";
 
   let user = await EntTestUser.insertReturning(vc, {
-    company_id: companyID,
-    team_id: teamID,
+    company_id: companyID1,
+    team_id: teamID1,
     name: "u1",
   });
 
-  expect(await EntTestUser.INVERSES[0].id2s(vc, companyID)).toEqual([user.id]);
-  expect(await EntTestUser.INVERSES[1].id2s(vc, teamID)).toEqual([user.id]);
+  expect(await EntTestUser.INVERSES[0].id2s(vc, companyID1)).toEqual([user.id]);
+  expect(await EntTestUser.INVERSES[1].id2s(vc, teamID1)).toEqual([user.id]);
 
   const companyID2 = "1000100000000000012";
   const teamID2 = "1000000000000000022";
@@ -205,8 +205,8 @@ test("CRUD", async () => {
     team_id: teamID2,
   });
 
-  expect(await EntTestUser.INVERSES[0].id2s(vc, companyID)).toEqual([]);
-  expect(await EntTestUser.INVERSES[1].id2s(vc, teamID)).toEqual([]);
+  expect(await EntTestUser.INVERSES[0].id2s(vc, companyID1)).toEqual([]);
+  expect(await EntTestUser.INVERSES[1].id2s(vc, teamID1)).toEqual([]);
   expect(await EntTestUser.INVERSES[0].id2s(vc, companyID2)).toEqual([user.id]);
   expect(await EntTestUser.INVERSES[1].id2s(vc, teamID2)).toEqual([user.id]);
 
@@ -439,6 +439,54 @@ test("exception", async () => {
   );
 });
 
+test("id2s loader", async () => {
+  const companyID1 = "1000000000000000010";
+  const companyID2 = "1000000000000000020";
+  const teamID = "1000000000000000090";
+
+  const [u1, u2, u3, u4, u5] = await join([
+    EntTestUser.insertReturning(vc, {
+      company_id: companyID1,
+      team_id: null,
+      name: `u1`,
+    }),
+    EntTestUser.insertReturning(vc, {
+      company_id: companyID1, // same companyID1
+      team_id: null,
+      name: `u2`,
+    }),
+    EntTestUser.insertReturning(vc, {
+      company_id: companyID2,
+      team_id: null,
+      name: `u3`,
+    }),
+    EntTestUser.insertReturning(vc, {
+      company_id: null,
+      team_id: null,
+      name: `u4`,
+    }),
+    EntTestUser.insertReturning(vc, {
+      company_id: null,
+      team_id: teamID,
+      name: `u5`,
+    }),
+  ]);
+
+  const master = await testCluster.globalShard().client(MASTER);
+  master.resetSnapshot();
+  const [company1UserIDs, company2UserIDs, companyNullUserIDs, teamUserIDs] =
+    await join([
+      EntTestUser.INVERSES[0].id2s(vc, companyID1),
+      EntTestUser.INVERSES[0].id2s(vc, companyID2),
+      EntTestUser.INVERSES[0].id2s(vc, null),
+      EntTestUser.INVERSES[1].id2s(vc, teamID),
+    ]);
+  expect(company1UserIDs).toEqual([u1.id, u2.id].sort());
+  expect(company2UserIDs).toEqual([u3.id].sort());
+  expect(companyNullUserIDs).toEqual([u4.id, u5.id].sort());
+  expect(teamUserIDs).toEqual([u5.id].sort());
+  master.toMatchSnapshot();
+});
 /**
  * Tries to insert EntTestUser multiple times until it succeeds inserting it to
  * shardNo. Since shard number generation is randomly-deterministic by unique
