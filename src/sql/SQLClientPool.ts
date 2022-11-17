@@ -22,6 +22,7 @@ export interface SQLClientDest {
     maxConnLifetimeJitter?: number;
     maxReplicationLagMs?: number;
     prewarmIntervalMs?: number;
+    prewarmQuery?: string | (() => string);
   };
 }
 
@@ -130,16 +131,22 @@ export class SQLClientPool extends SQLClient {
 
     const toPrewarm = this.dest.config.min - this.state.pool.waitingCount;
     if (toPrewarm > 0) {
-      const tokens = `word ${Math.floor(Date.now() / 1000)}`;
-      Array.from(Array(toPrewarm).keys()).forEach(
-        // This may be slow: full-text dictionaries initialization is slow, and
-        // also the 1st query in a pg-pool connection is slow.
-        () =>
-          runInVoid(
-            this.state.pool
-              .query(`SELECT 'word' @@ plainto_tsquery('english', '${tokens}')`)
-              .catch((e) => this.logGlobalError("SQLClientPool.prewarm()", e))
-          )
+      const prewarmQuery =
+        this.dest.config.prewarmQuery ??
+        (() => {
+          // This may be slow: full-text dictionaries initialization is slow,
+          // and also the 1st query in a pg-pool connection is slow.
+          const tokens = `word ${Math.floor(Date.now() / 1000)}`;
+          return `SELECT 'word' @@ plainto_tsquery('english', '${tokens}')`;
+        });
+      const query =
+        typeof prewarmQuery === "string" ? prewarmQuery : prewarmQuery();
+      Array.from(Array(toPrewarm).keys()).forEach(() =>
+        runInVoid(
+          this.state.pool
+            .query(query)
+            .catch((e) => this.logGlobalError("SQLClientPool.prewarm()", e))
+        )
       );
     }
 
