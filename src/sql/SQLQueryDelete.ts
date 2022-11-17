@@ -32,7 +32,7 @@ export class SQLRunnerDelete<TTable extends Table> extends SQLRunner<
     super(schema, client);
     this.builder = {
       prefix: this.fmt("DELETE FROM %T WHERE "),
-      func: this.createInBuilder(ID),
+      func: this.createOneOfBuilder(ID),
       suffix: this.fmt(` RETURNING %PK AS ${ID}`),
     };
   }

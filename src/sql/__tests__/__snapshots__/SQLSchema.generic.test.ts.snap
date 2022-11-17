@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`delete batched 1`] = `"DELETE FROM \\"schema\\"\\"test\\" WHERE (id IN('<id>','<id>','42') OR id IS NULL) RETURNING id"`;
+exports[`delete batched 1`] = `"DELETE FROM \\"schema\\"\\"test\\" WHERE (id=ANY('{<id>,<id>,42}') OR id IS NULL) RETURNING id"`;
 
 exports[`delete single 1`] = `
-"DELETE FROM \\"schema\\"\\"test\\" WHERE id IN('<id>') RETURNING id
+"DELETE FROM \\"schema\\"\\"test\\" WHERE id=ANY('{<id>}') RETURNING id
 
-DELETE FROM \\"schema\\"\\"test\\" WHERE id IN('42') RETURNING id
+DELETE FROM \\"schema\\"\\"test\\" WHERE id=ANY('{42}') RETURNING id
 
 DELETE FROM \\"schema\\"\\"test\\" WHERE id IS NULL RETURNING id"
 `;
 
-exports[`delete where 1`] = `"DELETE FROM \\"schema\\"\\"test\\" WHERE id IN('<id>','<id>') AND (1=1) RETURNING id"`;
+exports[`delete where 1`] = `"DELETE FROM \\"schema\\"\\"test\\" WHERE id=ANY('{<id>,<id>}') AND (1=1) RETURNING id"`;
 
 exports[`idGen batched 1`] = `"SELECT id_gen() AS k*, id_gen() AS k*"`;
 
@@ -85,43 +85,43 @@ INSERT INTO \\"schema\\"\\"test\\" (id, name, url_name, some_flag, json_text_fie
 
 exports[`load batched 1`] = `
 "SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
-  WHERE id IN('<id>','<id>')"
+  WHERE id=ANY('{<id>,<id>}')"
 `;
 
 exports[`loadBy batched one column 1`] = `
 "SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
-  WHERE name IN('a','b','no')"
+  WHERE name=ANY('{\\"a\\\\\\\\a\\",\\"b\\\\\\\\nb\\",\\"no value\\"}')"
 `;
 
 exports[`loadBy batched two columns 1`] = `
 "SELECT id, name, url_name, created_at, updated_at FROM \\"schema\\"\\"test_2col\\"
   WHERE (name='z'
-    AND url_name IN('z1','z2'))
-    OR (name='no'
-    AND url_name IN('no'))
+    AND url_name=ANY('{z1,\\"z,2\\"}'))
+    OR (name='no\\\\value'
+    AND url_name=ANY('{\\"no\\\\\\\\value\\"}'))
     OR (name='b'
-    AND url_name IN('b1'))
+    AND url_name=ANY('{\\"b{1}\\"}'))
     OR (name='c'
-    AND url_name IN('c1','c2'))"
+    AND url_name=ANY('{\\"NuLL\\",\\"\\"}'))"
 `;
 
 exports[`loadBy batched with two columns nullable unique key 1`] = `
 "SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable_unique_key
   WHERE (name='z'
-    AND url_name IN('z1','z2'))
+    AND url_name=ANY('{z1,z2}'))
     OR (name='no'
-    AND url_name IN('no'))
+    AND url_name=ANY('{\\"Null\\"}'))
     OR (name='b'
     AND url_name IS NULL)
     OR (name='c'
-    AND (url_name IN('c2')
+    AND (url_name=ANY('{c2}')
     OR url_name IS NULL))"
 `;
 
 exports[`loadBy single two columns 1`] = `
 "SELECT id, name, url_name, created_at, updated_at FROM \\"schema\\"\\"test_2col\\"
   WHERE (name='b'
-    AND url_name IN('bbb'))"
+    AND url_name=ANY('{bbb}'))"
 `;
 
 exports[`loadBy single two columns with nullable unique key 1`] = `
@@ -131,7 +131,7 @@ exports[`loadBy single two columns with nullable unique key 1`] = `
 
 SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable_unique_key
   WHERE (name IS NULL
-    AND url_name IN('a'))
+    AND url_name=ANY('{a}'))
 
 SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable_unique_key
   WHERE (name IS NULL
@@ -140,14 +140,16 @@ SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable
 
 exports[`loadNy single one column 1`] = `
 "SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
-  WHERE name IN('b')"
+  WHERE name=ANY('{b}')"
 `;
 
 exports[`select and count batched 1`] = `
 "(SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
-  WHERE name IN('a','aa')
+  WHERE name=ANY('{\\"a
+a\\",\\"a\\\\\\\\a\\"}')
     AND some_flag=true
-    AND (name IN('a','aa')
+    AND (name=ANY('{\\"a
+a\\",\\"a\\\\\\\\a\\"}')
     AND name<>'kk'
     AND name IS DISTINCT FROM 'dd'
     AND url_name IS DISTINCT FROM NULL
@@ -157,10 +159,11 @@ exports[`select and count batched 1`] = `
     AND ('5' > '2')
     AND (name>='a'
     AND name<='z'))
-    AND (name='a'
-    OR name='aa'
-    OR false/*empty_IN*/
-    OR (url_name IN('zzz')
+    AND (name='a
+a'
+    OR name='a\\\\a'
+    OR false/*empty_ANY*/
+    OR (url_name=ANY('{zzz}')
     OR url_name IS NULL))
     AND NOT (name='zz'
     AND (5 < '2'))
@@ -172,9 +175,11 @@ exports[`select and count batched 1`] = `
   LIMIT 10)
 
 SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
-  WHERE name IN('a','aa')
+  WHERE name=ANY('{\\"a
+a\\",\\"a\\\\\\\\a\\"}')
     AND some_flag=true
-    AND (name IN('a','aa')
+    AND (name=ANY('{\\"a
+a\\",\\"a\\\\\\\\a\\"}')
     AND name<>'kk'
     AND name IS DISTINCT FROM 'dd'
     AND url_name IS DISTINCT FROM NULL
@@ -184,19 +189,22 @@ SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
     AND ('5' > '2')
     AND (name>='a'
     AND name<='z'))
-    AND (name='a'
-    OR name='aa'
-    OR false/*empty_IN*/
-    OR (url_name IN('zzz')
+    AND (name='a
+a'
+    OR name='a\\\\a'
+    OR false/*empty_ANY*/
+    OR (url_name=ANY('{zzz}')
     OR url_name IS NULL))
     AND NOT (name='zz'
     AND (5 < '2'))
   UNION ALL
 SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
-  WHERE name IN('a','aa')
+  WHERE name=ANY('{\\"a
+a\\",\\"a\\\\\\\\a\\"}')
     AND some_flag=true
     AND url_name='a1'
-    AND (name IN('a','aa')
+    AND (name=ANY('{\\"a
+a\\",\\"a\\\\\\\\a\\"}')
     AND name<>'kk'
     AND name IS DISTINCT FROM 'dd'
     AND url_name IS DISTINCT FROM NULL
@@ -206,10 +214,11 @@ SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
     AND ('5' > '2')
     AND (name>='a'
     AND name<='z'))
-    AND (name='a'
-    OR name='aa'
-    OR false/*empty_IN*/
-    OR (url_name IN('zzz')
+    AND (name='a
+a'
+    OR name='a\\\\a'
+    OR false/*empty_ANY*/
+    OR (url_name=ANY('{zzz}')
     OR url_name IS NULL))
     AND NOT (name='zz'
     AND (5 < '2'))
@@ -218,9 +227,11 @@ SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
   WHERE name='b'
 
 SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
-  WHERE name IN('a','aa')
+  WHERE name=ANY('{\\"a
+a\\",\\"a\\\\\\\\a\\"}')
     AND some_flag=true
-    AND (name IN('a','aa')
+    AND (name=ANY('{\\"a
+a\\",\\"a\\\\\\\\a\\"}')
     AND name<>'kk'
     AND name IS DISTINCT FROM 'dd'
     AND url_name IS DISTINCT FROM NULL
@@ -230,10 +241,11 @@ SELECT COUNT(1) AS count FROM \\"schema\\"\\"test\\"
     AND ('5' > '2')
     AND (name>='a'
     AND name<='z'))
-    AND (name='a'
-    OR name='aa'
-    OR false/*empty_IN*/
-    OR (url_name IN('zzz')
+    AND (name='a
+a'
+    OR name='a\\\\a'
+    OR false/*empty_ANY*/
+    OR (url_name=ANY('{zzz}')
     OR url_name IS NULL))
     AND NOT (name='zz'
     AND (5 < '2'))"
@@ -246,7 +258,7 @@ exports[`select custom 1`] = `
 SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\" 
 JOIN cte1 ON true
 JOIN (SELECT 10+'10' AS join2_v) join2 ON true
-WHERE name IN('a','aa') AND ('5' > '2') ORDER BY name ASC, cte1_v LIMIT 10
+WHERE name=ANY('{a,aa}') AND ('5' > '2') ORDER BY name ASC, cte1_v LIMIT 10
 
 (WITH
   cte1 AS (SELECT 1+'1' AS cte1_v FROM generate_series(1,1)),
@@ -254,7 +266,7 @@ WHERE name IN('a','aa') AND ('5' > '2') ORDER BY name ASC, cte1_v LIMIT 10
 SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\" 
 JOIN cte1 ON true
 JOIN (SELECT 10+'10' AS join2_v) join2 ON true
-WHERE name IN('a','aa') AND ('5' > '2') ORDER BY name ASC, cte1_v LIMIT 10)
+WHERE name=ANY('{a,aa}') AND ('5' > '2') ORDER BY name ASC, cte1_v LIMIT 10)
   UNION ALL
 (SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\" WHERE name='b' LIMIT 10)"
 `;

@@ -741,16 +741,16 @@ test("loadNy single one column", async () => {
 
 test("loadBy batched one column", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a", url_name: "aaa" })),
-    shardRun(schema.insert({ name: "b", url_name: "bbb" })),
+    shardRun(schema.insert({ name: String.raw`a\a`, url_name: "aaa" })),
+    shardRun(schema.insert({ name: String.raw`b\nb`, url_name: "bbb" })),
   ]);
 
   master.resetSnapshot();
   const rows = await join([
-    shardRun(schema.loadBy({ name: "a" })),
-    shardRun(schema.loadBy({ name: "b" })),
-    shardRun(schema.loadBy({ name: "no" })),
-    shardRun(schema.loadBy({ name: "a" })),
+    shardRun(schema.loadBy({ name: String.raw`a\a` })),
+    shardRun(schema.loadBy({ name: String.raw`b\nb` })),
+    shardRun(schema.loadBy({ name: "no value" })),
+    shardRun(schema.loadBy({ name: String.raw`a\a` })),
   ]);
   master.toMatchSnapshot();
   expect(rows).toMatchObject([{ id: id1 }, { id: id2 }, null, { id: id1 }]);
@@ -771,20 +771,25 @@ test("loadBy single two columns", async () => {
 test("loadBy batched two columns", async () => {
   const [id1, id2, id3, id4, id5] = await join([
     shardRun(schema2Col.insert({ name: "z", url_name: "z1" })),
-    shardRun(schema2Col.insert({ name: "z", url_name: "z2" })),
-    shardRun(schema2Col.insert({ name: "b", url_name: "b1" })),
-    shardRun(schema2Col.insert({ name: "c", url_name: "c1" })),
-    shardRun(schema2Col.insert({ name: "c", url_name: "c2" })),
+    shardRun(schema2Col.insert({ name: "z", url_name: "z,2" })),
+    shardRun(schema2Col.insert({ name: "b", url_name: "b{1}" })),
+    shardRun(schema2Col.insert({ name: "c", url_name: "NuLL" })),
+    shardRun(schema2Col.insert({ name: "c", url_name: "" })),
   ]);
 
   master.resetSnapshot();
   const rows = await join([
     shardRun(schema2Col.loadBy({ name: "z", url_name: "z1" })),
-    shardRun(schema2Col.loadBy({ name: "z", url_name: "z2" })),
-    shardRun(schema2Col.loadBy({ name: "no", url_name: "no" })),
-    shardRun(schema2Col.loadBy({ name: "b", url_name: "b1" })),
-    shardRun(schema2Col.loadBy({ name: "c", url_name: "c1" })),
-    shardRun(schema2Col.loadBy({ name: "c", url_name: "c2" })),
+    shardRun(schema2Col.loadBy({ name: "z", url_name: "z,2" })),
+    shardRun(
+      schema2Col.loadBy({
+        name: String.raw`no\value`,
+        url_name: String.raw`no\value`,
+      })
+    ),
+    shardRun(schema2Col.loadBy({ name: "b", url_name: "b{1}" })),
+    shardRun(schema2Col.loadBy({ name: "c", url_name: "NuLL" })),
+    shardRun(schema2Col.loadBy({ name: "c", url_name: "" })),
   ]);
   master.toMatchSnapshot();
   expect(rows).toMatchObject([
@@ -833,7 +838,7 @@ test("loadBy batched with two columns nullable unique key", async () => {
     shardRun(schema2ColNullableUniqueKey.loadBy({ name: "z", url_name: "z1" })),
     shardRun(schema2ColNullableUniqueKey.loadBy({ name: "z", url_name: "z2" })),
     shardRun(
-      schema2ColNullableUniqueKey.loadBy({ name: "no", url_name: "no" })
+      schema2ColNullableUniqueKey.loadBy({ name: "no", url_name: "Null" })
     ),
     shardRun(schema2ColNullableUniqueKey.loadBy({ name: "b", url_name: null })),
     shardRun(schema2ColNullableUniqueKey.loadBy({ name: "c", url_name: null })),
@@ -852,8 +857,10 @@ test("loadBy batched with two columns nullable unique key", async () => {
 
 test("select and count batched", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a", url_name: "a1", some_flag: true })),
-    shardRun(schema.insert({ name: "aa", url_name: "aa1", some_flag: true })),
+    shardRun(schema.insert({ name: "a\na", url_name: "a1", some_flag: true })),
+    shardRun(
+      schema.insert({ name: String.raw`a\a`, url_name: "aa1", some_flag: true })
+    ),
     shardRun(schema.insert({ name: "c", url_name: "c1" })),
     shardRun(schema.insert({ name: "d", url_name: "d1" })),
     shardRun(schema.insert({ name: "e", url_name: "ce1" })),
@@ -863,16 +870,16 @@ test("select and count batched", async () => {
   const input: Parameters<typeof schema.select>[0] = {
     order: [{ name: "ASC" }, { url_name: "DESC" }, { $literal: ["1=?", 2] }],
     where: {
-      name: ["a", "aa"],
+      name: ["a\na", String.raw`a\a`],
       some_flag: true,
       $or: [
-        { name: "a" },
-        { name: "aa" },
+        { name: "a\na" },
+        { name: String.raw`a\a` },
         { url_name: [] },
         { url_name: [null, "zzz"] },
       ],
       $and: [
-        { name: ["a", "aa"] },
+        { name: ["a\na", String.raw`a\a`] },
         { name: { $ne: "kk" } },
         { name: { $isDistinctFrom: "dd" } },
         { url_name: { $isDistinctFrom: null } },

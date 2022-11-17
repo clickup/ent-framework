@@ -3,11 +3,11 @@
 exports[`id2s loader 1`] = `
 "(SELECT '<hash>' AS _key, id, type, id1, id2 FROM \\"inv\\"\\"test_inverse\\"
   WHERE type='company2users'
-    AND id1 IN('<id>','<id>','0')
+    AND id1=ANY('{<id>,<id>,0}')
   LIMIT 9007199254740991)
   UNION ALL
 (SELECT '<hash>' AS _key, id, type, id1, id2 FROM \\"inv\\"\\"test_inverse\\"
   WHERE type='team2users'
-    AND id1 IN('<id>')
+    AND id1=ANY('{<id>}')
   LIMIT 9007199254740991)"
 `;

@@ -35,7 +35,7 @@ export class SQLRunnerLoad<TTable extends Table> extends SQLRunner<
     super(schema, client);
     this.builder = {
       prefix: this.fmt("SELECT %SELECT_FIELDS FROM %T WHERE "),
-      func: this.createInBuilder(ID),
+      func: this.createOneOfBuilder(ID),
       suffix: this.fmt(""),
     };
   }

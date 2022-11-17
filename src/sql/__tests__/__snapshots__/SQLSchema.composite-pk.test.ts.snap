@@ -41,7 +41,7 @@ exports[`batched ops 6`] = `
 exports[`batched ops 7`] = `
 "SELECT tenant_id, user_id, name, ROW(tenant_id,user_id) AS id FROM \\"schema\\"\\"test_composite\\"
   WHERE (tenant_id='1'
-    AND user_id IN('3','4'))"
+    AND user_id=ANY('{3,4}'))"
 `;
 
 exports[`batched ops 8`] = `
