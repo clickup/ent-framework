@@ -39,10 +39,14 @@ export abstract class SQLRunner<
   readonly shardName = this.client.shardName;
   readonly isMaster = this.client.isMaster;
 
-  private runtimeEscapers: Partial<Record<string, (value: any) => string>> = {};
-  private runtimeInBuilders: Partial<Record<string, (v: any[]) => string>> = {};
-  private runtimeParsers: Array<[string, (value: any) => any]> = [];
-  private stringifiers: Partial<Record<string, (value: any) => string>> = {};
+  private runtimeEscapers: Partial<Record<string, (value: unknown) => string>> =
+    {};
+  private runtimeOneOfBuilders: Partial<
+    Record<string, (value: unknown[]) => string>
+  > = {};
+  private runtimeParsers: Array<[string, (value: unknown) => any]> = [];
+  private stringifiers: Partial<Record<string, (value: unknown) => string>> =
+    {};
 
   constructor(
     public readonly schema: Schema<TTable>,
@@ -55,7 +59,7 @@ export abstract class SQLRunner<
     for (const field of [ID, ...Object.keys(this.schema.table)]) {
       const body = "return " + this.createEscapeCode(field, "$value");
       this.runtimeEscapers[field] = this.newFunction("$value", body);
-      this.runtimeInBuilders[field] = this.createInBuilder(field);
+      this.runtimeOneOfBuilders[field] = this.createOneOfBuilder(field);
     }
 
     for (const [field, { type }] of Object.entries(this.schema.table)) {
@@ -68,7 +72,7 @@ export abstract class SQLRunner<
     }
   }
 
-  delayForSingleQueryRetryOnError(e: any) {
+  delayForSingleQueryRetryOnError(e: unknown) {
     // Deadlocks may happen when a simple query involves multiple rows (e.g.
     // deleting a row by ID, but this row has foreign keys, especially with ON
     // DELETE CASCADE).
@@ -79,7 +83,7 @@ export abstract class SQLRunner<
       : "no_retry";
   }
 
-  shouldDebatchOnError(e: any) {
+  shouldDebatchOnError(e: unknown) {
     return (
       // Debatch some of SQL WRITE query errors.
       (e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)) ||
@@ -184,7 +188,7 @@ export abstract class SQLRunner<
    * 2. We want to make createEscapeCode() the single source of truth about
    *    fields escaping, even at runtime.
    */
-  protected escapeValue(field: Field<TTable>, value: any): string {
+  protected escapeValue(field: Field<TTable>, value: unknown): string {
     const escaper = this.nullThrowsUnknownField(
       this.runtimeEscapers[field],
       field
@@ -371,18 +375,90 @@ export abstract class SQLRunner<
   }
 
   /**
+   * Prefers to do utilize createAnyBuilder() if it can (i.e. build
+   * a=ANY('{...}') clause). Otherwise, builds an IN(...) clause.
+   */
+  protected createOneOfBuilder(
+    field: Field<TTable>,
+    fieldValCode = "$value"
+  ): (values: Iterable<unknown>) => string {
+    const specType = this.schema.table[field]?.type;
+    return specType === Boolean ||
+      specType === ID ||
+      specType === Number ||
+      specType === String
+      ? this.createAnyBuilder(field, fieldValCode)
+      : this.createInBuilder(field, fieldValCode);
+  }
+
+  /**
    * Returns a newly created JS function which, when called with an array of
-   * values, returns one of following SQL clause:
+   * values, returns one of following SQL clauses:
+   *
+   * - $field=ANY('{aaa,bbb,ccc}')
+   * - ($field=ANY('{aaa,bbb}') OR $field IS NULL)
+   * - $field IS NULL
+   * - false
+   */
+  private createAnyBuilder(
+    field: Field<TTable>,
+    fieldValCode = "$value"
+  ): ($values: Iterable<unknown>) => string {
+    // Notes:
+    // - See arrayfuncs.c, array_out() function (needquote logic):
+    //   https://github.com/postgres/postgres/blob/4ddfbd2/src/backend/utils/adt/arrayfuncs.c#L1136-L1156
+    // - Why will it work not worse (index wise) than IN():
+    //   https://www.postgresql.org/message-id/1761901.1668657080%40sss.pgh.pa.us
+    // - We can't easily use a general-purpose quoting function here, because we
+    //   must exclude nulls from the values, to add an explicit "OR IS NULL"
+    //   clause instead.
+    // - We sacrifice performance a little and not quote everything blindly.
+    //   This is to gain the generated SQL queries some more readability.
+    const escapedFieldCode = JSON.stringify(this.escapeField(field));
+    const body = `
+      let sql = '';
+      let hasIsNull = false;
+      for (const $value of $values) {
+        if (${fieldValCode} != null) {
+          if (sql) sql += ',';
+          let value = "" + ${fieldValCode};
+          sql += value.match(/^$|^NULL$|[ \\t\\n\\r\\v\\f]|["\\\\{},]/is)
+            ? '"' + value.replace(/\\\\/g, '\\\\\\\\').replace(/"/g, '\\\\"') + '"'
+            : value;
+        } else {
+          hasIsNull = true;
+        }
+      }
+      if (sql) {
+        sql = '{' + sql + '}';
+        sql = ${escapedFieldCode} + '=ANY(' + this.escapeString(sql) + ')';
+      }
+      return sql && hasIsNull
+        ? '(' + sql + ' OR ' + ${escapedFieldCode} + ' IS NULL)'
+        : hasIsNull
+        ? ${escapedFieldCode} + ' IS NULL'
+        : sql
+        ? sql
+        : 'false/*empty_ANY*/';
+    `;
+    return this.newFunction("$values", body);
+  }
+
+  /**
+   * Returns a newly created JS function which, when called with an array of
+   * values, returns one of following SQL clauses:
    *
    * - $field IN('aaa', 'bbb', 'ccc')
    * - ($field IN('aaa', 'bbb') OR $field IS NULL)
    * - $field IS NULL
    * - false
+   *
+   * This only works for primitive types.
    */
-  protected createInBuilder(
+  private createInBuilder(
     field: Field<TTable>,
     fieldValCode = "$value"
-  ): (values: Iterable<unknown>) => string {
+  ): ($values: Iterable<unknown>) => string {
     const escapedFieldCode = JSON.stringify(this.escapeField(field));
     const valueCode = this.createEscapeCode(field, fieldValCode);
     const body = `
@@ -568,7 +644,7 @@ export abstract class SQLRunner<
       return this.escapeField(field) + " IS NULL";
     } else if (value instanceof Array) {
       const inBuilder = this.nullThrowsUnknownField(
-        this.runtimeInBuilders[field],
+        this.runtimeOneOfBuilders[field],
         field
       );
       return inBuilder(value);

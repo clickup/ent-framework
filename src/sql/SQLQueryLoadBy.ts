@@ -40,7 +40,10 @@ export class SQLRunnerLoadBy<
     super(schema, client);
     const lastUniqueKeyField = last(this.schema.uniqueKey);
     this.inBuilder = lastUniqueKeyField
-      ? this.createInBuilder(lastUniqueKeyField, `$value.${lastUniqueKeyField}`)
+      ? this.createOneOfBuilder(
+          lastUniqueKeyField,
+          `$value.${lastUniqueKeyField}`
+        )
       : null;
     this.builder = {
       prefix: this.fmt("SELECT %SELECT_FIELDS FROM %T WHERE "),

@@ -35,7 +35,7 @@ exports[`single ops 8`] = `
 
 exports[`single ops 9`] = `
 "SELECT user_id, name, user_id AS id FROM \\"schema\\"\\"test_alias\\"
-  WHERE user_id IN('<id>')"
+  WHERE user_id=ANY('{<id>}')"
 `;
 
 exports[`single ops 10`] = `
