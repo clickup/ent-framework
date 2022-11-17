@@ -8,15 +8,15 @@ test("parseCompositeRow", async () => {
   expect(parseCompositeRow('("1","2","(""d""""d"",""5"")")')).toEqual([
     "1",
     "2",
-    '("d""""d"",""5"")',
+    '("d""d","5")',
   ]);
   expect(parseCompositeRow('("1","2","{""x"",""y""}")')).toEqual([
     "1",
     "2",
-    '{"x"",""y""}',
+    '{"x","y"}',
   ]);
   expect(parseCompositeRow('("aaa",)')).toEqual(["aaa", null]);
-  expect(parseCompositeRow('("a\\\\b")')).toEqual(["a\\b"]);
+  expect(parseCompositeRow(String.raw`("a\\b")`)).toEqual([String.raw`a\b`]);
   expect(parseCompositeRow("(aa)")).toEqual(["aa"]);
   expect(parseCompositeRow('("aaaaa aa","2")')).toEqual(["aaaaa aa", "2"]);
   expect(parseCompositeRow("(12345,678)")).toEqual(["12345", "678"]);
