@@ -40,6 +40,7 @@ export abstract class SQLRunner<
   readonly isMaster = this.client.isMaster;
 
   private runtimeEscapers: Partial<Record<string, (value: any) => string>> = {};
+  private runtimeInBuilders: Partial<Record<string, (v: any[]) => string>> = {};
   private runtimeParsers: Array<[string, (value: any) => any]> = [];
   private stringifiers: Partial<Record<string, (value: any) => string>> = {};
 
@@ -54,6 +55,7 @@ export abstract class SQLRunner<
     for (const field of [ID, ...Object.keys(this.schema.table)]) {
       const body = "return " + this.createEscapeCode(field, "$value");
       this.runtimeEscapers[field] = this.newFunction("$value", body);
+      this.runtimeInBuilders[field] = this.createInBuilder(field);
     }
 
     for (const [field, { type }] of Object.entries(this.schema.table)) {
@@ -183,11 +185,10 @@ export abstract class SQLRunner<
    *    fields escaping, even at runtime.
    */
   protected escapeValue(field: Field<TTable>, value: any): string {
-    const escaper = this.runtimeEscapers[field];
-    if (!escaper) {
-      this.throwUnknownField(field);
-    }
-
+    const escaper = this.nullThrowsUnknownField(
+      this.runtimeEscapers[field],
+      field
+    );
     return escaper(value);
   }
 
@@ -211,7 +212,7 @@ export abstract class SQLRunner<
       );
     }
 
-    this.throwUnknownField(field);
+    return this.nullThrowsUnknownField(null, field);
   }
 
   /**
@@ -300,11 +301,7 @@ export abstract class SQLRunner<
     suffix: string;
   }) {
     const cols = this.prependPK(fields).map((field) => {
-      const spec = this.schema.table[field];
-      if (!spec) {
-        this.throwUnknownField(field);
-      }
-
+      const spec = this.nullThrowsUnknownField(this.schema.table[field], field);
       return this.createEscapeCode(
         field,
         `$input.${field}`,
@@ -570,22 +567,11 @@ export abstract class SQLRunner<
     if (value === null) {
       return this.escapeField(field) + " IS NULL";
     } else if (value instanceof Array) {
-      let orIsNull = false;
-      const pieces: string[] = [];
-      for (const v of value) {
-        if (v === null) {
-          orIsNull = true;
-        } else {
-          pieces.push(this.escapeValue(field, v));
-        }
-      }
-
-      const sql = pieces.length
-        ? this.escapeField(field) + " IN(" + pieces.join(",") + ")"
-        : "false/*empty_IN*/";
-      return orIsNull
-        ? "(" + sql + " OR " + this.escapeField(field) + " IS NULL)"
-        : sql;
+      const inBuilder = this.nullThrowsUnknownField(
+        this.runtimeInBuilders[field],
+        field
+      );
+      return inBuilder(value);
     } else {
       return this.escapeField(field) + "=" + this.escapeValue(field, value);
     }
@@ -762,12 +748,17 @@ export abstract class SQLRunner<
 
   /**
    * Throws an exception about some field being not mentioned in the table
-   * schema. Notice that ID is treated as always available.
+   * schema if the passed data is undefined. Notice that ID is treated as always
+   * available in this message.
    */
-  private throwUnknownField(field: Field<TTable>): never {
-    throw Error(
-      `Unknown field: ${field}; allowed fields: ` +
-        [ID, ...Object.keys(this.schema.table)]
-    );
+  private nullThrowsUnknownField<T>(data: T, field: Field<TTable>) {
+    if (data === null || data === undefined) {
+      throw Error(
+        `Unknown field: ${field}; allowed fields: ` +
+          [ID, ...Object.keys(this.schema.table)]
+      );
+    } else {
+      return data as Exclude<T, null | undefined>;
+    }
   }
 }
