@@ -29,10 +29,10 @@ const ZERO_NULL = "0";
  */
 export class Inverse<TClient extends Client, TTable extends Table> {
   public readonly id2Field;
+  public readonly type;
   private cluster;
   private shardAffinity;
   private name;
-  private type;
   private inverseSchema;
   private InverseLoader;
 
