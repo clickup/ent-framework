@@ -69,7 +69,7 @@ export default function parseCompositeRow(str: string): Array<string | null> {
       const matches = reQuoted.exec(str);
       if (matches) {
         // Quoted string.
-        result.push(matches[1].replace('""', '"').replace("\\\\", "\\"));
+        result.push(matches[1].replace(/""/g, '"').replace(/\\\\/g, "\\"));
         p += matches[0].length;
       } else {
         throwError("Expected a balanced quoted string");
