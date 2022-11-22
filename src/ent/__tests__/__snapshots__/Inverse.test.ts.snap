@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`id2s loader 1`] = `
-"(SELECT '<hash>' AS _key, id, type, id1, id2 FROM \\"inv\\"\\"test_inverse\\"
+"
+(SELECT '<hash>' AS _key, id, type, id1, id2 FROM \\"inv\\"\\"test_inverse\\"
   WHERE type='company2users'
     AND id1=ANY('{<id>,<id>,0}')
   LIMIT 9007199254740991)
@@ -9,5 +10,6 @@ exports[`id2s loader 1`] = `
 (SELECT '<hash>' AS _key, id, type, id1, id2 FROM \\"inv\\"\\"test_inverse\\"
   WHERE type='team2users'
     AND id1=ANY('{<id>}')
-  LIMIT 9007199254740991)"
+  LIMIT 9007199254740991)
+"
 `;
