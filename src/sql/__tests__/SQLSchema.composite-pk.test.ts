@@ -217,6 +217,13 @@ test("batched ops", async () => {
           limit: 10,
         })
       ),
+      shardRun(
+        schema.select({
+          where: { tenant_id: "101" },
+          order: [{ user_id: "ASC" }],
+          limit: 10,
+        })
+      ),
     ]);
     master.toMatchSnapshot();
     expect(res).toMatchObject([
@@ -225,6 +232,7 @@ test("batched ops", async () => {
         { id: id3, tenant_id: "1", user_id: "3" },
         { id: id4, tenant_id: "1", user_id: "4" },
       ],
+      [],
     ]);
   }
 

@@ -93,9 +93,9 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
               RegExp.$3;
           }
 
-          return query;
+          return `\n${query}\n`;
         })
-        .join("\n\n")
+        .join("")
     ).toMatchSnapshot();
     this.resetSnapshot();
   }
