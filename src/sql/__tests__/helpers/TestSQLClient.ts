@@ -2,6 +2,7 @@ import { Client } from "../../../abstract/Client";
 import { Cluster, Island } from "../../../abstract/Cluster";
 import type { QueryAnnotation } from "../../../abstract/QueryAnnotation";
 import { nullthrows } from "../../../helpers/misc";
+import buildShape from "../../helpers/buildShape";
 import type { SQLClient } from "../../SQLClient";
 import { escapeIdent, escapeString } from "../../SQLClient";
 import { SQLClientPool } from "../../SQLClientPool";
@@ -62,41 +63,17 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
   toMatchSnapshot() {
     expect(
       this.queries
-        .map((query) => {
-          query = query
-            .replace(/\d{4}-\d{2}-\d{2}T[^']+/g, "<date>")
-            .replace(/'[A-Za-z0-9+/]{27}='/g, "'<hash>'")
-            .replace(/'k\d+'/g, "'<key>'")
-            .replace(/\d{16,}/g, (m) =>
-              m === Number.MAX_SAFE_INTEGER.toString() ? m : "<id>"
-            )
-            .replace(/ id AS id/g, " id")
-            .replace(/( AS k)\d+/g, "$1*");
-
-          // Beautify single-lined SQL queries.
-          if (query.match(/^\(?SELECT/)) {
-            query = query
-              .replace(/\s+(WHERE|ORDER|LIMIT)/g, "\n  $1")
-              .replace(/\s+(AND|OR)/g, "\n    $1");
-          }
-
-          // Make the order of rows in UPDATE clause static (to avoid flaky
-          // tests); the framework orders the rows by ID typically
-          if (query.match(/^(WITH.*\(VALUES\n.*?\n)(.*?)(\)\n\s*UPDATE.*)/s)) {
-            query =
-              RegExp.$1 +
-              RegExp.$2
-                .split(",\n")
-                .sort()
-                .map((s) => `${s}<reordered for test>`)
-                .join(",\n") +
-              RegExp.$3;
-          }
-
-          return `\n${query}\n`;
-        })
+        .map(
+          (query) =>
+            "\n" +
+            indentQuery(query) +
+            "\n----\n" +
+            indentQuery(buildShape(query)) +
+            "\n"
+        )
         .join("")
     ).toMatchSnapshot();
+
     this.resetSnapshot();
   }
 
@@ -138,3 +115,37 @@ export const testCluster = new Cluster([
     ),
   ]),
 ]);
+
+function indentQuery(query: string) {
+  query = query
+    .replace(/\d{4}-\d{2}-\d{2}T[^']+/g, "<date>")
+    .replace(/'[A-Za-z0-9+/]{27}='/g, "'<hash>'")
+    .replace(/'k\d+'/g, "'<key>'")
+    .replace(/\d{16,}/g, (m) =>
+      m === Number.MAX_SAFE_INTEGER.toString() ? m : "<id>"
+    )
+    .replace(/ id AS id/g, " id")
+    .replace(/( AS k)\d+/g, "$1*");
+
+  // Beautify single-lined SQL queries.
+  if (query.match(/^\(?SELECT/)) {
+    query = query
+      .replace(/\s+(WHERE|ORDER|LIMIT)/g, "\n  $1")
+      .replace(/\s+(AND|OR)/g, "\n    $1");
+  }
+
+  // Make the order of rows in UPDATE clause static (to avoid flaky tests); the
+  // framework orders the rows by ID typically.
+  if (query.match(/^(WITH.*\(VALUES\n.*?\n)(.*?)(\)\n\s*UPDATE.*)/s)) {
+    query =
+      RegExp.$1 +
+      RegExp.$2
+        .split(",\n")
+        .sort()
+        .map((s) => `${s}<reordered for test>`)
+        .join(",\n") +
+      RegExp.$3;
+  }
+
+  return query;
+}

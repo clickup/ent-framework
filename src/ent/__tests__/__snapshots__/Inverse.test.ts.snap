@@ -11,5 +11,11 @@ exports[`id2s loader 1`] = `
   WHERE type='team2users'
     AND id1=ANY('{<id>}')
   LIMIT 9007199254740991)
+----
+(SELECT '?' AS _key, id, type, id1, id2 FROM \\"inv\\"\\"test_inverse\\"
+  WHERE type='?'
+    AND id1=ANY('?')
+  LIMIT ?)
+  UNION ALL ...
 "
 `;
