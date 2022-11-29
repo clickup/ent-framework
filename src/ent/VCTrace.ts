@@ -1,5 +1,3 @@
-import { randomBytes } from "crypto";
-
 /**
  * The upper bound of Date.now() is Number.MAX_SAFE_INTEGER which is 2^53 - 1,
  * so we have only 10 bits from BigInt (2^63 - 1) left to represent the random
@@ -28,6 +26,6 @@ export class VCTrace {
 function createRandomTrace() {
   return (
     (BigInt(Date.now()) << BigInt(RANDOM_BITS)) |
-    BigInt(randomBytes(2).readUInt16BE() & RANDOM_BITS_MASK)
+    BigInt(Math.trunc(Math.random() * RANDOM_BITS_MASK) & RANDOM_BITS_MASK)
   ).toString();
 }
