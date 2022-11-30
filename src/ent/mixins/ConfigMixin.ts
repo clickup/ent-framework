@@ -93,12 +93,6 @@ export function ConfigMixin<
   schema: Schema<TTable, TUniqueKey>
 ) {
   class ConfigMixin extends Base {
-    override ["constructor"]!: typeof ConfigMixin;
-
-    static configure(): Configuration<TTable> {
-      throw Error(`Please define ${this.name}.configure() method`);
-    }
-
     static Configuration: new (
       c: Configuration<TTable>
     ) => Configuration<TTable> = Configuration;
@@ -202,6 +196,12 @@ export function ConfigMixin<
         writable: false,
       });
       return this.INVERSES;
+    }
+
+    override ["constructor"]!: typeof ConfigMixin;
+
+    static configure(): Configuration<TTable> {
+      throw Error(`Please define ${this.name}.configure() method`);
     }
   }
 

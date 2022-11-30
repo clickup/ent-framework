@@ -53,6 +53,15 @@ export abstract class SQLClient extends Client {
       )
   );
 
+  protected abstract acquireConn(): Promise<SQLClientConn>;
+
+  protected abstract releaseConn(conn: SQLClientConn): void;
+
+  protected logGlobalError(where: string, e: unknown) {
+    // eslint-disable-next-line no-console
+    console.log(`SQLClient(${this.name}): ${where}: ${e}`);
+  }
+
   constructor(
     name: string,
     isMaster: boolean,
@@ -76,10 +85,6 @@ export abstract class SQLClient extends Client {
       this.shardNoPadLen = 0;
     }
   }
-
-  protected abstract acquireConn(): Promise<SQLClientConn>;
-
-  protected abstract releaseConn(conn: SQLClientConn): void;
 
   async query<TRow>(
     query: string | { query: string; hints: Record<string, string> },
@@ -345,11 +350,6 @@ export abstract class SQLClient extends Client {
             no.toString().padStart(zero ? parseInt(d) : 0, "0")
         )
       : this.shardName;
-  }
-
-  protected logGlobalError(where: string, e: unknown) {
-    // eslint-disable-next-line no-console
-    console.log(`SQLClient(${this.name}): ${where}: ${e}`);
   }
 }
 

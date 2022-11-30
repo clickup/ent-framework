@@ -28,9 +28,8 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
   string
 > {
   static override readonly IS_WRITE = true;
-  readonly op = "UPSERT";
-
   private builder;
+  readonly op = "UPSERT";
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);

@@ -166,6 +166,11 @@ export function PrimitiveMixin<
 
     readonly [ID]: string;
 
+    constructor() {
+      super();
+      throw Error("Don't create Ents manually, use static loaders");
+    }
+
     static async insertIfNotExists(vc: VC, input: InsertInput<TTable>) {
       const [shard] = await join([
         this.SHARD_LOCATOR.singleShardFromInput(
@@ -634,11 +639,6 @@ export function PrimitiveMixin<
       }
 
       return vc.toLowerInternal(newRowPrincipal);
-    }
-
-    constructor() {
-      super();
-      throw Error("Don't create Ents manually, use static loaders");
     }
   }
 

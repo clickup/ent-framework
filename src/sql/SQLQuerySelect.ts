@@ -31,14 +31,11 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
   Array<Row<TTable>>
 > {
   static override readonly IS_WRITE = false;
-  readonly op = "SELECT";
-
   private prefix = this.fmt("SELECT %SELECT_FIELDS FROM %T");
   private prefixUnion = this.fmt("SELECT ");
   private midfixUnion = this.fmt(" AS _key, %SELECT_FIELDS FROM %T");
-
-  // We just need something here.
-  readonly default = [];
+  readonly op = "SELECT";
+  readonly default = []; // We just need something here.
 
   override key(input: SelectInput<TTable>): string {
     // Coalesce equal select queries.

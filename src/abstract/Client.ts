@@ -49,12 +49,6 @@ export interface Loggers {
  * (including required arguments) is up to the derived classes.
  */
 export abstract class Client {
-  constructor(
-    public readonly name: string,
-    public readonly isMaster: boolean,
-    public readonly loggers: Loggers
-  ) {}
-
   /**
    * Each Client may be bound to some shard, so the queries executed via it will
    * be namespaced to this shard. E.g. in PostgreSQL, shard name is schema name
@@ -91,6 +85,12 @@ export abstract class Client {
    * new client will share the same connection pool with the parent's Client.
    */
   abstract withShard(no: number): this;
+
+  constructor(
+    public readonly name: string,
+    public readonly isMaster: boolean,
+    public readonly loggers: Loggers
+  ) {}
 
   /**
    * Batcher is per-client per-query-type per-table-name-and-shape:

@@ -21,10 +21,10 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
   string | null
 > {
   static override readonly IS_WRITE = true;
-  readonly op = "INSERT";
-
   private singleBuilder;
   private batchBuilder;
+  readonly op = "INSERT";
+  readonly default = null; // In case of duplicate key error, returns null.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);
@@ -51,9 +51,6 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
       ),
     });
   }
-
-  // In case of duplicate key error, returns null.
-  readonly default = null;
 
   override key(input: InsertInput<TTable>): string {
     // We must NEVER dedup inserts, because:

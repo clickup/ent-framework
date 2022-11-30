@@ -21,15 +21,10 @@ export class SQLRunnerLoad<TTable extends Table> extends SQLRunner<
   Row<TTable> | null
 > {
   static override readonly IS_WRITE = false;
-  readonly op = "SELECT_BY_ID";
-
-  // Select by ID is cheap, so we can have much bigger load batches.
-  override readonly maxBatchSize = 1000;
-
-  // If no row is found, returns null.
-  readonly default = null;
-
   private builder;
+  readonly op = "SELECT_BY_ID";
+  override readonly maxBatchSize = 1000; // Select by ID is cheap, so we can have much bigger load batches.
+  readonly default = null; // If no row is found, returns null.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);

@@ -13,12 +13,12 @@ const INIT_SEQUENCE = 3; // small prime, doesn't matter
  * (e.g. SQL, Redis etc.) and how to parse the result back.
  */
 export abstract class Runner<TInput, TOutput> {
-  private sequence = INIT_SEQUENCE;
-
   /**
    * If true, it's a write operation.
    */
   static readonly IS_WRITE: boolean;
+
+  private sequence = INIT_SEQUENCE;
 
   /**
    * Maximum batch size for this type of operations.
@@ -40,26 +40,6 @@ export abstract class Runner<TInput, TOutput> {
    * Is it a master or a replica connection.
    */
   abstract readonly isMaster: boolean;
-
-  /**
-   * Parameter `name` is typically a table name.
-   */
-  constructor(public readonly name: string) {}
-
-  /**
-   * Returns a batch-dedupping key for the input. By default, no dedupping is
-   * performed (i.e. all inputs are processed individually and not collapsed
-   * into one input; e.g. this is needed for inserts).
-   */
-  key(_input: TInput): string {
-    const key = "k" + this.sequence;
-    this.sequence += INIT_SEQUENCE;
-    if (this.sequence > INIT_SEQUENCE * 10000000) {
-      this.sequence = INIT_SEQUENCE;
-    }
-
-    return key;
-  }
 
   /**
    * Method runSingle is to e.g. produce simple SQL requests when we have only
@@ -100,6 +80,26 @@ export abstract class Runner<TInput, TOutput> {
    * false.)
    */
   abstract shouldDebatchOnError(error: any): boolean;
+
+  /**
+   * Parameter `name` is typically a table name.
+   */
+  constructor(public readonly name: string) {}
+
+  /**
+   * Returns a batch-dedupping key for the input. By default, no dedupping is
+   * performed (i.e. all inputs are processed individually and not collapsed
+   * into one input; e.g. this is needed for inserts).
+   */
+  key(_input: TInput): string {
+    const key = "k" + this.sequence;
+    this.sequence += INIT_SEQUENCE;
+    if (this.sequence > INIT_SEQUENCE * 10000000) {
+      this.sequence = INIT_SEQUENCE;
+    }
+
+    return key;
+  }
 }
 
 /**
@@ -130,63 +130,6 @@ export class Batcher<TInput, TOutput> {
 
   // dedupped annotations; each annotation identifies a caller of the query
   private queuedAnnotations = new Map<string, QueryAnnotation>();
-
-  constructor(
-    private runner: Runner<TInput, TOutput>,
-    private entInputLogger?: Loggers["entInputLogger"],
-    private maxBatchSize: number = 0
-  ) {
-    if (!this.maxBatchSize) {
-      this.maxBatchSize = runner.maxBatchSize;
-    }
-  }
-
-  async run(input: TInput, annotation: QueryAnnotation): Promise<TOutput> {
-    const startTime = this.entInputLogger
-      ? process.hrtime()
-      : ([0, 0] as [number, number]); // can save up to ~7 cpu ms
-
-    return new Promise((resolve, reject) => {
-      const key = this.runner.key(input);
-
-      let handler = this.queuedHandlers.get(key);
-      if (handler === undefined) {
-        handler = { startTime, callbacks: [] };
-        this.queuedHandlers.set(key, handler);
-      }
-
-      handler.callbacks.push({ annotation, resolve, reject });
-
-      // In case of dedupping by key, prefer the last value. E.g. if 2 UPDATEs
-      // for the same ID have different values, then the last one will win, not
-      // the 1st one.
-      this.queuedInputs.set(key, input);
-
-      this.queuedAnnotations.set(
-        annotation.trace +
-          annotation.vc +
-          annotation.debugStack +
-          annotation.whyClient,
-        annotation
-      );
-
-      if (this.queuedInputs.size >= this.maxBatchSize) {
-        runInVoid(this.flushQueue);
-      } else if (this.queuedInputs.size === 1) {
-        // Defer calling of flushQueue() to the "end of the event loop's spin",
-        // to have a chance to collect more run() calls for it to execute. We
-        // actually defer twice (to the end of microtasks sub-loop and then once
-        // again), just in case: the original DataLoader library wraps the
-        // nextTick() call into a "global resolved Promise" object, so we do the
-        // same here blindly. See some of details here:
-        // https://github.com/graphql/dataloader/blob/fae38f14702e925d1e59051d7e5cb3a9a78bfde8/src/index.js#L234-L241
-        // https://stackoverflow.com/a/27648394
-        runInVoid(
-          RESOLVED_PROMISE.then(() => process.nextTick(this.flushQueue))
-        );
-      }
-    });
-  }
 
   protected flushQueue = async () => {
     if (!this.queuedInputs.size) {
@@ -262,6 +205,63 @@ export class Batcher<TInput, TOutput> {
       }
     }
   };
+
+  constructor(
+    private runner: Runner<TInput, TOutput>,
+    private entInputLogger?: Loggers["entInputLogger"],
+    private maxBatchSize: number = 0
+  ) {
+    if (!this.maxBatchSize) {
+      this.maxBatchSize = runner.maxBatchSize;
+    }
+  }
+
+  async run(input: TInput, annotation: QueryAnnotation): Promise<TOutput> {
+    const startTime = this.entInputLogger
+      ? process.hrtime()
+      : ([0, 0] as [number, number]); // can save up to ~7 cpu ms
+
+    return new Promise((resolve, reject) => {
+      const key = this.runner.key(input);
+
+      let handler = this.queuedHandlers.get(key);
+      if (handler === undefined) {
+        handler = { startTime, callbacks: [] };
+        this.queuedHandlers.set(key, handler);
+      }
+
+      handler.callbacks.push({ annotation, resolve, reject });
+
+      // In case of dedupping by key, prefer the last value. E.g. if 2 UPDATEs
+      // for the same ID have different values, then the last one will win, not
+      // the 1st one.
+      this.queuedInputs.set(key, input);
+
+      this.queuedAnnotations.set(
+        annotation.trace +
+          annotation.vc +
+          annotation.debugStack +
+          annotation.whyClient,
+        annotation
+      );
+
+      if (this.queuedInputs.size >= this.maxBatchSize) {
+        runInVoid(this.flushQueue);
+      } else if (this.queuedInputs.size === 1) {
+        // Defer calling of flushQueue() to the "end of the event loop's spin",
+        // to have a chance to collect more run() calls for it to execute. We
+        // actually defer twice (to the end of microtasks sub-loop and then once
+        // again), just in case: the original DataLoader library wraps the
+        // nextTick() call into a "global resolved Promise" object, so we do the
+        // same here blindly. See some of details here:
+        // https://github.com/graphql/dataloader/blob/fae38f14702e925d1e59051d7e5cb3a9a78bfde8/src/index.js#L234-L241
+        // https://stackoverflow.com/a/27648394
+        runInVoid(
+          RESOLVED_PROMISE.then(() => process.nextTick(this.flushQueue))
+        );
+      }
+    });
+  }
 
   private async runSingleForEach(
     inputs: Map<string, TInput>,

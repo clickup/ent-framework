@@ -50,6 +50,21 @@ export class SQLClientPool extends SQLClient {
     ended: boolean;
   };
 
+  protected override logGlobalError(where: string, e: unknown) {
+    if (!this.state.ended) {
+      super.logGlobalError(where, e);
+    }
+  }
+
+  protected async acquireConn() {
+    return this.state.pool.connect();
+  }
+
+  protected releaseConn(conn: SQLClientPoolClient) {
+    const needClose = !!(conn.closeAt && Date.now() > conn.closeAt);
+    conn.release(needClose);
+  }
+
   constructor(public readonly dest: SQLClientDest, loggers: Loggers) {
     super(
       dest.name,
@@ -107,21 +122,6 @@ export class SQLClientPool extends SQLClient {
     } else {
       return this.state.pool.end();
     }
-  }
-
-  protected override logGlobalError(where: string, e: unknown) {
-    if (!this.state.ended) {
-      super.logGlobalError(where, e);
-    }
-  }
-
-  protected async acquireConn() {
-    return this.state.pool.connect();
-  }
-
-  protected releaseConn(conn: SQLClientPoolClient) {
-    const needClose = !!(conn.closeAt && Date.now() > conn.closeAt);
-    conn.release(needClose);
   }
 
   override prewarm() {

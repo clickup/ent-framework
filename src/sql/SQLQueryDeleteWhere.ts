@@ -22,10 +22,10 @@ export class SQLRunnerDeleteWhere<TTable extends Table> extends SQLRunner<
   string[]
 > {
   static override readonly IS_WRITE = true;
+  private builder;
   readonly op = "DELETE_WHERE";
   readonly default = [];
-
-  private builder;
+  runBatch = undefined;
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);
@@ -62,6 +62,4 @@ export class SQLRunnerDeleteWhere<TTable extends Table> extends SQLRunner<
     );
     return rows.map((row) => row.id);
   }
-
-  runBatch = undefined;
 }
