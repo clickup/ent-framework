@@ -32,13 +32,6 @@ export abstract class SQLRunner<
   TInput,
   TOutput
 > extends Runner<TInput, TOutput> {
-  override ["constructor"]!: typeof SQLRunner;
-
-  abstract readonly op: string;
-
-  readonly shardName = this.client.shardName;
-  readonly isMaster = this.client.isMaster;
-
   private runtimeEscapers: Partial<Record<string, (value: unknown) => string>> =
     {};
   private runtimeOneOfBuilders: Partial<
@@ -47,52 +40,12 @@ export abstract class SQLRunner<
   private runtimeParsers: Array<[string, (value: unknown) => any]> = [];
   private stringifiers: Partial<Record<string, (value: unknown) => string>> =
     {};
+  readonly shardName = this.client.shardName;
+  readonly isMaster = this.client.isMaster;
 
-  constructor(
-    public readonly schema: Schema<TTable>,
-    private client: sqlClientMod.SQLClient
-  ) {
-    super(sqlClientMod.escapeIdent(schema.name));
+  override ["constructor"]!: typeof SQLRunner;
 
-    // For tables with composite primary key and no explicit "id" column, we
-    // still need an ID escaper (where id looks like "(1,2)" anonymous row).
-    for (const field of [ID, ...Object.keys(this.schema.table)]) {
-      const body = "return " + this.createEscapeCode(field, "$value");
-      this.runtimeEscapers[field] = this.newFunction("$value", body);
-      this.runtimeOneOfBuilders[field] = this.createOneOfBuilder(field);
-    }
-
-    for (const [field, { type }] of Object.entries(this.schema.table)) {
-      // Notice that e.g. Date type has parse() static method, so we require
-      // BOTH parse() and stringify() to be presented in custom types.
-      if (hasKey("parse", type) && hasKey("stringify", type)) {
-        this.runtimeParsers.push([field, type.parse.bind(type)]);
-        this.stringifiers[field] = type.stringify.bind(type);
-      }
-    }
-  }
-
-  delayForSingleQueryRetryOnError(e: unknown) {
-    // Deadlocks may happen when a simple query involves multiple rows (e.g.
-    // deleting a row by ID, but this row has foreign keys, especially with ON
-    // DELETE CASCADE).
-    return e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)
-      ? random(DEADLOCK_RETRY_MS_MIN, DEADLOCK_RETRY_MS_MAX)
-      : e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY)
-      ? "immediate_retry"
-      : "no_retry";
-  }
-
-  shouldDebatchOnError(e: unknown) {
-    return (
-      // Debatch some of SQL WRITE query errors.
-      (e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)) ||
-      (e instanceof SQLError && e.message.includes(ERROR_FK)) ||
-      // Debatch "conflict with recovery" errors (we support retries only after
-      // debatching, so have to return true here).
-      (e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY))
-    );
-  }
+  abstract readonly op: string;
 
   protected async clientQuery<TOutput>(
     sql: string,
@@ -391,101 +344,6 @@ export abstract class SQLRunner<
       : this.createInBuilder(field, fieldValCode);
   }
 
-  /**
-   * Returns a newly created JS function which, when called with an array of
-   * values, returns one of following SQL clauses:
-   *
-   * - $field=ANY('{aaa,bbb,ccc}')
-   * - ($field=ANY('{aaa,bbb}') OR $field IS NULL)
-   * - $field IS NULL
-   * - false
-   */
-  private createAnyBuilder(
-    field: Field<TTable>,
-    fieldValCode = "$value"
-  ): ($values: Iterable<unknown>) => string {
-    // Notes:
-    // - See arrayfuncs.c, array_out() function (needquote logic):
-    //   https://github.com/postgres/postgres/blob/4ddfbd2/src/backend/utils/adt/arrayfuncs.c#L1136-L1156
-    // - Why will it work not worse (index wise) than IN():
-    //   https://www.postgresql.org/message-id/1761901.1668657080%40sss.pgh.pa.us
-    // - We can't easily use a general-purpose quoting function here, because we
-    //   must exclude nulls from the values, to add an explicit "OR IS NULL"
-    //   clause instead.
-    // - We sacrifice performance a little and not quote everything blindly.
-    //   This is to gain the generated SQL queries some more readability.
-    const escapedFieldCode = JSON.stringify(this.escapeField(field));
-    const body = `
-      let sql = '';
-      let hasIsNull = false;
-      for (const $value of $values) {
-        if (${fieldValCode} != null) {
-          if (sql) sql += ',';
-          let value = "" + ${fieldValCode};
-          sql += value.match(/^$|^NULL$|[ \\t\\n\\r\\v\\f]|["\\\\{},]/is)
-            ? '"' + value.replace(/\\\\/g, '\\\\\\\\').replace(/"/g, '\\\\"') + '"'
-            : value;
-        } else {
-          hasIsNull = true;
-        }
-      }
-      if (sql) {
-        sql = '{' + sql + '}';
-        sql = ${escapedFieldCode} + '=ANY(' + this.escapeString(sql) + ')';
-      }
-      return sql && hasIsNull
-        ? '(' + sql + ' OR ' + ${escapedFieldCode} + ' IS NULL)'
-        : hasIsNull
-        ? ${escapedFieldCode} + ' IS NULL'
-        : sql
-        ? sql
-        : 'false/*empty_ANY*/';
-    `;
-    return this.newFunction("$values", body);
-  }
-
-  /**
-   * Returns a newly created JS function which, when called with an array of
-   * values, returns one of following SQL clauses:
-   *
-   * - $field IN('aaa', 'bbb', 'ccc')
-   * - ($field IN('aaa', 'bbb') OR $field IS NULL)
-   * - $field IS NULL
-   * - false
-   *
-   * This only works for primitive types.
-   */
-  private createInBuilder(
-    field: Field<TTable>,
-    fieldValCode = "$value"
-  ): ($values: Iterable<unknown>) => string {
-    const escapedFieldCode = JSON.stringify(this.escapeField(field));
-    const valueCode = this.createEscapeCode(field, fieldValCode);
-    const body = `
-      let sql = '';
-      let hasIsNull = false;
-      for (const $value of $values) {
-        if (${fieldValCode} != null) {
-          if (sql) sql += ',';
-          sql += ${valueCode};
-        } else {
-          hasIsNull = true;
-        }
-      }
-      if (sql) {
-        sql = ${escapedFieldCode} + ' IN(' + sql + ')';
-      }
-      return sql && hasIsNull
-        ? '(' + sql + ' OR ' + ${escapedFieldCode} + ' IS NULL)'
-        : hasIsNull
-        ? ${escapedFieldCode} + ' IS NULL'
-        : sql
-        ? sql
-        : 'false/*empty_IN*/';
-    `;
-    return this.newFunction("$values", body);
-  }
-
   protected buildOptionalWhere(
     specs: TTable,
     where: Where<TTable> | undefined
@@ -597,34 +455,6 @@ export abstract class SQLRunner<
     return this.escapeField(field) + binOp + this.escapeValue(field, value);
   }
 
-  private buildFieldNe<TField extends Field<TTable>>(
-    field: TField,
-    value: Value<TTable[TField]> | ReadonlyArray<Value<TTable[TField]>>
-  ) {
-    if (value === null) {
-      return this.escapeField(field) + " IS NOT NULL";
-    } else if (value instanceof Array) {
-      let andIsNotNull = false;
-      const pieces: string[] = [];
-      for (const v of value) {
-        if (v === null) {
-          andIsNotNull = true;
-        } else {
-          pieces.push(this.escapeValue(field, v));
-        }
-      }
-
-      const sql = pieces.length
-        ? this.escapeField(field) + " NOT IN(" + pieces.join(",") + ")"
-        : "true/*empty_NOT_IN*/";
-      return andIsNotNull
-        ? "(" + sql + " AND " + this.escapeField(field) + " IS NOT NULL)"
-        : sql;
-    } else {
-      return this.escapeField(field) + "<>" + this.escapeValue(field, value);
-    }
-  }
-
   protected buildFieldIsDistinctFrom<TField extends Field<TTable>>(
     field: TField,
     value: Value<TTable[TField]>
@@ -693,6 +523,175 @@ export abstract class SQLRunner<
         ? sqlClientMod.escapeID("" + args.shift())
         : sqlClientMod.escapeAny(args.shift())
     );
+  }
+
+  constructor(
+    public readonly schema: Schema<TTable>,
+    private client: sqlClientMod.SQLClient
+  ) {
+    super(sqlClientMod.escapeIdent(schema.name));
+
+    // For tables with composite primary key and no explicit "id" column, we
+    // still need an ID escaper (where id looks like "(1,2)" anonymous row).
+    for (const field of [ID, ...Object.keys(this.schema.table)]) {
+      const body = "return " + this.createEscapeCode(field, "$value");
+      this.runtimeEscapers[field] = this.newFunction("$value", body);
+      this.runtimeOneOfBuilders[field] = this.createOneOfBuilder(field);
+    }
+
+    for (const [field, { type }] of Object.entries(this.schema.table)) {
+      // Notice that e.g. Date type has parse() static method, so we require
+      // BOTH parse() and stringify() to be presented in custom types.
+      if (hasKey("parse", type) && hasKey("stringify", type)) {
+        this.runtimeParsers.push([field, type.parse.bind(type)]);
+        this.stringifiers[field] = type.stringify.bind(type);
+      }
+    }
+  }
+
+  delayForSingleQueryRetryOnError(e: unknown) {
+    // Deadlocks may happen when a simple query involves multiple rows (e.g.
+    // deleting a row by ID, but this row has foreign keys, especially with ON
+    // DELETE CASCADE).
+    return e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)
+      ? random(DEADLOCK_RETRY_MS_MIN, DEADLOCK_RETRY_MS_MAX)
+      : e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY)
+      ? "immediate_retry"
+      : "no_retry";
+  }
+
+  shouldDebatchOnError(e: unknown) {
+    return (
+      // Debatch some of SQL WRITE query errors.
+      (e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)) ||
+      (e instanceof SQLError && e.message.includes(ERROR_FK)) ||
+      // Debatch "conflict with recovery" errors (we support retries only after
+      // debatching, so have to return true here).
+      (e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY))
+    );
+  }
+
+  private buildFieldNe<TField extends Field<TTable>>(
+    field: TField,
+    value: Value<TTable[TField]> | ReadonlyArray<Value<TTable[TField]>>
+  ) {
+    if (value === null) {
+      return this.escapeField(field) + " IS NOT NULL";
+    } else if (value instanceof Array) {
+      let andIsNotNull = false;
+      const pieces: string[] = [];
+      for (const v of value) {
+        if (v === null) {
+          andIsNotNull = true;
+        } else {
+          pieces.push(this.escapeValue(field, v));
+        }
+      }
+
+      const sql = pieces.length
+        ? this.escapeField(field) + " NOT IN(" + pieces.join(",") + ")"
+        : "true/*empty_NOT_IN*/";
+      return andIsNotNull
+        ? "(" + sql + " AND " + this.escapeField(field) + " IS NOT NULL)"
+        : sql;
+    } else {
+      return this.escapeField(field) + "<>" + this.escapeValue(field, value);
+    }
+  }
+
+  /**
+   * Returns a newly created JS function which, when called with an array of
+   * values, returns one of following SQL clauses:
+   *
+   * - $field=ANY('{aaa,bbb,ccc}')
+   * - ($field=ANY('{aaa,bbb}') OR $field IS NULL)
+   * - $field IS NULL
+   * - false
+   */
+  private createAnyBuilder(
+    field: Field<TTable>,
+    fieldValCode = "$value"
+  ): ($values: Iterable<unknown>) => string {
+    // Notes:
+    // - See arrayfuncs.c, array_out() function (needquote logic):
+    //   https://github.com/postgres/postgres/blob/4ddfbd2/src/backend/utils/adt/arrayfuncs.c#L1136-L1156
+    // - Why will it work not worse (index wise) than IN():
+    //   https://www.postgresql.org/message-id/1761901.1668657080%40sss.pgh.pa.us
+    // - We can't easily use a general-purpose quoting function here, because we
+    //   must exclude nulls from the values, to add an explicit "OR IS NULL"
+    //   clause instead.
+    // - We sacrifice performance a little and not quote everything blindly.
+    //   This is to gain the generated SQL queries some more readability.
+    const escapedFieldCode = JSON.stringify(this.escapeField(field));
+    const body = `
+        let sql = '';
+        let hasIsNull = false;
+        for (const $value of $values) {
+          if (${fieldValCode} != null) {
+            if (sql) sql += ',';
+            let value = "" + ${fieldValCode};
+            sql += value.match(/^$|^NULL$|[ \\t\\n\\r\\v\\f]|["\\\\{},]/is)
+              ? '"' + value.replace(/\\\\/g, '\\\\\\\\').replace(/"/g, '\\\\"') + '"'
+              : value;
+          } else {
+            hasIsNull = true;
+          }
+        }
+        if (sql) {
+          sql = '{' + sql + '}';
+          sql = ${escapedFieldCode} + '=ANY(' + this.escapeString(sql) + ')';
+        }
+        return sql && hasIsNull
+          ? '(' + sql + ' OR ' + ${escapedFieldCode} + ' IS NULL)'
+          : hasIsNull
+          ? ${escapedFieldCode} + ' IS NULL'
+          : sql
+          ? sql
+          : 'false/*empty_ANY*/';
+      `;
+    return this.newFunction("$values", body);
+  }
+
+  /**
+   * Returns a newly created JS function which, when called with an array of
+   * values, returns one of following SQL clauses:
+   *
+   * - $field IN('aaa', 'bbb', 'ccc')
+   * - ($field IN('aaa', 'bbb') OR $field IS NULL)
+   * - $field IS NULL
+   * - false
+   *
+   * This only works for primitive types.
+   */
+  private createInBuilder(
+    field: Field<TTable>,
+    fieldValCode = "$value"
+  ): ($values: Iterable<unknown>) => string {
+    const escapedFieldCode = JSON.stringify(this.escapeField(field));
+    const valueCode = this.createEscapeCode(field, fieldValCode);
+    const body = `
+        let sql = '';
+        let hasIsNull = false;
+        for (const $value of $values) {
+          if (${fieldValCode} != null) {
+            if (sql) sql += ',';
+            sql += ${valueCode};
+          } else {
+            hasIsNull = true;
+          }
+        }
+        if (sql) {
+          sql = ${escapedFieldCode} + ' IN(' + sql + ')';
+        }
+        return sql && hasIsNull
+          ? '(' + sql + ' OR ' + ${escapedFieldCode} + ' IS NULL)'
+          : hasIsNull
+          ? ${escapedFieldCode} + ' IS NULL'
+          : sql
+          ? sql
+          : 'false/*empty_IN*/';
+      `;
+    return this.newFunction("$values", body);
   }
 
   /**

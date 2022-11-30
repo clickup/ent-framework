@@ -21,12 +21,9 @@ export class SQLRunnerDelete<TTable extends Table> extends SQLRunner<
   boolean
 > {
   static override readonly IS_WRITE = true;
-  readonly op = "DELETE";
-
-  // If no delete happened, returns false.
-  readonly default = false;
-
   private builder;
+  readonly op = "DELETE";
+  readonly default = false; // If no delete happened, returns false.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);

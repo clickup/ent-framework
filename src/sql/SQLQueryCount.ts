@@ -20,12 +20,9 @@ export class SQLRunnerCount<TTable extends Table> extends SQLRunner<
   number
 > {
   static override readonly IS_WRITE = false;
-  readonly op = "COUNT";
-
-  // We just need something here.
-  readonly default = 0;
-
   private builder;
+  readonly op = "COUNT";
+  readonly default = 0; // We just need something here.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);

@@ -39,6 +39,26 @@ export abstract class Schema<
 > {
   readonly hash: string;
 
+  /**
+   * Used in e.g. inverses. This casts this.constructor to SchemaClass with all
+   * static methods and `new` semantic (TS doesn't do it by default; for TS,
+   * x.constructor is Function).
+   */
+  ["constructor"]!: SchemaClass;
+
+  // The API to be used by BaseEnt (which is engine-agnostic).
+  abstract idGen(): Query<string>;
+  abstract insert(input: InsertInput<TTable>): Query<string | null>;
+  abstract upsert(input: InsertInput<TTable>): Query<string>;
+  abstract delete(id: string): Query<boolean>;
+  abstract load(id: string): Query<Row<TTable> | null>;
+  abstract loadBy(
+    input: LoadByInput<TTable, TUniqueKey>
+  ): Query<Row<TTable> | null>;
+  abstract update(id: string, input: UpdateInput<TTable>): Query<boolean>;
+  abstract select(input: SelectInput<TTable>): Query<Array<Row<TTable>>>;
+  abstract count(input: CountInput<TTable>): Query<number>;
+
   constructor(
     /** For SQL-like databases, it's likely a table name. */
     public readonly name: string,
@@ -75,24 +95,4 @@ export abstract class Schema<
         ignoreUnknown: true,
       });
   }
-
-  // The API to be used by BaseEnt (which is engine-agnostic).
-  abstract idGen(): Query<string>;
-  abstract insert(input: InsertInput<TTable>): Query<string | null>;
-  abstract upsert(input: InsertInput<TTable>): Query<string>;
-  abstract delete(id: string): Query<boolean>;
-  abstract load(id: string): Query<Row<TTable> | null>;
-  abstract loadBy(
-    input: LoadByInput<TTable, TUniqueKey>
-  ): Query<Row<TTable> | null>;
-  abstract update(id: string, input: UpdateInput<TTable>): Query<boolean>;
-  abstract select(input: SelectInput<TTable>): Query<Array<Row<TTable>>>;
-  abstract count(input: CountInput<TTable>): Query<number>;
-
-  /**
-   * Used in e.g. inverses. This casts this.constructor to SchemaClass with all
-   * static methods and `new` semantic (TS doesn't do it by default; for TS,
-   * x.constructor is Function).
-   */
-  ["constructor"]!: SchemaClass;
 }

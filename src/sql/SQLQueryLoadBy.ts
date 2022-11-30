@@ -28,13 +28,10 @@ export class SQLRunnerLoadBy<
   Row<TTable> | null
 > {
   static override readonly IS_WRITE = false;
-  readonly op = "SELECT_UNIQ";
-
-  // If no row is found, returns null.
-  readonly default = null;
-
   private inBuilder;
   private builder;
+  readonly op = "SELECT_UNIQ";
+  readonly default = null; // If no row is found, returns null.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);

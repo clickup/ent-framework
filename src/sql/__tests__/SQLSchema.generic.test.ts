@@ -25,22 +25,12 @@ let replica: TestSQLClient;
 // Overcomplicated a little, but after a 2h struggle with TS & static methods
 // typechecking, let it be like this for now.
 class EncryptedValue {
-  private constructor(private dbValue: string) {}
-
   static parse(dbValue: string) {
     return new this(dbValue);
   }
 
   static stringify(obj: EncryptedValue) {
     return obj.dbValue;
-  }
-
-  async decrypt(delta: number) {
-    return this.dbValue
-      .replace("encrypted:", "")
-      .split("")
-      .map((c) => String.fromCharCode(c.charCodeAt(0) - delta))
-      .join("");
   }
 
   static async encrypt(text: string, delta: number) {
@@ -52,6 +42,16 @@ class EncryptedValue {
           .join("")
     );
   }
+
+  async decrypt(delta: number) {
+    return this.dbValue
+      .replace("encrypted:", "")
+      .split("")
+      .map((c) => String.fromCharCode(c.charCodeAt(0) - delta))
+      .join("");
+  }
+
+  private constructor(private dbValue: string) {}
 }
 
 async function shardRun<TOutput>(

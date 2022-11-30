@@ -8,10 +8,9 @@ import type { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
 export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
+  private readonly allFields = Object.keys(this.schema.table);
   readonly input: UpdateInput<TTable> & { [ID]: string };
   readonly IS_WRITE = true;
-
-  private readonly allFields = Object.keys(this.schema.table);
 
   constructor(
     public readonly schema: Schema<TTable>,
@@ -70,10 +69,33 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
   boolean
 > {
   static override readonly IS_WRITE = true;
-  readonly op = "UPDATE";
-
   private singleBuilder;
   private batchBuilder;
+  readonly op = "UPDATE";
+  readonly default = false; // If nothing is updated, we return false.
+
+  runBatch = this.disableBatching
+    ? undefined
+    : async (
+        inputs: Map<string, UpdateInput<TTable> & { [ID]: string }>,
+        annotations: QueryAnnotation[]
+      ): Promise<Map<string, boolean>> => {
+        const sql =
+          this.batchBuilder.prefix +
+          this.batchBuilder.func(inputs) +
+          this.batchBuilder.suffix;
+        const rows = await this.clientQuery<{ _key: string; [ID]: string }>(
+          sql,
+          annotations,
+          inputs.size
+        );
+        const outputs = new Map<string, boolean>();
+        for (const row of rows) {
+          outputs.set(row._key, true);
+        }
+
+        return outputs;
+      };
 
   constructor(
     schema: Schema<TTable>,
@@ -112,9 +134,6 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
     });
   }
 
-  // If nothing is updated, we return false.
-  readonly default = false;
-
   override key(input: UpdateInput<TTable> & { [ID]: string }): string {
     return this.runBatch ? input[ID] : super.key(input);
   }
@@ -133,27 +152,4 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
     const rows = await this.clientQuery<{ [ID]: string }>(sql, annotations, 1);
     return rows.length > 0 ? true : false;
   }
-
-  runBatch = this.disableBatching
-    ? undefined
-    : async (
-        inputs: Map<string, UpdateInput<TTable> & { [ID]: string }>,
-        annotations: QueryAnnotation[]
-      ): Promise<Map<string, boolean>> => {
-        const sql =
-          this.batchBuilder.prefix +
-          this.batchBuilder.func(inputs) +
-          this.batchBuilder.suffix;
-        const rows = await this.clientQuery<{ _key: string; [ID]: string }>(
-          sql,
-          annotations,
-          inputs.size
-        );
-        const outputs = new Map<string, boolean>();
-        for (const row of rows) {
-          outputs.set(row._key, true);
-        }
-
-        return outputs;
-      };
 }

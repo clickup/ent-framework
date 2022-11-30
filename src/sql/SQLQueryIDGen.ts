@@ -22,13 +22,11 @@ export class SQLRunnerIDGen<TTable extends Table> extends SQLRunner<
   string
 > {
   static override readonly IS_WRITE = true;
-  readonly op = "ID_GEN";
-
   private readonly idAutoInsert = nullthrows(
     this.schema.table[ID].autoInsert,
     `Schema for ${this.name}.${ID} must have autoInsert attribute defined`
   );
-
+  readonly op = "ID_GEN";
   readonly default = "never_happens"; // abstract property implementation
 
   async runSingle(

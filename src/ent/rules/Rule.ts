@@ -45,6 +45,8 @@ export abstract class Rule<TInput> {
   readonly predicate: Predicate<TInput>;
   readonly name: string;
 
+  abstract evaluate(vc: VC, input: TInput): Promise<RuleResult>;
+
   constructor(
     predicate: Predicate<TInput> | ((vc: VC, input: TInput) => Promise<boolean>)
   ) {
@@ -54,8 +56,6 @@ export abstract class Rule<TInput> {
         : predicate;
     this.name = this.constructor.name + ":" + this.predicate.name;
   }
-
-  abstract evaluate(vc: VC, input: TInput): Promise<RuleResult>;
 }
 
 /**

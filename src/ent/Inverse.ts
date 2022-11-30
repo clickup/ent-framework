@@ -28,13 +28,13 @@ const ZERO_NULL = "0";
  * field "org_id" in EntUser refers an EntOrg row).
  */
 export class Inverse<TClient extends Client, TTable extends Table> {
-  public readonly id2Field;
-  public readonly type;
   private cluster;
   private shardAffinity;
   private name;
   private inverseSchema;
   private InverseLoader;
+  public readonly id2Field;
+  public readonly type;
 
   constructor({
     cluster,
@@ -122,6 +122,30 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   }
 
   /**
+   * Creates an inverse schema which derives its id field's autoInsert from the
+   * passed id2 schema. The returned schema is heavily cached, so batching for
+   * it works efficiently even for different id2 schemas and different inverse
+   * types (actually, it would work the same way even without @Memoize since
+   * Runner batches by schema hash, not by schema object instance, but anyways).
+   */
+  @Memoize(
+    (id2Schema: Schema<any>, name: string) =>
+      id2Schema.table[ID].autoInsert + name
+  )
+  private static buildInverseSchema(id2Schema: Schema<any>, name: string) {
+    return new id2Schema.constructor(
+      name,
+      {
+        id: { type: ID, autoInsert: id2Schema.table[ID].autoInsert },
+        type: { type: String },
+        id1: { type: ID },
+        id2: { type: ID },
+      },
+      ["id1", "type", "id2"]
+    );
+  }
+
+  /**
    * If the field is already mentioned in shardAffinity, and the referred parent
    * object (id1) exists, we won't need to create an inverse, because the engine
    * will be able to infer the target shard from shardAffinity. This method
@@ -162,30 +186,6 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   private shard(id: string | null) {
     // id1=NULL inverse is always put to the global shard.
     return id ? this.cluster.shard(id) : this.cluster.globalShard();
-  }
-
-  /**
-   * Creates an inverse schema which derives its id field's autoInsert from the
-   * passed id2 schema. The returned schema is heavily cached, so batching for
-   * it works efficiently even for different id2 schemas and different inverse
-   * types (actually, it would work the same way even without @Memoize since
-   * Runner batches by schema hash, not by schema object instance, but anyways).
-   */
-  @Memoize(
-    (id2Schema: Schema<any>, name: string) =>
-      id2Schema.table[ID].autoInsert + name
-  )
-  private static buildInverseSchema(id2Schema: Schema<any>, name: string) {
-    return new id2Schema.constructor(
-      name,
-      {
-        id: { type: ID, autoInsert: id2Schema.table[ID].autoInsert },
-        type: { type: String },
-        id1: { type: ID },
-        id2: { type: ID },
-      },
-      ["id1", "type", "id2"]
-    );
   }
 
   /**

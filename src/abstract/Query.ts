@@ -25,15 +25,15 @@ export abstract class QueryBase<
   TClient extends Client
 > implements Query<TOutput>
 {
-  constructor(
-    public readonly schema: Schema<TTable>,
-    public readonly input: TInput
-  ) {}
-
   protected abstract readonly RUNNER_CLASS: {
     readonly IS_WRITE: boolean;
     new (schema: Schema<TTable>, client: TClient): Runner<TInput, TOutput>;
   };
+
+  constructor(
+    public readonly schema: Schema<TTable>,
+    public readonly input: TInput
+  ) {}
 
   get IS_WRITE() {
     return this.RUNNER_CLASS.IS_WRITE;

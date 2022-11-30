@@ -60,43 +60,30 @@ export class VC {
   private caches = new Map<Function | symbol, any>();
 
   /**
+   * Please please don't call this method except one or two core places. The
+   * idea is that we create an "origin" VC once and then derive all other VCs
+   * from it (possibly upgrading or downgrading permissions, controlling
+   * master/replica read policy etc.). It's also good to trace the entire chain
+   * of calls and reasons, why some object was accessed.
+   */
+  static createGuestPleaseDoNotUseCreationPointsMustBeLimited() {
+    return new VC(
+      new VCTrace(),
+      GUEST_ID,
+      null,
+      new Map(),
+      new Map(),
+      { heartbeat: async () => {}, delay },
+      true
+    );
+  }
+
+  /**
    * This is to show VCs in console.log() and inspect() nicely.
    */
   [inspect.custom]() {
     return `<${this.toString()}>`;
   }
-
-  /**
-   * Private constructor disallows inheritance and manual object creation.
-   */
-  private constructor(
-    /** Trace information to quickly find all the requests done by this VC in
-     * debug logs. Trace is inherited once VC is derived. */
-    private readonly trace: VCTrace,
-    /** A principal (typically user ID) represented by this VC. */
-    public readonly principal: string,
-    /** Allows to set VC to always use either a master or a replica DB. E.g. if
-     * freshness=MASTER, then all the timeline data is ignored, and all the
-     * requests are sent to master. */
-    public readonly freshness: null | typeof MASTER | typeof STALE_REPLICA,
-    /** Replication WAL position per shard & Ent. Used to make decisions,
-     * should a request be sent to a replica or to the master. */
-    private timelines: Map<string, Timeline>,
-    /** Sticky objects attached to the VC (and inherited when deriving). */
-    private flavors: ReadonlyMap<Function, VCFlavor>,
-    /** The heartbeat callback is called before each primitive operation. It
-     * plays the similar role as AbortController: when called, it may throw
-     * sometimes (signalled externally). Delay callback can also be passed since
-     * it's pretty common use case to wait for some time and be aborted on a
-     * heartbeat exception. */
-    public readonly heartbeater: {
-      readonly heartbeat: () => Promise<void>;
-      readonly delay: (ms: number) => Promise<void>;
-    },
-    /** If true, it's the initial "root" VC which is not yet derived to any
-     * user's VC. */
-    private isRoot: boolean
-  ) {}
 
   /**
    * Some IDs are cached in VC (e.g. is this ID readable? is it writable? is
@@ -477,21 +464,34 @@ export class VC {
   }
 
   /**
-   * Please please don't call this method except one or two core places. The
-   * idea is that we create an "origin" VC once and then derive all other VCs
-   * from it (possibly upgrading or downgrading permissions, controlling
-   * master/replica read policy etc.). It's also good to trace the entire chain
-   * of calls and reasons, why some object was accessed.
+   * Private constructor disallows inheritance and manual object creation.
    */
-  static createGuestPleaseDoNotUseCreationPointsMustBeLimited() {
-    return new VC(
-      new VCTrace(),
-      GUEST_ID,
-      null,
-      new Map(),
-      new Map(),
-      { heartbeat: async () => {}, delay },
-      true
-    );
-  }
+  private constructor(
+    /** Trace information to quickly find all the requests done by this VC in
+     * debug logs. Trace is inherited once VC is derived. */
+    private readonly trace: VCTrace,
+    /** A principal (typically user ID) represented by this VC. */
+    public readonly principal: string,
+    /** Allows to set VC to always use either a master or a replica DB. E.g. if
+     * freshness=MASTER, then all the timeline data is ignored, and all the
+     * requests are sent to master. */
+    public readonly freshness: null | typeof MASTER | typeof STALE_REPLICA,
+    /** Replication WAL position per shard & Ent. Used to make decisions,
+     * should a request be sent to a replica or to the master. */
+    private timelines: Map<string, Timeline>,
+    /** Sticky objects attached to the VC (and inherited when deriving). */
+    private flavors: ReadonlyMap<Function, VCFlavor>,
+    /** The heartbeat callback is called before each primitive operation. It
+     * plays the similar role as AbortController: when called, it may throw
+     * sometimes (signalled externally). Delay callback can also be passed since
+     * it's pretty common use case to wait for some time and be aborted on a
+     * heartbeat exception. */
+    public readonly heartbeater: {
+      readonly heartbeat: () => Promise<void>;
+      readonly delay: (ms: number) => Promise<void>;
+    },
+    /** If true, it's the initial "root" VC which is not yet derived to any
+     * user's VC. */
+    private isRoot: boolean
+  ) {}
 }
