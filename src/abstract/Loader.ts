@@ -50,7 +50,7 @@ export class Loader<TLoadArgs extends any[], TReturn> {
     return handler.onReturn(...args);
   }
 
-  async waitFlush<TResult>(): Promise<TResult> {
+  private async waitFlush<TResult>(): Promise<TResult> {
     if (this.defer === null) {
       this.defer = pDefer<any>();
       this.RESOLVED_PROMISE.then(() => {
