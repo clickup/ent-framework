@@ -31,6 +31,7 @@ export class SQLRunnerLoadBy<
   private inBuilder;
   private builder;
   readonly op = "SELECT_UNIQ";
+  override readonly maxBatchSize = 1000; // Select by unique key is cheap, so we can have much bigger load batches to accumulate more data from e.g. shard 0 for the next multi-shard requests.
   readonly default = null; // If no row is found, returns null.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {

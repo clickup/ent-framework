@@ -35,6 +35,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
   private prefixUnion = this.fmt("SELECT ");
   private midfixUnion = this.fmt(" AS _key, %SELECT_FIELDS FROM %T");
   readonly op = "SELECT";
+  override readonly maxBatchSize = 1000; // THis high value is a temporary work-around to allow more inverses to be fetched, so we can have much bigger load batches to accumulate more data from e.g. shard 0 for the next multi-shard requests.
   readonly default = []; // We just need something here.
 
   override key(input: SelectInput<TTable>): string {
