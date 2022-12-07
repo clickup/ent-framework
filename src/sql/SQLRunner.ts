@@ -605,6 +605,8 @@ export abstract class SQLRunner<
    *
    * - $field=ANY('{aaa,bbb,ccc}')
    * - ($field=ANY('{aaa,bbb}') OR $field IS NULL)
+   * - $field='aaa' (see below, why)
+   * - ($field='aaa' OR $field IS NULL)
    * - $field IS NULL
    * - false
    */
@@ -613,42 +615,66 @@ export abstract class SQLRunner<
     fieldValCode = "$value"
   ): ($values: Iterable<unknown>) => string {
     // Notes:
+    //
     // - See arrayfuncs.c, array_out() function (needquote logic):
     //   https://github.com/postgres/postgres/blob/4ddfbd2/src/backend/utils/adt/arrayfuncs.c#L1136-L1156
-    // - Why will it work not worse (index wise) than IN():
+    // - Why will it work not worse (index wise) than multi-value IN():
     //   https://www.postgresql.org/message-id/1761901.1668657080%40sss.pgh.pa.us
     // - We can't easily use a general-purpose quoting function here, because we
     //   must exclude nulls from the values, to add an explicit "OR IS NULL"
     //   clause instead.
     // - We sacrifice performance a little and not quote everything blindly.
     //   This is to gain the generated SQL queries some more readability.
+    //
+    // Also one more thing. Imagine we have a `btree(a, b)` index. Compare two
+    // queries for one-element use case;
+    //
+    //   1. `a='aaa' AND b=ANY('{bbb}')`
+    //   2. `a='aaa' AND b IN('bbb')`
+    //
+    // They may produce different plans: IN() always coalesces to `field='aaa'`
+    // in the plan, whilst =ANY() always remains =ANY(). This causes PG to
+    // choose a "post-filtering" plan sometimes:
+    //
+    //   1. For =ANY: Index Cond: (a='aaa'); Filter: b=ANY('{bbb}')
+    //   2. For IN(): Index Cond: (a='aaa') AND (b='bbb')
+    //
+    // So to be on a safe side, we never emit a 1-element =ANY().
+    //
     const escapedFieldCode = JSON.stringify(this.escapeField(field));
     const body = `
-        let sql = '';
-        let hasIsNull = false;
-        for (const $value of $values) {
-          if (${fieldValCode} != null) {
-            if (sql) sql += ',';
-            let value = "" + ${fieldValCode};
-            sql += value.match(/^$|^NULL$|[ \\t\\n\\r\\v\\f]|["\\\\{},]/is)
-              ? '"' + value.replace(/\\\\/g, '\\\\\\\\').replace(/"/g, '\\\\"') + '"'
-              : value;
-          } else {
-            hasIsNull = true;
-          }
+      let sql = '';
+      let lastValue = null;
+      let nonNullCount = 0;
+      let hasIsNull = false;
+      for (const $value of $values) {
+        if (${fieldValCode} != null) {
+          if (sql) sql += ',';
+          nonNullCount++;
+          lastValue = "" + ${fieldValCode};
+          sql += lastValue.match(/^$|^NULL$|[ \\t\\n\\r\\v\\f]|["\\\\{},]/is)
+            ? '"' + lastValue.replace(/\\\\/g, '\\\\\\\\').replace(/"/g, '\\\\"') + '"'
+            : lastValue;
+        } else {
+          hasIsNull = true;
         }
-        if (sql) {
+      }
+      if (sql) {
+        if (nonNullCount > 1) {
           sql = '{' + sql + '}';
           sql = ${escapedFieldCode} + '=ANY(' + this.escapeString(sql) + ')';
+        } else {
+          sql = ${escapedFieldCode} + '=' + this.escapeString(lastValue);
         }
-        return sql && hasIsNull
-          ? '(' + sql + ' OR ' + ${escapedFieldCode} + ' IS NULL)'
-          : hasIsNull
-          ? ${escapedFieldCode} + ' IS NULL'
-          : sql
-          ? sql
-          : 'false/*empty_ANY*/';
-      `;
+      }
+      return sql && hasIsNull
+        ? '(' + sql + ' OR ' + ${escapedFieldCode} + ' IS NULL)'
+        : hasIsNull
+        ? ${escapedFieldCode} + ' IS NULL'
+        : sql
+        ? sql
+        : 'false/*empty_ANY*/';
+    `;
     return this.newFunction("$values", body);
   }
 
@@ -670,27 +696,27 @@ export abstract class SQLRunner<
     const escapedFieldCode = JSON.stringify(this.escapeField(field));
     const valueCode = this.createEscapeCode(field, fieldValCode);
     const body = `
-        let sql = '';
-        let hasIsNull = false;
-        for (const $value of $values) {
-          if (${fieldValCode} != null) {
-            if (sql) sql += ',';
-            sql += ${valueCode};
-          } else {
-            hasIsNull = true;
-          }
+      let sql = '';
+      let hasIsNull = false;
+      for (const $value of $values) {
+        if (${fieldValCode} != null) {
+          if (sql) sql += ',';
+          sql += ${valueCode};
+        } else {
+          hasIsNull = true;
         }
-        if (sql) {
-          sql = ${escapedFieldCode} + ' IN(' + sql + ')';
-        }
-        return sql && hasIsNull
-          ? '(' + sql + ' OR ' + ${escapedFieldCode} + ' IS NULL)'
-          : hasIsNull
-          ? ${escapedFieldCode} + ' IS NULL'
-          : sql
-          ? sql
-          : 'false/*empty_IN*/';
-      `;
+      }
+      if (sql) {
+        sql = ${escapedFieldCode} + ' IN(' + sql + ')';
+      }
+      return sql && hasIsNull
+        ? '(' + sql + ' OR ' + ${escapedFieldCode} + ' IS NULL)'
+        : hasIsNull
+        ? ${escapedFieldCode} + ' IS NULL'
+        : sql
+        ? sql
+        : 'false/*empty_IN*/';
+    `;
     return this.newFunction("$values", body);
   }
 

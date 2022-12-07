@@ -10,13 +10,13 @@ DELETE FROM \\"schema\\"\\"test\\" WHERE (id=ANY('?') OR id IS NULL) RETURNING i
 
 exports[`delete single 1`] = `
 "
-DELETE FROM \\"schema\\"\\"test\\" WHERE id=ANY('{<id>}') RETURNING id
+DELETE FROM \\"schema\\"\\"test\\" WHERE id='<id>' RETURNING id
 ----
-DELETE FROM \\"schema\\"\\"test\\" WHERE id=ANY('?') RETURNING id
+DELETE FROM \\"schema\\"\\"test\\" WHERE id='?' RETURNING id
 
-DELETE FROM \\"schema\\"\\"test\\" WHERE id=ANY('{42}') RETURNING id
+DELETE FROM \\"schema\\"\\"test\\" WHERE id='42' RETURNING id
 ----
-DELETE FROM \\"schema\\"\\"test\\" WHERE id=ANY('?') RETURNING id
+DELETE FROM \\"schema\\"\\"test\\" WHERE id='?' RETURNING id
 
 DELETE FROM \\"schema\\"\\"test\\" WHERE id IS NULL RETURNING id
 ----
@@ -201,17 +201,13 @@ exports[`loadBy batched two columns 1`] = `
 SELECT id, name, url_name, created_at, updated_at FROM \\"schema\\"\\"test_2col\\"
   WHERE (name='z'
     AND url_name=ANY('{z1,\\"z,2\\"}'))
-    OR (name='no\\\\value'
-    AND url_name=ANY('{\\"no\\\\\\\\value\\"}'))
     OR (name='b'
-    AND url_name=ANY('{\\"b{1}\\"}'))
+    AND url_name=ANY('{\\"no\\\\\\\\value\\",\\"b{1}\\"}'))
     OR (name='c'
     AND url_name=ANY('{\\"NuLL\\",\\"\\"}'))
 ----
 SELECT id, name, url_name, created_at, updated_at FROM \\"schema\\"\\"test_2col\\"
   WHERE (name='?'
-    AND url_name=ANY('?'))
-    OR (name='?'
     AND url_name=ANY('?'))
     OR (name='?'
     AND url_name=ANY('?'))
@@ -226,22 +222,22 @@ SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable
   WHERE (name='z'
     AND url_name=ANY('{z1,z2}'))
     OR (name='no'
-    AND url_name=ANY('{\\"Null\\"}'))
+    AND url_name='Null')
     OR (name='b'
     AND url_name IS NULL)
     OR (name='c'
-    AND (url_name=ANY('{c2}')
+    AND (url_name='c2'
     OR url_name IS NULL))
 ----
 SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable_unique_key
   WHERE (name='?'
     AND url_name=ANY('?'))
     OR (name='?'
-    AND url_name=ANY('?'))
+    AND url_name='?')
     OR (name='?'
     AND url_name IS NULL)
     OR (name='?'
-    AND (url_name=ANY('?')
+    AND (url_name='?'
     OR url_name IS NULL))
 "
 `;
@@ -250,11 +246,11 @@ exports[`loadBy single two columns 1`] = `
 "
 SELECT id, name, url_name, created_at, updated_at FROM \\"schema\\"\\"test_2col\\"
   WHERE (name='b'
-    AND url_name=ANY('{bbb}'))
+    AND url_name='bbb')
 ----
 SELECT id, name, url_name, created_at, updated_at FROM \\"schema\\"\\"test_2col\\"
   WHERE (name='?'
-    AND url_name=ANY('?'))
+    AND url_name='?')
 "
 `;
 
@@ -270,11 +266,11 @@ SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable
 
 SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable_unique_key
   WHERE (name IS NULL
-    AND url_name=ANY('{a}'))
+    AND url_name='a')
 ----
 SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable_unique_key
   WHERE (name IS NULL
-    AND url_name=ANY('?'))
+    AND url_name='?')
 
 SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable_unique_key
   WHERE (name IS NULL
@@ -289,10 +285,10 @@ SELECT id, name, url_name, created_at, updated_at FROM schema_test_2col_nullable
 exports[`loadNy single one column 1`] = `
 "
 SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
-  WHERE name=ANY('{b}')
+  WHERE name='b'
 ----
 SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM \\"schema\\"\\"test\\"
-  WHERE name=ANY('?')
+  WHERE name='?'
 "
 `;
 
@@ -317,7 +313,7 @@ a\\",\\"a\\\\\\\\a\\"}')
 a'
     OR name='a\\\\a'
     OR false/*empty_ANY*/
-    OR (url_name=ANY('{zzz}')
+    OR (url_name='zzz'
     OR url_name IS NULL))
     AND NOT (name='zz'
     AND (5 < '2'))
@@ -344,7 +340,7 @@ a'
     AND (name='?'
     OR name='?'
     OR false
-    OR (url_name=ANY('?')
+    OR (url_name='?'
     OR url_name IS NULL))
     AND NOT (name='?'
     AND (? < '?'))
@@ -374,7 +370,7 @@ a\\",\\"a\\\\\\\\a\\"}')
 a'
     OR name='a\\\\a'
     OR false/*empty_ANY*/
-    OR (url_name=ANY('{zzz}')
+    OR (url_name='zzz'
     OR url_name IS NULL))
     AND NOT (name='zz'
     AND (5 < '2'))
@@ -399,7 +395,7 @@ a\\",\\"a\\\\\\\\a\\"}')
 a'
     OR name='a\\\\a'
     OR false/*empty_ANY*/
-    OR (url_name=ANY('{zzz}')
+    OR (url_name='zzz'
     OR url_name IS NULL))
     AND NOT (name='zz'
     AND (5 < '2'))
@@ -423,7 +419,7 @@ SELECT COUNT(?) AS count FROM \\"schema\\"\\"test\\"
     AND (name='?'
     OR name='?'
     OR false
-    OR (url_name=ANY('?')
+    OR (url_name='?'
     OR url_name IS NULL))
     AND NOT (name='?'
     AND (? < '?'))
@@ -445,7 +441,7 @@ SELECT COUNT(?) AS count FROM \\"schema\\"\\"test\\"
     AND (name='?'
     OR name='?'
     OR false
-    OR (url_name=ANY('?')
+    OR (url_name='?'
     OR url_name IS NULL))
     AND NOT (name='?'
     AND (? < '?'))
@@ -472,7 +468,7 @@ a\\",\\"a\\\\\\\\a\\"}')
 a'
     OR name='a\\\\a'
     OR false/*empty_ANY*/
-    OR (url_name=ANY('{zzz}')
+    OR (url_name='zzz'
     OR url_name IS NULL))
     AND NOT (name='zz'
     AND (5 < '2'))
@@ -493,7 +489,7 @@ SELECT COUNT(?) AS count FROM \\"schema\\"\\"test\\"
     AND (name='?'
     OR name='?'
     OR false
-    OR (url_name=ANY('?')
+    OR (url_name='?'
     OR url_name IS NULL))
     AND NOT (name='?'
     AND (? < '?'))
