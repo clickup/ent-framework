@@ -4,7 +4,7 @@ import pDefer from "p-defer";
 export interface Handler<TLoadArgs extends any[], TReturn> {
   onCollect: (...args: TLoadArgs) => void;
   onWait?: () => Promise<void>;
-  onFlush: () => Promise<void>;
+  onFlush: (collected: number) => Promise<void>;
   onReturn: (...args: TLoadArgs) => TReturn;
 }
 
@@ -36,6 +36,7 @@ export class Loader<TLoadArgs extends any[], TReturn> {
   private handler: Handler<TLoadArgs, TReturn> | null = null;
   private defer: DeferredPromise<any> | null = null;
   private RESOLVED_PROMISE = Promise.resolve();
+  private collected = 0;
 
   constructor(private handlerCreator: () => Handler<TLoadArgs, TReturn>) {}
 
@@ -45,7 +46,8 @@ export class Loader<TLoadArgs extends any[], TReturn> {
     }
 
     const handler = this.handler;
-    this.handler.onCollect(...args);
+    this.collected++;
+    handler.onCollect(...args);
     await this.waitFlush();
     return handler.onReturn(...args);
   }
@@ -60,8 +62,10 @@ export class Loader<TLoadArgs extends any[], TReturn> {
           await handler.onWait?.();
           this.defer = null;
           this.handler = null;
+          const collected = this.collected;
+          this.collected = 0;
           handler
-            .onFlush()
+            .onFlush(collected)
             .then(defer.resolve.bind(defer))
             .catch(defer.reject.bind(defer));
         });
