@@ -781,12 +781,7 @@ test("loadBy batched two columns", async () => {
   const rows = await join([
     shardRun(schema2Col.loadBy({ name: "z", url_name: "z1" })),
     shardRun(schema2Col.loadBy({ name: "z", url_name: "z,2" })),
-    shardRun(
-      schema2Col.loadBy({
-        name: String.raw`no\value`,
-        url_name: String.raw`no\value`,
-      })
-    ),
+    shardRun(schema2Col.loadBy({ name: "b", url_name: String.raw`no\value` })),
     shardRun(schema2Col.loadBy({ name: "b", url_name: "b{1}" })),
     shardRun(schema2Col.loadBy({ name: "c", url_name: "NuLL" })),
     shardRun(schema2Col.loadBy({ name: "c", url_name: "" })),

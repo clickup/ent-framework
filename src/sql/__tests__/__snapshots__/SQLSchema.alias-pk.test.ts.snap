@@ -75,10 +75,10 @@ SELECT user_id, name, user_id AS id FROM \\"schema\\"\\"test_alias\\"
 exports[`single ops 9`] = `
 "
 SELECT user_id, name, user_id AS id FROM \\"schema\\"\\"test_alias\\"
-  WHERE user_id=ANY('{<id>}')
+  WHERE user_id='<id>'
 ----
 SELECT user_id, name, user_id AS id FROM \\"schema\\"\\"test_alias\\"
-  WHERE user_id=ANY('?')
+  WHERE user_id='?'
 "
 `;
 
