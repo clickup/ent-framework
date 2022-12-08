@@ -131,6 +131,8 @@ export class Batcher<TInput, TOutput> {
   // dedupped annotations; each annotation identifies a caller of the query
   private queuedAnnotations = new Map<string, QueryAnnotation>();
 
+  private batchDelayMs: () => number;
+
   protected flushQueue = async () => {
     if (!this.queuedInputs.size) {
       return;
@@ -209,11 +211,15 @@ export class Batcher<TInput, TOutput> {
   constructor(
     private runner: Runner<TInput, TOutput>,
     private entInputLogger?: Loggers["entInputLogger"],
-    private maxBatchSize: number = 0
+    private maxBatchSize: number = 0,
+    batchDelayMs: number | (() => number) = 0
   ) {
     if (!this.maxBatchSize) {
       this.maxBatchSize = runner.maxBatchSize;
     }
+
+    this.batchDelayMs =
+      typeof batchDelayMs === "number" ? () => batchDelayMs : batchDelayMs;
   }
 
   async run(input: TInput, annotation: QueryAnnotation): Promise<TOutput> {
@@ -256,8 +262,13 @@ export class Batcher<TInput, TOutput> {
         // same here blindly. See some of details here:
         // https://github.com/graphql/dataloader/blob/fae38f14702e925d1e59051d7e5cb3a9a78bfde8/src/index.js#L234-L241
         // https://stackoverflow.com/a/27648394
+        const delay = this.batchDelayMs();
         runInVoid(
-          RESOLVED_PROMISE.then(() => process.nextTick(this.flushQueue))
+          RESOLVED_PROMISE.then(() =>
+            delay
+              ? setTimeout(() => runInVoid(this.flushQueue()), delay)
+              : process.nextTick(this.flushQueue)
+          )
         );
       }
     });
