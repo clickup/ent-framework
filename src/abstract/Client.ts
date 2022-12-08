@@ -89,7 +89,8 @@ export abstract class Client {
   constructor(
     public readonly name: string,
     public readonly isMaster: boolean,
-    public readonly loggers: Loggers
+    public readonly loggers: Loggers,
+    private readonly batchDelayMs?: number | (() => number)
   ) {}
 
   /**
@@ -129,7 +130,8 @@ export abstract class Client {
     return new Batcher<TInput, TOutput>(
       runner,
       this.loggers.entInputLogger,
-      runner.maxBatchSize
+      runner.maxBatchSize,
+      this.batchDelayMs
     );
   }
   /**

@@ -17,6 +17,7 @@ export interface SQLClientDest {
   };
   isMaster: boolean;
   hints?: Record<string, string>;
+  batchDelayMs?: number | (() => number);
   config: PoolConfig & {
     maxConnLifetimeMs?: number;
     maxConnLifetimeJitter?: number;
@@ -72,7 +73,8 @@ export class SQLClientPool extends SQLClient {
       loggers,
       dest.hints,
       dest.shards,
-      dest.config.maxReplicationLagMs
+      dest.config.maxReplicationLagMs,
+      dest.batchDelayMs
     );
 
     this.state = {

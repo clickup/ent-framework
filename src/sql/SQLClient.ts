@@ -71,9 +71,10 @@ export abstract class SQLClient extends Client {
       nameFormat: string;
       discoverQuery: string;
     },
-    private maxReplicationLagMs?: number
+    private maxReplicationLagMs?: number,
+    batchDelayMs?: number | (() => number)
   ) {
-    super(name, isMaster, loggers);
+    super(name, isMaster, loggers, batchDelayMs);
     if (this.shards) {
       this.shardNoPadLen = this.buildShardName(0).match(/(\d+)/)
         ? RegExp.$1.length
