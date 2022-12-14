@@ -9,7 +9,7 @@ import type { Client } from "./Client";
 import { Shard } from "./Shard";
 import ShardError from "./ShardError";
 
-const DISCOVER_ERROR_RETRY_ATTEMPTS = 1;
+const DISCOVER_ERROR_RETRY_ATTEMPTS = 2;
 const DISCOVER_ERROR_RETRY_DELAY_MS = 3000;
 
 /**
@@ -70,6 +70,8 @@ export class Cluster<TClient extends Client> {
       island.master.prewarm();
       island.replicas.forEach((client) => client.prewarm());
     }
+
+    runInVoid(this.discoverShards());
   }
 
   /**
