@@ -2,21 +2,21 @@
 
 exports[`single ops 1`] = `
 "
-INSERT INTO \\"schema\\"\\"test_alias\\" (user_id, name) VALUES
+INSERT INTO "schema""test_alias" (user_id, name) VALUES
   ('1', 'n1') ON CONFLICT DO NOTHING RETURNING user_id AS id
 ----
-INSERT INTO \\"schema\\"\\"test_alias\\" (user_id, name) VALUES
+INSERT INTO "schema""test_alias" (user_id, name) VALUES
   ('?', '?') ON CONFLICT DO NOTHING RETURNING user_id AS id
 "
 `;
 
 exports[`single ops 2`] = `
 "
-INSERT INTO \\"schema\\"\\"test_alias\\" (user_id, name) VALUES
+INSERT INTO "schema""test_alias" (user_id, name) VALUES
   ('2', 'n2')
   ON CONFLICT (user_id) DO UPDATE SET name=EXCLUDED.name RETURNING user_id AS id
 ----
-INSERT INTO \\"schema\\"\\"test_alias\\" (user_id, name) VALUES
+INSERT INTO "schema""test_alias" (user_id, name) VALUES
   ('?', '?')
   ON CONFLICT (user_id) DO UPDATE SET name=EXCLUDED.name RETURNING user_id AS id
 "
@@ -24,10 +24,10 @@ INSERT INTO \\"schema\\"\\"test_alias\\" (user_id, name) VALUES
 
 exports[`single ops 3`] = `
 "
-INSERT INTO \\"schema\\"\\"test_alias\\" (user_id, name) VALUES
+INSERT INTO "schema""test_alias" (user_id, name) VALUES
   (id_gen(), 'n3') ON CONFLICT DO NOTHING RETURNING user_id AS id
 ----
-INSERT INTO \\"schema\\"\\"test_alias\\" (user_id, name) VALUES
+INSERT INTO "schema""test_alias" (user_id, name) VALUES
   (id_gen(), '?') ON CONFLICT DO NOTHING RETURNING user_id AS id
 "
 `;
@@ -36,11 +36,11 @@ exports[`single ops 4`] = `""`;
 
 exports[`single ops 5`] = `
 "
-INSERT INTO \\"schema\\"\\"test_alias\\" (user_id, name) VALUES
+INSERT INTO "schema""test_alias" (user_id, name) VALUES
   ('101', 'n11')
   ON CONFLICT (user_id) DO UPDATE SET name=EXCLUDED.name RETURNING user_id AS id
 ----
-INSERT INTO \\"schema\\"\\"test_alias\\" (user_id, name) VALUES
+INSERT INTO "schema""test_alias" (user_id, name) VALUES
   ('?', '?')
   ON CONFLICT (user_id) DO UPDATE SET name=EXCLUDED.name RETURNING user_id AS id
 "
@@ -48,57 +48,57 @@ INSERT INTO \\"schema\\"\\"test_alias\\" (user_id, name) VALUES
 
 exports[`single ops 6`] = `
 "
-DELETE FROM \\"schema\\"\\"test_alias\\" WHERE user_id IN('1') RETURNING user_id AS id
+DELETE FROM "schema""test_alias" WHERE user_id IN('1') RETURNING user_id AS id
 ----
-DELETE FROM \\"schema\\"\\"test_alias\\" WHERE user_id IN('?') RETURNING user_id AS id
+DELETE FROM "schema""test_alias" WHERE user_id IN('?') RETURNING user_id AS id
 "
 `;
 
 exports[`single ops 7`] = `
 "
-DELETE FROM \\"schema\\"\\"test_alias\\" WHERE user_id IN('2') AND (1=1) RETURNING user_id AS id
+DELETE FROM "schema""test_alias" WHERE user_id IN('2') AND (1=1) RETURNING user_id AS id
 ----
-DELETE FROM \\"schema\\"\\"test_alias\\" WHERE user_id IN('?') AND (?=?) RETURNING user_id AS id
+DELETE FROM "schema""test_alias" WHERE user_id IN('?') AND (?=?) RETURNING user_id AS id
 "
 `;
 
 exports[`single ops 8`] = `
 "
-SELECT user_id, name, user_id AS id FROM \\"schema\\"\\"test_alias\\"
+SELECT user_id, name, user_id AS id FROM "schema""test_alias"
   WHERE user_id IN('<id>')
 ----
-SELECT user_id, name, user_id AS id FROM \\"schema\\"\\"test_alias\\"
+SELECT user_id, name, user_id AS id FROM "schema""test_alias"
   WHERE user_id IN('?')
 "
 `;
 
 exports[`single ops 9`] = `
 "
-SELECT user_id, name, user_id AS id FROM \\"schema\\"\\"test_alias\\"
+SELECT user_id, name, user_id AS id FROM "schema""test_alias"
   WHERE user_id='<id>'
 ----
-SELECT user_id, name, user_id AS id FROM \\"schema\\"\\"test_alias\\"
+SELECT user_id, name, user_id AS id FROM "schema""test_alias"
   WHERE user_id='?'
 "
 `;
 
 exports[`single ops 10`] = `
 "
-SELECT COUNT(1) AS count FROM \\"schema\\"\\"test_alias\\"
+SELECT COUNT(1) AS count FROM "schema""test_alias"
   WHERE user_id='<id>'
 ----
-SELECT COUNT(?) AS count FROM \\"schema\\"\\"test_alias\\"
+SELECT COUNT(?) AS count FROM "schema""test_alias"
   WHERE user_id='?'
 "
 `;
 
 exports[`single ops 11`] = `
 "
-SELECT user_id, name, user_id AS id FROM \\"schema\\"\\"test_alias\\"
+SELECT user_id, name, user_id AS id FROM "schema""test_alias"
   WHERE user_id='<id>'
   LIMIT 10
 ----
-SELECT user_id, name, user_id AS id FROM \\"schema\\"\\"test_alias\\"
+SELECT user_id, name, user_id AS id FROM "schema""test_alias"
   WHERE user_id='?'
   LIMIT ?
 "
