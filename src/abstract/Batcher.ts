@@ -158,7 +158,12 @@ export class Batcher<TInput, TOutput> {
       } catch (e: any) {
         // Relatively rare under heavy load (since errors are rare).
         if (this.runner.shouldDebatchOnError(e)) {
-          await this.runSingleForEach(inputs, annotations, outputs, errors);
+          await this.runSingleForEach(
+            inputs,
+            incrementAttempt(annotations),
+            outputs,
+            errors
+          );
         } else {
           for (const key of handlers.keys()) {
             errors.set(key, e);
@@ -293,7 +298,10 @@ export class Batcher<TInput, TOutput> {
             }
 
             if (retryMs !== "no_retry") {
-              return this.runner.runSingle(input, annotations);
+              return this.runner.runSingle(
+                input,
+                incrementAttempt(annotations)
+              );
             }
 
             throw error;
@@ -305,4 +313,8 @@ export class Batcher<TInput, TOutput> {
 
     return Promise["all"](promises);
   }
+}
+
+function incrementAttempt(annotations: QueryAnnotation[]) {
+  return annotations.map((a) => ({ ...a, attempt: a.attempt + 1 }));
 }

@@ -1,6 +1,7 @@
 import delay from "delay";
 import compact from "lodash/compact";
 import first from "lodash/first";
+import omitBy from "lodash/omitBy";
 import random from "lodash/random";
 import hash from "object-hash";
 import Memoize from "../helpers/Memoize";
@@ -8,18 +9,6 @@ import { mapJoin, runInVoid } from "../helpers/misc";
 import type { Client } from "./Client";
 import { Shard } from "./Shard";
 import ShardError from "./ShardError";
-
-const DISCOVER_ERROR_RETRY_ATTEMPTS = 2;
-const DISCOVER_ERROR_RETRY_DELAY_MS = 3000;
-
-/**
- * Holds the complete auto-discovered map of shards to figure out, which island
- * holds which shard.
- */
-interface DiscoveredShards<TClient extends Client> {
-  shardNoToIsland: ReadonlyMap<number, Island<TClient>>;
-  nonGlobalShards: ReadonlyArray<Shard<TClient>>;
-}
 
 /**
  * Island is 1 master + N replicas.
@@ -34,6 +23,52 @@ export class Island<TClient extends Client> {
 }
 
 /**
+ * Options for Cluster constructor.
+ */
+export interface ClusterOptions {
+  /** How often to run shards rediscovery in normal circumstances. */
+  readonly shardsDiscoverIntervalMs: number;
+  /** If there were DB errors during shards discovery (e.g. transport errors,
+   * which is rare), the discovery is retried that many times before giving up
+   * and throwing the error through. The number here can be high, because
+   * rediscovery happens in background. */
+  readonly shardsDiscoverErrorRetryCount: number;
+  /** If there were DB errors during shards discovery (rare), this is how much
+   * we wait between attempts. */
+  readonly shardsDiscoverErrorRetryDelayMs: number;
+  /** If we think that we know island of a particular shard, but an attempt to
+   * access it fails, this means that maybe the shard is migrating to another
+   * island. In this case, we wait a bit and retry that many times. We should
+   * not do it too many times though, because all DB requests will be blocked
+   * waiting for the resolution. */
+  readonly locateIslandErrorRetryCount: number;
+  /** How much time to wait between the retries mentioned above. The time here
+   * should be just enough to wait for switching the shard from one island to
+   * another (typically quick). */
+  readonly locateIslandErrorRetryDelayMs: number;
+}
+
+/**
+ * Default values for ClusterOptions if not passed.
+ */
+const DEFAULT_CLUSTER_OPTIONS: ClusterOptions = {
+  shardsDiscoverIntervalMs: 10000,
+  shardsDiscoverErrorRetryCount: 3,
+  shardsDiscoverErrorRetryDelayMs: 3000,
+  locateIslandErrorRetryCount: 2,
+  locateIslandErrorRetryDelayMs: 1000,
+};
+
+/**
+ * Holds the complete auto-discovered map of shards to figure out, which island
+ * holds which shard.
+ */
+interface DiscoveredShards<TClient extends Client> {
+  shardNoToIsland: ReadonlyMap<number, Island<TClient>>;
+  nonGlobalShards: ReadonlyArray<Shard<TClient>>;
+}
+
+/**
  * Cluster is a collection of islands and an orchestration
  * of shardNo -> island resolution.
  *
@@ -43,20 +78,29 @@ export class Island<TClient extends Client> {
  * Shard 0 is a special "global" shard.
  */
 export class Cluster<TClient extends Client> {
-  private discoverShardsCache: Promise<DiscoveredShards<TClient>> | null = null;
+  private discoverShardsCache = {
+    wait: null as Promise<void> | null,
+    timeout: null as NodeJS.Timeout | null,
+    cache: null as Promise<DiscoveredShards<TClient>> | null,
+  };
   private firstIsland;
 
+  readonly options: ClusterOptions;
   readonly islands: ReadonlyMap<number, Island<TClient>>;
 
   constructor(
     islands: ReadonlyArray<Island<TClient>>,
-    public readonly shardsRediscoverMs: number = 10000
+    options: Partial<ClusterOptions> = {}
   ) {
     const firstIsland = first(islands);
     if (!firstIsland) {
       throw Error("The cluster has no islands");
     }
 
+    this.options = {
+      ...DEFAULT_CLUSTER_OPTIONS,
+      ...omitBy(options, (v) => v === undefined),
+    };
     this.firstIsland = firstIsland;
     this.islands = new Map(islands.map((island) => [island.no, island]));
   }
@@ -112,20 +156,45 @@ export class Cluster<TClient extends Client> {
    */
   @Memoize()
   shardByNo(shardNo: number) {
-    return new Shard(shardNo, async () => {
-      const { shardNoToIsland } = await this.discoverShards();
-      const shard = shardNoToIsland.get(shardNo);
-      if (!shard) {
-        const masterNames = [...this.islands.values()]
-          .map((island) => island.master.name)
-          .join(", ");
-        throw new ShardError(
-          `Shard ${shardNo} is not discoverable (some islands are down? connections limit? no such shard in the cluster?) on [${masterNames}]`
-        );
-      } else {
-        return shard;
-      }
-    });
+    const shardOptions = {
+      locateIsland: async () => {
+        for (let attempt = 0; ; attempt++) {
+          try {
+            const { shardNoToIsland } = await this.discoverShards();
+            const shard = shardNoToIsland.get(shardNo);
+            if (!shard) {
+              const masterNames = [...this.islands.values()]
+                .map((island) => island.master.name)
+                .join(", ");
+              throw new ShardError(
+                `Shard ${shardNo} is not discoverable (some islands are down? connections limit? no such shard in the cluster?) on [${masterNames}]`,
+                masterNames
+              );
+            } else {
+              return shard;
+            }
+          } catch (error: unknown) {
+            if ((await shardOptions.onRunError(attempt, error)) === "retry") {
+              continue;
+            } else {
+              throw error;
+            }
+          }
+        }
+      },
+      onRunError: async (attempt: number, error: unknown) => {
+        if (
+          error instanceof ShardError &&
+          attempt < this.options.locateIslandErrorRetryCount
+        ) {
+          await this.discoverShards(this.options.locateIslandErrorRetryDelayMs);
+          return "retry";
+        } else {
+          return "throw";
+        }
+      },
+    };
+    return new Shard(shardNo, shardOptions);
   }
 
   /**
@@ -172,20 +241,51 @@ export class Cluster<TClient extends Client> {
   }
 
   /**
-   * Returns the cached Shard-to-Island mapping. Once called, we schedule a
-   * chain of re-discovery operations.
+   * Returns the cached Shard-to-Island mapping.
+   *
+   * - Once called, we schedule an endless chain of background re-discovery
+   *   operations.
+   * - The result is cached, so next calls will return it immediately in most of
+   *   the cases.
+   * - Once every shardsDiscoverIntervalMs we reset the cache and re-discover.
+   *   If during the re-discovery someone else tries to call the method, this
+   *   call will be coalesced with the re-discovery queries.
+   * - If waitMsAndResetCache is passed, it means that we want to wait that
+   *   number of ms, then reset the cache and rediscover. If during that wait
+   *   period someone else also wants to reset the cache, this "cache reset"
+   *   order will be coalesced with the existing one.
    */
-  private async discoverShards() {
-    if (!this.discoverShardsCache) {
-      this.discoverShardsCache = this.islandsByShardsExpensive();
-      // Schedule re-discovery in background to refresh the cache in the future.
-      setTimeout(() => {
-        this.discoverShardsCache = null;
-        runInVoid(this.discoverShards());
-      }, this.shardsRediscoverMs);
+  private async discoverShards(waitMsAndResetCache = 0) {
+    const isLeaderToResetCache =
+      waitMsAndResetCache > 0 && !this.discoverShardsCache.wait;
+
+    if (isLeaderToResetCache) {
+      this.discoverShardsCache.wait = delay(waitMsAndResetCache);
     }
 
-    return this.discoverShardsCache;
+    if (waitMsAndResetCache > 0) {
+      await this.discoverShardsCache.wait;
+    }
+
+    if (isLeaderToResetCache) {
+      this.discoverShardsCache.timeout &&
+        clearTimeout(this.discoverShardsCache.timeout);
+      this.discoverShardsCache.wait = null;
+      this.discoverShardsCache.timeout = null;
+      this.discoverShardsCache.cache = null;
+    }
+
+    if (!this.discoverShardsCache.cache) {
+      this.discoverShardsCache.cache = this.islandsByShardsExpensive();
+      // Schedule re-discovery in background to refresh the cache in the future.
+      this.discoverShardsCache.timeout = setTimeout(() => {
+        this.discoverShardsCache.timeout = null;
+        this.discoverShardsCache.cache = null;
+        runInVoid(this.discoverShards());
+      }, this.options.shardsDiscoverIntervalMs);
+    }
+
+    return this.discoverShardsCache.cache!;
   }
 
   /**
@@ -195,7 +295,7 @@ export class Cluster<TClient extends Client> {
    * the caller code.
    */
   private async islandsByShardsExpensive(
-    retriesLeft = DISCOVER_ERROR_RETRY_ATTEMPTS
+    retriesLeft = this.options.shardsDiscoverErrorRetryCount
   ): Promise<DiscoveredShards<TClient>> {
     try {
       const islandsByShard = new Map<number, Island<TClient>>();
@@ -222,7 +322,7 @@ export class Cluster<TClient extends Client> {
       };
     } catch (e) {
       if (retriesLeft > 0) {
-        await delay(DISCOVER_ERROR_RETRY_DELAY_MS);
+        await delay(this.options.shardsDiscoverErrorRetryDelayMs);
         return this.islandsByShardsExpensive(retriesLeft - 1);
       } else {
         throw e;

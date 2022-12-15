@@ -33,4 +33,6 @@ export interface QueryAnnotation {
   readonly debugStack: string;
   /** Answers, why exactly this client was selected to send the query to. */
   readonly whyClient: WhyClient | undefined;
+  /** In case it's a retry, the attempt number will be greater than 0. */
+  readonly attempt: number;
 }

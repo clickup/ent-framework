@@ -152,7 +152,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    * case of e.g. "Cannot locate shard" exception). This is just a convenience
    * for debugging.
    *
-   * If this method returns null, that means the caller show give up trying to
+   * If this method returns null, that means the caller should give up trying to
    * load the Ent with this ID, because it won't find it anyways (e.g. when we
    * try to load a sharded Ent using an ID from the global shard). This is
    * identical to the case of an Ent not existing in the database.
@@ -169,11 +169,15 @@ export class ShardLocator<TClient extends Client, TField extends string> {
         shard = this.globalShard;
       } else if (id === GUEST_ID) {
         throw new ShardError(
-          `can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID`
+          `can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID`,
+          `${this.entName}.${field}`
         );
       } else {
         if (id === null || id === undefined) {
-          throw new ShardError(`can't locate shard`);
+          throw new ShardError(
+            `can't locate shard`,
+            `null ID in ${this.entName}.${field}`
+          );
         }
 
         shard = this.cluster.shard(id);

@@ -536,6 +536,28 @@ WHERE name=ANY('?') AND ('?' > '?') ORDER BY name ASC, cte1_v LIMIT ?)
 "
 `;
 
+exports[`shard relocation error when accessing a table 1`] = `
+"
+INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), 'test', 'test', false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+
+INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), 'test', 'test', false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+
+INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), 'test', 'test', false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+"
+`;
+
 exports[`update batched 1`] = `
 "
 WITH rows(id, name, some_flag, updated_at, _key) AS (VALUES

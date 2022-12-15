@@ -108,13 +108,19 @@ export const master = new SQLClientPool(
   {}
 );
 
-export const testCluster = new Cluster([
-  new Island(0, new TestSQLClient(master), [
-    new TestSQLClient(
-      new SQLClientPool({ ...master.dest, isMaster: false }, master.loggers)
-    ),
-  ]),
-]);
+export const testCluster = new Cluster(
+  [
+    new Island(0, new TestSQLClient(master), [
+      new TestSQLClient(
+        new SQLClientPool({ ...master.dest, isMaster: false }, master.loggers)
+      ),
+    ]),
+  ],
+  {
+    locateIslandErrorRetryCount: 30,
+    locateIslandErrorRetryDelayMs: 1000,
+  }
+);
 
 function indentQuery(query: string) {
   query = query

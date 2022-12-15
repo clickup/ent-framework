@@ -406,6 +406,7 @@ export class VC {
         // vc.toString() returns a textual VC with all flavors mixed in
         vc: this.toString(),
         whyClient: undefined,
+        attempt: 0,
       };
     }
 
