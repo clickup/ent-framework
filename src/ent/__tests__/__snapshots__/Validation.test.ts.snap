@@ -47,7 +47,7 @@ Second returned false"
 `;
 
 exports[`0043: update fails when user errors 1`] = `
-"failure: table: tenant_id: \\"some one\\", tenant_id: \\"some two\\"
+"failure: table: tenant_id: "some one", tenant_id: "some two"
 "
 `;
 
@@ -76,13 +76,13 @@ First threw wild"
 
 exports[`0080: validations fail when no rules defined 1`] = `
 "failure: table:123 is not readable in vc:guest:master, because:
-  No \\"load\\" rules defined
+  No "load" rules defined
 "
 `;
 
 exports[`0080: validations fail when no rules defined 2`] = `
 "failure: table: cannot insert in vc:guest:master, because:
-  No \\"insert\\" rules defined
+  No "insert" rules defined
 "
 `;
 
@@ -126,30 +126,30 @@ First threw other_table:987 is not readable in vc:guest:master, because:
 
 exports[`0130: fail when tenant user id mismatches 1`] = `
 "failure: table:123 is not readable in vc:999, because:
-  tenant_id is expected to be \\"999\\", but got \\"42\\"
+  tenant_id is expected to be "999", but got "42"
 "
 `;
 
 exports[`0130: fail when tenant user id mismatches 2`] = `
 "failure: table: cannot insert in vc:999, because:
-  tenant_id is expected to be \\"999\\", but got \\"42\\"
+  tenant_id is expected to be "999", but got "42"
 "
 `;
 
 exports[`0130: fail when tenant user id mismatches 3`] = `
 "failure: table: cannot insert in vc:999, because:
-  tenant_id is expected to be \\"999\\", but got undefined
+  tenant_id is expected to be "999", but got undefined
 "
 `;
 
 exports[`0130: fail when tenant user id mismatches 4`] = `
 "failure: table:123 is not updatable/deletable in vc:999, because:
-  tenant_id is expected to be \\"999\\", but got \\"42\\"
+  tenant_id is expected to be "999", but got "42"
 "
 `;
 
 exports[`0130: fail when tenant user id mismatches 5`] = `
 "failure: table:123 is not updatable/deletable in vc:999, because:
-  tenant_id is expected to be \\"999\\", but got \\"42\\"
+  tenant_id is expected to be "999", but got "42"
 "
 `;
