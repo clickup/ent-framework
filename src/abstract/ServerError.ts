@@ -8,7 +8,7 @@ import { copyStack } from "../helpers/misc";
  */
 export class ServerError extends Error {
   constructor(public readonly origError: any, destName: string) {
-    super(origError.message);
+    super(typeof origError === "string" ? origError : origError.message);
 
     Object.defineProperty(this, "name", {
       value: this.constructor.name,
@@ -16,7 +16,12 @@ export class ServerError extends Error {
       enumerable: false,
     });
 
-    copyStack(this, origError);
+    if (typeof origError === "string") {
+      this.origError = Error(origError);
+    } else {
+      copyStack(this, origError);
+    }
+
     this.stack += "\n" + destName;
     delete origError.stack;
   }

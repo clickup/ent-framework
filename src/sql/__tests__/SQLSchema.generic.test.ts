@@ -1,7 +1,9 @@
 import delay from "delay";
+import waitForExpect from "wait-for-expect";
 import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
 import { MASTER, STALE_REPLICA } from "../../abstract/Shard";
+import ShardError from "../../abstract/ShardError";
 import { Timeline } from "../../abstract/Timeline";
 import { join, nullthrows } from "../../helpers/misc";
 import { ID } from "../../types";
@@ -12,6 +14,7 @@ import type { TestSQLClient } from "./helpers/TestSQLClient";
 import { testCluster } from "./helpers/TestSQLClient";
 
 const TABLE = 'schema"test';
+const TABLE_BAK = `${TABLE}_bak`;
 const TABLE_NULLABLE_UNIQUE_KEY = 'schema"test_nullable_unique_key';
 const TABLE_2COL = 'schema"test_2col';
 const TABLE_2COL_NULLABLE_UNIQUE_KEY = "schema_test_2col_nullable_unique_key";
@@ -65,6 +68,7 @@ async function shardRun<TOutput>(
       debugStack: "",
       vc: "some-vc",
       whyClient: undefined,
+      attempt: 0,
     },
     timeline,
     freshness
@@ -78,6 +82,7 @@ beforeEach(async () => {
   replica = await shard.client(timeline);
 
   await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE);
+  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_BAK);
   await master.rows(
     "DROP TABLE IF EXISTS %T CASCADE",
     TABLE_NULLABLE_UNIQUE_KEY
@@ -961,4 +966,28 @@ test("test empty $or and $and", async () => {
   expect(all.length).toBe(2);
   expect(emptyOR.length).toBe(0);
   expect(emptyAND.length).toBe(0);
+});
+
+test("shard relocation error when accessing a table", async () => {
+  await master.rows("ALTER TABLE %T RENAME TO %T", TABLE, TABLE_BAK);
+
+  const query = schema.insert({ name: "test", url_name: "test" });
+  const spy = jest.spyOn(query, "run");
+  const idPromise = shardRun(query);
+
+  await waitForExpect(() => expect(spy).toBeCalledTimes(2));
+
+  await expect(spy.mock.results[0].value).rejects.toThrow(ShardError);
+
+  await master.rows("ALTER TABLE %T RENAME TO %T", TABLE_BAK, TABLE);
+  expect(await idPromise).toMatch(/^\d+$/);
+
+  master.toMatchSnapshot();
+});
+
+test("shard relocation error when locating island", async () => {
+  (testCluster.options as any).locateIslandErrorRetryCount = 3;
+  await expect(testCluster.shardByNo(1000).client(MASTER)).rejects.toThrow(
+    ShardError
+  );
 });

@@ -17,7 +17,8 @@
     "object-hash": "^2.2.0",
     "p-defer": "^3.0.0",
     "quick-lru": "^5.1.1",
-    "streaming-iterables": "^5.0.4"
+    "streaming-iterables": "^5.0.4",
+    "wait-for-expect": "^3.0.2"
   },
   "devDependencies": {
     "@types/object-hash": "^2.2.1",

@@ -48,6 +48,7 @@ async function shardRun<TOutput>(query: Query<TOutput>) {
       debugStack: "",
       vc: "some-vc",
       whyClient: undefined,
+      attempt: 0,
     },
     timeline,
     null

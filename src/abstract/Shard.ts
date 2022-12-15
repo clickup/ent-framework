@@ -15,13 +15,18 @@ export const MASTER = Symbol("MASTER");
  */
 export const STALE_REPLICA = Symbol("STALE_REPLICA");
 
+export interface ShardOptions<TClient extends Client> {
+  locateIsland: () => Promise<Island<TClient>>;
+  onRunError: (attempt: number, error: unknown) => Promise<"retry" | "throw">;
+}
+
 /**
  * Shard is a numbered island with one master and N replicas.
  */
 export class Shard<TClient extends Client> {
   constructor(
     public readonly no: number,
-    private locateIsland: () => Promise<Island<TClient>>
+    private options: ShardOptions<TClient>
   ) {}
 
   /**
@@ -45,20 +50,38 @@ export class Shard<TClient extends Client> {
     timeline: Timeline,
     freshness: null | typeof MASTER | typeof STALE_REPLICA
   ): Promise<TOutput> {
-    const { client, whyClient } = await this.clientEx(
-      freshness ?? timeline,
-      query.IS_WRITE ? true : undefined
-    );
-    const res = await query.run(client, { ...annotation, whyClient });
-
-    if (query.IS_WRITE && freshness !== STALE_REPLICA) {
-      timeline.setPos(
-        await client.timelineManager.currentPos(),
-        client.timelineManager.maxLagMs
+    for (let attempt = 0; ; attempt++) {
+      const { client, whyClient } = await this.clientEx(
+        freshness ?? timeline,
+        query.IS_WRITE ? true : undefined
       );
-    }
 
-    return res;
+      let res;
+      try {
+        res = await query.run(client, {
+          ...annotation,
+          whyClient,
+          attempt: annotation.attempt + attempt,
+        });
+      } catch (error: unknown) {
+        // The shard was there by the moment we got its client, but it probably
+        // disappeared (during migration) and appeared on some other island.
+        if ((await this.options.onRunError(attempt, error)) === "retry") {
+          continue;
+        } else {
+          throw error;
+        }
+      }
+
+      if (query.IS_WRITE && freshness !== STALE_REPLICA) {
+        timeline.setPos(
+          await client.timelineManager.currentPos(),
+          client.timelineManager.maxLagMs
+        );
+      }
+
+      return res;
+    }
   }
 
   /**
@@ -66,7 +89,7 @@ export class Shard<TClient extends Client> {
    * else is wrong with it.
    */
   async assertDiscoverable() {
-    await this.locateIsland();
+    await this.options.locateIsland();
   }
 
   /**
@@ -79,7 +102,7 @@ export class Shard<TClient extends Client> {
     timeline: Timeline | typeof MASTER | typeof STALE_REPLICA,
     isWrite: true | undefined
   ): Promise<{ client: TClient; whyClient: WhyClient }> {
-    const island = await this.locateIsland();
+    const island = await this.options.locateIsland();
     const { master, replicas } = await this.clients(island);
 
     if (isWrite) {

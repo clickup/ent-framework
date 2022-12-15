@@ -3,9 +3,9 @@ import range from "lodash/range";
 import sortBy from "lodash/sortBy";
 import uniq from "lodash/uniq";
 import { MASTER } from "../../abstract/Shard";
+import ShardError from "../../abstract/ShardError";
 import { join, mapJoin } from "../../helpers/misc";
 import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
-import { SQLError } from "../../sql/SQLError";
 import { SQLSchema } from "../../sql/SQLSchema";
 import { ID } from "../../types";
 import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
@@ -349,7 +349,7 @@ test("ent creation throws", async () => {
       owner_id: company.id,
       slug: "topic",
     })
-  ).rejects.toThrow(SQLError);
+  ).rejects.toThrow(ShardError);
   const inverse = EntTestTopic.INVERSES[0];
   expect(await inverse.id2s(vc, company.id)).toEqual([]);
 });

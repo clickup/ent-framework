@@ -17,6 +17,7 @@ const DEFAULT_MAX_REPLICATION_LAG_MS = 60000;
 const DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS = 1000;
 const MAX_BIGINT = "9223372036854775807";
 const MAX_BIGINT_RE = new RegExp("^\\d{1," + MAX_BIGINT.length + "}$");
+const PG_CODE_UNDEFINED_TABLE = "42P01";
 
 /**
  * An opened PostgreSQL connection. Only multi-queries are supported.
@@ -235,8 +236,13 @@ export abstract class SQLClient extends Client {
       }
 
       return res;
-    } catch (origError) {
-      if (origError instanceof Error && (origError as any).severity) {
+    } catch (origError: unknown) {
+      if (
+        origError instanceof Error &&
+        (origError as any).code === PG_CODE_UNDEFINED_TABLE
+      ) {
+        throw new ShardError(origError, this.name);
+      } else if (origError instanceof Error && (origError as any).severity) {
         // Only wrap the errors which PG sent to us explicitly. Those errors
         // mean that there was some aborted transaction.
         throw new SQLError(origError, this.name, debugQueryWithHints.trim());
@@ -273,8 +279,8 @@ export abstract class SQLClient extends Client {
       // Being unable to access a DB is not a critical error here, we'll just
       // miss some shards (and other shards will work). DO NOT throw through
       // here yet! This needs to be addressed holistically and with careful
-      // retries. Also, we have shards rediscovery every 10 or so seconds, so a
-      // missing island will self-heal eventually.
+      // retries. Also, we have shards rediscovery every N seconds, so a missing
+      // island will self-heal eventually.
       this.logGlobalError("shardNos()", e);
       return [];
     }
@@ -327,7 +333,10 @@ export abstract class SQLClient extends Client {
         : NaN;
     if (isNaN(no)) {
       const idSafe = sanitizeIDForDebugPrinting(id);
-      throw new ShardError(`Cannot parse ID ${idSafe} to detect shard number`);
+      throw new ShardError(
+        `Cannot parse ID ${idSafe} to detect shard number`,
+        this.name
+      );
     }
 
     return no;
