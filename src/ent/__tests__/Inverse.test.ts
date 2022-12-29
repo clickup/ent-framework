@@ -117,7 +117,8 @@ async function init() {
         id bigint NOT NULL PRIMARY KEY,
         id1 bigint,
         type varchar(32) NOT NULL,
-        id2 bigint NOT NULL
+        id2 bigint NOT NULL,
+        created_at timestamptz NOT NULL
       )`,
       TABLE_INVERSE
     ),
@@ -155,7 +156,8 @@ async function init() {
           id bigint NOT NULL PRIMARY KEY,
           id1 bigint,
           type varchar(32) NOT NULL,
-          id2 bigint NOT NULL
+          id2 bigint NOT NULL,
+          created_at timestamptz NOT NULL
         )`,
         TABLE_INVERSE
       ),
