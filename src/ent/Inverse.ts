@@ -137,6 +137,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
       name,
       {
         id: { type: ID, autoInsert: id2Schema.table[ID].autoInsert },
+        created_at: { type: Date, autoInsert: "now()" },
         type: { type: String },
         id1: { type: ID },
         id2: { type: ID },
