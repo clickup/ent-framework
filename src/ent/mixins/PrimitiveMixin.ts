@@ -205,7 +205,7 @@ export function PrimitiveMixin<
         }));
 
         let actuallyInsertedID = null;
-        let gotKnownServerReply = true;
+        let isKnownServerState = true;
         try {
           // Preliminarily insert inverse rows to inverses table, even before we
           // insert the main Ent. This avoids race conditions for cases when
@@ -222,35 +222,40 @@ export function PrimitiveMixin<
           // we'll get a null returned.
           actuallyInsertedID = await this.TRIGGERS.wrapInsert(
             async (input) =>
-              shard.run(
-                this.SCHEMA.insert(input),
-                vc.toAnnotation(),
-                vc.timeline(shard, this.SCHEMA.name),
-                vc.freshness
-              ),
+              shard
+                .run(
+                  this.SCHEMA.insert(input),
+                  vc.toAnnotation(),
+                  vc.timeline(shard, this.SCHEMA.name),
+                  vc.freshness
+                )
+                .catch((error) => {
+                  // Do we know for sure whether the server applied the insert
+                  // or not? Some examples are: "connection reset" or pgbouncer
+                  // timeout: in those cases, it's possible that the insert
+                  // actually DID succeed internally, so we must NOT delete
+                  // inverses as a cleanup action.
+                  if (!(error instanceof ServerError)) {
+                    isKnownServerState = false;
+                  }
+
+                  throw error;
+                }),
             vc,
             { ...input, [ID]: id2 }
           );
           return actuallyInsertedID;
-        } catch (e: unknown) {
-          // If it's ServerError, then we know for sure that the server did not
-          // apply the insert. Otherwise (e.g. if it's a "connection reset"
-          // error or pgbouncer timeout), we don't know: it's possible that the
-          // insert actually DID succeed internally, so we must NOT delete
-          // inverses as a cleanup action.
-          gotKnownServerReply = e instanceof ServerError;
-          throw e;
         } finally {
           // There are 3 failure conditions here:
-          // 1. There was an exception, but we don't know the state of PG (it
-          //    might or might not apply the insert).
+          // 1. There was an exception, but we don't know the state of PG server
+          //    (it might or might not apply the insert).
           // 2. There was an exception during the insert (in this case,
           //    actuallyInsertedID will be null due to the above
           //    initialization), and we received the response from PG.
           // 3. An insert resulted in a no-op due to unique constraints
           //    violation (and in this case, insert() will return null to
           //    actuallyInsertedID).
-          if (actuallyInsertedID === null && gotKnownServerReply) {
+          if (actuallyInsertedID === null && isKnownServerState) {
             // We couldn't insert the Ent due to an unique key violation or some
             // other DB error. Try to undo the inverses creation (but if we fail
             // to undo, it's not a big deal to have stale inverses in the DB
