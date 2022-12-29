@@ -94,6 +94,13 @@ class EntTestTopic extends BaseEnt(testCluster, schemaTestTopic) {
       },
       privacyLoad: [new AllowIf(new True())],
       privacyInsert: [new AllowIf(new True())],
+      beforeInsert: [
+        async (_vc, { input }) => {
+          if (input.slug === "throwInBeforeInsert") {
+            throw Error("thrown in beforeInsert");
+          }
+        },
+      ],
     });
   }
 }
@@ -338,7 +345,7 @@ test("race condition in insert/loadBy", async () => {
   }
 });
 
-test("ent creation throws", async () => {
+test("inverses are deleted when ent insert DB operation fails", async () => {
   const company = await EntTestCompany.insertReturning(vc, {
     name: "my-company",
   });
@@ -356,7 +363,21 @@ test("ent creation throws", async () => {
   expect(await inverse.id2s(vc, company.id)).toEqual([]);
 });
 
-test("ent creation times out", async () => {
+test("inverses are deleted when beforeInsert trigger throws with any error", async () => {
+  const company = await EntTestCompany.insertReturning(vc, {
+    name: "my-company",
+  });
+  await expect(
+    EntTestTopic.insertIfNotExists(vc, {
+      owner_id: company.id,
+      slug: "throwInBeforeInsert",
+    })
+  ).rejects.toThrow(Error);
+  const inverse = EntTestTopic.INVERSES[0];
+  expect(await inverse.id2s(vc, company.id)).toEqual([]);
+});
+
+test("inverses are not deleted when ent creation times out", async () => {
   const company = await EntTestCompany.insertReturning(vc, {
     name: "my-company",
   });
