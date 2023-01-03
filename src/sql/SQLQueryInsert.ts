@@ -31,7 +31,7 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
 
     this.singleBuilder = this.createValuesBuilder({
       prefix: this.fmt("INSERT INTO %T (%INSERT_FIELDS) VALUES"),
-      fields: Object.keys(this.schema.table),
+      fields: this.prependPK(Object.keys(this.schema.table)),
       suffix: this.fmt(` ON CONFLICT DO NOTHING RETURNING %PK AS ${ID}`),
     });
 
@@ -40,7 +40,7 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
     // distinguish rows which were inserted from the rows which were not. Having
     // WITH solves this (see RETURNING below).
     this.batchBuilder = this.createWithBuilder({
-      fields: Object.keys(this.schema.table),
+      fields: this.prependPK(Object.keys(this.schema.table)),
       suffix: this.fmt(
         "  INSERT INTO %T (%INSERT_FIELDS)\n" +
           "  SELECT %INSERT_FIELDS FROM rows OFFSET 1\n" +
