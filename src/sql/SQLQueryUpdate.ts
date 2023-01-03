@@ -125,7 +125,6 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
     // all keys here.
     this.batchBuilder = this.createWithBuilder({
       fields,
-      rowsReorderingIsSafe: true, // because we use _key to reference the input rows
       suffix: this.fmt(
         "  UPDATE %T SET %UPDATE_FIELD_VALUE_PAIRS(rows)\n" +
           `  FROM rows WHERE %PK(%T)=%PK(rows) RETURNING (SELECT _key FROM rows WHERE %PK(rows)=%PK(%T))`,

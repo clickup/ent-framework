@@ -95,8 +95,8 @@ export abstract class SQLRunner<
           return this.name;
         }
 
-        // Comma-separated list of ALL fields in the table to be used in
-        // SELECT clauses (always includes ID field).
+        // Comma-separated list of ALL fields in the table to be used in SELECT
+        // clauses (always includes ID field).
         if (c === "%SELECT_FIELDS") {
           return uniq([...Object.keys(this.schema.table), ID])
             .map((field) => this.escapeField(field, undefined, true))
@@ -191,11 +191,9 @@ export abstract class SQLRunner<
    */
   protected createWithBuilder({
     fields,
-    rowsReorderingIsSafe,
     suffix,
   }: {
     fields: Array<Field<TTable>>;
-    rowsReorderingIsSafe: boolean;
     suffix: string;
   }) {
     const cols = [
@@ -214,7 +212,6 @@ export abstract class SQLRunner<
         `  (${cols.map(([n, _]) => n).join(", ")}),`,
       fields,
       withKey: true,
-      rowsReorderingIsSafe,
       suffix: ")\n" + suffix,
     });
   }
@@ -248,13 +245,13 @@ export abstract class SQLRunner<
     prefix,
     fields,
     withKey,
-    rowsReorderingIsSafe,
+    skipSorting,
     suffix,
   }: {
     prefix: string;
     fields: Array<Field<TTable>>;
     withKey?: boolean;
-    rowsReorderingIsSafe: boolean;
+    skipSorting?: boolean;
     suffix: string;
   }) {
     const cols = this.prependPK(fields).map((field) => {
@@ -284,10 +281,10 @@ export abstract class SQLRunner<
           parts.push(rowFunc(key, this.unfoldCompositePK(input)));
         }
 
-        if (rowsReorderingIsSafe) {
-          // To eliminate deadlocks in parallel batched inserts, we sort rows. This
-          // prevents deadlocks when two batched queries are running in different
-          // connections, and the table has some unique key.
+        // To eliminate deadlocks in parallel batched inserts, we sort rows.
+        // This prevents deadlocks when two batched queries are running in
+        // different connections, and the table has some unique key.
+        if (!skipSorting) {
           parts.sort();
         }
 
