@@ -44,7 +44,6 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
     this.builder = this.createValuesBuilder({
       prefix: this.fmt("INSERT INTO %T (%INSERT_FIELDS) VALUES"),
       fields: Object.keys(this.schema.table),
-      rowsReorderingIsSafe: true, // because ON CONFLICT DO UPDATE has input:output rows as N:N
       suffix: this.fmt(
         "\n" +
           `  ON CONFLICT (${uniqueKeyFields}) DO UPDATE ` +

@@ -32,7 +32,6 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
     this.singleBuilder = this.createValuesBuilder({
       prefix: this.fmt("INSERT INTO %T (%INSERT_FIELDS) VALUES"),
       fields: Object.keys(this.schema.table),
-      rowsReorderingIsSafe: false, // because ON CONFLICT DO NOTHING doesn't have input:output rows as N:N
       suffix: this.fmt(` ON CONFLICT DO NOTHING RETURNING %PK AS ${ID}`),
     });
 
@@ -42,7 +41,6 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
     // WITH solves this (see RETURNING below).
     this.batchBuilder = this.createWithBuilder({
       fields: Object.keys(this.schema.table),
-      rowsReorderingIsSafe: true, // because we use _key to reference the input rows
       suffix: this.fmt(
         "  INSERT INTO %T (%INSERT_FIELDS)\n" +
           "  SELECT %INSERT_FIELDS FROM rows OFFSET 1\n" +
