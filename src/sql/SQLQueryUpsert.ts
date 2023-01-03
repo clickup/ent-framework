@@ -43,7 +43,7 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
       .join(",");
     this.builder = this.createValuesBuilder({
       prefix: this.fmt("INSERT INTO %T (%INSERT_FIELDS) VALUES"),
-      fields: Object.keys(this.schema.table),
+      fields: this.prependPK(Object.keys(this.schema.table)),
       suffix: this.fmt(
         "\n" +
           `  ON CONFLICT (${uniqueKeyFields}) DO UPDATE ` +

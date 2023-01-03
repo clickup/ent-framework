@@ -193,11 +193,11 @@ export abstract class SQLRunner<
     fields,
     suffix,
   }: {
-    fields: Array<Field<TTable>>;
+    fields: ReadonlyArray<Field<TTable>>;
     suffix: string;
   }) {
     const cols = [
-      ...this.prependPK(fields).map((field) => [
+      ...fields.map((field) => [
         this.fmt(`(NULL::%T).${this.escapeField(field)}`),
         this.escapeField(field),
       ]),
@@ -241,7 +241,7 @@ export abstract class SQLRunner<
    * are always prepended to the list of values since it makes no sense to
    * generate VALUES clause without exact identification of the destination.
    */
-  protected createValuesBuilder({
+  protected createValuesBuilder<TInput = object>({
     prefix,
     fields,
     withKey,
@@ -249,12 +249,12 @@ export abstract class SQLRunner<
     suffix,
   }: {
     prefix: string;
-    fields: Array<Field<TTable>>;
+    fields: ReadonlyArray<Field<TTable>>;
     withKey?: boolean;
     skipSorting?: boolean;
     suffix: string;
   }) {
-    const cols = this.prependPK(fields).map((field) => {
+    const cols = fields.map((field) => {
       const spec = this.nullThrowsUnknownField(this.schema.table[field], field);
       return this.createEscapeCode(
         field,
@@ -273,9 +273,7 @@ export abstract class SQLRunner<
 
     return {
       prefix: prefix + "\n  ",
-      func: (
-        entries: Iterable<[key: string, input: object & { [ID]?: string }]>
-      ) => {
+      func: (entries: Iterable<[key: string, input: TInput]>) => {
         const parts: string[] = [];
         for (const [key, input] of entries) {
           parts.push(rowFunc(key, this.unfoldCompositePK(input)));
@@ -520,6 +518,20 @@ export abstract class SQLRunner<
         ? sqlClientMod.escapeID("" + args.shift())
         : sqlClientMod.escapeAny(args.shift())
     );
+  }
+
+  /**
+   * Prepends a primary key to the list of fields. In case the primary key is
+   * plain (i.e. "id" field), it's just added as a field; otherwise, the unique
+   * key fields are added. (Prepending the primary key fields doesn't affect
+   * logic, but minimizes deadlocks since the rows to insert/update are sorted
+   * lexicographically.)
+   */
+  protected prependPK(fields: ReadonlyArray<Field<TTable>>) {
+    return uniq([
+      ...(this.schema.table[ID] ? [ID] : this.schema.uniqueKey),
+      ...fields,
+    ]);
   }
 
   constructor(
@@ -780,20 +792,6 @@ export abstract class SQLRunner<
       ...sqlClientMod,
       stringifiers: this.stringifiers,
     });
-  }
-
-  /**
-   * Prepends a primary key to the list of fields. In case the primary key is
-   * plain (i.e. "id" field), it's just added as a field; otherwise, the unique
-   * key fields are added. (Prepending the primary key fields doesn't affect
-   * logic, but minimizes deadlocks since the rows to insert/update are sorted
-   * lexicographically.)
-   */
-  private prependPK(fields: Array<Field<TTable>>) {
-    return uniq([
-      ...(this.schema.table[ID] ? [ID] : this.schema.uniqueKey),
-      ...fields,
-    ]);
   }
 
   /**
