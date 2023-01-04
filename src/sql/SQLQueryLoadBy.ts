@@ -2,7 +2,6 @@ import last from "lodash/last";
 import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import type { Schema } from "../abstract/Schema";
-import { nullthrows } from "../helpers/misc";
 import type { LoadByInput, Row, Table, UniqueKey } from "../types";
 import type { SQLClient } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
@@ -28,27 +27,54 @@ export class SQLRunnerLoadBy<
   Row<TTable> | null
 > {
   static override readonly IS_WRITE = false;
-  private inBuilder;
-  private builder;
+  private optimizedBuilder;
+  private plainBuilder;
   readonly op = "SELECT_UNIQ";
   override readonly maxBatchSize = 1000; // Select by unique key is cheap, so we can have much bigger load batches to accumulate more data from e.g. shard 0 for the next multi-shard requests.
   readonly default = null; // If no row is found, returns null.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);
-    const lastUniqueKeyField = last(this.schema.uniqueKey);
-    this.inBuilder = lastUniqueKeyField
-      ? this.createOneOfBuilder(
-          lastUniqueKeyField,
-          `$value.${lastUniqueKeyField}`
-        )
-      : null;
-    this.builder = {
+    const escapedFields = this.schema.uniqueKey.map((f) => this.escapeField(f));
+
+    // ```
+    // WHERE (field1, field2) IN(VALUES
+    //   ((NULL::tbl).field1, (NULL::tbl).field2),
+    //   ('aa', 'bb'),
+    //   ('cc', 'dd'))
+    // ```
+    // - This clause always produces an Index Scan (not Bitmap Index Scan).
+    // - Used in most of the cases in runBatch(), i.e. when unique key has >1
+    //   fields, and they are all non-nullable.
+    this.optimizedBuilder =
+      this.schema.uniqueKey.length > 1 &&
+      this.schema.uniqueKey.every(
+        (field) => !this.schema.table[field].allowNull
+      )
+        ? this.createValuesBuilder<LoadByInput<TTable, TUniqueKey>>({
+            prefix:
+              this.fmt("SELECT %SELECT_FIELDS FROM %T WHERE ") +
+              `(${escapedFields.join(", ")}) IN(VALUES\n` +
+              "  (" +
+              escapedFields.map((f) => this.fmt(`(NULL::%T).${f}`)).join(", ") +
+              "),",
+            fields: this.schema.uniqueKey,
+            skipSorting: true, // for JS perf
+            suffix: this.fmt(")"),
+          })
+        : null;
+
+    // ```
+    // (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
+    //  ^^^^^^^^^^prefix^^^^^^^^^               ^^^^^^^^ins^^^^^^^
+    // ```
+    // - If at least one OR is produced, it will likely result in a slower
+    //   Bitmap Index Scan.
+    // - Used in runSingle() (no ORs there) or when optimized builder is not
+    //   available (e.g. when unique key contains nullable fields).
+    this.plainBuilder = {
       prefix: this.fmt("SELECT %SELECT_FIELDS FROM %T WHERE "),
-      func:
-        this.schema.uniqueKey.length === 1
-          ? this.oneColumnWhereBuilder.bind(this)
-          : this.multiColumnWhereBuilder.bind(this),
+      func: this.createOrBasedWhereBuilder(),
       suffix: this.fmt(""),
     };
   }
@@ -62,7 +88,9 @@ export class SQLRunnerLoadBy<
     annotations: QueryAnnotation[]
   ): Promise<Row<TTable> | undefined> {
     const sql =
-      this.builder.prefix + this.builder.func([input]) + this.builder.suffix;
+      this.plainBuilder.prefix +
+      this.plainBuilder.func([["", input]]) +
+      this.plainBuilder.suffix;
     const rows = await this.clientQuery<Row<TTable>>(sql, annotations, 1);
     return rows[0];
   }
@@ -71,10 +99,8 @@ export class SQLRunnerLoadBy<
     inputs: Map<string, LoadByInput<TTable, TUniqueKey>>,
     annotations: QueryAnnotation[]
   ): Promise<Map<string, Row<TTable>>> {
-    const sql =
-      this.builder.prefix +
-      this.builder.func(inputs.values()) +
-      this.builder.suffix;
+    const builder = this.optimizedBuilder ?? this.plainBuilder;
+    const sql = builder.prefix + builder.func(inputs) + builder.suffix;
     const rows = await this.clientQuery<Row<TTable>>(
       sql,
       annotations,
@@ -88,63 +114,73 @@ export class SQLRunnerLoadBy<
     return output;
   }
 
-  private oneColumnWhereBuilder(
-    inputs: Iterable<LoadByInput<TTable, TUniqueKey>>
-  ): string {
-    // field1 IN('aa', 'bb', 'cc', ...)
-    return nullthrows(this.inBuilder, "no unique key defined")(inputs);
-  }
+  private createOrBasedWhereBuilder() {
+    if (this.schema.uniqueKey.length === 0) {
+      return () => {
+        throw Error("No unique key defined");
+      };
+    }
 
-  private multiColumnWhereBuilder(
-    inputs: Iterable<LoadByInput<TTable, TUniqueKey>>
-  ): string {
-    // field1='aaa' AND field2='bbb' AND field3 IN('aa', 'bb', 'cc', ...) OR ...
-    // ^^^^^^^^^^^^^prefix^^^^^^^^^^               ^^^^^^^^^^ins^^^^^^^^
-    // In case of constant prefix, it will be one Index Scan with ANY sub-clause.
-    const inBuilder = nullthrows(this.inBuilder, "no unique key defined");
+    const lastUniqueKeyField = last(this.schema.uniqueKey)!;
 
-    const insByPrefix = new Map<
-      string,
-      Array<LoadByInput<TTable, TUniqueKey>>
-    >();
-    for (const input of inputs) {
-      let prefix = "";
-      for (let i = 0; i < this.schema.uniqueKey.length - 1; i++) {
-        const field = this.schema.uniqueKey[i];
-        if (prefix !== "") {
-          prefix += " AND ";
+    // fieldN IN('aa', 'bb', 'cc', ...)
+    const lastFieldOneOf = this.createOneOfBuilder(
+      lastUniqueKeyField,
+      `$value[1].${lastUniqueKeyField}`
+    );
+
+    if (this.schema.uniqueKey.length === 1) {
+      // If we have only one field in unique key, we can use the plain
+      // oneOfBuilder (which is either an IN(...) or =ANY(...) clause).
+      return lastFieldOneOf;
+    }
+
+    return (
+      inputs: Iterable<[key: string, input: LoadByInput<TTable, TUniqueKey>]>
+    ) => {
+      const insByPrefix = new Map<
+        string,
+        Array<[key: string, input: LoadByInput<TTable, TUniqueKey>]>
+      >();
+      for (const input of inputs) {
+        let prefix = "";
+        for (let i = 0; i < this.schema.uniqueKey.length - 1; i++) {
+          const field = this.schema.uniqueKey[i];
+          if (prefix !== "") {
+            prefix += " AND ";
+          }
+
+          const value = (input[1] as any)[field];
+          prefix +=
+            value !== null
+              ? field + "=" + this.escapeValue(field, value)
+              : field + " IS NULL";
         }
 
-        const value = (input as any)[field];
-        prefix +=
-          value !== null
-            ? field + "=" + this.escapeValue(field, value)
-            : field + " IS NULL";
+        let ins = insByPrefix.get(prefix);
+        if (!ins) {
+          ins = [];
+          insByPrefix.set(prefix, ins);
+        }
+
+        ins.push(input);
       }
 
-      let ins = insByPrefix.get(prefix);
-      if (!ins) {
-        ins = [];
-        insByPrefix.set(prefix, ins);
+      let sql = "";
+      for (const [prefix, ins] of insByPrefix) {
+        if (sql !== "") {
+          sql += " OR ";
+        }
+
+        const inClause = lastFieldOneOf(ins);
+        if (prefix !== "") {
+          sql += "(" + prefix + " AND " + inClause + ")";
+        } else {
+          sql += inClause;
+        }
       }
 
-      ins.push(input);
-    }
-
-    let sql = "";
-    for (const [prefix, ins] of insByPrefix) {
-      if (sql !== "") {
-        sql += " OR ";
-      }
-
-      const inClause = inBuilder(ins);
-      if (prefix !== "") {
-        sql += "(" + prefix + " AND " + inClause + ")";
-      } else {
-        sql += inClause;
-      }
-    }
-
-    return sql;
+      return sql;
+    };
   }
 }
