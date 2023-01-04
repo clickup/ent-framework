@@ -75,12 +75,15 @@ SELECT tenant_id, user_id, name, ROW(tenant_id,user_id) AS id FROM "schema""test
 exports[`batched ops 7`] = `
 "
 SELECT tenant_id, user_id, name, ROW(tenant_id,user_id) AS id FROM "schema""test_composite"
-  WHERE (tenant_id='1'
-    AND user_id=ANY('{3,4}'))
+  WHERE (tenant_id, user_id) IN(VALUES
+  ((NULL::"schema""test_composite").tenant_id, (NULL::"schema""test_composite").user_id),
+  ('1', '3'),
+  ('1', '4'))
 ----
 SELECT tenant_id, user_id, name, ROW(tenant_id,user_id) AS id FROM "schema""test_composite"
-  WHERE (tenant_id='?'
-    AND user_id=ANY('?'))
+  WHERE (tenant_id, user_id) IN(VALUES
+  ((NULL::"schema""test_composite").tenant_id, (NULL::"schema""test_composite").user_id),
+  ('?', '?'), ...)
 "
 `;
 

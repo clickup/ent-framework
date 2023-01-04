@@ -18,11 +18,12 @@ const RE_IN_ROW = toRegExp`
   (?: ,\s* ROW \( [^)]+ \) )*
 `;
 
-const RE_WITH_VALUES = toRegExp`
+const RE_VALUES = toRegExp`
   ^(
-    WITH \s [^\n]+VALUES\n
-      [^\n]+,\n
-      ( \s* \( (?:[^\n]+) \) )
+    (?: WITH \s [^\n]+ | [^\n]+ \s WHERE [^\n]+ \s IN\( )
+    VALUES\n
+    [^\n]+,\n
+    ( \s* \( (?:[^\n]+) \) )
   ),\n
     (?: \2 (?:,\n)? )+
 `;
@@ -51,7 +52,7 @@ export default function buildShape(sql: string) {
     .replace(RE_NUMBER, "?")
     .replace(RE_STRING, "'?'")
     .replace(RE_IN_ROW, "$1, ...")
-    .replace(RE_WITH_VALUES, "$1, ...")
+    .replace(RE_VALUES, "$1, ...")
     .replace(RE_INSERT_VALUES, "$1, ...")
     .replace(RE_IDENTICAL_UNION_ALL, "$1\n$2 ...");
 }

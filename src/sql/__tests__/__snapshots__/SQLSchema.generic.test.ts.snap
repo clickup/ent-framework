@@ -199,20 +199,19 @@ SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, js
 exports[`loadBy batched two columns 1`] = `
 "
 SELECT id, name, url_name, created_at, updated_at FROM "schema""test_2col"
-  WHERE (name='z'
-    AND url_name=ANY('{z1,"z,2"}'))
-    OR (name='b'
-    AND url_name=ANY('{"no\\\\value","b{1}"}'))
-    OR (name='c'
-    AND url_name=ANY('{"NuLL",""}'))
+  WHERE (name, url_name) IN(VALUES
+  ((NULL::"schema""test_2col").name, (NULL::"schema""test_2col").url_name),
+  ('z', 'z1'),
+  ('z', 'z,2'),
+  ('b', 'no\\value'),
+  ('b', 'b{1}'),
+  ('c', 'NuLL'),
+  ('c', ''))
 ----
 SELECT id, name, url_name, created_at, updated_at FROM "schema""test_2col"
-  WHERE (name='?'
-    AND url_name=ANY('?'))
-    OR (name='?'
-    AND url_name=ANY('?'))
-    OR (name='?'
-    AND url_name=ANY('?'))
+  WHERE (name, url_name) IN(VALUES
+  ((NULL::"schema""test_2col").name, (NULL::"schema""test_2col").url_name),
+  ('?', '?'), ...)
 "
 `;
 
