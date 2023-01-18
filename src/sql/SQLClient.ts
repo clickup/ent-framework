@@ -58,9 +58,13 @@ export abstract class SQLClient extends Client {
 
   protected abstract releaseConn(conn: SQLClientConn): void;
 
-  protected logGlobalError(where: string, e: unknown) {
+  protected logGlobalError(where: string, e: unknown, elapsed: number | null) {
     // eslint-disable-next-line no-console
-    console.log(`SQLClient(${this.name}): ${where}: ${e}`);
+    console.log(
+      `SQLClient(${this.name}): ${where}` +
+        (elapsed !== null ? ` after ${Math.round(elapsed)} ms` : "") +
+        `: ${e}`
+    );
   }
 
   constructor(
@@ -258,6 +262,7 @@ export abstract class SQLClient extends Client {
       return [0];
     }
 
+    const startTime = process.hrtime();
     try {
       // e.g. sh0000, sh0123 and not e.g. sh1 or sh12345678
       const rows = await this.query<Partial<Record<string, string>>>(
@@ -275,13 +280,17 @@ export abstract class SQLClient extends Client {
         })
         .filter((no): no is number => no !== null)
         .sort();
-    } catch (e: any) {
+    } catch (e: unknown) {
       // Being unable to access a DB is not a critical error here, we'll just
       // miss some shards (and other shards will work). DO NOT throw through
       // here yet! This needs to be addressed holistically and with careful
       // retries. Also, we have shards rediscovery every N seconds, so a missing
       // island will self-heal eventually.
-      this.logGlobalError("shardNos()", e);
+      this.logGlobalError(
+        "shardNos()",
+        e,
+        toFloatMs(process.hrtime(startTime))
+      );
       return [];
     }
   }

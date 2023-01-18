@@ -1,7 +1,8 @@
+import range from "lodash/range";
 import type { Connection, PoolClient, PoolConfig } from "pg";
 import { Pool } from "pg";
 import type { Loggers } from "../abstract/Client";
-import { runInVoid } from "../helpers/misc";
+import { runInVoid, toFloatMs } from "../helpers/misc";
 import { SQLClient } from "./SQLClient";
 
 const DEFAULT_PREWARM_INTERVAL_MS = 10000;
@@ -51,9 +52,13 @@ export class SQLClientPool extends SQLClient {
     ended: boolean;
   };
 
-  protected override logGlobalError(where: string, e: unknown) {
+  protected override logGlobalError(
+    where: string,
+    e: unknown,
+    elapsed: number | null
+  ) {
     if (!this.state.ended) {
-      super.logGlobalError(where, e);
+      super.logGlobalError(where, e, elapsed);
     }
   }
 
@@ -101,7 +106,7 @@ export class SQLClientPool extends SQLClient {
         })
         .on("error", (e) => {
           // Having this hook prevents node from crashing.
-          this.logGlobalError("SQLClientPool", e);
+          this.logGlobalError("SQLClientPool", e, null);
         }),
       clients: new Set(),
       prewarmTimeout: null,
@@ -143,11 +148,18 @@ export class SQLClientPool extends SQLClient {
         });
       const query =
         typeof prewarmQuery === "string" ? prewarmQuery : prewarmQuery();
-      Array.from(Array(toPrewarm).keys()).forEach(() =>
+      const startTime = process.hrtime();
+      range(toPrewarm).forEach(() =>
         runInVoid(
           this.state.pool
             .query(query)
-            .catch((e) => this.logGlobalError("SQLClientPool.prewarm()", e))
+            .catch((e) =>
+              this.logGlobalError(
+                "SQLClientPool.prewarm()",
+                e,
+                toFloatMs(process.hrtime(startTime))
+              )
+            )
         )
       );
     }
