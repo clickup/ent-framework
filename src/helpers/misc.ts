@@ -112,10 +112,7 @@ export type AddNew<
 export type Flatten<T> = {} & { [P in keyof T]: T[P] };
 
 /**
- * A wrapper around process.hrtime() to quickly calculate time deltas:
- * const timeStart = process.hrtime();
- * ...
- * const elapsedMs = toFloatMs(process.hrtime(timeStart));
+ * A wrapper around process.hrtime() to quickly calculate time deltas.
  */
 export function toFloatMs(elapsed: [number, number]) {
   return elapsed[0] * 1e3 + elapsed[1] / 1e6;
