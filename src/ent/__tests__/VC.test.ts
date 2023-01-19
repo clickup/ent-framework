@@ -69,7 +69,7 @@ test("VC flavor prepend and append", () => {
   expect(vc2.withFlavor(new VCTest2("tNew")).toString()).toEqual(
     "vc:guest(VCTest1:some,VCTest2:tNew)"
   );
-  expect(vc2.withFlavor(new VCTest2("tNew"), "prepend").toString()).toEqual(
+  expect(vc2.withFlavor("prepend", new VCTest2("tNew")).toString()).toEqual(
     "vc:guest(VCTest2:tNew,VCTest1:some)"
   );
 });

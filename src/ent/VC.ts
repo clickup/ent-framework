@@ -56,7 +56,7 @@ export class VC {
   //
 
   private annotationCache?: QueryAnnotation;
-  private instanceNumber = instanceNumber++;
+  private instanceNumber = (instanceNumber++).toString(); // string makes it visible in Chrome memory dump profiler
   private caches = new Map<Function | symbol, any>();
 
   /**
@@ -66,9 +66,9 @@ export class VC {
    * master/replica read policy etc.). It's also good to trace the entire chain
    * of calls and reasons, why some object was accessed.
    */
-  static createGuestPleaseDoNotUseCreationPointsMustBeLimited() {
+  static createGuestPleaseDoNotUseCreationPointsMustBeLimited(trace?: string) {
     return new VC(
-      new VCTrace(),
+      new VCTrace(trace),
       GUEST_ID,
       null,
       new Map(),
@@ -181,6 +181,7 @@ export class VC {
    * position wins).
    */
   withDeserializedTimelines(...dataStrs: ReadonlyArray<string | undefined>) {
+    let deserialized = false;
     for (const dataStr of dataStrs) {
       if (dataStr) {
         const data = JSON.parse(dataStr) as Record<string, string>;
@@ -190,11 +191,12 @@ export class VC {
             key,
             Timeline.deserialize(timelineStr, oldTimeline)
           );
+          deserialized = true;
         }
       }
     }
 
-    return this.withEmptyCache();
+    return deserialized ? this.withEmptyCache() : this;
   }
 
   /**
@@ -255,11 +257,17 @@ export class VC {
   }
 
   /**
-   * Returns a new VC derived from the current one adding some more
-   * flavors to it.
+   * Returns a new VC derived from the current one adding some more flavors to
+   * it. If no flavors were added, returns the same VC (`this`).
    */
-  withFlavor(flavor: VCFlavor | undefined, prepend?: "prepend") {
-    return flavor
+  withFlavor(prepend: "prepend", ...flavors: Array<VCFlavor | undefined>): this;
+  withFlavor(...flavors: Array<VCFlavor | undefined>): this;
+  withFlavor(...args: any[]) {
+    const prepend = args[0] === "prepend" ? args.shift() : undefined;
+    const pairs = (args as Array<VCFlavor | undefined>)
+      .filter((flavor): flavor is VCFlavor => flavor !== undefined)
+      .map((flavor) => [flavor.constructor, flavor] as const);
+    return pairs.length > 0
       ? new VC(
           this.trace,
           this.principal,
@@ -268,12 +276,17 @@ export class VC {
           new Map(
             prepend === "prepend"
               ? [
-                  [flavor.constructor, flavor],
-                  ...[...this.flavors.entries()].filter(
-                    ([cons]) => cons !== flavor.constructor
+                  ...pairs,
+                  ...[...this.flavors].filter(([cons]) =>
+                    pairs.every(([newCons]) => cons !== newCons)
                   ),
                 ]
-              : [...this.flavors.entries(), [flavor.constructor, flavor]]
+              : [
+                  ...this.flavors,
+                  // Keys in pairs override the previous flavors, do we don't
+                  // need to filter here as above (performance).
+                  ...pairs,
+                ]
           ),
           this.heartbeater,
           this.isRoot
@@ -380,7 +393,7 @@ export class VC {
    */
   toString(withInstanceNumber = false) {
     const flavorsStr = compact([
-      withInstanceNumber && this.instanceNumber.toString(),
+      withInstanceNumber && this.instanceNumber,
       ...[...this.flavors.values()].map((flavor) => flavor.toDebugString()),
     ]).join(",");
     return (
