@@ -43,8 +43,8 @@ export async function join<TRec extends Readonly<Record<string, unknown>>>(
  * “join” into one. It's a word to describe having "one" from "many".
  *
  * What’s interesting is that, besides Promise-all leaks execution flows, it
- * still doesn’t trigger UnhandledPromiseRejection for them in case one of them
- * throws later, it just swallows all other exceptions.
+ * still doesn’t trigger unhandledRejection for them in case one of them throws
+ * later, it just swallows all other exceptions.
  *
  * I.e. Promise-all means "run all in parallel, if one throws - throw
  * immediately and let the others continue running in nowhere; if some of THAT
