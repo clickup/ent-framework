@@ -502,6 +502,7 @@ export function PrimitiveMixin<
           );
 
           if (updated) {
+            this.vc.cache(IDsCacheUpdatable).add(this[ID]);
             await mapJoin(
               this.constructor.INVERSES,
               async (inverse) =>
@@ -551,6 +552,7 @@ export function PrimitiveMixin<
           );
 
           if (deleted) {
+            this.vc.cache(IDsCacheUpdatable).add(this[ID]);
             await mapJoin(this.constructor.INVERSES, async (inverse) =>
               inverse.afterDelete(
                 this.vc,
