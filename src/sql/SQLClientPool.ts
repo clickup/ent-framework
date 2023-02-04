@@ -1,7 +1,7 @@
 import range from "lodash/range";
 import type { Connection, PoolClient, PoolConfig } from "pg";
 import { Pool } from "pg";
-import type { Loggers } from "../abstract/Client";
+import type { Loggers } from "../abstract/Loggers";
 import { runInVoid, toFloatMs } from "../helpers/misc";
 import { SQLClient } from "./SQLClient";
 
@@ -52,16 +52,6 @@ export class SQLClientPool extends SQLClient {
     ended: boolean;
   };
 
-  protected override logGlobalError(
-    where: string,
-    e: unknown,
-    elapsed: number | null
-  ) {
-    if (!this.state.ended) {
-      super.logGlobalError(where, e, elapsed);
-    }
-  }
-
   protected async acquireConn() {
     return this.state.pool.connect();
   }
@@ -106,12 +96,22 @@ export class SQLClientPool extends SQLClient {
         })
         .on("error", (e) => {
           // Having this hook prevents node from crashing.
-          this.logGlobalError("SQLClientPool", e, null);
+          this.logSwallowedError('Pool.on("error")', e, null);
         }),
       clients: new Set(),
       prewarmTimeout: null,
       ended: false,
     };
+  }
+
+  override logSwallowedError(
+    where: string,
+    e: unknown,
+    elapsed: number | null
+  ) {
+    if (!this.state.ended) {
+      super.logSwallowedError(where, e, elapsed);
+    }
   }
 
   override async end(forceDisconnect?: boolean) {
@@ -153,10 +153,10 @@ export class SQLClientPool extends SQLClient {
         runInVoid(
           this.state.pool
             .query(query)
-            .catch((e) =>
-              this.logGlobalError(
-                "SQLClientPool.prewarm()",
-                e,
+            .catch((error) =>
+              this.logSwallowedError(
+                "prewarm()",
+                error,
                 toFloatMs(process.hrtime(startTime))
               )
             )

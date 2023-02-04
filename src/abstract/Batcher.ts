@@ -1,6 +1,8 @@
 import delay from "delay";
-import { runInVoid, toFloatMs } from "../helpers/misc";
-import type { Loggers } from "./Client";
+import type { DeferredPromise } from "p-defer";
+import pDefer from "p-defer";
+import { DefaultMap } from "../helpers/DefaultMap";
+import { runInVoid } from "../helpers/misc";
 import type { QueryAnnotation } from "./QueryAnnotation";
 
 export const DEFAULT_MAX_BATCH_SIZE = 100;
@@ -115,20 +117,13 @@ export class Batcher<TInput, TOutput> {
   // key -> input
   private queuedInputs = new Map<string, TInput>();
 
-  // key -> handler
-  private queuedHandlers = new Map<
+  // key -> DeferredPromise[]
+  private queuedDefers = new DefaultMap<
     string,
-    {
-      startTime: [number, number];
-      callbacks: Array<{
-        annotation: QueryAnnotation;
-        resolve: (output: TOutput | PromiseLike<TOutput>) => void;
-        reject: (e: any) => void;
-      }>;
-    }
+    Array<DeferredPromise<TOutput>>
   >();
 
-  // dedupped annotations; each annotation identifies a caller of the query
+  // Dedupped annotations; each annotation identifies a caller of the query.
   private queuedAnnotations = new Map<string, QueryAnnotation>();
 
   private batchDelayMs: () => number;
@@ -139,10 +134,10 @@ export class Batcher<TInput, TOutput> {
     }
 
     const inputs = this.queuedInputs;
-    const handlers = this.queuedHandlers;
+    const defers = this.queuedDefers;
     const annotations = [...this.queuedAnnotations.values()];
     this.queuedInputs = new Map();
-    this.queuedHandlers = new Map();
+    this.queuedDefers = new DefaultMap();
     this.queuedAnnotations = new Map();
 
     let outputs = new Map<string, TOutput | undefined>();
@@ -165,49 +160,27 @@ export class Batcher<TInput, TOutput> {
             errors
           );
         } else {
-          for (const key of handlers.keys()) {
+          for (const key of defers.keys()) {
             errors.set(key, e);
           }
         }
       }
     }
 
-    for (const [key, handler] of handlers.entries()) {
+    for (const [key, defersOfKey] of defers.entries()) {
       const error = errors.get(key);
       const output = outputs.get(key);
-      try {
-        if (error === undefined) {
-          const outputOrDefault =
-            output === undefined ? this.runner.default : output;
-          for (const callbacks of handler.callbacks) {
-            // There are typically multiple callers waiting for the query results
-            // (due to e.g. same-ID queries coalescing).
-            callbacks.resolve(outputOrDefault);
-          }
-        } else {
-          for (const callbacks of handler.callbacks) {
-            callbacks.reject(error);
-          }
+      if (error === undefined) {
+        const outputOrDefault =
+          output === undefined ? this.runner.default : output;
+        for (const { resolve } of defersOfKey) {
+          // There are typically multiple callers waiting for the query results
+          // (due to e.g. same-ID queries coalescing).
+          resolve(outputOrDefault);
         }
-      } finally {
-        if (this.entInputLogger) {
-          const input = inputs.get(key);
-          for (const { annotation } of handler.callbacks) {
-            this.entInputLogger({
-              annotation,
-              runnerName: this.runner.constructor.name,
-              shard: this.runner.shardName,
-              table: this.runner.name,
-              key,
-              dedup: handler.callbacks.length,
-              batchFactor: inputs.size,
-              input,
-              output,
-              elapsed: toFloatMs(process.hrtime(handler.startTime)),
-              error: "" + error,
-              isMaster: this.runner.isMaster,
-            });
-          }
+      } else {
+        for (const { reject } of defersOfKey) {
+          reject(error);
         }
       }
     }
@@ -215,7 +188,6 @@ export class Batcher<TInput, TOutput> {
 
   constructor(
     private runner: Runner<TInput, TOutput>,
-    private entInputLogger?: Loggers["entInputLogger"],
     private maxBatchSize: number = 0,
     batchDelayMs: number | (() => number) = 0
   ) {
@@ -228,55 +200,48 @@ export class Batcher<TInput, TOutput> {
   }
 
   async run(input: TInput, annotation: QueryAnnotation): Promise<TOutput> {
-    const startTime = this.entInputLogger
-      ? process.hrtime()
-      : ([0, 0] as [number, number]); // can save up to ~7 cpu ms
+    const key = this.runner.key(input);
+    const delay = this.batchDelayMs();
 
-    return new Promise((resolve, reject) => {
-      const key = this.runner.key(input);
+    // Queue return promise of this method.
+    const defer = pDefer<TOutput>();
+    this.queuedDefers.getOrAdd(key, Array).push(defer);
 
-      let handler = this.queuedHandlers.get(key);
-      if (handler === undefined) {
-        handler = { startTime, callbacks: [] };
-        this.queuedHandlers.set(key, handler);
-      }
+    // In case of dedupping by key, prefer the last value. E.g. if 2 UPDATEs
+    // for the same ID have different values, then the last one will win, not
+    // the 1st one.
+    this.queuedInputs.set(key, input);
 
-      handler.callbacks.push({ annotation, resolve, reject });
+    // Annotations are dedupped by their content.
+    this.queuedAnnotations.set(
+      annotation.trace +
+        annotation.vc +
+        annotation.debugStack +
+        annotation.whyClient,
+      annotation
+    );
 
-      // In case of dedupping by key, prefer the last value. E.g. if 2 UPDATEs
-      // for the same ID have different values, then the last one will win, not
-      // the 1st one.
-      this.queuedInputs.set(key, input);
-
-      this.queuedAnnotations.set(
-        annotation.trace +
-          annotation.vc +
-          annotation.debugStack +
-          annotation.whyClient,
-        annotation
+    if (this.queuedInputs.size >= this.maxBatchSize) {
+      runInVoid(RESOLVED_PROMISE.then(this.flushQueue));
+    } else if (this.queuedInputs.size === 1) {
+      // Defer calling of flushQueue() to the "end of the event loop's spin", to
+      // have a chance to collect more run() calls for it to execute. We
+      // actually defer twice (to the end of microtasks sub-loop and then once
+      // again), just in case: the original DataLoader library wraps the
+      // nextTick() call into a "global resolved Promise" object, so we do the
+      // same here blindly. See some of details here:
+      // https://github.com/graphql/dataloader/blob/fae38f14702e925d1e59051d7e5cb3a9a78bfde8/src/index.js#L234-L241
+      // https://stackoverflow.com/a/27648394
+      runInVoid(
+        RESOLVED_PROMISE.then(() =>
+          delay > 0
+            ? setTimeout(() => runInVoid(this.flushQueue()), delay)
+            : process.nextTick(this.flushQueue)
+        )
       );
+    }
 
-      if (this.queuedInputs.size >= this.maxBatchSize) {
-        runInVoid(this.flushQueue);
-      } else if (this.queuedInputs.size === 1) {
-        // Defer calling of flushQueue() to the "end of the event loop's spin",
-        // to have a chance to collect more run() calls for it to execute. We
-        // actually defer twice (to the end of microtasks sub-loop and then once
-        // again), just in case: the original DataLoader library wraps the
-        // nextTick() call into a "global resolved Promise" object, so we do the
-        // same here blindly. See some of details here:
-        // https://github.com/graphql/dataloader/blob/fae38f14702e925d1e59051d7e5cb3a9a78bfde8/src/index.js#L234-L241
-        // https://stackoverflow.com/a/27648394
-        const delay = this.batchDelayMs();
-        runInVoid(
-          RESOLVED_PROMISE.then(() =>
-            delay
-              ? setTimeout(() => runInVoid(this.flushQueue()), delay)
-              : process.nextTick(this.flushQueue)
-          )
-        );
-      }
-    });
+    return defer.promise;
   }
 
   private async runSingleForEach(

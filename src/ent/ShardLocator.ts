@@ -1,7 +1,7 @@
 import type { Client } from "../abstract/Client";
 import type { Cluster } from "../abstract/Cluster";
 import type { Shard } from "../abstract/Shard";
-import ShardError from "../abstract/ShardError";
+import { ShardError } from "../abstract/ShardError";
 import { copyStack, mapJoin } from "../helpers/misc";
 import { ID } from "../types";
 import type { ShardAffinity } from "./Configuration";

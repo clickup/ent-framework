@@ -206,6 +206,7 @@ export function PrimitiveMixin<
 
         let actuallyInsertedID = null;
         let isKnownServerState = true;
+        let lastError: unknown = undefined;
         try {
           // Preliminarily insert inverse rows to inverses table, even before we
           // insert the main Ent. This avoids race conditions for cases when
@@ -245,6 +246,9 @@ export function PrimitiveMixin<
             { ...input, [ID]: id2 }
           );
           return actuallyInsertedID;
+        } catch (e: unknown) {
+          lastError = e;
+          throw e;
         } finally {
           // There are 3 failure conditions here:
           // 1. There was an exception, but we don't know the state of PG server
@@ -263,6 +267,11 @@ export function PrimitiveMixin<
             // looks scary, but it's exactly how the code looked like in FB; in
             // real lifer, there is always an "inverses fixer" service which
             // removes orphaned inverses asynchronously.
+            this.CLUSTER.loggers.swallowedErrorLogger({
+              where: `PrimitiveMixin.insertIfNotExists(${this.name}), inverses undo`,
+              error: lastError ?? Error("duplicate key on insert"),
+              elapsed: null,
+            });
             await mapJoin(inverseRows, async ({ inverse, id1, id2 }) =>
               inverse.afterDelete(vc, id1, id2).catch(() => {})
             );

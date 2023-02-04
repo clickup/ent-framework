@@ -105,7 +105,7 @@ export const master = new SQLClientPool(
       password: process.env.PGPASSWORD || process.env.DB_PASS,
     },
   },
-  {}
+  { swallowedErrorLogger: () => {} }
 );
 
 export const testCluster = new Cluster(

@@ -7,8 +7,9 @@ import hash from "object-hash";
 import Memoize from "../helpers/Memoize";
 import { mapJoin, runInVoid } from "../helpers/misc";
 import type { Client } from "./Client";
+import type { Loggers } from "./Loggers";
 import { Shard } from "./Shard";
-import ShardError from "./ShardError";
+import { ShardError } from "./ShardError";
 
 /**
  * Island is 1 master + N replicas.
@@ -85,8 +86,9 @@ export class Cluster<TClient extends Client> {
   };
   private firstIsland;
 
-  readonly options: ClusterOptions;
   readonly islands: ReadonlyMap<number, Island<TClient>>;
+  readonly options: ClusterOptions;
+  readonly loggers: Loggers;
 
   constructor(
     islands: ReadonlyArray<Island<TClient>>,
@@ -103,6 +105,7 @@ export class Cluster<TClient extends Client> {
     };
     this.firstIsland = firstIsland;
     this.islands = new Map(islands.map((island) => [island.no, island]));
+    this.loggers = this.firstIsland.master.loggers;
   }
 
   /**

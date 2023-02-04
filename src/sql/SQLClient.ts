@@ -1,9 +1,9 @@
 import type { QueryResult, QueryResultRow } from "pg";
-import type { Loggers } from "../abstract/Client";
 import { Client } from "../abstract/Client";
+import type { Loggers } from "../abstract/Loggers";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 
-import ShardError from "../abstract/ShardError";
+import { ShardError } from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
 import {
   nullthrows,
@@ -57,15 +57,6 @@ export abstract class SQLClient extends Client {
   protected abstract acquireConn(): Promise<SQLClientConn>;
 
   protected abstract releaseConn(conn: SQLClientConn): void;
-
-  protected logGlobalError(where: string, e: unknown, elapsed: number | null) {
-    // eslint-disable-next-line no-console
-    console.log(
-      `SQLClient(${this.name}): ${where}` +
-        (elapsed !== null ? ` after ${Math.round(elapsed)} ms` : "") +
-        `: ${e}`
-    );
-  }
 
   constructor(
     name: string,
@@ -280,15 +271,15 @@ export abstract class SQLClient extends Client {
         })
         .filter((no): no is number => no !== null)
         .sort();
-    } catch (e: unknown) {
+    } catch (error: unknown) {
       // Being unable to access a DB is not a critical error here, we'll just
       // miss some shards (and other shards will work). DO NOT throw through
       // here yet! This needs to be addressed holistically and with careful
       // retries. Also, we have shards rediscovery every N seconds, so a missing
       // island will self-heal eventually.
-      this.logGlobalError(
+      this.logSwallowedError(
         "shardNos()",
-        e,
+        error,
         toFloatMs(process.hrtime(startTime))
       );
       return [];

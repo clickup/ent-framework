@@ -1,47 +1,9 @@
 import Memoize from "../helpers/Memoize";
 import type { Runner } from "./Batcher";
 import { Batcher } from "./Batcher";
-import type { QueryAnnotation } from "./QueryAnnotation";
+import type { Loggers } from "./Loggers";
 import type { Schema } from "./Schema";
 import type { TimelineManager } from "./TimelineManager";
-
-export interface ClientQueryLoggerProps {
-  annotations: QueryAnnotation[];
-  connID: string;
-  op: string;
-  shard: string;
-  table: string;
-  batchFactor: number;
-  msg: string;
-  output: any;
-  elapsed: number;
-  error: string | undefined;
-  isMaster: boolean;
-  backendPID: number;
-  backend: string;
-}
-
-export interface EntInputLoggerProps {
-  annotation: QueryAnnotation;
-  runnerName: string;
-  shard: string;
-  table: string;
-  key: string;
-  dedup: number;
-  batchFactor: number;
-  input: any;
-  output: any;
-  elapsed: number;
-  error: string | undefined;
-  isMaster: boolean;
-}
-
-export interface Loggers {
-  // Logs actual queries to the database (e.g. raw SQL queries, after batching).
-  clientQueryLogger?: (props: ClientQueryLoggerProps) => void;
-  // Logs input queries for every shard (i.e. before batching).
-  entInputLogger?: (props: EntInputLoggerProps) => void;
-}
 
 /**
  * Client is a shard-name aware abstraction which sends an actual query and
@@ -129,11 +91,26 @@ export abstract class Client {
     const runner = runnerCreator();
     return new Batcher<TInput, TOutput>(
       runner,
-      this.loggers.entInputLogger,
       runner.maxBatchSize,
       this.batchDelayMs
     );
   }
+
+  /**
+   * Calls swallowedErrorLogger() doing some preliminary amendment.
+   */
+  public logSwallowedError(
+    where: string,
+    error: unknown,
+    elapsed: number | null
+  ) {
+    this.loggers.swallowedErrorLogger({
+      where: `${this.constructor.name}(${this.name}): ${where}`,
+      error,
+      elapsed,
+    });
+  }
+
   /**
    * A convenience method to put connections prewarming logic to. The idea is to
    * keep the needed number of open connections and also, in each connection,

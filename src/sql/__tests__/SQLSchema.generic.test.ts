@@ -3,7 +3,7 @@ import waitForExpect from "wait-for-expect";
 import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
 import { MASTER, STALE_REPLICA } from "../../abstract/Shard";
-import ShardError from "../../abstract/ShardError";
+import { ShardError } from "../../abstract/ShardError";
 import { Timeline } from "../../abstract/Timeline";
 import { join, nullthrows } from "../../helpers/misc";
 import { ID } from "../../types";
