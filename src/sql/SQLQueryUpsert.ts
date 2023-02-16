@@ -1,6 +1,6 @@
 import pickBy from "lodash/pickBy";
-import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { QueryBase } from "../abstract/QueryBase";
 import type { Schema } from "../abstract/Schema";
 import { nullthrows } from "../helpers/misc";
 import type { InsertInput, Table } from "../types";

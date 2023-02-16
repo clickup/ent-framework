@@ -39,11 +39,6 @@ export abstract class Runner<TInput, TOutput> {
   abstract readonly shardName: string;
 
   /**
-   * Is it a master or a replica connection.
-   */
-  abstract readonly isMaster: boolean;
-
-  /**
    * Method runSingle is to e.g. produce simple SQL requests when we have only
    * one input to process, not many.
    */

@@ -45,13 +45,13 @@ export abstract class SQLClient extends Client {
     this.maxReplicationLagMs ?? DEFAULT_MAX_REPLICATION_LAG_MS,
     this.isMaster ? null : DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS,
     async () =>
-      this.query(
-        "SELECT 'TIMELINE_POS_REFRESH'",
-        "TIMELINE_POS_REFRESH",
-        "pg_catalog",
-        [],
-        1
-      )
+      this.query({
+        query: "SELECT 'TIMELINE_POS_REFRESH'",
+        isWrite: false,
+        annotations: [],
+        op: "TIMELINE_POS_REFRESH",
+        table: "pg_catalog",
+      })
   );
 
   protected abstract acquireConn(): Promise<SQLClientConn>;
@@ -83,26 +83,37 @@ export abstract class SQLClient extends Client {
     }
   }
 
-  async query<TRow>(
-    query: string | { query: string; hints: Record<string, string> },
-    op: string,
-    table: string,
-    annotations: QueryAnnotation[],
-    batchFactor: number
-  ): Promise<TRow[]> {
+  async query<TRow>({
+    query,
+    hints,
+    isWrite,
+    annotations,
+    op,
+    table,
+    batchFactor,
+  }: {
+    query: string;
+    hints?: Record<string, string>;
+    isWrite: boolean;
+    annotations: QueryAnnotation[];
+    op: string;
+    table: string;
+    batchFactor?: number;
+  }): Promise<TRow[]> {
+    annotations ??= [];
+
+    query = query.trimEnd();
+
     const queriesPrologue: string[] = [];
     const queriesEpilogue: string[] = [];
     const queriesRollback: string[] = [];
 
     // Prepend per-query hints to the prologue (if any); they will be logged.
-    if (typeof query === "object") {
+    if (hints) {
       queriesPrologue.unshift(
-        ...Object.entries(query.hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
+        ...Object.entries(hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
       );
-      query = query.query;
     }
-
-    query = query.trimEnd();
 
     // The query which is logged to the logging infra. For more brief messages,
     // we don't log internal hints (this.hints) and search_path; see below.
@@ -128,12 +139,16 @@ export abstract class SQLClient extends Client {
       `SET LOCAL search_path TO ${this.shardName}, public`
     );
 
-    if (this.isMaster) {
-      // Why BEGIN...COMMIT for master queries? See here:
-      // https://www.postgresql.org/message-id/20220803.163217.1789690807623885906.horikyota.ntt%40gmail.com
+    // Why BEGIN...COMMIT for write queries? See here:
+    // https://www.postgresql.org/message-id/20220803.163217.1789690807623885906.horikyota.ntt%40gmail.com
+    if (isWrite) {
       queriesPrologue.unshift("BEGIN");
       queriesRollback.push("ROLLBACK");
       queriesEpilogue.push("COMMIT");
+    }
+
+    if (this.isMaster) {
+      // For master, we read its WAL LSN after each query.
       queriesEpilogue.push("SELECT pg_current_wal_insert_lsn()");
     } else {
       // For replica, we read its WAL LSN as a piggy pack to each query.
@@ -221,7 +236,7 @@ export abstract class SQLClient extends Client {
           op,
           shard: this.shardName,
           table,
-          batchFactor,
+          batchFactor: batchFactor ?? 1,
           msg: debugQueryWithHints,
           output: res ? res : undefined,
           elapsed: toFloatMs(process.hrtime(startTime)),
@@ -256,13 +271,13 @@ export abstract class SQLClient extends Client {
     const startTime = process.hrtime();
     try {
       // e.g. sh0000, sh0123 and not e.g. sh1 or sh12345678
-      const rows = await this.query<Partial<Record<string, string>>>(
-        this.shards.discoverQuery,
-        "SHARDS",
-        "shards",
-        [],
-        1
-      );
+      const rows = await this.query<Partial<Record<string, string>>>({
+        query: this.shards.discoverQuery,
+        isWrite: false,
+        annotations: [],
+        op: "SHARDS",
+        table: "pg_catalog",
+      });
       return rows
         .map((row) => Object.values(row)[0])
         .map((name) => {
