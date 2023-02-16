@@ -1,5 +1,5 @@
-import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { QueryBase } from "../abstract/QueryBase";
 import type { Schema } from "../abstract/Schema";
 import type { CountInput, Table } from "../types";
 import type { SQLClient } from "./SQLClient";

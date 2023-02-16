@@ -1,6 +1,5 @@
 import { Client } from "../../../abstract/Client";
 import { Cluster, Island } from "../../../abstract/Cluster";
-import type { QueryAnnotation } from "../../../abstract/QueryAnnotation";
 import { nullthrows } from "../../../helpers/misc";
 import buildShape from "../../helpers/buildShape";
 import type { SQLClient } from "../../SQLClient";
@@ -31,21 +30,10 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
   }
 
   async query<TRes>(
-    query: string,
-    op: string,
-    table: string,
-    annotations: QueryAnnotation[],
-    batchFactor: number
+    params: Parameters<SQLClient["query"]>[0]
   ): Promise<TRes[]> {
-    this.queries.push(query);
-    const res = await this.client.query<TRes>(
-      query,
-      op,
-      table,
-      annotations,
-      batchFactor
-    );
-    return res;
+    this.queries.push(params.query);
+    return this.client.query<TRes>(params);
   }
 
   async shardNos() {
@@ -84,7 +72,15 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
   async rows(query: string, ...values: any[]): Promise<any[]> {
     query = query.replace(/%T/g, (_) => escapeIdent(values.shift()));
     query = query.replace(/\?/g, (_) => escapeString(values.shift()));
-    return nullthrows(await this.client.query<any>(query, "", "", [], 1));
+    return nullthrows(
+      await this.client.query<any>({
+        query,
+        isWrite: true, // because used for BOTH read and write queries in tests
+        annotations: [],
+        op: "",
+        table: "",
+      })
+    );
   }
 }
 

@@ -1,6 +1,6 @@
 import last from "lodash/last";
-import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { QueryBase } from "../abstract/QueryBase";
 import type { Schema } from "../abstract/Schema";
 import type { LoadByInput, Row, Table, UniqueKey } from "../types";
 import type { SQLClient } from "./SQLClient";

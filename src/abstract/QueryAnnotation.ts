@@ -19,7 +19,10 @@ export type WhyClient =
   | "master-bc-replica-not-caught-up";
 
 /**
- * A debug annotation of an object which runs a query.
+ * A debug annotation from each individual place which initiated the query. When
+ * multiple queries are grouped into one large query by Ent Framework (even
+ * cross-async-trace and cross-VC), the resulting large query is accompanied
+ * with all those annotations.
  */
 export interface QueryAnnotation {
   /** Trace ID of the series of the queries. */

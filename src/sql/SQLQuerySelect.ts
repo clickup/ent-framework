@@ -1,6 +1,6 @@
 import { inspect } from "util";
-import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { QueryBase } from "../abstract/QueryBase";
 import { hash, hasKey } from "../helpers/misc";
 import type { Order, Row, SelectInput, Table } from "../types";
 import type { SQLClient } from "./SQLClient";

@@ -41,7 +41,6 @@ export abstract class SQLRunner<
   private stringifiers: Partial<Record<string, (value: unknown) => string>> =
     {};
   readonly shardName = this.client.shardName;
-  readonly isMaster = this.client.isMaster;
 
   override ["constructor"]!: typeof SQLRunner;
 
@@ -52,13 +51,14 @@ export abstract class SQLRunner<
     annotations: QueryAnnotation[],
     batchFactor: number
   ) {
-    const rows = await this.client.query<TOutput>(
-      sql,
-      this.op,
-      this.name,
+    const rows = await this.client.query<TOutput>({
+      query: sql,
+      isWrite: this.constructor.IS_WRITE,
       annotations,
-      batchFactor
-    );
+      op: this.op,
+      table: this.name,
+      batchFactor,
+    });
 
     // Apply parsers only for known field names. Notice that TOutput is not
     // necessarily a type of the table's row, it can be something else (in e.g.

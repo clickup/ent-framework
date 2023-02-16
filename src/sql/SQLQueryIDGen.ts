@@ -1,5 +1,5 @@
-import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { QueryBase } from "../abstract/QueryBase";
 import { nullthrows } from "../helpers/misc";
 import type { Table } from "../types";
 import { ID } from "../types";

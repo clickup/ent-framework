@@ -1,5 +1,5 @@
-import { QueryBase } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { QueryBase } from "../abstract/QueryBase";
 import type { Schema } from "../abstract/Schema";
 import { hash } from "../helpers/misc";
 import type { DeleteWhereInput, Table } from "../types";
