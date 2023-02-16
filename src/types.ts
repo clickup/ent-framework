@@ -256,6 +256,11 @@ export type SelectInput<TTable extends Table> = {
 export type CountInput<TTable extends Table> = Where<TTable>;
 
 /**
+ * Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
+ */
+export type ExistsInput<TTable extends Table> = Where<TTable>;
+
+/**
  * Table -> { id: ["1", "2", "3"], ... }
  */
 export type DeleteWhereInput<TTable extends Table> = { [ID]: string[] } & Omit<

@@ -9,6 +9,7 @@ import type { OmitNew } from "../../helpers/misc";
 import { hasKey, join, mapJoin } from "../../helpers/misc";
 import type {
   CountInput,
+  ExistsInput,
   InsertInput,
   LoadByInput,
   Order,
@@ -137,6 +138,12 @@ export type PrimitiveClass<
    * fields mentioned in the query.
    */
   count: (vc: VC, where: CountInput<TTable>) => Promise<number>;
+
+  /**
+   * A more optimal approach than count() when we basically just need to know
+   * whether we have "0 or not 0" rows.
+   */
+  exists: (vc: VC, where: ExistsInput<TTable>) => Promise<boolean>;
 
   /**
    * TS requires us to have a public constructor to infer instance types in
@@ -481,6 +488,24 @@ export function PrimitiveMixin<
       );
 
       return sum(counts);
+    }
+
+    static async exists(vc: VC, where: ExistsInput<TTable>) {
+      const [shards] = await join([
+        this.SHARD_LOCATOR.multiShardsFromInput(vc, where, "exists"),
+        vc.heartbeater.heartbeat(),
+      ]);
+
+      const exists = await mapJoin(shards, async (shard) =>
+        shard.run(
+          this.SCHEMA.exists(where),
+          vc.toAnnotation(),
+          vc.timeline(shard, this.SCHEMA.name),
+          vc.freshness
+        )
+      );
+
+      return exists.some((v) => v);
     }
 
     async updateOriginal(input: UpdateInput<TTable>) {

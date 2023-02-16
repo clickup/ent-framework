@@ -2,6 +2,7 @@ import type { Query } from "../abstract/Query";
 import { Schema } from "../abstract/Schema";
 import type {
   CountInput,
+  ExistsInput,
   InsertInput,
   LoadByInput,
   Row,
@@ -12,6 +13,7 @@ import type {
 } from "../types";
 import { SQLQueryCount } from "./SQLQueryCount";
 import { SQLQueryDelete } from "./SQLQueryDelete";
+import { SQLQueryExists } from "./SQLQueryExists";
 import { SQLQueryIDGen } from "./SQLQueryIDGen";
 import { SQLQueryInsert } from "./SQLQueryInsert";
 import { SQLQueryLoad } from "./SQLQueryLoad";
@@ -58,5 +60,9 @@ export class SQLSchema<
 
   count(input: CountInput<TTable>): Query<number> {
     return new SQLQueryCount(this, input);
+  }
+
+  exists(input: ExistsInput<TTable>): Query<boolean> {
+    return new SQLQueryExists(this, input);
   }
 }

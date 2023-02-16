@@ -3,7 +3,13 @@ import { MASTER } from "../abstract/Shard";
 import type { VC } from "./VC";
 import { VCWithQueryCache } from "./VCFlavor";
 
-const OPS = ["loadNullable", "loadByNullable", "select", "count"] as const;
+const OPS = [
+  "loadNullable",
+  "loadByNullable",
+  "select",
+  "count",
+  "exists",
+] as const;
 
 export type AnyClass = new (...args: any) => any;
 

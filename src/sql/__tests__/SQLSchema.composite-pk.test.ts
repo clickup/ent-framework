@@ -117,6 +117,12 @@ test("single ops", async () => {
   }
 
   {
+    const res = await shardRun(schema.exists({ user_id: "3" }));
+    master.toMatchSnapshot();
+    expect(res).toStrictEqual(true);
+  }
+
+  {
     const res = await shardRun(
       schema.select({ where: { user_id: "3" }, limit: 10 })
     );
@@ -200,6 +206,16 @@ test("batched ops", async () => {
     ]);
     master.toMatchSnapshot();
     expect(res).toEqual([1, 2]);
+  }
+
+  {
+    const res = await join([
+      shardRun(schema.exists({ user_id: "3" })),
+      shardRun(schema.exists({ tenant_id: "1" })),
+      shardRun(schema.exists({ tenant_id: "199999" })),
+    ]);
+    master.toMatchSnapshot();
+    expect(res).toEqual([true, true, false]);
   }
 
   {

@@ -1,6 +1,7 @@
 import type { Client } from "../../abstract/Client";
 import type {
   CountInput,
+  ExistsInput,
   InsertInput,
   LoadByInput,
   Order,
@@ -93,6 +94,14 @@ export function CacheMixin<
         .cache(QueryCache)
         .through(this, "count", JSON.stringify(where), async () =>
           super.count(vc, where)
+        );
+    }
+
+    static override async exists(vc: VC, where: ExistsInput<TTable>) {
+      return vc
+        .cache(QueryCache)
+        .through(this, "exists", JSON.stringify(where), async () =>
+          super.exists(vc, where)
         );
     }
 

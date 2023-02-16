@@ -1,6 +1,7 @@
 import type { Schema } from "../abstract/Schema";
 import type {
   CountInput,
+  ExistsInput,
   LoadByInput,
   Order,
   Table,
@@ -23,6 +24,7 @@ export interface EntClass<TTable extends Table = any> {
   loadNullable(vc: VC, id: string): Promise<Ent | null>;
   loadIfReadableNullable(vc: VC, id: string): Promise<Ent | null>;
   count(vc: VC, where: CountInput<TTable>): Promise<number>;
+  exists(vc: VC, where: ExistsInput<TTable>): Promise<boolean>;
   select(
     vc: VC,
     where: Where<TTable>,

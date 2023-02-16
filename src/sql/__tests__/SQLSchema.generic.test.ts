@@ -896,6 +896,7 @@ test("select and count batched", async () => {
     shardRun(schema.select(input)),
     shardRun(schema.select({ where: { name: "b" }, limit: 10 })),
   ]);
+
   const [count1, count2, count3, count4] = await join([
     shardRun(schema.count(input.where!)),
     shardRun(schema.count(input.where!)),
@@ -904,6 +905,14 @@ test("select and count batched", async () => {
   ]);
   const count5 = await shardRun(schema.count(input.where!));
 
+  const [exists1, exists2, exists3, exists4] = await join([
+    shardRun(schema.exists(input.where!)),
+    shardRun(schema.exists(input.where!)),
+    shardRun(schema.exists({ ...input.where!, url_name: "a1" })),
+    shardRun(schema.exists({ name: "b" })),
+  ]);
+  const exists5 = await shardRun(schema.exists(input.where!));
+
   master.toMatchSnapshot();
   expect(rows1).toMatchObject([{ id: id1 }, { id: id2 }]);
   expect(count1).toEqual(2);
@@ -911,6 +920,11 @@ test("select and count batched", async () => {
   expect(count3).toEqual(1);
   expect(count4).toEqual(0);
   expect(count5).toEqual(2);
+  expect(exists1).toStrictEqual(true);
+  expect(exists2).toStrictEqual(true);
+  expect(exists3).toStrictEqual(true);
+  expect(exists4).toStrictEqual(false);
+  expect(exists5).toStrictEqual(true);
 });
 
 test("select custom", async () => {

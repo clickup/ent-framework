@@ -492,6 +492,149 @@ SELECT COUNT(?) AS count FROM "schema""test"
     OR url_name IS NULL))
     AND NOT (name='?'
     AND (? < '?'))
+
+SELECT EXISTS (SELECT true FROM "schema""test"
+  WHERE name=ANY('{"a
+a","a\\\\a"}')
+    AND some_flag=true
+    AND (name=ANY('{"a
+a","a\\\\a"}')
+    AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('kk')
+    AND url_name IS NOT NULL)
+    AND true/*empty_NOT_IN*/
+    AND ('5' > '2')
+    AND (name>='a'
+    AND name<='z'))
+    AND (name='a
+a'
+    OR name='a\\a'
+    OR false/*empty_ANY*/
+    OR (url_name='zzz'
+    OR url_name IS NULL))
+    AND NOT (name='zz'
+    AND (5 < '2')))
+  UNION ALL
+SELECT EXISTS (SELECT true FROM "schema""test"
+  WHERE name=ANY('{"a
+a","a\\\\a"}')
+    AND some_flag=true
+    AND url_name='a1'
+    AND (name=ANY('{"a
+a","a\\\\a"}')
+    AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('kk')
+    AND url_name IS NOT NULL)
+    AND true/*empty_NOT_IN*/
+    AND ('5' > '2')
+    AND (name>='a'
+    AND name<='z'))
+    AND (name='a
+a'
+    OR name='a\\a'
+    OR false/*empty_ANY*/
+    OR (url_name='zzz'
+    OR url_name IS NULL))
+    AND NOT (name='zz'
+    AND (5 < '2')))
+  UNION ALL
+SELECT EXISTS (SELECT true FROM "schema""test"
+  WHERE name='b')
+----
+SELECT EXISTS (SELECT true FROM "schema""test"
+  WHERE name=ANY('?')
+    AND some_flag=true
+    AND (name=ANY('?')
+    AND name<>'?'
+    AND name IS DISTINCT FROM '?'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('?')
+    AND url_name IS NOT NULL)
+    AND true
+    AND ('?' > '?')
+    AND (name>='?'
+    AND name<='?'))
+    AND (name='?'
+    OR name='?'
+    OR false
+    OR (url_name='?'
+    OR url_name IS NULL))
+    AND NOT (name='?'
+    AND (? < '?')))
+  UNION ALL
+SELECT EXISTS (SELECT true FROM "schema""test"
+  WHERE name=ANY('?')
+    AND some_flag=true
+    AND url_name='?'
+    AND (name=ANY('?')
+    AND name<>'?'
+    AND name IS DISTINCT FROM '?'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('?')
+    AND url_name IS NOT NULL)
+    AND true
+    AND ('?' > '?')
+    AND (name>='?'
+    AND name<='?'))
+    AND (name='?'
+    OR name='?'
+    OR false
+    OR (url_name='?'
+    OR url_name IS NULL))
+    AND NOT (name='?'
+    AND (? < '?')))
+  UNION ALL
+SELECT EXISTS (SELECT true FROM "schema""test"
+  WHERE name='?')
+
+SELECT EXISTS (SELECT true FROM "schema""test"
+  WHERE name=ANY('{"a
+a","a\\\\a"}')
+    AND some_flag=true
+    AND (name=ANY('{"a
+a","a\\\\a"}')
+    AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('kk')
+    AND url_name IS NOT NULL)
+    AND true/*empty_NOT_IN*/
+    AND ('5' > '2')
+    AND (name>='a'
+    AND name<='z'))
+    AND (name='a
+a'
+    OR name='a\\a'
+    OR false/*empty_ANY*/
+    OR (url_name='zzz'
+    OR url_name IS NULL))
+    AND NOT (name='zz'
+    AND (5 < '2')))
+----
+SELECT EXISTS (SELECT true FROM "schema""test"
+  WHERE name=ANY('?')
+    AND some_flag=true
+    AND (name=ANY('?')
+    AND name<>'?'
+    AND name IS DISTINCT FROM '?'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('?')
+    AND url_name IS NOT NULL)
+    AND true
+    AND ('?' > '?')
+    AND (name>='?'
+    AND name<='?'))
+    AND (name='?'
+    OR name='?'
+    OR false
+    OR (url_name='?'
+    OR url_name IS NULL))
+    AND NOT (name='?'
+    AND (? < '?')))
 "
 `;
 

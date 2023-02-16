@@ -108,6 +108,12 @@ test("single ops", async () => {
   }
 
   {
+    const res = await shardRun(schema.exists({ user_id: id3! }));
+    master.toMatchSnapshot();
+    expect(res).toStrictEqual(true);
+  }
+
+  {
     const res = await shardRun(
       schema.select({ where: { user_id: id3! }, limit: 10 })
     );
