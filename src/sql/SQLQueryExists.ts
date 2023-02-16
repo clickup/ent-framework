@@ -1,0 +1,83 @@
+import { QueryBase } from "../abstract/Query";
+import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import type { Schema } from "../abstract/Schema";
+import type { ExistsInput, Table } from "../types";
+import type { SQLClient } from "./SQLClient";
+import { SQLRunner } from "./SQLRunner";
+
+export class SQLQueryExists<TTable extends Table> extends QueryBase<
+  TTable,
+  ExistsInput<TTable>,
+  boolean,
+  SQLClient
+> {
+  protected readonly RUNNER_CLASS = SQLRunnerExists;
+}
+
+export class SQLRunnerExists<TTable extends Table> extends SQLRunner<
+  TTable,
+  ExistsInput<TTable>,
+  boolean
+> {
+  static override readonly IS_WRITE = false;
+  private builder;
+  readonly op = "EXISTS";
+  readonly default = false; // We just need something here.
+
+  constructor(schema: Schema<TTable>, client: SQLClient) {
+    super(schema, client);
+    this.builder = {
+      prefix: this.fmt("SELECT EXISTS (SELECT true FROM %T"),
+      func: (input: ExistsInput<TTable>) =>
+        this.buildOptionalWhere(this.schema.table, input),
+      suffix: this.fmt(")"),
+    };
+  }
+
+  override key(input: ExistsInput<TTable>): string {
+    // Coalesce equal queries.
+    return JSON.stringify(input);
+  }
+
+  async runSingle(
+    input: ExistsInput<TTable>,
+    annotations: QueryAnnotation[]
+  ): Promise<boolean> {
+    const sql =
+      this.builder.prefix + this.builder.func(input) + this.builder.suffix;
+    const res = await this.clientQuery<{ exists: boolean }>(
+      sql,
+      annotations,
+      1
+    );
+    return !!res[0].exists;
+  }
+
+  async runBatch(
+    inputs: Map<string, ExistsInput<TTable>>,
+    annotations: QueryAnnotation[]
+  ): Promise<Map<string, boolean>> {
+    // SELECT EXISTS(SELECT 1 FROM ... WHERE ...)
+    //   UNION ALL
+    // SELECT EXISTS(SELECT 1 FROM ... WHERE ...)
+    const sql = [...inputs.values()]
+      .map(
+        (input) =>
+          this.builder.prefix + this.builder.func(input) + this.builder.suffix
+      )
+      .join("\n  UNION ALL\n");
+    const rows = await this.clientQuery<{ i: string; exists: boolean }>(
+      sql,
+      annotations,
+      inputs.size
+    );
+    const outputs = new Map<string, boolean>();
+    let i = 0;
+    for (const key of inputs.keys()) {
+      outputs.set(key, !!rows[i].exists);
+      i++;
+    }
+
+    return outputs;
+  }
+}

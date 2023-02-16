@@ -161,6 +161,18 @@ test("select and count", async () => {
     text: ["c1", "c2", "c3"],
   });
   expect(count).toEqual(2);
+
+  const exists1 = await EntTestComment.exists(vc, {
+    post_id: post.id,
+    text: ["c1", "c2", "c3"],
+  });
+  expect(exists1).toStrictEqual(true);
+
+  const exists2 = await EntTestComment.exists(vc, {
+    post_id: post.id,
+    text: ["cNonExistent"],
+  });
+  expect(exists2).toStrictEqual(false);
 });
 
 test("selectChunked", async () => {

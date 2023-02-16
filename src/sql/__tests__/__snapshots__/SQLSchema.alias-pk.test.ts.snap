@@ -94,6 +94,16 @@ SELECT COUNT(?) AS count FROM "schema""test_alias"
 
 exports[`single ops 11`] = `
 "
+SELECT EXISTS (SELECT true FROM "schema""test_alias"
+  WHERE user_id='<id>')
+----
+SELECT EXISTS (SELECT true FROM "schema""test_alias"
+  WHERE user_id='?')
+"
+`;
+
+exports[`single ops 12`] = `
+"
 SELECT user_id, name, user_id AS id FROM "schema""test_alias"
   WHERE user_id='<id>'
   LIMIT 10

@@ -1,6 +1,7 @@
 import hash from "object-hash";
 import type {
   CountInput,
+  ExistsInput,
   InsertInput,
   LoadByInput,
   Row,
@@ -58,6 +59,7 @@ export abstract class Schema<
   abstract update(id: string, input: UpdateInput<TTable>): Query<boolean>;
   abstract select(input: SelectInput<TTable>): Query<Array<Row<TTable>>>;
   abstract count(input: CountInput<TTable>): Query<number>;
+  abstract exists(input: ExistsInput<TTable>): Query<boolean>;
 
   constructor(
     /** For SQL-like databases, it's likely a table name. */

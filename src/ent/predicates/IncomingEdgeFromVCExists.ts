@@ -68,9 +68,8 @@ export class IncomingEdgeFromVCExists<TEdgeTable extends Table>
       const filtered = ents.filter((ent) => this.entEdgeFilter!(ent as any));
       allow = filtered.length > 0;
     } else {
-      // Count is not privacy-checked (it doesn't fetch any row to be checked).
-      const entEdgeCount = await this.EntEdge.count(vc, where);
-      allow = !!entEdgeCount;
+      // Exists is not privacy-checked (it doesn't fetch any row to be checked).
+      allow = await this.EntEdge.exists(vc, where);
     }
 
     if (allow) {
