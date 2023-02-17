@@ -24,7 +24,6 @@ const PG_CODE_UNDEFINED_TABLE = "42P01";
  */
 export interface SQLClientConn {
   id?: number;
-  processID?: number | null;
   query<R extends QueryResultRow = any>(
     query: string
   ): Promise<Array<QueryResult<R>>>;
@@ -161,13 +160,11 @@ export abstract class SQLClient extends Client {
       const startTime = process.hrtime();
       let error: string | undefined;
       let connID: number | null = null;
-      let processID: number | null = null;
       let res: TRow[] | undefined;
 
       try {
         const conn = await this.acquireConn();
         connID = conn.id ?? 0;
-        processID = conn.processID ?? 0;
         try {
           if (query === "") {
             throw Error("Empty query passed to query()");
@@ -231,7 +228,6 @@ export abstract class SQLClient extends Client {
         this.loggers.clientQueryLogger?.({
           annotations,
           connID: "" + connID,
-          backendPID: processID ?? 0,
           backend: this.name,
           op,
           shard: this.shardName,

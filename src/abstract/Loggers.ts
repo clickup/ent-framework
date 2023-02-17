@@ -20,7 +20,6 @@ export interface ClientQueryLoggerProps {
   elapsed: number;
   error: string | undefined;
   isMaster: boolean;
-  backendPID: number;
   backend: string;
 }
 
