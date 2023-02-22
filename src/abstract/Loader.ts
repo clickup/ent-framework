@@ -2,10 +2,18 @@ import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 
 export interface Handler<TLoadArgs extends any[], TReturn> {
-  onCollect: (...args: TLoadArgs) => void;
+  onCollect: (...args: TLoadArgs) => void | "flush" | "wait";
   onWait?: () => Promise<void>;
   onFlush: (collected: number) => Promise<void>;
   onReturn: (...args: TLoadArgs) => TReturn;
+}
+
+interface LoaderSession<TLoadArgs extends any[], TReturn> {
+  handler: Handler<TLoadArgs, TReturn>;
+  defer: DeferredPromise<any>;
+  flush: DeferredPromise<void>;
+  collected: number;
+  scheduled: boolean;
 }
 
 /**
@@ -33,45 +41,45 @@ export interface Handler<TLoadArgs extends any[], TReturn> {
  * specific and Loader is completely abstract).
  */
 export class Loader<TLoadArgs extends any[], TReturn> {
-  private handler: Handler<TLoadArgs, TReturn> | null = null;
-  private defer: DeferredPromise<any> | null = null;
+  private session: LoaderSession<TLoadArgs, TReturn> | null = null;
   private RESOLVED_PROMISE = Promise.resolve();
-  private collected = 0;
 
   constructor(private handlerCreator: () => Handler<TLoadArgs, TReturn>) {}
 
   async load(...args: TLoadArgs) {
-    if (this.handler === null) {
-      this.handler = this.handlerCreator();
-    }
+    this.session ??= {
+      handler: this.handlerCreator(),
+      defer: pDefer<any>(),
+      flush: pDefer<void>(),
+      collected: 0,
+      scheduled: false,
+    };
 
-    const handler = this.handler;
-    this.collected++;
-    handler.onCollect(...args);
-    await this.waitFlush();
-    return handler.onReturn(...args);
-  }
-
-  private async waitFlush<TResult>(): Promise<TResult> {
-    if (this.defer === null) {
-      this.defer = pDefer<any>();
+    const session = this.session;
+    if (!session.scheduled) {
+      session.scheduled = true;
       this.RESOLVED_PROMISE.then(() => {
         process.nextTick(async () => {
-          const defer = this.defer!;
-          const handler = this.handler!;
-          await handler.onWait?.();
-          this.defer = null;
-          this.handler = null;
-          const collected = this.collected;
-          this.collected = 0;
-          handler
-            .onFlush(collected)
-            .then(defer.resolve.bind(defer))
-            .catch(defer.reject.bind(defer));
+          await Promise.race([
+            session.handler.onWait?.(),
+            session.flush.promise,
+          ]);
+          this.session = this.session === session ? null : this.session;
+          session.handler
+            .onFlush(session.collected)
+            .then(session.defer.resolve.bind(session.defer))
+            .catch(session.defer.reject.bind(session.defer));
         });
       }).catch(() => {});
     }
 
-    return this.defer.promise;
+    session.collected++;
+    if (session.handler.onCollect(...args) === "flush") {
+      this.session = this.session === session ? null : this.session;
+      session.flush.resolve();
+    }
+
+    await session.defer.promise;
+    return session.handler.onReturn(...args);
   }
 }
