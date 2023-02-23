@@ -10,10 +10,9 @@ export interface Handler<TLoadArgs extends any[], TReturn> {
 
 interface LoaderSession<TLoadArgs extends any[], TReturn> {
   handler: Handler<TLoadArgs, TReturn>;
-  defer: DeferredPromise<any>;
-  flush: DeferredPromise<void>;
+  flush: Promise<void>;
+  flushNow: DeferredPromise<void>;
   collected: number;
-  scheduled: boolean;
 }
 
 /**
@@ -42,44 +41,33 @@ interface LoaderSession<TLoadArgs extends any[], TReturn> {
  */
 export class Loader<TLoadArgs extends any[], TReturn> {
   private session: LoaderSession<TLoadArgs, TReturn> | null = null;
-  private RESOLVED_PROMISE = Promise.resolve();
 
   constructor(private handlerCreator: () => Handler<TLoadArgs, TReturn>) {}
 
   async load(...args: TLoadArgs) {
-    this.session ??= {
-      handler: this.handlerCreator(),
-      defer: pDefer<any>(),
-      flush: pDefer<void>(),
+    const session = (this.session ??= {
       collected: 0,
-      scheduled: false,
-    };
-
-    const session = this.session;
-    if (!session.scheduled) {
-      session.scheduled = true;
-      this.RESOLVED_PROMISE.then(() => {
+      handler: this.handlerCreator(),
+      flushNow: pDefer<void>(),
+      flush: new Promise((resolve) =>
         process.nextTick(async () => {
           await Promise.race([
             session.handler.onWait?.(),
-            session.flush.promise,
+            session.flushNow.promise,
           ]);
           this.session = this.session === session ? null : this.session;
-          session.handler
-            .onFlush(session.collected)
-            .then(session.defer.resolve.bind(session.defer))
-            .catch(session.defer.reject.bind(session.defer));
-        });
-      }).catch(() => {});
-    }
+          resolve(session.handler.onFlush(session.collected));
+        })
+      ),
+    });
 
     session.collected++;
     if (session.handler.onCollect(...args) === "flush") {
       this.session = this.session === session ? null : this.session;
-      session.flush.resolve();
+      session.flushNow.resolve();
     }
 
-    await session.defer.promise;
+    await session.flush;
     return session.handler.onReturn(...args);
   }
 }
