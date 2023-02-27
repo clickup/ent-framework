@@ -4,7 +4,7 @@ See also [Full API documentation](https://github.com/time-loop/slapdash/blob/mas
 
 ## How to Publish a New Version
 
-Use slapdash-engineering account from DashLane.
+Use engineering-slapdash account from 1Password.
 
     yarn login
     yarn publish
