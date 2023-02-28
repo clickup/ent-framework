@@ -18,9 +18,10 @@ export const GLOBAL_SHARD = "global_shard";
  * Defines Ent shard collocation to some Ent's field when this Ent is inserted.
  * The shard can always be shard 0 ("global shard"), be inferred based on the
  * value in other Ent field during the insertion ("colocation"), or, in case
- * colocation inference didn't succeed, be chosen randomly at insertion time
- * ("random shard"). E.g. a random shard can also be chosen in case an empty
- * array is passed to shard affinity (like "always fallback").
+ * colocation inference didn't succeed, be chosen pseudo-randomly at insertion
+ * time ("random shard"). E.g. a random shard can also be chosen in case an
+ * empty array is passed to shard affinity (like "always fallback"), or when a
+ * field's value points to a global shard.
  */
 export type ShardAffinity<
   TField extends string,
@@ -46,7 +47,27 @@ export type ShardAffinity<
  *    https://github.com/Microsoft/TypeScript/issues/31273
  */
 export class Configuration<TTable extends Table> {
-  /** Defines how to locate a shard at Ent insert time. See ShardAffinity. */
+  /** Defines how to locate a shard at Ent insert time. See ShardAffinity for
+   * more details.
+   *
+   * 1. GLOBAL_SHARD: places the Ent in the global shard (shard 0).
+   * 2. []: places the Ent in a random shard. The "randomness" of the "random
+   *    shard" is deterministic by the Ent's unique key at the moment of
+   *    insertion (if it's defined; otherwise completely random). This helps two
+   *    racy insert operations running concurrently to choose the same shard for
+   *    the Ent to be created in, so only one of them will win, instead of both
+   *    winning and mistakenly creating the Ent duplicates. I.e. having the same
+   *    value in unique key forces the engine to target the same "random" shard.
+   * 3. ["field1", "field2", ...]: places the Ent in the shard that is pointed
+   *    to by the value in field1 (if it's null, then field2 etc.).
+   *
+   * A special treatment is applied if a fieldN value in (3) points to the
+   * global shard. In such a case, the shard for the current Ent is chosen
+   * deterministic-randomly at insert time, as if [] is passed. This allows the
+   * Ent to refer other "owning" Ents of different types, some of which may be
+   * located in the global shard. Keep in mind that, to locate such an Ent
+   * pointing to another Ent in the global shard, an inverse for fieldN must be
+   * defined in most of the cases. */
   readonly shardAffinity!: ShardAffinity<IDFields<TTable>>;
   /** Inverses allow cross-shard foreign keys & cross-shard selection. If a
    * field points to an Ent in another shard, and we're e.g. selecting by a
