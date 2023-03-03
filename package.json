@@ -12,7 +12,7 @@
     "prepack": "yarn build"
   },
   "dependencies": {
-    "@swc/helpers": "^0.4.3",
+    "@swc/helpers": "^0.4.14",
     "delay": "^4.4.1",
     "object-hash": "^2.2.0",
     "p-defer": "^3.0.0",
