@@ -7,7 +7,6 @@ import type { QueryAnnotation } from "./QueryAnnotation";
 
 export const DEFAULT_MAX_BATCH_SIZE = 100;
 
-const RESOLVED_PROMISE = Promise.resolve();
 const INIT_SEQUENCE = 3; // small prime, doesn't matter
 
 /**
@@ -217,7 +216,7 @@ export class Batcher<TInput, TOutput> {
     );
 
     if (this.queuedInputs.size >= this.maxBatchSize) {
-      runInVoid(RESOLVED_PROMISE.then(this.flushQueue));
+      runInVoid(Promise.resolve().then(this.flushQueue));
     } else if (this.queuedInputs.size === 1) {
       // Defer calling of flushQueue() to the "end of the event loop's spin", to
       // have a chance to collect more run() calls for it to execute. We
@@ -228,7 +227,7 @@ export class Batcher<TInput, TOutput> {
       // https://github.com/graphql/dataloader/blob/fae38f14702e925d1e59051d7e5cb3a9a78bfde8/src/index.js#L234-L241
       // https://stackoverflow.com/a/27648394
       runInVoid(
-        RESOLVED_PROMISE.then(() =>
+        Promise.resolve().then(() =>
           delay > 0
             ? setTimeout(() => runInVoid(this.flushQueue()), delay)
             : process.nextTick(this.flushQueue)
