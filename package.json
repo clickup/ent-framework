@@ -34,6 +34,5 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
-  },
-  "gitHead": "34e955c7670376d9c43886f98fe27f9c87c2a81f"
+  }
 }
