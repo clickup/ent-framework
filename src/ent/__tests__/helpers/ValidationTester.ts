@@ -11,7 +11,7 @@ import { vcTestGuest } from "./test-objects";
  *   the function which validates the validation?"
  * - A: "TS & Jest"
  */
-export default class ValidationTester {
+export class ValidationTester {
   private log: string[] = [];
 
   respond(predName: string, response: boolean | Error, row?: any): boolean {
