@@ -10,6 +10,7 @@ import { MASTER, STALE_REPLICA } from "../abstract/Shard";
 import { Timeline } from "../abstract/Timeline";
 import Memoize from "../helpers/Memoize";
 import { minifyStack } from "../helpers/misc";
+import { VCCaches } from "./VCCaches";
 import type { VCFlavor } from "./VCFlavor";
 import { VCWithStacks } from "./VCFlavor";
 import { VCTrace } from "./VCTrace";
@@ -47,17 +48,17 @@ export class VC {
   //
   // WARNING!
   //
-  // DO NOT use ES2020 private properties for VC, use only native TS private
+  // DO NOT use ES2020 #-private properties for VC, use only native TS private
   // properties. This is because VC is often times cloned by core libraries
   // (e.g. Apollo GraphQL context could be a VC, or Express Request user is VC
-  // etc.). Private properties are simulated via WeakMap during transpilation
-  // which requires a call to VC's constructor. And while cloning via
-  // Object.create()/Object.setPrototypeOf(), the constructor is not called.
+  // etc.). ES2020 #-private properties are simulated via WeakMap during
+  // transpilation which requires a call to VC's constructor. And while cloning
+  // via Object.create()/Object.setPrototypeOf(), the constructor is not called.
   //
 
   private annotationCache?: QueryAnnotation;
+  private caches: VCCaches<Function | symbol, unknown> | undefined = undefined;
   private instanceNumber = (instanceNumber++).toString(); // string makes it visible in Chrome memory dump profiler
-  private caches = new Map<Function | symbol, any>();
 
   /**
    * Please please don't call this method except one or two core places. The
@@ -66,7 +67,13 @@ export class VC {
    * master/replica read policy etc.). It's also good to trace the entire chain
    * of calls and reasons, why some object was accessed.
    */
-  static createGuestPleaseDoNotUseCreationPointsMustBeLimited(trace?: string) {
+  static createGuestPleaseDoNotUseCreationPointsMustBeLimited({
+    trace,
+    cachesExpirationMs,
+  }: {
+    trace?: string;
+    cachesExpirationMs?: number;
+  } = {}) {
     return new VC(
       new VCTrace(trace),
       GUEST_ID,
@@ -74,7 +81,8 @@ export class VC {
       new Map(),
       new Map(),
       { heartbeat: async () => {}, delay },
-      true
+      true,
+      cachesExpirationMs ?? 0
     );
   }
 
@@ -102,7 +110,9 @@ export class VC {
     ClassOrTag: { new (vc: VC): TInstance } | symbol,
     creator?: (vc: VC) => TInstance
   ): TInstance {
-    let cache: TInstance = this.caches.get(ClassOrTag);
+    this.caches ??= new VCCaches(this.cachesExpirationMs);
+
+    let cache = this.caches.get(ClassOrTag) as TInstance | undefined;
     if (!cache) {
       cache =
         typeof ClassOrTag === "function"
@@ -210,7 +220,8 @@ export class VC {
       this.timelines,
       this.flavors,
       this.heartbeater,
-      this.isRoot
+      this.isRoot,
+      this.cachesExpirationMs
     );
   }
 
@@ -230,7 +241,8 @@ export class VC {
       this.timelines,
       this.flavors,
       this.heartbeater,
-      this.isRoot
+      this.isRoot,
+      this.cachesExpirationMs
     );
   }
 
@@ -252,7 +264,8 @@ export class VC {
       this.timelines,
       this.flavors,
       this.heartbeater,
-      this.isRoot
+      this.isRoot,
+      this.cachesExpirationMs
     );
   }
 
@@ -289,7 +302,8 @@ export class VC {
                 ]
           ),
           this.heartbeater,
-          this.isRoot
+          this.isRoot,
+          this.cachesExpirationMs
         )
       : this;
   }
@@ -305,7 +319,8 @@ export class VC {
       this.timelines,
       this.flavors,
       this.heartbeater,
-      this.isRoot
+      this.isRoot,
+      this.cachesExpirationMs
     );
   }
 
@@ -320,7 +335,8 @@ export class VC {
       this.timelines,
       this.flavors,
       heartbeater,
-      this.isRoot
+      this.isRoot,
+      this.cachesExpirationMs
     );
   }
 
@@ -339,7 +355,8 @@ export class VC {
       this.timelines,
       this.flavors,
       this.heartbeater,
-      this.isRoot
+      this.isRoot,
+      this.cachesExpirationMs
     );
   }
 
@@ -355,7 +372,8 @@ export class VC {
       this.timelines,
       this.flavors,
       this.heartbeater,
-      this.isRoot
+      this.isRoot,
+      this.cachesExpirationMs
     );
   }
   /**
@@ -473,7 +491,8 @@ export class VC {
       newTimelines,
       this.flavors,
       this.heartbeater,
-      newIsRoot
+      newIsRoot,
+      this.cachesExpirationMs
     );
   }
 
@@ -506,6 +525,9 @@ export class VC {
     },
     /** If true, it's the initial "root" VC which is not yet derived to any
      * user's VC. */
-    private isRoot: boolean
+    private isRoot: boolean,
+    /** If nonzero, VC#cache() will return the values which will be auto-removed
+     * when VC#cache() hasn't been called for more than this time. */
+    private cachesExpirationMs: number
   ) {}
 }
