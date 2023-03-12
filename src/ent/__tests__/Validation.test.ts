@@ -7,7 +7,7 @@ import { DenyIf } from "../rules/DenyIf";
 import { Require } from "../rules/Require";
 import { Validation } from "../Validation";
 import { createVC } from "./helpers/test-objects";
-import ValidationTester from "./helpers/ValidationTester";
+import { ValidationTester } from "./helpers/ValidationTester";
 
 const companyTable = {
   id: { type: ID },
