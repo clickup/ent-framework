@@ -1,5 +1,6 @@
 import { inspect } from "util";
 import delay from "delay";
+import { Memoize } from "fast-typescript-memoize";
 import compact from "lodash/compact";
 import type { Client } from "../abstract/Client";
 import type { Handler } from "../abstract/Loader";
@@ -8,7 +9,6 @@ import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import type { Shard } from "../abstract/Shard";
 import { MASTER, STALE_REPLICA } from "../abstract/Shard";
 import { Timeline } from "../abstract/Timeline";
-import Memoize from "../helpers/Memoize";
 import { minifyStack } from "../helpers/misc";
 import { VCCaches } from "./VCCaches";
 import type { VCFlavor } from "./VCFlavor";

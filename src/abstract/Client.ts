@@ -1,4 +1,4 @@
-import Memoize from "../helpers/Memoize";
+import { Memoize } from "fast-typescript-memoize";
 import type { Runner } from "./Batcher";
 import { Batcher } from "./Batcher";
 import type { Loggers } from "./Loggers";

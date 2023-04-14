@@ -1,10 +1,10 @@
+import { memoize2 } from "fast-typescript-memoize";
 import compact from "lodash/compact";
 import first from "lodash/first";
 import flatten from "lodash/flatten";
 import sum from "lodash/sum";
 import type { Client } from "../../abstract/Client";
 import { ServerError } from "../../abstract/ServerError";
-import memoize2 from "../../helpers/memoize2";
 import type { OmitNew } from "../../helpers/misc";
 import { hasKey, join, mapJoin } from "../../helpers/misc";
 import type {

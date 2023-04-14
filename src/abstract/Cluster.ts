@@ -1,10 +1,10 @@
 import delay from "delay";
+import { Memoize } from "fast-typescript-memoize";
 import compact from "lodash/compact";
 import first from "lodash/first";
 import omitBy from "lodash/omitBy";
 import random from "lodash/random";
 import hash from "object-hash";
-import Memoize from "../helpers/Memoize";
 import { mapJoin, runInVoid } from "../helpers/misc";
 import type { Client } from "./Client";
 import type { Loggers } from "./Loggers";
