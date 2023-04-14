@@ -1,4 +1,4 @@
-import Memoize from "../helpers/Memoize";
+import { Memoize } from "fast-typescript-memoize";
 import type { Client } from "./Client";
 import type { Island } from "./Cluster";
 import type { Query } from "./Query";

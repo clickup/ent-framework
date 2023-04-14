@@ -1,3 +1,4 @@
+import { Memoize } from "fast-typescript-memoize";
 import flatten from "lodash/flatten";
 import type { Client } from "../abstract/Client";
 import type { Cluster } from "../abstract/Cluster";
@@ -5,7 +6,6 @@ import type { Query } from "../abstract/Query";
 import type { Schema } from "../abstract/Schema";
 import type { Shard } from "../abstract/Shard";
 import { DefaultMap } from "../helpers/DefaultMap";
-import Memoize from "../helpers/Memoize";
 import { join, mapJoin } from "../helpers/misc";
 import type { IDFieldsRequired, Row, Table } from "../types";
 import { ID } from "../types";
