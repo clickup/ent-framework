@@ -5,10 +5,48 @@ import type {
   Row,
   RowWithID,
   Table,
-  TriggerRow,
   UpdateInput,
+  Value,
 } from "../types";
 import type { VC } from "./VC";
+
+/**
+ * Table -> trigger's before- and after-insert input. Below, we use InsertInput
+ * and not Row, because before and even after some INSERT, we may still not know
+ * some values of the row (they can be filled by the DB in e.g. autoInsert
+ * clause). InsertInput is almost a subset of Row, but it has stricter symbol
+ * keys: e.g. if some symbol key is non-optional in INSERT (aka doesn't have
+ * autoInsert), it will always be required in InsertInput too.
+ */
+export type TriggerInsertInput<TTable extends Table> = Flatten<
+  InsertInput<TTable> & RowWithID
+>;
+
+/**
+ * Table -> trigger's before- and after-update NEW row.
+ */
+export type TriggerUpdateNewRow<TTable extends Table> = Flatten<
+  Readonly<
+    Row<TTable> & {
+      [K in keyof TTable & symbol]?: Value<TTable[K]> | undefined;
+    }
+  >
+>;
+
+/**
+ * Table -> trigger's before- and after-update (or delete) OLD row.
+ */
+export type TriggerUpdateOrDeleteOldRow<TTable extends Table> = Flatten<
+  Readonly<Row<TTable>>
+>;
+
+/**
+ * Table -> trigger's after-mutation row. We don't know if it's called after
+ * INSERT, UPDATE or DELETE, so use the most narrow list of fields.
+ */
+export type TriggerAfterMutationNewOrOldRow<TTable extends Table> =
+  | Readonly<TriggerInsertInput<TTable>> // on insert
+  | TriggerUpdateNewRow<TTable>; // on update or delete
 
 /**
  * Triggers could be used to simulate "transactional best-effort behavior" in a
@@ -50,20 +88,14 @@ import type { VC } from "./VC";
 
 export type InsertTrigger<TTable extends Table> = (
   vc: VC,
-  // We use InsertInput and not TriggerRow below, because before and even after
-  // some INSERT, we may still not know some values of the row (they can be
-  // filled by the DB in e.g. autoInsert clause). InsertInput is almost a subset
-  // of TriggerRow, but it has stricter symbol keys: e.g. if some symbol key is
-  // non-optional in INSERT (aka doesn't have autoInsert), it will always be
-  // required in InsertInput too.
-  args: { input: Flatten<InsertInput<TTable> & RowWithID> } // always knows ID even in beforeInsert
+  args: { input: TriggerInsertInput<TTable> } // always knows ID even in beforeInsert
 ) => Promise<unknown>;
 
 export type BeforeUpdateTrigger<TTable extends Table> = (
   vc: VC,
   args: {
-    newRow: Flatten<Readonly<TriggerRow<TTable>>>;
-    oldRow: Flatten<Readonly<Row<TTable>>>;
+    newRow: TriggerUpdateNewRow<TTable>;
+    oldRow: TriggerUpdateOrDeleteOldRow<TTable>;
     input: Flatten<UpdateInput<TTable>>;
   }
 ) => Promise<unknown>;
@@ -71,29 +103,22 @@ export type BeforeUpdateTrigger<TTable extends Table> = (
 export type AfterUpdateTrigger<TTable extends Table> = (
   vc: VC,
   args: {
-    newRow: Flatten<Readonly<TriggerRow<TTable>>>;
-    oldRow: Flatten<Readonly<Row<TTable>>>;
+    newRow: TriggerUpdateNewRow<TTable>;
+    oldRow: TriggerUpdateOrDeleteOldRow<TTable>;
   }
 ) => Promise<unknown>;
 
 export type DeleteTrigger<TTable extends Table> = (
   vc: VC,
   args: {
-    oldRow: Flatten<Readonly<Row<TTable>>>;
+    oldRow: TriggerUpdateOrDeleteOldRow<TTable>;
   }
 ) => Promise<unknown>;
 
 export type AfterMutationTrigger<TTable extends Table> = (
   vc: VC,
   args: {
-    // We don't know if it's called after INSERT, UPDATE or DELETE, so use the
-    // most narrow list of fields.
-    newOrOldRow: Flatten<
-      Readonly<
-        | (InsertInput<TTable> & RowWithID) // on insert
-        | TriggerRow<TTable> // on update or delete
-      >
-    >;
+    newOrOldRow: TriggerAfterMutationNewOrOldRow<TTable>;
     op: "INSERT" | "UPDATE" | "DELETE";
   }
 ) => Promise<unknown>;
@@ -175,13 +200,13 @@ export class Triggers<TTable extends Table> {
       return func(input);
     }
 
-    let newRow = buildNewRow(oldRow, input);
+    let newRow = buildUpdateNewRow(oldRow, input);
     for (const triggerBeforeUpdate of this.beforeUpdate) {
       await triggerBeforeUpdate(vc, { newRow, oldRow, input });
       // Each call to triggerBefore() may potentially change the input, so we
       // need to rebuild newRow each time to feed it to the next call of
       // triggerBefore() and to the rest of triggerAfter.
-      newRow = buildNewRow(oldRow, input);
+      newRow = buildUpdateNewRow(oldRow, input);
     }
 
     const output = await func(input);
@@ -250,7 +275,7 @@ export class Triggers<TTable extends Table> {
 
     for (const [_, triggerAfterMutation] of this.afterMutation) {
       await triggerAfterMutation(vc, {
-        newOrOldRow: oldRow as TriggerRow<TTable>,
+        newOrOldRow: oldRow as TriggerAfterMutationNewOrOldRow<TTable>,
         op: "DELETE",
       });
     }
@@ -262,11 +287,11 @@ export class Triggers<TTable extends Table> {
 /**
  * Simulates an update for a row, as if it's applied to the Ent.
  */
-export function buildNewRow<TTable extends Table>(
+export function buildUpdateNewRow<TTable extends Table>(
   oldRow: Row<TTable>,
   input: UpdateInput<TTable>
 ) {
-  const newRow = { ...oldRow } as TriggerRow<TTable>;
+  const newRow = { ...oldRow } as TriggerUpdateNewRow<TTable>;
 
   for (const k of Object.getOwnPropertyNames(input)) {
     if (input[k] !== undefined) {

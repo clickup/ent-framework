@@ -16,7 +16,7 @@ import type { Predicate } from "./predicates/Predicate";
 import { Require } from "./rules/Require";
 import type { Rule, RuleResult } from "./rules/Rule";
 import { evaluate, RuleDecision } from "./rules/Rule";
-import { buildNewRow } from "./Triggers";
+import { buildUpdateNewRow } from "./Triggers";
 import type { VC } from "./VC";
 
 export type ValidationRules<TTable extends Table> = {
@@ -81,7 +81,7 @@ export class Validation<TTable extends Table> {
     privacyOnly = false
   ): Promise<void> {
     // Simulate the update, as if it's applied to the ent.
-    const newRow = buildNewRow(old, input);
+    const newRow = buildUpdateNewRow(old, input);
 
     if (!privacyOnly) {
       await this.validateUserInputImpl(vc, newRow, input);
