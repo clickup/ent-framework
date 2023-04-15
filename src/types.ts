@@ -90,13 +90,6 @@ export type Row<TTable extends Table> = RowWithID & {
 };
 
 /**
- * Table -> Row (with optional symbols) deduction.
- */
-export type TriggerRow<TTable extends Table> = Row<TTable> & {
-  [K in keyof TTable & symbol]?: Value<TTable[K]> | undefined;
-};
-
-/**
  * Insert: Table -> "field1" | "field2" |  ... deduction (required).
  */
 export type InsertFieldsRequired<TTable extends Table> = {
