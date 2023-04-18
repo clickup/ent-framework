@@ -6,11 +6,12 @@ import { EntAccessError } from "./EntAccessError";
  */
 export class EntNotFoundError extends EntAccessError {
   constructor(
-    public readonly entName: string,
+    entName: string,
     public readonly where: Record<string, any>,
     messageSuffix?: string
   ) {
     super(
+      entName,
       `${entName} not found: ${whereToText(where)}` +
         (messageSuffix ? ": " + messageSuffix : "")
     );

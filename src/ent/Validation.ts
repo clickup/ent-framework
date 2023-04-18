@@ -13,11 +13,48 @@ import { EntNotUpdatableError } from "./errors/EntNotUpdatableError";
 import type { EntValidationErrorInfo } from "./errors/EntValidationError";
 import { EntValidationError } from "./errors/EntValidationError";
 import type { Predicate } from "./predicates/Predicate";
+import type { AllowIf } from "./rules/AllowIf";
+import type { DenyIf } from "./rules/DenyIf";
 import { Require } from "./rules/Require";
 import type { Rule, RuleResult } from "./rules/Rule";
 import { evaluate, RuleDecision } from "./rules/Rule";
 import { buildUpdateNewRow } from "./Triggers";
 import type { VC } from "./VC";
+
+type LoadRule<TInput extends object> = AllowIf<TInput> | DenyIf<TInput>;
+
+/**
+ * For safety, we enforce all Require rules to be in the end of the
+ * insert/update/delete privacy list, and have at least one of them. In
+ * TypeScript, it's not possible to create [...L[], R, ...R[]] type
+ * (double-variadic) when both L[] and R[] are open-ended (i.e. tuples with
+ * unknown length), so we have to brute-force.
+ */
+type WriteRules<TInput extends object> =
+  | []
+  | [Require<TInput>, ...Array<Require<TInput>>]
+  | [LoadRule<TInput>, Require<TInput>, ...Array<Require<TInput>>]
+  | [
+      LoadRule<TInput>,
+      LoadRule<TInput>,
+      Require<TInput>,
+      ...Array<Require<TInput>>
+    ]
+  | [
+      LoadRule<TInput>,
+      LoadRule<TInput>,
+      LoadRule<TInput>,
+      Require<TInput>,
+      ...Array<Require<TInput>>
+    ]
+  | [
+      LoadRule<TInput>,
+      LoadRule<TInput>,
+      LoadRule<TInput>,
+      LoadRule<TInput>,
+      Require<TInput>,
+      ...Array<Require<TInput>>
+    ];
 
 export type ValidationRules<TTable extends Table> = {
   readonly tenantPrincipalField?: InsertFieldsRequired<TTable> & string;
@@ -35,10 +72,10 @@ export type ValidationRules<TTable extends Table> = {
 export class Validation<TTable extends Table> {
   readonly tenantPrincipalField?: ValidationRules<TTable>["tenantPrincipalField"];
   readonly inferPrincipal?: ValidationRules<TTable>["inferPrincipal"];
-  readonly load: Array<Rule<Row<TTable>>>;
-  readonly insert: Array<Rule<InsertInput<TTable>>>;
-  readonly update: Array<Rule<Row<TTable>>>;
-  readonly delete: Array<Rule<Row<TTable>>>;
+  readonly load: Array<LoadRule<Row<TTable>>>;
+  readonly insert: WriteRules<InsertInput<TTable>>;
+  readonly update: WriteRules<Row<TTable>>;
+  readonly delete: WriteRules<Row<TTable>>;
   readonly validate: Array<Require<Row<TTable>>>;
 
   constructor(private entName: string, rules: ValidationRules<TTable>) {

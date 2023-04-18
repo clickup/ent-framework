@@ -6,10 +6,11 @@ import { EntAccessError } from "./EntAccessError";
  */
 export class EntValidationError extends EntAccessError {
   constructor(
-    public readonly entName: string,
+    entName: string,
     public readonly errors: readonly EntValidationErrorInfo[]
   ) {
     super(
+      entName,
       // The below string is just for debugging purposes.
       `${entName}: ` +
         errors

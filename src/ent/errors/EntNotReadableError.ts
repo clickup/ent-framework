@@ -8,12 +8,13 @@ import { EntAccessError } from "./EntAccessError";
  */
 export class EntNotReadableError extends EntAccessError {
   constructor(
-    public readonly entName: string,
+    entName: string,
     public readonly vc: string,
     public readonly row: RowWithID,
     public readonly cause: { message: string } | null = null
   ) {
     super(
+      entName,
       `${entName}:${row[ID]} is not readable in ${vc}` +
         (cause ? ", because:\n" + indent(cause.message) : "")
     );

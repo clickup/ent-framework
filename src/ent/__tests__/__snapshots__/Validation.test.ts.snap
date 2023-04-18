@@ -148,7 +148,7 @@ exports[`0100: insert fails with nice error message if only one rule 2`] = `
 "Failure
 --- (error returned to client) ---
 EntNotInsertableError: table: cannot insert in vc:guest:master, because:
-  Rule AllowIf:First returned SKIP
+  Rule Require:First returned DENY
 --- (what actually happened) ---
 [First threw] Error: wild
 [First returned] false"
@@ -215,4 +215,35 @@ EntNotUpdatableError: table:123 is not updatable/deletable in vc:999, because:
   tenant_id is expected to be "999", but got "42"
 --- (what actually happened) ---
 "
+`;
+
+exports[`0140: load succeeds when some of Or predicates succeed 1`] = `
+"OK
+--- (what actually happened) ---
+[First threw] EntNotReadableError: other_table:987 is not readable in vc:guest, because:
+  ent access error
+[Second returned] true"
+`;
+
+exports[`0150: load fails with nice error when all of Or predicates fail 1`] = `
+"Failure
+--- (error returned to client) ---
+EntNotInsertableError: table: cannot insert in vc:guest:master, because:
+  Rule Require:Or returned DENY, because:
+    First: other_table:987 is not readable in vc:guest, because:
+      ent access error
+    Second: false
+--- (what actually happened) ---
+[First threw] EntNotReadableError: other_table:987 is not readable in vc:guest, because:
+  ent access error
+[Second returned] false"
+`;
+
+exports[`0160: load crashes when some predicates fail with a wild error 1`] = `
+"Failure
+--- (error returned to client) ---
+Error: wild
+--- (what actually happened) ---
+[First threw] Error: wild
+[Second returned] true"
 `;
