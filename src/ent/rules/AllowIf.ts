@@ -10,6 +10,8 @@ import { Rule, RuleDecision } from "./Rule";
  *   derived from EntAccessError).
  */
 export class AllowIf<TInput extends object> extends Rule<TInput> {
+  readonly _TAG!: "AllowIf";
+
   async evaluate(vc: VC, input: TInput): Promise<RuleResult> {
     try {
       return (await this.predicate.check(vc, input))

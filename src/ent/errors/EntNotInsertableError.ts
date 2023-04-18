@@ -6,12 +6,13 @@ import { EntAccessError } from "./EntAccessError";
  */
 export class EntNotInsertableError extends EntAccessError {
   constructor(
-    public readonly entName: string,
+    entName: string,
     public readonly vc: string,
     public readonly row: object,
     public readonly cause: string | { message: string } | null = null
   ) {
     super(
+      entName,
       `${entName}: cannot insert in ${vc}` +
         (cause
           ? ", because:\n" +

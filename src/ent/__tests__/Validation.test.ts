@@ -1,6 +1,7 @@
 import { ID } from "../../types";
 import { EntNotReadableError } from "../errors/EntNotReadableError";
 import { FieldIs } from "../predicates/FieldIs";
+import { Or } from "../predicates/Or";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { DenyIf } from "../rules/DenyIf";
@@ -158,7 +159,7 @@ test("0043: update fails when user errors", async () => {
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
       load: [],
-      insert: [new AllowIf(new True())],
+      insert: [new Require(new True())],
       validate: [
         new FieldIs("tenant_id", (_value) => false, "some one"),
         new FieldIs("tenant_id", (_value) => false, "some two"),
@@ -175,7 +176,7 @@ test("0044: update succeeds user validation when field untouched", async () => {
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
       load: [],
-      insert: [new AllowIf(new True())],
+      insert: [new Require(new True())],
       validate: [new FieldIs("id", (_value) => false, "some one")],
     }),
     { id: "123", tenant_id: "42" },
@@ -300,7 +301,7 @@ test("0100: insert fails with nice error message if only one rule", async () => 
     new Validation<typeof companyTable>("table", {
       load: [],
       insert: [
-        new AllowIf(async function First(_vc, _row) {
+        new Require(async function First(_vc, _row) {
           return tester.respond("First", Error("wild"));
         }),
       ],
@@ -311,7 +312,7 @@ test("0100: insert fails with nice error message if only one rule", async () => 
     new Validation<typeof companyTable>("table", {
       load: [],
       insert: [
-        new AllowIf(async function First(_vc, _row) {
+        new Require(async function First(_vc, _row) {
           return tester.respond("First", false);
         }),
       ],
@@ -329,7 +330,7 @@ test("0110: insert succeeds when DenyIf rule evaluates", async () => {
         new DenyIf(async function First(_vc, _row) {
           return tester.respond("First", false);
         }),
-        new AllowIf(new True()),
+        new Require(new True()),
       ],
     }),
     { id: "123", tenant_id: "42" }
@@ -400,5 +401,87 @@ test("0130: fail when tenant user id mismatches", async () => {
     "validateDelete",
     undefined,
     vc.toLowerInternal("999")
+  );
+});
+
+test("0140: load succeeds when some of Or predicates succeed", async () => {
+  const tester = new ValidationTester();
+  await tester.matchSnapshot(
+    new Validation<typeof companyTable>("table", {
+      load: [],
+      insert: [
+        new Require(
+          new Or(
+            async function First(_vc, _row) {
+              return tester.respond(
+                "First",
+                new EntNotReadableError(
+                  "other_table",
+                  vc.toString(),
+                  { id: "987" },
+                  { message: "ent access error" }
+                )
+              );
+            },
+            async function Second(_vc, _row) {
+              return tester.respond("Second", true);
+            }
+          )
+        ),
+      ],
+    }),
+    { id: "123", tenant_id: "42" }
+  );
+});
+
+test("0150: load fails with nice error when all of Or predicates fail", async () => {
+  const tester = new ValidationTester();
+  await tester.matchSnapshot(
+    new Validation<typeof companyTable>("table", {
+      load: [],
+      insert: [
+        new Require(
+          new Or(
+            async function First(_vc, _row) {
+              return tester.respond(
+                "First",
+                new EntNotReadableError(
+                  "other_table",
+                  vc.toString(),
+                  { id: "987" },
+                  { message: "ent access error" }
+                )
+              );
+            },
+            async function Second(_vc, _row) {
+              return tester.respond("Second", false);
+            }
+          )
+        ),
+      ],
+    }),
+    { id: "123", tenant_id: "42" }
+  );
+});
+
+test("0160: load crashes when some predicates fail with a wild error", async () => {
+  const tester = new ValidationTester();
+  await tester.matchSnapshot(
+    new Validation<typeof companyTable>("table", {
+      load: [],
+      insert: [
+        new Require(
+          new Or(
+            async function First(_vc, _row) {
+              return tester.respond("First", Error("wild"));
+            },
+            async function Second(_vc, _row) {
+              return tester.respond("Second", true);
+            }
+          )
+        ),
+      ],
+    }),
+    { id: "123", tenant_id: "42" }
   );
 });

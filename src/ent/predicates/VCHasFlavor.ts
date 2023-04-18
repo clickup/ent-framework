@@ -3,7 +3,7 @@ import type { VCFlavor } from "../VCFlavor";
 import type { Predicate } from "./Predicate";
 
 /**
- * Checks if the VC has some flavor.
+ * Checks that the VC has some flavor.
  */
 export class VCHasFlavor implements Predicate<never> {
   readonly name = this.constructor.name + ":" + this.Flavor.name;

@@ -12,6 +12,7 @@ import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
 import { EntCannotDetectShardError } from "../errors/EntCannotDetectShardError";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
+import { Require } from "../rules/Require";
 import type { VC } from "../VC";
 import { createVC } from "./helpers/test-objects";
 
@@ -43,7 +44,7 @@ class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
         team_id: { name: TABLE_INVERSE, type: "team2users" },
       },
       privacyLoad: [new AllowIf(new True())],
-      privacyInsert: [new AllowIf(new True())],
+      privacyInsert: [new Require(new True())],
     });
   }
 }
@@ -65,7 +66,7 @@ class EntTestCompany extends BaseEnt(testCluster, schemaTestCompany) {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
       privacyLoad: [new AllowIf(new True())],
-      privacyInsert: [new AllowIf(new True())],
+      privacyInsert: [new Require(new True())],
     });
   }
 }
@@ -93,7 +94,7 @@ class EntTestTopic extends BaseEnt(testCluster, schemaTestTopic) {
         owner_id: { name: TABLE_INVERSE, type: "owner2topics" },
       },
       privacyLoad: [new AllowIf(new True())],
-      privacyInsert: [new AllowIf(new True())],
+      privacyInsert: [new Require(new True())],
       beforeInsert: [
         async (_vc, { input }) => {
           if (input.slug === "throwInBeforeInsert") {

@@ -9,6 +9,8 @@ import { Rule, RuleDecision } from "./Rule";
  *   from EntAccessError).
  */
 export class Require<TInput extends object> extends Rule<TInput> {
+  readonly _TAG!: "Require";
+
   async evaluate(vc: VC, input: TInput): Promise<RuleResult> {
     return (await this.predicate.check(vc, input))
       ? { decision: RuleDecision.TOLERATE, rule: this, cause: null }
