@@ -17,10 +17,10 @@ export class ValidationTester {
   respond(predName: string, response: boolean | Error, row?: any): boolean {
     predName += row ? " " + inspect(row) : "";
     if (response instanceof Error) {
-      this.log.push(predName + " threw " + response.message);
+      this.log.push(`[${predName} threw] ${response}`);
       throw response;
     } else {
-      this.log.push(predName + " returned " + response);
+      this.log.push(`[${predName} returned] ${response}`);
       return response;
     }
   }
@@ -52,12 +52,12 @@ export class ValidationTester {
         await validation[method](vc, row as any);
       }
 
-      res = "success";
+      res = "OK";
     } catch (e: any) {
-      res = "failure: " + e.message;
+      res = "Failure\n--- (error returned to client) ---\n" + e;
     }
 
-    res += "\n" + this.log.join("\n");
+    res += "\n--- (what actually happened) ---\n" + this.log.join("\n");
     expect(res.replace(/\b(vc:\w+)\(\d+\)/g, "$1")).toMatchSnapshot();
   }
 }
