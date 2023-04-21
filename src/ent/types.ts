@@ -2,6 +2,7 @@ import type { Schema } from "../abstract/Schema";
 import type {
   CountInput,
   ExistsInput,
+  ID,
   LoadByInput,
   Order,
   Table,
@@ -13,13 +14,14 @@ import type { VC } from "./VC";
 
 /**
  * A very shallow interface of Ent class (as a collection of static methods).
- * User in some places where we need the very minimum from the Ent.
+ * Used in some places where we need the very minimum from the Ent.
  */
 export interface EntClass<TTable extends Table = any> {
   readonly SCHEMA: Schema<TTable>;
   readonly VALIDATION: Validation<TTable>;
   readonly name: string; // class constructor name
 
+  new (): Ent;
   loadX(vc: VC, id: string): Promise<Ent>;
   loadNullable(vc: VC, id: string): Promise<Ent | null>;
   loadIfReadableNullable(vc: VC, id: string): Promise<Ent | null>;
@@ -31,6 +33,13 @@ export interface EntClass<TTable extends Table = any> {
     limit: number,
     order?: Order<TTable>
   ): Promise<Ent[]>;
+  selectChunked(
+    vc: VC,
+    where: Where<TTable>,
+    chunkSize: number,
+    limit: number,
+    custom?: {}
+  ): AsyncIterableIterator<Ent[]>;
   loadByX(vc: VC, keys: LoadByInput<TTable, UniqueKey<TTable>>): Promise<Ent>;
 }
 
@@ -38,7 +47,7 @@ export interface EntClass<TTable extends Table = any> {
  * A very shallow interface of one Ent.
  */
 export interface Ent {
-  readonly id: string;
+  readonly [ID]: string;
   readonly vc: VC;
   deleteOriginal(): Promise<boolean>;
 }
