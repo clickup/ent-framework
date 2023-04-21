@@ -164,8 +164,8 @@ export class Cluster<TClient extends Client> {
         for (let attempt = 0; ; attempt++) {
           try {
             const { shardNoToIsland } = await this.discoverShards();
-            const shard = shardNoToIsland.get(shardNo);
-            if (!shard) {
+            const island = shardNoToIsland.get(shardNo);
+            if (!island) {
               const masterNames = [...this.islands.values()]
                 .map((island) => island.master.name)
                 .join(", ");
@@ -174,7 +174,7 @@ export class Cluster<TClient extends Client> {
                 masterNames
               );
             } else {
-              return shard;
+              return island;
             }
           } catch (error: unknown) {
             if ((await shardOptions.onRunError(attempt, error)) === "retry") {

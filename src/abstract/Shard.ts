@@ -30,6 +30,13 @@ export class Shard<TClient extends Client> {
   ) {}
 
   /**
+   * Returns Island where this Shard is currently located.
+   */
+  async island() {
+    return this.options.locateIsland();
+  }
+
+  /**
    * Chooses the right client to be used for this shard. We don't memoize,
    * because the Shard may relocate to another Island during re-discovery.
    */
