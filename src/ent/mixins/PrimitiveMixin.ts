@@ -275,7 +275,7 @@ export function PrimitiveMixin<
             // real lifer, there is always an "inverses fixer" service which
             // removes orphaned inverses asynchronously.
             this.CLUSTER.loggers.swallowedErrorLogger({
-              where: `PrimitiveMixin.insertIfNotExists(${this.name}), inverses undo`,
+              where: `(not an error, just a debug warning) PrimitiveMixin.insertIfNotExists(${this.name}), inverses undo`,
               error: lastError ?? Error("duplicate key on insert"),
               elapsed: null,
             });
