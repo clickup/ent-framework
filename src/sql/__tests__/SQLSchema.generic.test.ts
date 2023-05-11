@@ -1,4 +1,5 @@
 import delay from "delay";
+import range from "lodash/range";
 import waitForExpect from "wait-for-expect";
 import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
@@ -9,6 +10,8 @@ import { join, nullthrows } from "../../helpers/misc";
 import { ID } from "../../types";
 import { SQLError } from "../SQLError";
 import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
+import { SQLRunnerIDGen } from "../SQLQueryIDGen";
+import { SQLRunnerInsert } from "../SQLQueryInsert";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./helpers/TestSQLClient";
 import { testCluster } from "./helpers/TestSQLClient";
@@ -282,6 +285,15 @@ test("idGen batched", async () => {
   expect(id1).not.toEqual(id2);
 });
 
+test("idGen with large batch", async () => {
+  const maxBatchSize = new SQLRunnerIDGen(schema, master.client).maxBatchSize;
+  master.resetSnapshot();
+  await join(
+    range(maxBatchSize * 2 - 10).map(async () => shardRun(schema.idGen()))
+  );
+  expect(master.queries).toHaveLength(2);
+});
+
 test("insert single", async () => {
   const id1Gen = await shardRun(schema.idGen());
   const id1 = await shardRun(
@@ -354,6 +366,17 @@ test("insert batched", async () => {
   ]);
 
   expect(id3).toBeNull();
+});
+
+test("insert large batch", async () => {
+  const maxBatchSize = new SQLRunnerInsert(schema, master.client).maxBatchSize;
+  master.resetSnapshot();
+  await join(
+    range(maxBatchSize * 2 - 10).map(async (i) =>
+      shardRun(schema.insert({ name: `aaa${i}`, url_name: `uuu${i}` }))
+    )
+  );
+  expect(master.queries).toHaveLength(2);
 });
 
 test("insert is never dedupped", async () => {

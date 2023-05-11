@@ -216,7 +216,7 @@ export class Batcher<TInput, TOutput> {
     );
 
     if (this.queuedInputs.size >= this.maxBatchSize) {
-      runInVoid(Promise.resolve().then(this.flushQueue));
+      runInVoid(this.flushQueue);
     } else if (this.queuedInputs.size === 1) {
       // Defer calling of flushQueue() to the "end of the event loop's spin", to
       // have a chance to collect more run() calls for it to execute. We

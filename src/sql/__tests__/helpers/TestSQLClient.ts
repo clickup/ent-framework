@@ -13,7 +13,7 @@ import { SQLClientPool } from "../../SQLClientPool";
 export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
   readonly queries: string[] = [];
 
-  constructor(private client: SQLClient) {
+  constructor(public readonly client: SQLClient) {
     super("test", client.isMaster, client.loggers);
   }
 
