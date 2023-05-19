@@ -1,4 +1,4 @@
-import type { ID, IDFields, IDFieldsRequired, Table } from "../types";
+import type { ID, FieldOfIDType, FieldOfIDTypeRequired, Table } from "../types";
 import type {
   AfterMutationTrigger,
   AfterUpdateTrigger,
@@ -68,12 +68,12 @@ export class Configuration<TTable extends Table> {
    * located in the global shard. Keep in mind that, to locate such an Ent
    * pointing to another Ent in the global shard, an inverse for fieldN must be
    * defined in most of the cases. */
-  readonly shardAffinity!: ShardAffinity<IDFields<TTable>>;
+  readonly shardAffinity!: ShardAffinity<FieldOfIDType<TTable>>;
   /** Inverses allow cross-shard foreign keys & cross-shard selection. If a
    * field points to an Ent in another shard, and we're e.g. selecting by a
    * value in this field, inverses allow to locate shard(s) of the Ent. */
   readonly inverses?: {
-    [k in IDFieldsRequired<TTable>]?: { name: string; type: string };
+    [k in FieldOfIDTypeRequired<TTable>]?: { name: string; type: string };
   };
   /** If defined, forces all Ents of this class to have the value of that field
    * equal to VC's principal at load time. This is a very 1st unavoidable check

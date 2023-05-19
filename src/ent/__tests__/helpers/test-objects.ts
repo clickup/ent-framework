@@ -167,14 +167,18 @@ export class EntTestComment extends BaseEnt(testCluster, schemaTestComment) {
 export const $EPHEMERAL = Symbol("$EPHEMERAL");
 export const $EPHEMERAL2 = Symbol("$EPHEMERAL2");
 
-const schemaTestHeadline = new SQLSchema(TABLE_HEADLINE, {
-  id: { type: ID, autoInsert: "id_gen()" },
-  user_id: { type: ID },
-  headline: { type: String },
-  name: { type: String, allowNull: true, autoInsert: "NULL" },
-  [$EPHEMERAL]: { type: String, allowNull: true }, // required, but nullable
-  [$EPHEMERAL2]: { type: Number, autoInsert: "NULL" }, // optional (can be skipped), but if present, must be non-nullable
-});
+const schemaTestHeadline = new SQLSchema(
+  TABLE_HEADLINE,
+  {
+    id: { type: ID, autoInsert: "id_gen()" },
+    user_id: { type: ID },
+    headline: { type: String },
+    name: { type: String, allowNull: true, autoInsert: "NULL" },
+    [$EPHEMERAL]: { type: String, allowNull: true }, // required, but nullable
+    [$EPHEMERAL2]: { type: Number, autoInsert: "NULL" }, // optional (can be skipped), but if present, must be non-nullable
+  },
+  []
+);
 
 export class EntTestHeadline extends BaseEnt(testCluster, schemaTestHeadline) {
   static TRIGGER_CALLS: Array<{

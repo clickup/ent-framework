@@ -7,7 +7,7 @@ import type { Schema } from "../abstract/Schema";
 import type { Shard } from "../abstract/Shard";
 import { DefaultMap } from "../helpers/DefaultMap";
 import { join, mapJoin } from "../helpers/misc";
-import type { IDFieldsRequired, Row, Table } from "../types";
+import type { FieldOfIDTypeRequired, Row, Table } from "../types";
 import { ID } from "../types";
 import type { ShardAffinity } from "./Configuration";
 import { GLOBAL_SHARD } from "./Configuration";
@@ -47,7 +47,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
     cluster: Cluster<TClient>;
     shardAffinity: ShardAffinity<string>;
     id2Schema: Schema<TTable>;
-    id2Field: IDFieldsRequired<TTable>;
+    id2Field: FieldOfIDTypeRequired<TTable>;
     name: string;
     type: string;
   }) {

@@ -3,7 +3,7 @@ import type { Client } from "../../abstract/Client";
 import type { Cluster } from "../../abstract/Cluster";
 import type { Schema } from "../../abstract/Schema";
 import { entries } from "../../helpers/misc";
-import type { IDFields, Table, UniqueKey } from "../../types";
+import type { FieldOfIDType, Table, UniqueKey } from "../../types";
 import { ID } from "../../types";
 import type { ShardAffinity } from "../Configuration";
 import { Configuration, GLOBAL_SHARD } from "../Configuration";
@@ -50,12 +50,12 @@ export interface ConfigClass<
   /**
    * Defines how to find the right shard during Ent insertion.
    */
-  readonly SHARD_AFFINITY: ShardAffinity<IDFields<TTable>>;
+  readonly SHARD_AFFINITY: ShardAffinity<FieldOfIDType<TTable>>;
 
   /**
    * Shard locator for this Ent, responsible for resolving IDs into Shard objects.
    */
-  readonly SHARD_LOCATOR: ShardLocator<TClient, IDFields<TTable>>;
+  readonly SHARD_LOCATOR: ShardLocator<TClient, FieldOfIDType<TTable>>;
 
   /**
    * Privacy rules for this Ent class.
@@ -101,7 +101,7 @@ export function ConfigMixin<
 
     static readonly SCHEMA = schema;
 
-    static get SHARD_AFFINITY(): ShardAffinity<IDFields<TTable>> {
+    static get SHARD_AFFINITY(): ShardAffinity<FieldOfIDType<TTable>> {
       Object.defineProperty(this, "SHARD_AFFINITY", {
         value: this.configure().shardAffinity,
         writable: false,
@@ -109,7 +109,7 @@ export function ConfigMixin<
       return this.SHARD_AFFINITY;
     }
 
-    static get SHARD_LOCATOR(): ShardLocator<TClient, IDFields<TTable>> {
+    static get SHARD_LOCATOR(): ShardLocator<TClient, FieldOfIDType<TTable>> {
       Object.defineProperty(this, "SHARD_LOCATOR", {
         value: new ShardLocator({
           cluster,

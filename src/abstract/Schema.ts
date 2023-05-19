@@ -67,7 +67,7 @@ export abstract class Schema<
     /** Structure of the table. */
     public readonly table: TTable,
     /** Fields which the native unique key consists of (if any). */
-    public readonly uniqueKey: TUniqueKey = [] as unknown as TUniqueKey
+    public readonly uniqueKey: TUniqueKey
   ) {
     if (!Object.keys(this.table).length) {
       throw Error("Must have at least one field");

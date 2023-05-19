@@ -24,7 +24,7 @@ import { SQLQueryUpsert } from "./SQLQueryUpsert";
 
 export class SQLSchema<
   TTable extends Table,
-  TUniqueKey extends UniqueKey<TTable> = UniqueKey<TTable>
+  TUniqueKey extends UniqueKey<TTable>
 > extends Schema<TTable, TUniqueKey> {
   idGen(): Query<string> {
     return new SQLQueryIDGen(this);
