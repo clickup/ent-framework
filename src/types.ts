@@ -54,8 +54,41 @@ export type Table = {
  * 1. Field<TTable>: only DB-stored attributes, no ephemeral symbols
  * 2. keyof TTable: both real and ephemeral attributes
  * 3. keyof TTable & symbol: only "ephemeral" attributes available to triggers
+ *
+ * By doing `& string`, we ensure that we select only regular (non-symbol)
+ * fields.
  */
 export type Field<TTable extends Table> = keyof TTable & string;
+
+/**
+ * (Table) -> "field1" | "field2" | ... where the union contains only fields
+ * which can potentially be used as a part of unique key.
+ */
+export type FieldOfPotentialUniqueKey<TTable extends Table> = {
+  [K in Field<TTable>]: TTable[K] extends {
+    type: typeof Number | typeof String | typeof Boolean | typeof ID;
+    // allows nullable fields too!
+  }
+    ? K
+    : never;
+}[Field<TTable>];
+
+/**
+ * Table -> "user_id" | "some_id" | ...
+ */
+export type FieldOfIDType<TTable extends Table> = {
+  [K in Field<TTable>]: K extends string
+    ? TTable[K] extends { type: typeof ID }
+      ? K
+      : never
+    : never;
+}[Field<TTable>];
+
+/**
+ * Table -> "user_id" | "some_id" | ...
+ */
+export type FieldOfIDTypeRequired<TTable extends Table> =
+  InsertFieldsRequired<TTable> & FieldOfIDType<TTable>;
 
 /**
  * SpecType -> Value deduction (always deduces non-nullable type).
@@ -140,29 +173,15 @@ export type UpdateInput<TTable extends Table> = {
 };
 
 /**
- * Table -> ("field1" | "field2" | ...)[], list of fields allowed to compose an
+ * Table -> ["field1", "field2", ...], list of fields allowed to compose an
  * unique key on the table; fields must be allowed in insert/upsert.
  */
-export type UniqueKey<TTable extends Table> = ReadonlyArray<
-  {
-    [K in Field<TTable>]: TTable[K] extends {
-      type: typeof Number | typeof String | typeof Boolean | typeof ID;
-      // allows nullable fields too!
-    }
-      ? K
-      : never;
-  }[Field<TTable>]
->;
-
-/**
- * (Table, TConcreteUniqueKey) -> "field1" | "field2" | ... where fields are
- * from the concrete table and from the concrete unique key passed to the
- * constructor.
- */
-export type UniqueKeyFields<
-  TConcreteTable extends Table,
-  TConcreteUniqueKey extends UniqueKey<TConcreteTable>
-> = TConcreteUniqueKey[number];
+export type UniqueKey<TTable extends Table> =
+  | []
+  | [
+      FieldOfPotentialUniqueKey<TTable>,
+      ...Array<FieldOfPotentialUniqueKey<TTable>>
+    ];
 
 /**
  * (Table, UniqueKey) -> { field1: number, field2: number, ... }. loadBy
@@ -171,26 +190,9 @@ export type UniqueKeyFields<
 export type LoadByInput<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>
-> = TUniqueKey extends never[]
+> = TUniqueKey extends []
   ? never
-  : { [K in UniqueKeyFields<TTable, TUniqueKey>]: Value<TTable[K]> };
-
-/**
- * Table -> "user_id" | "some_id" | ...
- */
-export type IDFields<TTable extends Table> = {
-  [K in Field<TTable>]: K extends string
-    ? TTable[K] extends { type: typeof ID }
-      ? K
-      : never
-    : never;
-}[Field<TTable>];
-
-/**
- * Table -> "user_id" | "some_id" | ...
- */
-export type IDFieldsRequired<TTable extends Table> =
-  InsertFieldsRequired<TTable> & IDFields<TTable>;
+  : { [K in TUniqueKey[number]]: Value<TTable[K]> };
 
 /**
  * Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }

@@ -332,15 +332,23 @@ test("cannot create posts for different users", async () => {
 });
 
 test("heisenbug: two different schema field sets make schema hash different", async () => {
-  const schema1 = new SQLSchema(EntTestUser.SCHEMA.name, {
-    id: { type: ID, autoInsert: "id_gen()" },
-    company_id: { type: ID, allowNull: true, autoInsert: "NULL" },
-  });
+  const schema1 = new SQLSchema(
+    EntTestUser.SCHEMA.name,
+    {
+      id: { type: ID, autoInsert: "id_gen()" },
+      company_id: { type: ID, allowNull: true, autoInsert: "NULL" },
+    },
+    []
+  );
 
-  const schema2 = new SQLSchema(EntTestUser.SCHEMA.name, {
-    id: { type: ID, autoInsert: "id_gen()" },
-    name: { type: String },
-  });
+  const schema2 = new SQLSchema(
+    EntTestUser.SCHEMA.name,
+    {
+      id: { type: ID, autoInsert: "id_gen()" },
+      name: { type: String },
+    },
+    []
+  );
 
   class Ent1 extends BaseEnt(testCluster, schema1) {
     static override configure() {

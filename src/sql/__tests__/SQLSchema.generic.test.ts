@@ -756,7 +756,7 @@ test("load batched", async () => {
   expect(rows).toMatchObject([{ id: id1 }, { id: id2 }, { id: id1 }]);
 });
 
-test("loadNy single one column", async () => {
+test("loadBy single one column", async () => {
   const [, id2] = await join([
     shardRun(schema.insert({ name: "a", url_name: "aaa" })),
     shardRun(schema.insert({ name: "b", url_name: "bbb" })),
