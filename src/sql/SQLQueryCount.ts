@@ -26,11 +26,10 @@ export class SQLRunnerCount<TTable extends Table> extends SQLRunner<
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);
-    this.builder = {
-      prefix: this.fmt("SELECT COUNT(1) AS count FROM %T"),
-      func: (input: CountInput<TTable>) =>
-        this.buildOptionalWhere(this.schema.table, input),
-    };
+    this.builder = this.createWhereBuilder({
+      prefix: this.fmt("SELECT COUNT(1) AS count FROM %T "),
+      suffix: this.fmt(""),
+    });
   }
 
   override key(input: CountInput<TTable>): string {
@@ -42,7 +41,8 @@ export class SQLRunnerCount<TTable extends Table> extends SQLRunner<
     input: CountInput<TTable>,
     annotations: QueryAnnotation[]
   ): Promise<number> {
-    const sql = this.builder.prefix + this.builder.func(input);
+    const sql =
+      this.builder.prefix + this.builder.func(input) + this.builder.suffix;
     const res = await this.clientQuery<{ count: string }>(sql, annotations, 1);
     return parseInt(res[0].count);
   }
@@ -55,7 +55,10 @@ export class SQLRunnerCount<TTable extends Table> extends SQLRunner<
     //   UNION ALL
     // SELECT COUNT(1) FROM ... WHERE ...
     const sql = [...inputs.values()]
-      .map((input) => this.builder.prefix + this.builder.func(input))
+      .map(
+        (input) =>
+          this.builder.prefix + this.builder.func(input) + this.builder.suffix
+      )
       .join("\n  UNION ALL\n");
     const rows = await this.clientQuery<{ i: string; count: string }>(
       sql,

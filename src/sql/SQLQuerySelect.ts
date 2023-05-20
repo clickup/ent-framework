@@ -1,6 +1,7 @@
 import { inspect } from "util";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { QueryBase } from "../abstract/QueryBase";
+import type { Schema } from "../abstract/Schema";
 import { hash, hasKey } from "../helpers/misc";
 import type { Order, Row, SelectInput, Table } from "../types";
 import type { SQLClient } from "./SQLClient";
@@ -31,12 +32,21 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
   Array<Row<TTable>>
 > {
   static override readonly IS_WRITE = false;
-  private prefix = this.fmt("SELECT %SELECT_FIELDS FROM %T");
+  private prefix = this.fmt("SELECT %SELECT_FIELDS FROM %T ");
   private prefixUnion = this.fmt("SELECT ");
-  private midfixUnion = this.fmt(" AS _key, %SELECT_FIELDS FROM %T");
+  private midfixUnion = this.fmt(" AS _key, %SELECT_FIELDS FROM %T ");
+  private builder;
   readonly op = "SELECT";
   override readonly maxBatchSize = 500; // This high value is a temporary work-around to allow more inverses to be fetched, so we can have much bigger load batches to accumulate more data from e.g. shard 0 for the next multi-shard requests.
   readonly default = []; // We just need something here.
+
+  constructor(schema: Schema<TTable>, client: SQLClient) {
+    super(schema, client);
+    this.builder = this.createWhereBuilder({
+      prefix: this.fmt(""),
+      suffix: this.fmt(""),
+    });
+  }
 
   override key(input: SelectInput<TTable>): string {
     // Coalesce equal select queries.
@@ -50,7 +60,9 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
   ): Promise<Array<Row<TTable>>> {
     let sql =
       this.prefix +
-      this.buildOptionalWhere(this.schema.table, input.where) +
+      this.builder.prefix +
+      this.builder.func(input.where) +
+      this.builder.suffix +
       this.buildOptionalOrder(input.order) +
       this.buildLimit(input.limit);
     sql = this.buildCustom(input, sql);
@@ -70,7 +82,9 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
         this.prefixUnion +
         escapeString(key) +
         this.midfixUnion +
-        this.buildOptionalWhere(this.schema.table, input.where) +
+        this.builder.prefix +
+        this.builder.func(input.where) +
+        this.builder.suffix +
         this.buildOptionalOrder(input.order) +
         this.buildLimit(input.limit);
       sql = this.buildCustom(input, sql);

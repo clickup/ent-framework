@@ -26,12 +26,10 @@ export class SQLRunnerExists<TTable extends Table> extends SQLRunner<
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);
-    this.builder = {
-      prefix: this.fmt("SELECT EXISTS (SELECT true FROM %T"),
-      func: (input: ExistsInput<TTable>) =>
-        this.buildOptionalWhere(this.schema.table, input),
+    this.builder = this.createWhereBuilder({
+      prefix: this.fmt("SELECT EXISTS (SELECT true FROM %T "),
       suffix: this.fmt(")"),
-    };
+    });
   }
 
   override key(input: ExistsInput<TTable>): string {
