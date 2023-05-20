@@ -1,5 +1,6 @@
 import assert from "assert";
 import { inspect } from "util";
+import last from "lodash/last";
 import random from "lodash/random";
 import uniq from "lodash/uniq";
 import { Runner } from "../abstract/Batcher";
@@ -339,18 +340,290 @@ export abstract class SQLRunner<
       : this.createInBuilder(field, fieldValCode);
   }
 
-  protected buildOptionalWhere(
-    specs: TTable,
-    where: Where<TTable> | undefined
-  ) {
-    if (!where) {
-      return "";
-    }
-
-    return " WHERE " + this.buildWhere(specs, where, true);
+  /**
+   * Given a list of fields, returns two builders:
+   *
+   * 1. "Optimized": a newly created JS function which, when called with a row
+   *    set, returns one the following SQL clauses:
+   *
+   * ```
+   * WHERE (field1, field2) IN(VALUES
+   *   ((NULL::tbl).field1, (NULL::tbl).field2),
+   *   ('aa', 'bb'),
+   *   ('cc', 'dd'))
+   *
+   * or
+   *
+   * WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
+   *        ^^^^^^^^^^prefix^^^^^^^^^               ^^^^^^^^ins^^^^^^^
+   * ```
+   *
+   * 2. "Plain": the last one builder mentioned above (good to always use for
+   *    non-batched queries for instance).
+   */
+  protected createWhereBuildersFieldsEq<TInput = object>(args: {
+    prefix: string;
+    fields: ReadonlyArray<Field<TTable>>;
+    suffix: string;
+  }) {
+    const plain = this.createWhereBuilderFieldsEqOrBased<TInput>(args);
+    return {
+      plain,
+      optimized:
+        args.fields.length > 1 &&
+        args.fields.every((field) => !this.schema.table[field].allowNull)
+          ? this.createWhereBuilderFieldsEqTuplesBased<TInput>(args)
+          : plain,
+    };
   }
 
-  protected buildWhere(
+  /**
+   * Returns a newly created JS function which, when called with a Where object,
+   * returns the generated SQL WHERE clause.
+   *
+   * - The building is relatively expensive, since it traverses the Where object
+   *   at run-time and doesn't know the shape beforehand.
+   * - If the Where object is undefined, skips the entire WHERE clause.
+   */
+  protected createWhereBuilder({
+    prefix,
+    suffix,
+  }: {
+    prefix: string;
+    suffix: string;
+  }) {
+    return {
+      prefix: prefix + "WHERE ",
+      func: (where: Where<TTable>) =>
+        this.buildWhere(this.schema.table, where, true),
+      suffix,
+    };
+  }
+
+  /**
+   * Prepends a primary key to the list of fields. In case the primary key is
+   * plain (i.e. "id" field), it's just added as a field; otherwise, the unique
+   * key fields are added. (Prepending the primary key fields doesn't affect
+   * logic, but minimizes deadlocks since the rows to insert/update are sorted
+   * lexicographically.)
+   */
+  protected prependPK(fields: ReadonlyArray<Field<TTable>>) {
+    return uniq([
+      ...(this.schema.table[ID] ? [ID] : this.schema.uniqueKey),
+      ...fields,
+    ]);
+  }
+
+  /**
+   * Converts a Literal tuple [fmt, ...args] into a string, escaping the args
+   * and interpolating them into the format SQL.
+   */
+  protected buildLiteral(literal: Literal) {
+    if (
+      !(literal instanceof Array) ||
+      literal.length === 0 ||
+      typeof literal[0] !== "string"
+    ) {
+      throw Error(
+        "Invalid literal value (must be an array with 1st element as a format): " +
+          inspect(literal)
+      );
+    }
+
+    const [fmt, ...args] = literal;
+    if (args.length === 0) {
+      return fmt;
+    }
+
+    return fmt.replace(/\?([i]?)/g, (_, flag) =>
+      flag === "i"
+        ? sqlClientMod.escapeID("" + args.shift())
+        : sqlClientMod.escapeAny(args.shift())
+    );
+  }
+
+  constructor(
+    public readonly schema: Schema<TTable>,
+    private client: sqlClientMod.SQLClient
+  ) {
+    super(sqlClientMod.escapeIdent(schema.name));
+
+    // For tables with composite primary key and no explicit "id" column, we
+    // still need an ID escaper (where id looks like "(1,2)" anonymous row).
+    for (const field of [ID, ...Object.keys(this.schema.table)]) {
+      const body = "return " + this.createEscapeCode(field, "$value");
+      this.runtimeEscapers[field] = this.newFunction("$value", body);
+      this.runtimeOneOfBuilders[field] = this.createOneOfBuilder(field);
+    }
+
+    for (const [field, { type }] of Object.entries(this.schema.table)) {
+      // Notice that e.g. Date type has parse() static method, so we require
+      // BOTH parse() and stringify() to be presented in custom types.
+      if (hasKey("parse", type) && hasKey("stringify", type)) {
+        this.runtimeParsers.push([field, type.parse.bind(type)]);
+        this.stringifiers[field] = type.stringify.bind(type);
+      }
+    }
+  }
+
+  delayForSingleQueryRetryOnError(e: unknown) {
+    // Deadlocks may happen when a simple query involves multiple rows (e.g.
+    // deleting a row by ID, but this row has foreign keys, especially with ON
+    // DELETE CASCADE).
+    return e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)
+      ? random(DEADLOCK_RETRY_MS_MIN, DEADLOCK_RETRY_MS_MAX)
+      : e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY)
+      ? "immediate_retry"
+      : "no_retry";
+  }
+
+  shouldDebatchOnError(e: unknown) {
+    return (
+      // Debatch some of SQL WRITE query errors.
+      (e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)) ||
+      (e instanceof SQLError && e.message.includes(ERROR_FK)) ||
+      // Debatch "conflict with recovery" errors (we support retries only after
+      // debatching, so have to return true here).
+      (e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY))
+    );
+  }
+
+  /**
+   * Given a list of fields, returns a newly created JS function which, when
+   * called with a row set, returns the following SQL clause:
+   *
+   * ```
+   * WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
+   *        ^^^^^^^^^^prefix^^^^^^^^^               ^^^^^^^^ins^^^^^^^
+   * ```
+   *
+   * The assumption is that the last field in the list is the most variable,
+   * whilst all previous fields compose a more or less static prefix
+   *
+   * - ATTENTION: if at least one OR is produced, it will likely result in a
+   *   slower Bitmap Index Scan.
+   * - Used in runSingle() (no ORs there) or when optimized builder is not
+   *   available (e.g. when unique key contains nullable fields).
+   */
+  private createWhereBuilderFieldsEqOrBased<TInput = object>({
+    prefix,
+    fields,
+    suffix,
+  }: {
+    prefix: string;
+    fields: ReadonlyArray<Field<TTable>>;
+    suffix: string;
+  }) {
+    const lastField = last(fields)!;
+
+    // fieldN IN('aa', 'bb', 'cc', ...)
+    const lastFieldOneOf = this.createOneOfBuilder(
+      lastField,
+      `$value[1].${lastField}`
+    );
+
+    if (fields.length === 1) {
+      // If we have only one field, we can use the plain oneOfBuilder (which is
+      // either an IN(...) or =ANY(...) clause).
+      return {
+        prefix: prefix + "WHERE ",
+        func: lastFieldOneOf,
+        suffix,
+      };
+    }
+
+    return {
+      prefix: prefix + "WHERE ",
+      func: (inputs: Iterable<[key: string, input: TInput]>) => {
+        const insByPrefix = new Map<
+          string,
+          Array<[key: string, input: TInput]>
+        >();
+        for (const input of inputs) {
+          let prefix = "";
+          for (let i = 0; i < fields.length - 1; i++) {
+            const field = fields[i];
+            if (prefix !== "") {
+              prefix += " AND ";
+            }
+
+            const value = (input[1] as any)[field];
+            prefix +=
+              value !== null
+                ? field + "=" + this.escapeValue(field, value)
+                : field + " IS NULL";
+          }
+
+          let ins = insByPrefix.get(prefix);
+          if (!ins) {
+            ins = [];
+            insByPrefix.set(prefix, ins);
+          }
+
+          ins.push(input);
+        }
+
+        let sql = "";
+        for (const [prefix, ins] of insByPrefix) {
+          if (sql !== "") {
+            sql += " OR ";
+          }
+
+          const inClause = lastFieldOneOf(ins);
+          if (prefix !== "") {
+            sql += "(" + prefix + " AND " + inClause + ")";
+          } else {
+            sql += inClause;
+          }
+        }
+
+        return sql;
+      },
+      suffix,
+    };
+  }
+
+  /**
+   * Given a list of fields, returns a newly created JS function which, when
+   * called with a row set, returns the following SQL clause:
+   *
+   * ```
+   * WHERE (field1, field2) IN(VALUES
+   *   ((NULL::tbl).field1, (NULL::tbl).field2),
+   *   ('aa', 'bb'),
+   *   ('cc', 'dd'))
+   * ```
+   *
+   * The assumption is that all fields are non-nullable.
+   *
+   * - This clause always produces an Index Scan (not Bitmap Index Scan).
+   * - Used in most of the cases in runBatch(), e.g. when unique key has >1
+   *   fields, and they are all non-nullable.
+   */
+  private createWhereBuilderFieldsEqTuplesBased<TInput = object>({
+    prefix,
+    fields,
+    suffix,
+  }: {
+    prefix: string;
+    fields: ReadonlyArray<Field<TTable>>;
+    suffix: string;
+  }) {
+    const escapedFields = fields.map((f) => this.escapeField(f));
+    return this.createValuesBuilder<TInput>({
+      prefix:
+        prefix +
+        `WHERE (${escapedFields.join(", ")}) IN(VALUES\n` +
+        "  (" +
+        escapedFields.map((f) => this.fmt(`(NULL::%T).${f}`)).join(", ") +
+        "),",
+      fields,
+      skipSorting: true, // for JS perf
+      suffix: ")" + suffix,
+    });
+  }
+
+  private buildWhere(
     specs: TTable,
     where: Where<TTable>,
     isTopLevel: boolean = false
@@ -442,7 +715,7 @@ export abstract class SQLRunner<
     return pieces.length > 1 && !isTopLevel ? "(" + sql + ")" : sql;
   }
 
-  protected buildFieldBinOp<TField extends Field<TTable>>(
+  private buildFieldBinOp<TField extends Field<TTable>>(
     field: TField,
     binOp: string,
     value: NonNullable<Value<TTable[TField]>>
@@ -450,7 +723,7 @@ export abstract class SQLRunner<
     return this.escapeField(field) + binOp + this.escapeValue(field, value);
   }
 
-  protected buildFieldIsDistinctFrom<TField extends Field<TTable>>(
+  private buildFieldIsDistinctFrom<TField extends Field<TTable>>(
     field: TField,
     value: Value<TTable[TField]>
   ) {
@@ -461,7 +734,7 @@ export abstract class SQLRunner<
     );
   }
 
-  protected buildFieldEq<TField extends Field<TTable>>(
+  private buildFieldEq<TField extends Field<TTable>>(
     field: TField,
     value: Where<TTable>[TField]
   ) {
@@ -478,7 +751,7 @@ export abstract class SQLRunner<
     }
   }
 
-  protected buildLogical(
+  private buildLogical(
     specs: TTable,
     op: "OR" | "AND",
     items: Array<Where<TTable>>
@@ -492,92 +765,8 @@ export abstract class SQLRunner<
     return items.length > 1 ? "(" + sql + ")" : sql;
   }
 
-  protected buildNot(specs: TTable, where: Where<TTable>) {
+  private buildNot(specs: TTable, where: Where<TTable>) {
     return "NOT " + this.buildWhere(specs, where);
-  }
-
-  protected buildLiteral(literal: Literal) {
-    if (
-      !(literal instanceof Array) ||
-      literal.length === 0 ||
-      typeof literal[0] !== "string"
-    ) {
-      throw Error(
-        "Invalid literal value (must be an array with 1st element as a format): " +
-          inspect(literal)
-      );
-    }
-
-    const [fmt, ...args] = literal;
-    if (args.length === 0) {
-      return fmt;
-    }
-
-    return fmt.replace(/\?([i]?)/g, (_, flag) =>
-      flag === "i"
-        ? sqlClientMod.escapeID("" + args.shift())
-        : sqlClientMod.escapeAny(args.shift())
-    );
-  }
-
-  /**
-   * Prepends a primary key to the list of fields. In case the primary key is
-   * plain (i.e. "id" field), it's just added as a field; otherwise, the unique
-   * key fields are added. (Prepending the primary key fields doesn't affect
-   * logic, but minimizes deadlocks since the rows to insert/update are sorted
-   * lexicographically.)
-   */
-  protected prependPK(fields: ReadonlyArray<Field<TTable>>) {
-    return uniq([
-      ...(this.schema.table[ID] ? [ID] : this.schema.uniqueKey),
-      ...fields,
-    ]);
-  }
-
-  constructor(
-    public readonly schema: Schema<TTable>,
-    private client: sqlClientMod.SQLClient
-  ) {
-    super(sqlClientMod.escapeIdent(schema.name));
-
-    // For tables with composite primary key and no explicit "id" column, we
-    // still need an ID escaper (where id looks like "(1,2)" anonymous row).
-    for (const field of [ID, ...Object.keys(this.schema.table)]) {
-      const body = "return " + this.createEscapeCode(field, "$value");
-      this.runtimeEscapers[field] = this.newFunction("$value", body);
-      this.runtimeOneOfBuilders[field] = this.createOneOfBuilder(field);
-    }
-
-    for (const [field, { type }] of Object.entries(this.schema.table)) {
-      // Notice that e.g. Date type has parse() static method, so we require
-      // BOTH parse() and stringify() to be presented in custom types.
-      if (hasKey("parse", type) && hasKey("stringify", type)) {
-        this.runtimeParsers.push([field, type.parse.bind(type)]);
-        this.stringifiers[field] = type.stringify.bind(type);
-      }
-    }
-  }
-
-  delayForSingleQueryRetryOnError(e: unknown) {
-    // Deadlocks may happen when a simple query involves multiple rows (e.g.
-    // deleting a row by ID, but this row has foreign keys, especially with ON
-    // DELETE CASCADE).
-    return e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)
-      ? random(DEADLOCK_RETRY_MS_MIN, DEADLOCK_RETRY_MS_MAX)
-      : e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY)
-      ? "immediate_retry"
-      : "no_retry";
-  }
-
-  shouldDebatchOnError(e: unknown) {
-    return (
-      // Debatch some of SQL WRITE query errors.
-      (e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)) ||
-      (e instanceof SQLError && e.message.includes(ERROR_FK)) ||
-      // Debatch "conflict with recovery" errors (we support retries only after
-      // debatching, so have to return true here).
-      (e instanceof SQLError && e.message.includes(ERROR_CONFLICT_RECOVERY))
-    );
   }
 
   private buildFieldNe<TField extends Field<TTable>>(

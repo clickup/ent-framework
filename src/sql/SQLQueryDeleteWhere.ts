@@ -29,12 +29,10 @@ export class SQLRunnerDeleteWhere<TTable extends Table> extends SQLRunner<
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);
-    this.builder = {
-      prefix: this.fmt("DELETE FROM %T"),
-      func: (input: DeleteWhereInput<TTable>) =>
-        this.buildOptionalWhere(this.schema.table, input),
+    this.builder = this.createWhereBuilder({
+      prefix: this.fmt("DELETE FROM %T "),
       suffix: this.fmt(` RETURNING %PK AS ${ID}`),
-    };
+    });
   }
 
   override key(input: DeleteWhereInput<TTable>): string {
