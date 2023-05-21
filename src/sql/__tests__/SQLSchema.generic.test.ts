@@ -1,5 +1,6 @@
 import delay from "delay";
 import range from "lodash/range";
+import sortBy from "lodash/sortBy";
 import waitForExpect from "wait-for-expect";
 import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
@@ -21,6 +22,7 @@ const TABLE_BAK = `${TABLE}_bak`;
 const TABLE_NULLABLE_UNIQUE_KEY = 'schema"test_nullable_unique_key';
 const TABLE_2COL = 'schema"test_2col';
 const TABLE_2COL_NULLABLE_UNIQUE_KEY = "schema_test_2col_nullable_unique_key";
+const TABLE_3COL = 'schema"test_3col';
 const TABLE_DATE = "schema-te[st],_date";
 const timeline = new Timeline();
 
@@ -95,6 +97,7 @@ beforeEach(async () => {
     "DROP TABLE IF EXISTS %T CASCADE",
     TABLE_2COL_NULLABLE_UNIQUE_KEY
   );
+  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_3COL);
   await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_DATE);
   await master.rows(
     `CREATE TABLE %T(
@@ -150,6 +153,18 @@ beforeEach(async () => {
       UNIQUE (name, url_name)
     )`,
     TABLE_2COL_NULLABLE_UNIQUE_KEY
+  );
+  await master.rows(
+    `CREATE TABLE %T(
+      id bigint NOT NULL PRIMARY KEY,
+      type text NOT NULL,
+      id1 text NOT NULL,
+      id2 text NOT NULL,
+      created_at timestamptz NOT NULL,
+      updated_at timestamptz NOT NULL,
+      UNIQUE (type, id1, id2)
+    )`,
+    TABLE_3COL
   );
   await master.rows(
     `CREATE TABLE %T(
@@ -255,6 +270,19 @@ const schema2ColNullableUniqueKey = new SQLSchema(
     updated_at: { type: Date, autoUpdate: "now()" },
   },
   ["name", "url_name"]
+);
+
+const schema3Col = new SQLSchema(
+  TABLE_3COL,
+  {
+    id: { type: String, autoInsert: "id_gen()" },
+    type: { type: String },
+    id1: { type: String },
+    id2: { type: String },
+    created_at: { type: Date, autoInsert: "now()" },
+    updated_at: { type: Date, autoUpdate: "now()" },
+  },
+  ["type", "id1", "id2"]
 );
 
 const schemaDate = new SQLSchema(
@@ -875,6 +903,52 @@ test("loadBy batched with two columns nullable unique key", async () => {
     { id: id3 },
     { id: id4 },
     { id: id5 },
+  ]);
+});
+
+test("selectBy single three columns", async () => {
+  const [id1, id2] = await join([
+    shardRun(schema3Col.insert({ type: "a", id1: "1", id2: "21" })),
+    shardRun(schema3Col.insert({ type: "a", id1: "1", id2: "22" })),
+  ]);
+
+  master.resetSnapshot();
+  const rows = await shardRun(schema3Col.selectBy({ type: "a", id1: "1" }));
+  master.toMatchSnapshot();
+  expect(sortBy(rows, (row) => row.id2)).toMatchObject([
+    { id: id1, type: "a", id1: "1", id2: "21" },
+    { id: id2, type: "a", id1: "1", id2: "22" },
+  ]);
+});
+
+test("selectBy batched three columns", async () => {
+  const [id1, id2, id3, id4] = await join([
+    shardRun(schema3Col.insert({ type: "a", id1: "1", id2: "21" })),
+    shardRun(schema3Col.insert({ type: "a", id1: "1", id2: "22" })),
+    shardRun(schema3Col.insert({ type: "a", id1: "2", id2: "23" })),
+    shardRun(schema3Col.insert({ type: "b", id1: "1", id2: "24" })),
+  ]);
+
+  master.resetSnapshot();
+  const [rows1, rows2, rows3, rows4] = await join([
+    shardRun(schema3Col.selectBy({ type: "a", id1: "1" })),
+    shardRun(schema3Col.selectBy({ type: "a", id1: "2" })),
+    shardRun(schema3Col.selectBy({ type: "b", id1: "1" })),
+    shardRun(schema3Col.selectBy({ type: "b" })),
+  ]);
+  master.toMatchSnapshot();
+  expect(sortBy(rows1, (row) => row.id2)).toMatchObject([
+    { id: id1, type: "a", id1: "1", id2: "21" },
+    { id: id2, type: "a", id1: "1", id2: "22" },
+  ]);
+  expect(sortBy(rows2, (row) => row.id2)).toMatchObject([
+    { id: id3, type: "a", id1: "2", id2: "23" },
+  ]);
+  expect(sortBy(rows3, (row) => row.id2)).toMatchObject([
+    { id: id4, type: "b", id1: "1", id2: "24" },
+  ]);
+  expect(sortBy(rows4, (row) => row.id2)).toMatchObject([
+    { id: id4, type: "b", id1: "1", id2: "24" },
   ]);
 });
 

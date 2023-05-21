@@ -96,6 +96,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
       annotations,
       inputs.size
     );
+
     const outputs = new Map<string, Array<Row<TTable>>>();
     for (const { _key: key, ...row } of unionRows) {
       let rows = outputs.get(key);
@@ -104,7 +105,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
         outputs.set(key, rows);
       }
 
-      rows.push(row as unknown as Row<TTable>);
+      rows.push(row as Row<TTable>);
     }
 
     return outputs;

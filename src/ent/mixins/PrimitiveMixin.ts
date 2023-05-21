@@ -14,6 +14,7 @@ import type {
   LoadByInput,
   Order,
   Row,
+  SelectByInput,
   Table,
   UniqueKey,
   UpdateInput,
@@ -103,7 +104,19 @@ export type PrimitiveClass<
   ) => Promise<TEnt | null>;
 
   /**
-   * Loads the list of Ents by some predicate. The query can span multiple
+   * Selects the list of Ents by their unique key prefix. The query can span
+   * multiple shards if their locations can be inferred from inverses related to
+   * the fields mentioned in the query. Ordering of the results is not
+   * guaranteed.
+   */
+  selectBy: <TEnt extends PrimitiveInstance<TTable>>(
+    this: new (...args: any[]) => TEnt,
+    vc: VC,
+    input: SelectByInput<TTable, TUniqueKey>
+  ) => Promise<TEnt[]>;
+
+  /**
+   * Selects the list of Ents by some predicate. The query can span multiple
    * shards if their locations can be inferred from inverses related to the
    * fields mentioned in the query. In multi-shard case, ordering of results is
    * not guaranteed.
@@ -381,6 +394,25 @@ export function PrimitiveMixin<
       );
       const row = first(rows);
       return row ? this.createEnt(vc, row) : null;
+    }
+
+    static async selectBy(vc: VC, input: SelectByInput<TTable, TUniqueKey>) {
+      const [shards] = await join([
+        this.SHARD_LOCATOR.multiShardsFromInput(vc, input, "selectBy"),
+        vc.heartbeater.heartbeat(),
+      ]);
+
+      const ents = await mapJoin(shards, async (shard) => {
+        const rows = await shard.run(
+          this.SCHEMA.selectBy(input),
+          vc.toAnnotation(),
+          vc.timeline(shard, this.SCHEMA.name),
+          vc.freshness
+        );
+        return mapJoin(rows, async (row) => this.createEnt(vc, row));
+      });
+
+      return flatten(ents);
     }
 
     static async select(
