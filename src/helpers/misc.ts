@@ -112,6 +112,16 @@ export type AddNew<
 export type Flatten<T> = {} & { [P in keyof T]: T[P] };
 
 /**
+ * Returns a union type of all tuple strict prefixes:
+ * ["a", "b", "c"] -> ["a", "b"] | ["a"]
+ */
+export type TuplePrefixes<T extends readonly unknown[]> = T extends [unknown]
+  ? []
+  : T extends [infer First, ...infer Rest]
+  ? [First, ...TuplePrefixes<Rest>] | [First]
+  : [];
+
+/**
  * A wrapper around process.hrtime() to quickly calculate time deltas.
  */
 export function toFloatMs(elapsed: [number, number]) {

@@ -5,6 +5,7 @@ import type {
   InsertInput,
   LoadByInput,
   Row,
+  SelectByInput,
   SelectInput,
   Table,
   UniqueKey,
@@ -47,18 +48,72 @@ export abstract class Schema<
    */
   ["constructor"]!: SchemaClass;
 
-  // The API to be used by BaseEnt (which is engine-agnostic).
+  // Below is the API to be used by BaseEnt (which is engine-agnostic).
+
+  /**
+   * Generates a new ID for the row. Used when e.g. there is a beforeInsert
+   * trigger on the Ent which needs to know the ID beforehand.
+   */
   abstract idGen(): Query<string>;
+
+  /**
+   * Creates a new row. Returns null if the row violates some unique key
+   * constraint, otherwise returns the row ID.
+   */
   abstract insert(input: InsertInput<TTable>): Query<string | null>;
+
+  /**
+   * Upserts a row. Always returns the row ID.
+   */
   abstract upsert(input: InsertInput<TTable>): Query<string>;
+
+  /**
+   * Updates one single row by its ID. Returns true if it actually existed.
+   */
+  abstract update(id: string, input: UpdateInput<TTable>): Query<boolean>;
+
+  /**
+   * Deletes a row by id. Returns true if it actually existed.
+   */
   abstract delete(id: string): Query<boolean>;
+
+  /**
+   * "Load" family of methods means that we load exactly one row. This one
+   * returns a row by its ID or null if it's not found.
+   */
   abstract load(id: string): Query<Row<TTable> | null>;
+
+  /**
+   * Loads one single row by its unique key ("by" denotes that it's based on an
+   * unique key, not on an ID). Returns null if it's not found.
+   */
   abstract loadBy(
     input: LoadByInput<TTable, TUniqueKey>
   ): Query<Row<TTable> | null>;
-  abstract update(id: string, input: UpdateInput<TTable>): Query<boolean>;
+
+  /**
+   * "Select" family of methods means that we load multiple rows ("by" denotes
+   * that it's based on an unique key, not on an arbitrary query). This one
+   * returns all rows whose unique key prefix matches the input.
+   */
+  abstract selectBy(
+    input: SelectByInput<TTable, TUniqueKey>
+  ): Query<Array<Row<TTable>>>;
+
+  /**
+   * Returns all rows matching an arbitrary query.
+   */
   abstract select(input: SelectInput<TTable>): Query<Array<Row<TTable>>>;
+
+  /**
+   * Returns the number of rows matching an arbitrary query.
+   */
   abstract count(input: CountInput<TTable>): Query<number>;
+
+  /**
+   * An optimized version of count() for the cases where we only need to know
+   * whether at least one row exists, and don't need a precise count.
+   */
   abstract exists(input: ExistsInput<TTable>): Query<boolean>;
 
   constructor(

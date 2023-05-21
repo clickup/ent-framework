@@ -15,6 +15,7 @@ import {
   EntTestComment,
   EntTestCountry,
   EntTestHeadline,
+  EntTestLike,
   EntTestPost,
   EntTestUser,
   expectToMatchSnapshot,
@@ -101,7 +102,6 @@ test("loadByX", async () => {
   const user = await EntTestUser.loadByX(vc, { name: "John" });
   expect(user.url_name).toEqual("john");
   expect(user.nameUpper()).toEqual("JOHN");
-
   expect(await EntTestUser.loadByNullable(vc, { name: "zzz" })).toBeNull();
 });
 
@@ -112,6 +112,21 @@ test("loadBy with no access", async () => {
   } catch (e: any) {
     expectToMatchSnapshot(e.message);
   }
+});
+
+test("selectBy", async () => {
+  const post = await EntTestPost.insertReturning(vc, {
+    user_id: vc.principal,
+    title: "some_post",
+  });
+  const like = await EntTestLike.insertReturning(vc, {
+    post_id: post.id,
+    user_id: vc.principal,
+  });
+  const likes = await EntTestLike.selectBy(vc, {
+    post_id: post.id,
+  });
+  expect(likes.map((ent) => ent.id)).toEqual([like.id]);
 });
 
 test("select and count", async () => {

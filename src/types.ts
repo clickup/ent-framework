@@ -1,3 +1,5 @@
+import type { TuplePrefixes } from "./helpers/misc";
+
 // Primary key field's name is currently hardcoded for simplicity.
 export const ID = "id";
 
@@ -184,8 +186,8 @@ export type UniqueKey<TTable extends Table> =
     ];
 
 /**
- * (Table, UniqueKey) -> { field1: number, field2: number, ... }. loadBy
- * operation is allowed for exact unique key attributes only.
+ * (Table, UniqueKey) -> { field1: number, field2: number, field3: number }.
+ * loadBy operation is allowed for exact unique key attributes only.
  */
 export type LoadByInput<
   TTable extends Table,
@@ -193,6 +195,15 @@ export type LoadByInput<
 > = TUniqueKey extends []
   ? never
   : { [K in TUniqueKey[number]]: Value<TTable[K]> };
+
+/**
+ * (Table, UniqueKey) -> { field1: number [, field2: number [, ...] ] }.
+ * selectBy operation is allowed for unique key PREFIX attributes only.
+ */
+export type SelectByInput<
+  TTable extends Table,
+  TUniqueKey extends UniqueKey<TTable>
+> = LoadByInput<TTable, TuplePrefixes<TUniqueKey>>;
 
 /**
  * Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }

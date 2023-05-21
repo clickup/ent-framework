@@ -678,6 +678,40 @@ WHERE name=ANY('?') AND ('?' > '?') ORDER BY name ASC, cte1_v LIMIT ?)
 "
 `;
 
+exports[`selectBy batched three columns 1`] = `
+"
+SELECT id, type, id1, id2, created_at, updated_at FROM "schema""test_3col"
+  WHERE (type, id1) IN(VALUES
+  ((NULL::"schema""test_3col").type, (NULL::"schema""test_3col").id1),
+  ('a', '1'),
+  ('a', '2'),
+  ('b', '1'))
+----
+SELECT id, type, id1, id2, created_at, updated_at FROM "schema""test_3col"
+  WHERE (type, id1) IN(VALUES
+  ((NULL::"schema""test_3col").type, (NULL::"schema""test_3col").id1),
+  ('?', '?'), ...)
+
+SELECT id, type, id1, id2, created_at, updated_at FROM "schema""test_3col"
+  WHERE type='b'
+----
+SELECT id, type, id1, id2, created_at, updated_at FROM "schema""test_3col"
+  WHERE type='?'
+"
+`;
+
+exports[`selectBy single three columns 1`] = `
+"
+SELECT id, type, id1, id2, created_at, updated_at FROM "schema""test_3col"
+  WHERE (type='a'
+    AND id1='1')
+----
+SELECT id, type, id1, id2, created_at, updated_at FROM "schema""test_3col"
+  WHERE (type='?'
+    AND id1='?')
+"
+`;
+
 exports[`shard relocation error when accessing a table 1`] = `
 "
 INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES

@@ -19,6 +19,7 @@ const TABLE_COMPANY = 'ent"company';
 const TABLE_USER = 'ent"user';
 const TABLE_POST = 'ent"post';
 const TABLE_COMMENT = 'ent"comment';
+const TABLE_LIKE = 'ent"like';
 const TABLE_HEADLINE = 'ent"headline';
 const TABLE_COUNTRY = 'ent"country';
 
@@ -159,6 +160,32 @@ export class EntTestComment extends BaseEnt(testCluster, schemaTestComment) {
 
   textUpper() {
     return this.text.toUpperCase();
+  }
+}
+
+// Like -> Post -> User -> Company
+
+const schemaTestLike = new SQLSchema(
+  TABLE_LIKE,
+  {
+    id: { type: ID, autoInsert: "id_gen()" },
+    post_id: { type: ID },
+    user_id: { type: ID },
+  },
+  ["post_id", "user_id"]
+);
+
+export class EntTestLike extends BaseEnt(testCluster, schemaTestLike) {
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: ["post_id"],
+      privacyLoad: [
+        new AllowIf(new CanReadOutgoingEdge("post_id", EntTestPost)),
+      ],
+      privacyInsert: [
+        new Require(new CanUpdateOutgoingEdge("post_id", EntTestPost)),
+      ],
+    });
   }
 }
 
@@ -425,32 +452,41 @@ export async function init(): Promise<[VC, VC]> {
       master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_HEADLINE),
       master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMMENT),
       master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_POST),
+      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_LIKE),
     ]);
     await join([
       master.rows(
         `CREATE TABLE %T(
-            post_id bigint NOT NULL PRIMARY KEY,
-            user_id bigint NOT NULL,
-            title text NOT NULL,
-            created_at timestamptz NOT NULL
-          )`,
+          post_id bigint NOT NULL PRIMARY KEY,
+          user_id bigint NOT NULL,
+          title text NOT NULL,
+          created_at timestamptz NOT NULL
+        )`,
         TABLE_POST
       ),
       master.rows(
         `CREATE TABLE %T(
-            comment_id bigint NOT NULL PRIMARY KEY,
-            post_id bigint NOT NULL,
-            text text NOT NULL
-          )`,
+          comment_id bigint NOT NULL PRIMARY KEY,
+          post_id bigint NOT NULL,
+          text text NOT NULL
+        )`,
         TABLE_COMMENT
       ),
       master.rows(
         `CREATE TABLE %T(
-            id bigint NOT NULL PRIMARY KEY,
-            user_id bigint NOT NULL,
-            headline text NOT NULL,
-            name text
-          )`,
+          id bigint NOT NULL PRIMARY KEY,
+          post_id bigint NOT NULL,
+          user_id bigint NOT NULL
+        )`,
+        TABLE_LIKE
+      ),
+      master.rows(
+        `CREATE TABLE %T(
+          id bigint NOT NULL PRIMARY KEY,
+          user_id bigint NOT NULL,
+          headline text NOT NULL,
+          name text
+        )`,
         TABLE_HEADLINE
       ),
     ]);
