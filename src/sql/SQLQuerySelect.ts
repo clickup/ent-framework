@@ -37,7 +37,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
   private midfixUnion = this.fmt(" AS _key, %SELECT_FIELDS FROM %T ");
   private builder;
   readonly op = "SELECT";
-  override readonly maxBatchSize = 500; // This high value is a temporary work-around to allow more inverses to be fetched, so we can have much bigger load batches to accumulate more data from e.g. shard 0 for the next multi-shard requests.
+  override readonly maxBatchSize = 10; // PG crashes on large queries with lots of UNION ALL, so we keep this value low.
   readonly default = []; // We just need something here.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {

@@ -463,7 +463,25 @@ test("exception", async () => {
   );
 });
 
-test("id2s loader", async () => {
+test("id2s single", async () => {
+  const companyID1 = "1000000000000000010";
+  const teamID = "1000000000000000090";
+  const u1 = await EntTestUser.insertReturning(vc, {
+    company_id: companyID1,
+    team_id: teamID,
+    name: `u1`,
+  });
+  const master = await testCluster.globalShard().client(MASTER);
+  master.resetSnapshot();
+  const id2s = await EntTestUser.INVERSES[0].id2s(
+    vc.withEmptyCache(),
+    companyID1
+  );
+  expect(id2s).toEqual([u1.id]);
+  master.toMatchSnapshot();
+});
+
+test("id2s batched", async () => {
   const companyID1 = "1000000000000000010";
   const companyID2 = "1000000000000000020";
   const teamID = "1000000000000000090";
@@ -500,10 +518,10 @@ test("id2s loader", async () => {
   master.resetSnapshot();
   const [company1UserIDs, company2UserIDs, companyNullUserIDs, teamUserIDs] =
     await join([
-      EntTestUser.INVERSES[0].id2s(vc, companyID1),
-      EntTestUser.INVERSES[0].id2s(vc, companyID2),
-      EntTestUser.INVERSES[0].id2s(vc, null),
-      EntTestUser.INVERSES[1].id2s(vc, teamID),
+      EntTestUser.INVERSES[0].id2s(vc.withEmptyCache(), companyID1),
+      EntTestUser.INVERSES[0].id2s(vc.withEmptyCache(), companyID2),
+      EntTestUser.INVERSES[0].id2s(vc.withEmptyCache(), null),
+      EntTestUser.INVERSES[1].id2s(vc.withEmptyCache(), teamID),
     ]);
   expect(company1UserIDs).toEqual([u1.id, u2.id].sort());
   expect(company2UserIDs).toEqual([u3.id].sort());
