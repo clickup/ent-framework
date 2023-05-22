@@ -1,13 +1,11 @@
 import { Memoize } from "fast-typescript-memoize";
-import flatten from "lodash/flatten";
 import type { Client } from "../abstract/Client";
 import type { Cluster } from "../abstract/Cluster";
 import type { Query } from "../abstract/Query";
 import type { Schema } from "../abstract/Schema";
 import type { Shard } from "../abstract/Shard";
-import { DefaultMap } from "../helpers/DefaultMap";
-import { join, mapJoin } from "../helpers/misc";
-import type { FieldOfIDTypeRequired, Row, Table } from "../types";
+import { join } from "../helpers/misc";
+import type { FieldOfIDTypeRequired, Table } from "../types";
 import { ID } from "../types";
 import type { ShardAffinity } from "./Configuration";
 import { GLOBAL_SHARD } from "./Configuration";
@@ -32,7 +30,6 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   private shardAffinity;
   private name;
   private inverseSchema;
-  private InverseLoader;
   public readonly id2Field;
   public readonly type;
 
@@ -57,7 +54,6 @@ export class Inverse<TClient extends Client, TTable extends Table> {
     this.id2Field = id2Field;
     this.name = name;
     this.type = type;
-    this.InverseLoader = this.buildInverseLoaderClass();
   }
 
   /**
@@ -71,7 +67,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
     await this.run(
       vc,
       this.shard(id1),
-      this.inverseSchema.insert({ id1: id1 ?? ZERO_NULL, type: this.type, id2 })
+      this.inverseSchema.insert({ type: this.type, id1: id1 ?? ZERO_NULL, id2 })
     );
   }
 
@@ -105,7 +101,11 @@ export class Inverse<TClient extends Client, TTable extends Table> {
     const row = await this.run(
       vc,
       this.shard(id1),
-      this.inverseSchema.loadBy({ id1: id1 ?? "0", type: this.type, id2 })
+      this.inverseSchema.loadBy({
+        type: this.type,
+        id1: id1 ?? ZERO_NULL,
+        id2,
+      })
     );
     if (row) {
       await this.run(vc, this.shard(id1), this.inverseSchema.delete(row.id));
@@ -117,7 +117,14 @@ export class Inverse<TClient extends Client, TTable extends Table> {
    * rows is limited to not overload the database.
    */
   async id2s(vc: VC, id1: string | null) {
-    const rows = await vc.loader(this.InverseLoader).load(id1);
+    const rows = await this.run(
+      vc,
+      this.shard(id1),
+      this.inverseSchema.selectBy({
+        type: this.type,
+        id1: id1 ?? ZERO_NULL,
+      })
+    );
     return rows.map((row) => row.id2).sort();
   }
 
@@ -187,66 +194,5 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   private shard(id: string | null) {
     // id1=NULL inverse is always put to the global shard.
     return id ? this.cluster.shard(id) : this.cluster.globalShard();
-  }
-
-  /**
-   * Allows Inverse.id2s() to build more efficient SQL query to load the
-   * requested inverses. Without InversesLoader, having 50 id1s even for the
-   * same type, Ent framework would issue a SELECT query with 50 "UNION ALL"
-   * clauses, and with this loader, there will be only a plain regular SELECT
-   * expression in this example.
-   *
-   * Why do we build this Loader class dynamically? Because the Loader is per
-   * inverse type: i.e. we make the type constant and then vary id1. We can't
-   * vary both of them, because e.g. in PG, there is no index-matching way of
-   * running the queries like:
-   *
-   * ```
-   * WHERE (id1, type) IN ((1, 'typeA'), ('2', 'typeA'), (3, 'typeB'))
-   * ```
-   *
-   * Despite the above syntax is formally supported in SQL and in PG, for some
-   * weird reason, PG doesn't utilize an index on (id1, type) efficiently on
-   * such queries; that's also the reason why SQLRunnerLoadBy only varies the
-   * last field in the unique key and not all of them.
-   */
-  private buildInverseLoaderClass() {
-    const self = this;
-
-    return class InverseLoader {
-      private id1sByShard = new DefaultMap<Shard<TClient>, Set<string>>();
-      private results = new DefaultMap<
-        string,
-        Array<Row<ReturnType<typeof Inverse.buildInverseSchema>["table"]>>
-      >();
-
-      constructor(private vc: VC) {}
-
-      onCollect(id1: string | null) {
-        this.id1sByShard.getOrAdd(self.shard(id1), Set).add(id1 ?? ZERO_NULL);
-      }
-
-      onReturn(id1: string | null) {
-        return this.results.get(id1 ?? ZERO_NULL) ?? [];
-      }
-
-      async onFlush() {
-        const rows = flatten(
-          await mapJoin([...this.id1sByShard], async ([shard, id1s]) =>
-            self.run(
-              this.vc,
-              shard,
-              self.inverseSchema.select({
-                where: { type: self.type, id1: [...id1s] },
-                limit: Number.MAX_SAFE_INTEGER,
-              })
-            )
-          )
-        );
-        for (const row of rows) {
-          this.results.getOrAdd(row.id1, Array).push(row);
-        }
-      }
-    };
   }
 }
