@@ -142,7 +142,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
         id1: { type: ID },
         id2: { type: ID },
       },
-      ["id1", "type", "id2"]
+      ["type", "id1", "id2"]
     );
   }
 
