@@ -1098,7 +1098,7 @@ test("shard relocation error when accessing a table", async () => {
 
 test("shard relocation error when locating island", async () => {
   (testCluster.options as any).locateIslandErrorRetryCount = 3;
-  await expect(testCluster.shardByNo(1000).client(MASTER)).rejects.toThrow(
-    ShardError
-  );
+  await expect(
+    testCluster.shard("510001234567").client(MASTER)
+  ).rejects.toThrow(ShardError);
 });

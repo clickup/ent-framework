@@ -1,28 +1,17 @@
 import delay from "delay";
 import { Memoize } from "fast-typescript-memoize";
-import compact from "lodash/compact";
 import first from "lodash/first";
 import omitBy from "lodash/omitBy";
 import random from "lodash/random";
 import hash from "object-hash";
+import { DefaultMap } from "../helpers/DefaultMap";
 import { mapJoin, runInVoid } from "../helpers/misc";
 import type { Client } from "./Client";
+import type { Island } from "./Island";
 import type { Loggers } from "./Loggers";
 import type { ShardOptions } from "./Shard";
 import { Shard } from "./Shard";
 import { ShardError } from "./ShardError";
-
-/**
- * Island is 1 master + N replicas.
- * One island typically hosts multiple shards.
- */
-export class Island<TClient extends Client> {
-  constructor(
-    public readonly no: number,
-    public readonly master: TClient,
-    public readonly replicas: TClient[]
-  ) {}
-}
 
 /**
  * Options for Cluster constructor.
@@ -65,9 +54,10 @@ const DEFAULT_CLUSTER_OPTIONS: ClusterOptions = {
  * Holds the complete auto-discovered map of shards to figure out, which island
  * holds which shard.
  */
-interface DiscoveredShards<TClient extends Client> {
-  shardNoToIsland: ReadonlyMap<number, Island<TClient>>;
-  nonGlobalShards: ReadonlyArray<Shard<TClient>>;
+interface DiscoveredShards {
+  shardNoToIslandNo: ReadonlyMap<number, number>;
+  islandNoToShardNos: ReadonlyMap<number, readonly number[]>;
+  nonGlobalShardNos: readonly number[];
 }
 
 /**
@@ -83,7 +73,7 @@ export class Cluster<TClient extends Client> {
   private discoverShardsCache = {
     wait: null as Promise<void> | null,
     timeout: null as NodeJS.Timeout | null,
-    cache: null as Promise<DiscoveredShards<TClient>> | null,
+    cache: null as Promise<DiscoveredShards> | null,
   };
   private firstIsland;
 
@@ -119,7 +109,7 @@ export class Cluster<TClient extends Client> {
       island.replicas.forEach((client) => client.prewarm());
     }
 
-    runInVoid(this.discoverShards());
+    runInVoid(this.discoverShardsCached());
   }
 
   /**
@@ -152,6 +142,49 @@ export class Cluster<TClient extends Client> {
   }
 
   /**
+   * Returns a random shard among the ones which are currently known
+   * (discovered) in the cluster.
+   */
+  async randomShard(seed?: object): Promise<Shard<TClient>> {
+    const { nonGlobalShardNos } = await this.discoverShardsCached();
+
+    let index;
+    if (seed !== undefined) {
+      const numHash = hash(seed, {
+        algorithm: "md5",
+        encoding: "buffer",
+      }).readUInt32BE();
+      index = numHash % nonGlobalShardNos.length;
+    } else {
+      // TODO: implement power-of-two algorithm to pick the shard which is
+      // smallest in size.
+      index = random(0, nonGlobalShardNos.length - 1);
+    }
+
+    return this.shardByNo(nonGlobalShardNos[index]);
+  }
+
+  /**
+   * Returns all currently known (discovered) shards of a particular island.
+   */
+  async islandShards(islandNo: number): Promise<Array<Shard<TClient>>> {
+    const { islandNoToShardNos } = await this.discoverShardsCached();
+    return (
+      islandNoToShardNos
+        .get(islandNo)
+        ?.map((shardNo) => this.shardByNo(shardNo)) ?? []
+    );
+  }
+
+  /**
+   * Returns all currently known (discovered) non-global shards in the cluster.
+   */
+  async nonGlobalShards(): Promise<ReadonlyArray<Shard<TClient>>> {
+    const { nonGlobalShardNos } = await this.discoverShardsCached();
+    return nonGlobalShardNos.map((shardNo) => this.shardByNo(shardNo));
+  }
+
+  /**
    * The idea: for each shard number (even for non-discovered yet shard), we
    * keep the corresponding Shard object in a Memoize cache, so shards with the
    * same number always resolve into the same Shard object. Then, an actual
@@ -159,13 +192,15 @@ export class Cluster<TClient extends Client> {
    * that Shard (and it throws if such Shard hasn't been discovered actually).
    */
   @Memoize()
-  shardByNo(shardNo: number): Shard<TClient> {
+  private shardByNo(shardNo: number): Shard<TClient> {
     const shardOptions: ShardOptions<TClient> = {
       locateIsland: async () => {
         for (let attempt = 0; ; attempt++) {
           try {
-            const { shardNoToIsland } = await this.discoverShards();
-            const island = shardNoToIsland.get(shardNo);
+            const { shardNoToIslandNo } = await this.discoverShardsCached();
+            const islandNo = shardNoToIslandNo.get(shardNo);
+            const island =
+              islandNo !== undefined ? this.islands.get(islandNo) : undefined;
             if (!island) {
               const masterNames = [...this.islands.values()]
                 .map((island) => island.master.name)
@@ -191,7 +226,9 @@ export class Cluster<TClient extends Client> {
           error instanceof ShardError &&
           attempt < this.options.locateIslandErrorRetryCount
         ) {
-          await this.discoverShards(this.options.locateIslandErrorRetryDelayMs);
+          await this.discoverShardsCached(
+            this.options.locateIslandErrorRetryDelayMs
+          );
           return "retry";
         } else {
           return "throw";
@@ -199,49 +236,6 @@ export class Cluster<TClient extends Client> {
       },
     };
     return new Shard(shardNo, shardOptions);
-  }
-
-  /**
-   * Returns all currently known (discovered) non-global shards in the cluster.
-   */
-  async nonGlobalShards(): Promise<ReadonlyArray<Shard<TClient>>> {
-    const { nonGlobalShards } = await this.discoverShards();
-    return nonGlobalShards;
-  }
-
-  /**
-   * Returns a random shard among the ones which are currently known
-   * (discovered) in the cluster.
-   */
-  async randomShard(seed?: object): Promise<Shard<TClient>> {
-    const { nonGlobalShards } = await this.discoverShards();
-
-    let index;
-    if (seed !== undefined) {
-      const numHash = hash(seed, {
-        algorithm: "md5",
-        encoding: "buffer",
-      }).readUInt32BE();
-      index = numHash % nonGlobalShards.length;
-    } else {
-      // TODO: implement power-of-two algorithm to pick the shard which is
-      // smallest in size.
-      index = random(0, nonGlobalShards.length - 1);
-    }
-
-    return nonGlobalShards[index];
-  }
-
-  /**
-   * Returns all currently known (discovered) shards of a particular island.
-   */
-  async islandShards(islandNo: number): Promise<Array<Shard<TClient>>> {
-    const { shardNoToIsland } = await this.discoverShards();
-    return compact(
-      [...shardNoToIsland.entries()].map(([shardNo, island]) =>
-        island.no === islandNo ? this.shardByNo(shardNo) : null
-      )
-    );
   }
 
   /**
@@ -259,9 +253,9 @@ export class Cluster<TClient extends Client> {
    *   period someone else also wants to reset the cache, this "cache reset"
    *   order will be coalesced with the existing one.
    */
-  private async discoverShards(
+  private async discoverShardsCached(
     waitMsAndResetCache = 0
-  ): Promise<DiscoveredShards<TClient>> {
+  ): Promise<DiscoveredShards> {
     const isLeaderToResetCache =
       waitMsAndResetCache > 0 && !this.discoverShardsCache.wait;
 
@@ -282,12 +276,12 @@ export class Cluster<TClient extends Client> {
     }
 
     if (!this.discoverShardsCache.cache) {
-      this.discoverShardsCache.cache = this.islandsByShardsExpensive();
+      this.discoverShardsCache.cache = this.discoverShardsExpensive();
       // Schedule re-discovery in background to refresh the cache in the future.
       this.discoverShardsCache.timeout = setTimeout(() => {
         this.discoverShardsCache.timeout = null;
         this.discoverShardsCache.cache = null;
-        runInVoid(this.discoverShards());
+        runInVoid(this.discoverShardsCached());
       }, this.options.shardsDiscoverIntervalMs);
     }
 
@@ -300,36 +294,45 @@ export class Cluster<TClient extends Client> {
    * expensive, so it's expected that the return Promise is heavily cached by
    * the caller code.
    */
-  private async islandsByShardsExpensive(
+  private async discoverShardsExpensive(
     retriesLeft = this.options.shardsDiscoverErrorRetryCount
-  ): Promise<DiscoveredShards<TClient>> {
+  ): Promise<DiscoveredShards> {
     try {
-      const islandsByShard = new Map<number, Island<TClient>>();
+      const shardNoToIslandNo = new Map<number, number>();
+      const islandNoToShardNos = new DefaultMap<number, number[]>();
+      const nonGlobalShardNos: number[] = [];
       await mapJoin([...this.islands.values()], async (island) => {
         const shardNos = await island.master.shardNos();
         for (const shardNo of shardNos) {
-          const otherIsland = islandsByShard.get(shardNo);
-          if (otherIsland) {
+          const otherIslandNo = shardNoToIslandNo.get(shardNo);
+          if (otherIslandNo) {
             throw Error(
-              `Shard #${shardNo} exists in more than one island ` +
-                `(${island.master.name} and ${otherIsland?.master.name})`
+              `Shard #${shardNo} exists in more than one island (` +
+                island.master.name +
+                " and " +
+                this.islands.get(otherIslandNo)?.master.name +
+                ")"
             );
           }
 
-          islandsByShard.set(shardNo, island);
+          shardNoToIslandNo.set(shardNo, island.no);
+          islandNoToShardNos.getOrAdd(island.no, Array).push(shardNo);
+          if (shardNo !== 0) {
+            nonGlobalShardNos.push(shardNo);
+          }
         }
+
+        islandNoToShardNos.get(island.no)?.sort((a, b) => a - b);
       });
       return {
-        shardNoToIsland: islandsByShard,
-        nonGlobalShards: [...islandsByShard.keys()]
-          .filter((shardNo) => shardNo !== 0)
-          .sort()
-          .map((shardNo) => this.shardByNo(shardNo)),
+        shardNoToIslandNo,
+        islandNoToShardNos,
+        nonGlobalShardNos: nonGlobalShardNos.sort((a, b) => a - b),
       };
     } catch (e) {
       if (retriesLeft > 0) {
         await delay(this.options.shardsDiscoverErrorRetryDelayMs);
-        return this.islandsByShardsExpensive(retriesLeft - 1);
+        return this.discoverShardsExpensive(retriesLeft - 1);
       } else {
         throw e;
       }
