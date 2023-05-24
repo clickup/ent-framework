@@ -14,7 +14,7 @@ const timeline = new Timeline();
 let shard: Shard<TestSQLClient>;
 let master: TestSQLClient;
 
-async function shardRun<TOutput>(query: Query<TOutput>) {
+async function shardRun<TOutput>(query: Query<TOutput>): Promise<TOutput> {
   return shard.run(
     query,
     {
@@ -97,7 +97,7 @@ async function runStress(
   parallelism: number,
   iterations: number,
   func: (uniq: string) => Promise<void>
-) {
+): Promise<void> {
   let uniq = "";
   await join(
     range(parallelism).map(async () => {
@@ -110,6 +110,6 @@ async function runStress(
   );
 }
 
-function range(count: number) {
+function range(count: number): number[] {
   return Array.from(Array(count).keys());
 }

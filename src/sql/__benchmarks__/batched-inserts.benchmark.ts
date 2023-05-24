@@ -26,7 +26,7 @@ const TEMPLATE_MULTI =
 let seq = 0;
 let seqKey = 0;
 
-export default async function* () {
+export default async function* (): AsyncGenerator<unknown> {
   const pool = new Pool({
     ...master.dest.config,
     min: 1,
@@ -98,7 +98,7 @@ export default async function* () {
   }
 }
 
-function replace(template: string) {
+function replace(template: string): string {
   return template
     .replace(/%s/g, `${seq++}`)
     .replace(/%m/g, `${seq++ % 10}`)

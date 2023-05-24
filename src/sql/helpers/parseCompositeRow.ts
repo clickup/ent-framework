@@ -19,7 +19,7 @@ export default function parseCompositeRow(str: string): Array<string | null> {
     return p < str.length ? str[p] : "";
   }
 
-  function throwError(message: string) {
+  function throwError(message: string): void {
     throw Error(`${message} at position ${p} of "${str}"`);
   }
 

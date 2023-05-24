@@ -49,7 +49,9 @@ export class Timeline {
     );
   }
 
-  static cloneMap(timelines: ReadonlyMap<string, Timeline>) {
+  static cloneMap(
+    timelines: ReadonlyMap<string, Timeline>
+  ): Map<string, Timeline> {
     const copy = new Map<string, Timeline>();
     for (const [key, timeline] of timelines.entries()) {
       if (timeline.state !== "unknown") {
@@ -67,7 +69,7 @@ export class Timeline {
       : this.state.pos.toString() + SEP + this.state.expiresAt;
   }
 
-  setPos(pos: bigint, maxLagMs: number) {
+  setPos(pos: bigint, maxLagMs: number): void {
     if (this.state !== "unknown" && this.state.pos >= pos) {
       // We already hold a "more recent" pos, so don't need to update it.
       return;
@@ -86,7 +88,7 @@ export class Timeline {
       : false;
   }
 
-  reset() {
+  reset(): void {
     this.state = "unknown";
   }
 }

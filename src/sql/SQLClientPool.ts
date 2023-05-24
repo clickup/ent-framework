@@ -52,11 +52,11 @@ export class SQLClientPool extends SQLClient {
     ended: boolean;
   };
 
-  protected async acquireConn() {
+  protected async acquireConn(): Promise<PoolClient> {
     return this.state.pool.connect();
   }
 
-  protected releaseConn(conn: SQLClientPoolClient) {
+  protected releaseConn(conn: SQLClientPoolClient): void {
     const needClose = !!(conn.closeAt && Date.now() > conn.closeAt);
     conn.release(needClose);
   }
@@ -108,13 +108,13 @@ export class SQLClientPool extends SQLClient {
     where: string,
     e: unknown,
     elapsed: number | null
-  ) {
+  ): void {
     if (!this.state.ended) {
       super.logSwallowedError(where, e, elapsed);
     }
   }
 
-  override async end(forceDisconnect?: boolean) {
+  override async end(forceDisconnect?: boolean): Promise<void> {
     if (this.state.ended) {
       return;
     }
@@ -131,7 +131,7 @@ export class SQLClientPool extends SQLClient {
     }
   }
 
-  override prewarm() {
+  override prewarm(): void {
     if (!this.dest.config.min) {
       return;
     }

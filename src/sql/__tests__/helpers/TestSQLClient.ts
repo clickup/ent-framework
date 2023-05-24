@@ -1,5 +1,6 @@
 import { Client } from "../../../abstract/Client";
 import { Cluster, Island } from "../../../abstract/Cluster";
+import type { TimelineManager } from "../../../abstract/TimelineManager";
 import { nullthrows } from "../../../helpers/misc";
 import buildShape from "../../helpers/buildShape";
 import type { SQLClient } from "../../SQLClient";
@@ -17,15 +18,15 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
     super("test", client.isMaster, client.loggers);
   }
 
-  get shardName() {
+  get shardName(): string {
     return this.client.shardName;
   }
 
-  get timelineManager() {
+  get timelineManager(): TimelineManager {
     return this.client.timelineManager;
   }
 
-  async end(forceDisconnect?: boolean) {
+  async end(forceDisconnect?: boolean): Promise<void> {
     return this.client.end(forceDisconnect);
   }
 
@@ -36,11 +37,11 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
     return this.client.query<TRes>(params);
   }
 
-  async shardNos() {
+  async shardNos(): Promise<readonly number[]> {
     return this.client.shardNos();
   }
 
-  shardNoByID(id: string) {
+  shardNoByID(id: string): number {
     return this.client.shardNoByID(id);
   }
 
@@ -48,7 +49,7 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
     return new TestSQLClient(this.client.withShard(no)) as this;
   }
 
-  toMatchSnapshot() {
+  toMatchSnapshot(): void {
     expect(
       this.queries
         .map(
@@ -65,7 +66,7 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
     this.resetSnapshot();
   }
 
-  resetSnapshot() {
+  resetSnapshot(): void {
     this.queries.length = 0;
   }
 
@@ -118,7 +119,7 @@ export const testCluster = new Cluster(
   }
 );
 
-function indentQuery(query: string) {
+function indentQuery(query: string): string {
   query = query
     .replace(/\d{4}-\d{2}-\d{2}T[^']+/g, "<date>")
     .replace(/'[A-Za-z0-9+/]{27}='/g, "'<hash>'")

@@ -37,7 +37,7 @@ const schema = new SQLSchema(
   ["user_id"]
 );
 
-async function shardRun<TOutput>(query: Query<TOutput>) {
+async function shardRun<TOutput>(query: Query<TOutput>): Promise<TOutput> {
   return shard.run(
     query,
     {

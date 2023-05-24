@@ -124,14 +124,14 @@ export type TuplePrefixes<T extends readonly unknown[]> = T extends [unknown]
 /**
  * A wrapper around process.hrtime() to quickly calculate time deltas.
  */
-export function toFloatMs(elapsed: [number, number]) {
+export function toFloatMs(elapsed: [number, number]): number {
   return elapsed[0] * 1e3 + elapsed[1] / 1e6;
 }
 
 /**
  * Same as toFloatMs(), but returns seconds.
  */
-export function toFloatSec(elapsed: [number, number]) {
+export function toFloatSec(elapsed: [number, number]): number {
   return elapsed[0] + elapsed[1] / 1e9;
 }
 
@@ -139,7 +139,10 @@ export function toFloatSec(elapsed: [number, number]) {
  * Copies a stack-trace from fromErr error into toErr object. Useful for
  * lightweight exceptions wrapping.
  */
-export function copyStack(toErr: Error, fromErr: Error) {
+export function copyStack<TError extends Error>(
+  toErr: TError,
+  fromErr: Error
+): TError {
   // This is magic, the 1st line in stacktrace must be exactly "ExceptionType:
   // exception message\n", else jest goes mad and prints the stacktrace
   // incorrectly (once from err.message and then once from err.stack). See also:
@@ -163,7 +166,7 @@ export function copyStack(toErr: Error, fromErr: Error) {
  * Tries to minify a stacktrace by removing common parts of the paths. See unit
  * test with snapshot for examples.
  */
-export function minifyStack(stack: string, framesToPop: number) {
+export function minifyStack(stack: string, framesToPop: number): string {
   return stack
     .replace(/^\w+:[ ]*\n/s, "") // remove "Error:" prefix
     .trim()
@@ -190,7 +193,7 @@ export function localUniqueInt(): number {
 
 let sequenceValue = 1;
 
-export function hash(s: string) {
+export function hash(s: string): string {
   // Don't use for crypto purposes!
   // https://medium.com/@chris_72272/what-is-the-fastest-node-js-hashing-algorithm-c15c1a0e164e
   return createHash("sha1").update(s).digest("base64");
@@ -199,7 +202,7 @@ export function hash(s: string) {
 /**
  * Indents each line of the text with 2 spaces.
  */
-export function indent(message: string) {
+export function indent(message: string): string {
   return message.replace(/^/gm, "  ");
 }
 
@@ -208,7 +211,7 @@ export function indent(message: string) {
  * exception messages. We replace all non-ASCII characters to their \u
  * representations.
  */
-export function sanitizeIDForDebugPrinting(idIn: any) {
+export function sanitizeIDForDebugPrinting(idIn: any): string {
   const MAX_LEN = 32;
   const id = "" + idIn;
   const value =
@@ -249,7 +252,7 @@ export function nullthrows<T>(x?: T | null, message?: string | Error): T {
  */
 export function runInVoid(
   funcOrPromise: (() => Promise<unknown> | void) | Promise<unknown> | void
-) {
+): void {
   if (funcOrPromise instanceof Function) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     funcOrPromise();
@@ -271,6 +274,8 @@ export function hasKey<K extends symbol | string>(
 /**
  * Same as Object.entries(), but returns strongly-typed entries.
  */
-export function entries<K extends string, V>(obj: Partial<Record<K, V>>) {
+export function entries<K extends string, V>(
+  obj: Partial<Record<K, V>>
+): Array<[K, V]> {
   return Object.entries(obj) as Array<[K, V]>;
 }

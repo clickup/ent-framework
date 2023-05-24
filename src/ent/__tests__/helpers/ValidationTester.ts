@@ -35,7 +35,7 @@ export class ValidationTester {
       | "validateDelete",
     updateInput: UpdateInput<TTable> = {},
     vc = vcTestGuest
-  ) {
+  ): Promise<void> {
     let res = "";
     try {
       if (!method) {

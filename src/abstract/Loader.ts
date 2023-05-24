@@ -44,7 +44,7 @@ export class Loader<TLoadArgs extends any[], TReturn> {
 
   constructor(private handlerCreator: () => Handler<TLoadArgs, TReturn>) {}
 
-  async load(...args: TLoadArgs) {
+  async load(...args: TLoadArgs): Promise<TReturn> {
     const session = (this.session ??= {
       collected: 0,
       handler: this.handlerCreator(),

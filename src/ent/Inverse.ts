@@ -59,7 +59,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   /**
    * Runs before a row with a pre-generated id2 was inserted to the main schema.
    */
-  async beforeInsert(vc: VC, id1: string | null, id2: string) {
+  async beforeInsert(vc: VC, id1: string | null, id2: string): Promise<void> {
     if (this.id2ShardIsInferrableFromShardAffinity(id1)) {
       return;
     }
@@ -79,7 +79,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
     id1: string | null,
     id2: string,
     oldID1: string | null
-  ) {
+  ): Promise<void> {
     if (id1 === oldID1) {
       return;
     }
@@ -93,7 +93,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   /**
    * Runs after a row was deleted in the main schema.
    */
-  async afterDelete(vc: VC, id1: string | null, id2: string) {
+  async afterDelete(vc: VC, id1: string | null, id2: string): Promise<void> {
     if (this.id2ShardIsInferrableFromShardAffinity(id1)) {
       return;
     }
@@ -116,7 +116,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
    * Returns all id2s by a particular (id1, type) pair. The number of resulting
    * rows is limited to not overload the database.
    */
-  async id2s(vc: VC, id1: string | null) {
+  async id2s(vc: VC, id1: string | null): Promise<string[]> {
     const rows = await this.run(
       vc,
       this.shard(id1),
@@ -139,6 +139,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
     (id2Schema: Schema<any>, name: string) =>
       id2Schema.table[ID].autoInsert + name
   )
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   private static buildInverseSchema(id2Schema: Schema<any>, name: string) {
     return new id2Schema.constructor(
       name,
@@ -163,7 +164,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
    * Ent, like sometimes it point so an Ent which is sharded, and sometimes on
    * an Ent in the global shard).
    */
-  private id2ShardIsInferrableFromShardAffinity(id1: string | null) {
+  private id2ShardIsInferrableFromShardAffinity(id1: string | null): boolean {
     return (
       id1 !== null &&
       this.cluster.shard(id1) !== this.cluster.globalShard() &&
@@ -179,7 +180,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
     vc: VC,
     shard: Shard<TClient>,
     query: Query<TOutput>
-  ) {
+  ): Promise<TOutput> {
     return shard.run(
       query,
       vc.toAnnotation(),
@@ -191,7 +192,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   /**
    * Returns a target shard for an id.
    */
-  private shard(id: string | null) {
+  private shard(id: string | null): Shard<TClient> {
     // id1=NULL inverse is always put to the global shard.
     return id ? this.cluster.shard(id) : this.cluster.globalShard();
   }

@@ -157,7 +157,10 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    * try to load a sharded Ent using an ID from the global shard). This is
    * identical to the case of an Ent not existing in the database.
    */
-  async singleShardFromID(field: string, id: string | null | undefined) {
+  async singleShardFromID(
+    field: string,
+    id: string | null | undefined
+  ): Promise<Shard<TClient> | null> {
     try {
       let shard: Shard<TClient>;
 
@@ -193,7 +196,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       await shard.assertDiscoverable();
 
       return shard;
-    } catch (origError) {
+    } catch (origError: unknown) {
       if (origError instanceof ShardError) {
         throw copyStack(
           new EntNotFoundError(
@@ -223,7 +226,9 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    * null if it can't do this; the caller should likely throw in this case
    * (although not always).
    */
-  private async shardFromAffinity(input: Record<string, any>) {
+  private async shardFromAffinity(
+    input: Record<string, any>
+  ): Promise<Shard<TClient> | null> {
     // For a low number of a very global objects only. ATTENTION: GLOBAL_SHARD
     // has precedence over a shard number from ID! This allows to move some
     // previously sharded objects to the global shard while doing some

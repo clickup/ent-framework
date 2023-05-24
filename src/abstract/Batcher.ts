@@ -122,7 +122,7 @@ export class Batcher<TInput, TOutput> {
 
   private batchDelayMs: () => number;
 
-  protected flushQueue = async () => {
+  protected flushQueue = async (): Promise<void> => {
     if (!this.queuedInputs.size) {
       return;
     }
@@ -243,7 +243,7 @@ export class Batcher<TInput, TOutput> {
     annotations: QueryAnnotation[],
     outOutputs: Map<string, TOutput | undefined>,
     outErrors: Map<string, any>
-  ) {
+  ): Promise<void> {
     const promises: Array<Promise<unknown>> = [];
     for (const [key, input] of inputs) {
       promises.push(
@@ -270,10 +270,10 @@ export class Batcher<TInput, TOutput> {
       );
     }
 
-    return Promise["all"](promises);
+    await Promise["all"](promises);
   }
 }
 
-function incrementAttempt(annotations: QueryAnnotation[]) {
+function incrementAttempt(annotations: QueryAnnotation[]): QueryAnnotation[] {
   return annotations.map((a) => ({ ...a, attempt: a.attempt + 1 }));
 }

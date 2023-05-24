@@ -13,7 +13,7 @@ class VCTest1 extends VCFlavor {
     super();
   }
 
-  override toDebugString() {
+  override toDebugString(): string {
     return `VCTest1:${this.value}`;
   }
 }
@@ -23,7 +23,7 @@ class VCTest2 extends VCFlavor {
     super();
   }
 
-  override toDebugString() {
+  override toDebugString(): string {
     return `VCTest2:${this.value}`;
   }
 }

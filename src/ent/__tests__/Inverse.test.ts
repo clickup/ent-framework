@@ -106,7 +106,7 @@ class EntTestTopic extends BaseEnt(testCluster, schemaTestTopic) {
   }
 }
 
-async function init() {
+async function init(): Promise<void> {
   const globalMaster = await testCluster.globalShard().client(MASTER);
   await join([
     globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_INVERSE),
@@ -548,7 +548,7 @@ async function createUserInShard({
   startCompanyID: string;
   startTeamID: string;
   increment: "companyID" | "teamID";
-}) {
+}): Promise<EntTestUser> {
   for (let i = 1; i <= 100; i++) {
     const user = await EntTestUser.insertReturning(vc, {
       company_id: (

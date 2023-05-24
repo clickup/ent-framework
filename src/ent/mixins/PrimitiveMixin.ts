@@ -178,7 +178,9 @@ export function PrimitiveMixin<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
   TClient extends Client
->(Base: ConfigClass<TTable, TUniqueKey, TClient>) {
+>(
+  Base: ConfigClass<TTable, TUniqueKey, TClient>
+): PrimitiveClass<TTable, TUniqueKey, TClient> {
   class PrimitiveMixin extends Base {
     override ["constructor"]!: typeof PrimitiveMixin;
 
@@ -191,7 +193,10 @@ export function PrimitiveMixin<
       throw Error("Don't create Ents manually, use static loaders");
     }
 
-    static async insertIfNotExists(vc: VC, input: InsertInput<TTable>) {
+    static async insertIfNotExists(
+      vc: VC,
+      input: InsertInput<TTable>
+    ): Promise<string | null> {
       const [shard] = await join([
         this.SHARD_LOCATOR.singleShardFromInput(
           input,
@@ -308,7 +313,7 @@ export function PrimitiveMixin<
       }
     }
 
-    static async upsert(vc: VC, input: InsertInput<TTable>) {
+    static async upsert(vc: VC, input: InsertInput<TTable>): Promise<string> {
       const [shard] = await join([
         this.SHARD_LOCATOR.singleShardFromInput(
           input,
@@ -354,7 +359,10 @@ export function PrimitiveMixin<
       return id;
     }
 
-    static async loadNullable(vc: VC, id: string) {
+    static async loadNullable(
+      vc: VC,
+      id: string
+    ): Promise<PrimitiveInstance<TTable> | null> {
       const [shard] = await join([
         this.SHARD_LOCATOR.singleShardFromID(ID, id),
         vc.heartbeater.heartbeat(),
@@ -376,7 +384,7 @@ export function PrimitiveMixin<
     static async loadByNullable(
       vc: VC,
       input: LoadByInput<TTable, TUniqueKey>
-    ) {
+    ): Promise<PrimitiveInstance<TTable> | null> {
       const [shards] = await join([
         this.SHARD_LOCATOR.multiShardsFromInput(vc, input, "loadBy"),
         vc.heartbeater.heartbeat(),
@@ -396,7 +404,10 @@ export function PrimitiveMixin<
       return row ? this.createEnt(vc, row) : null;
     }
 
-    static async selectBy(vc: VC, input: SelectByInput<TTable, TUniqueKey>) {
+    static async selectBy(
+      vc: VC,
+      input: SelectByInput<TTable, TUniqueKey>
+    ): Promise<Array<PrimitiveInstance<TTable>>> {
       const [shards] = await join([
         this.SHARD_LOCATOR.multiShardsFromInput(vc, input, "selectBy"),
         vc.heartbeater.heartbeat(),
@@ -421,7 +432,7 @@ export function PrimitiveMixin<
       limit: number,
       order?: Order<TTable>,
       custom?: {}
-    ) {
+    ): Promise<Array<PrimitiveInstance<TTable>>> {
       const [shards] = await join([
         this.SHARD_LOCATOR.multiShardsFromInput(vc, where, "select"),
         vc.heartbeater.heartbeat(),
@@ -446,7 +457,7 @@ export function PrimitiveMixin<
       chunkSize: number,
       limit: number,
       custom?: {}
-    ) {
+    ): AsyncGenerator<Array<PrimitiveInstance<TTable>>, void, unknown> {
       const [shard] = await join([
         this.SHARD_LOCATOR.singleShardFromInput(
           where,
@@ -504,7 +515,7 @@ export function PrimitiveMixin<
       }
     }
 
-    static async count(vc: VC, where: CountInput<TTable>) {
+    static async count(vc: VC, where: CountInput<TTable>): Promise<number> {
       const [shards] = await join([
         this.SHARD_LOCATOR.multiShardsFromInput(vc, where, "count"),
         vc.heartbeater.heartbeat(),
@@ -522,7 +533,7 @@ export function PrimitiveMixin<
       return sum(counts);
     }
 
-    static async exists(vc: VC, where: ExistsInput<TTable>) {
+    static async exists(vc: VC, where: ExistsInput<TTable>): Promise<boolean> {
       const [shards] = await join([
         this.SHARD_LOCATOR.multiShardsFromInput(vc, where, "exists"),
         vc.heartbeater.heartbeat(),
@@ -540,7 +551,7 @@ export function PrimitiveMixin<
       return exists.some((v) => v);
     }
 
-    async updateOriginal(input: UpdateInput<TTable>) {
+    async updateOriginal(input: UpdateInput<TTable>): Promise<boolean> {
       const [shard] = await join([
         this.constructor.SHARD_LOCATOR.singleShardFromID(ID, this[ID]),
         this.vc.heartbeater.heartbeat(),
@@ -591,7 +602,7 @@ export function PrimitiveMixin<
       );
     }
 
-    async deleteOriginal() {
+    async deleteOriginal(): Promise<boolean> {
       const [shard] = await join([
         this.constructor.SHARD_LOCATOR.singleShardFromID(ID, this[ID]),
         this.vc.heartbeater.heartbeat(),
@@ -693,7 +704,7 @@ export function PrimitiveMixin<
      * to either the Ent's owner (if tenantPrincipalField is used, or if it has a
      * field pointing to VC) or to a guest VC.
      */
-    private static async createLowerVC(vc: VC, row: Row<TTable>) {
+    private static async createLowerVC(vc: VC, row: Row<TTable>): Promise<VC> {
       let newRowPrincipal: string | null;
       if (vc.isOmni()) {
         newRowPrincipal = null;

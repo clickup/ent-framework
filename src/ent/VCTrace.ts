@@ -23,7 +23,7 @@ export class VCTrace {
 /**
  * Returns a stringified uint63 (0 - 9223372036854775807).
  */
-function createRandomTrace() {
+function createRandomTrace(): string {
   return (
     (BigInt(Date.now()) << BigInt(RANDOM_BITS)) |
     BigInt(Math.trunc(Math.random() * RANDOM_BITS_MASK) & RANDOM_BITS_MASK)

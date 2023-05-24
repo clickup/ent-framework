@@ -143,7 +143,7 @@ export class Triggers<TTable extends Table> {
     >
   ) {}
 
-  hasInsertTriggers() {
+  hasInsertTriggers(): boolean {
     return (
       this.beforeInsert.length > 0 ||
       this.afterInsert.length > 0 ||
@@ -151,7 +151,7 @@ export class Triggers<TTable extends Table> {
     );
   }
 
-  hasUpdateTriggers() {
+  hasUpdateTriggers(): boolean {
     return (
       this.beforeUpdate.length > 0 ||
       this.afterUpdate.length > 0 ||
@@ -290,7 +290,7 @@ export class Triggers<TTable extends Table> {
 export function buildUpdateNewRow<TTable extends Table>(
   oldRow: Row<TTable>,
   input: UpdateInput<TTable>
-) {
+): TriggerUpdateNewRow<TTable> {
   const newRow = { ...oldRow } as TriggerUpdateNewRow<TTable>;
 
   for (const k of Object.getOwnPropertyNames(input)) {

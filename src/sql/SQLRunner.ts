@@ -51,7 +51,7 @@ export abstract class SQLRunner<
     sql: string,
     annotations: QueryAnnotation[],
     batchFactor: number
-  ) {
+  ): Promise<TOutput[]> {
     const rows = await this.client.query<TOutput>({
       query: sql,
       isWrite: this.constructor.IS_WRITE,
@@ -87,7 +87,7 @@ export abstract class SQLRunner<
   protected fmt(
     template: string,
     args: { fields?: Array<Field<TTable>> } = {}
-  ) {
+  ): string {
     return template.replace(
       /%(?:T|SELECT_FIELDS|INSERT_FIELDS|UPDATE_FIELD_VALUE_PAIRS|PK)(?:\(([%\w]+)\))?/g,
       (c: string, a?: string) => {
@@ -158,7 +158,7 @@ export abstract class SQLRunner<
     field: Field<TTable>,
     table?: string,
     withAs?: boolean
-  ) {
+  ): string {
     if (this.schema.table[field]) {
       return (table ? `${table}.` : "") + sqlClientMod.escapeIdent(field);
     }
@@ -196,7 +196,11 @@ export abstract class SQLRunner<
   }: {
     fields: ReadonlyArray<Field<TTable>>;
     suffix: string;
-  }) {
+  }): {
+    prefix: string;
+    func: (entries: Iterable<[key: string, input: object]>) => string;
+    suffix: string;
+  } {
     const cols = [
       ...fields.map((field) => [
         this.fmt(`(NULL::%T).${this.escapeField(field)}`),
@@ -254,7 +258,11 @@ export abstract class SQLRunner<
     withKey?: boolean;
     skipSorting?: boolean;
     suffix: string;
-  }) {
+  }): {
+    prefix: string;
+    func: (entries: Iterable<[key: string, input: TInput]>) => string;
+    suffix: string;
+  } {
     const cols = fields.map((field) => {
       const spec = this.nullThrowsUnknownField(this.schema.table[field], field);
       return this.createEscapeCode(
@@ -301,7 +309,9 @@ export abstract class SQLRunner<
    *
    * The set of columns is passed in specs, all other columns are ignored.
    */
-  protected createUpdateKVsBuilder(fields: Array<Field<TTable>>) {
+  protected createUpdateKVsBuilder(
+    fields: Array<Field<TTable>>
+  ): (input: object, literal?: Literal) => string {
     const parts = fields.map(
       (field) =>
         JSON.stringify(this.escapeField(field) + "=") +
@@ -365,7 +375,18 @@ export abstract class SQLRunner<
     prefix: string;
     fields: ReadonlyArray<Field<TTable>>;
     suffix: string;
-  }) {
+  }): {
+    plain: {
+      prefix: string;
+      func: (inputs: Iterable<[key: string, input: TInput]>) => string;
+      suffix: string;
+    };
+    optimized: {
+      prefix: string;
+      func: (inputs: Iterable<[key: string, input: TInput]>) => string;
+      suffix: string;
+    };
+  } {
     const plain = this.createWhereBuilderFieldsEqOrBased<TInput>(args);
     return {
       plain,
@@ -391,7 +412,11 @@ export abstract class SQLRunner<
   }: {
     prefix: string;
     suffix: string;
-  }) {
+  }): {
+    prefix: string;
+    func: (where: Where<TTable>) => string;
+    suffix: string;
+  } {
     return {
       prefix: prefix + "WHERE ",
       func: (where: Where<TTable>) =>
@@ -407,7 +432,7 @@ export abstract class SQLRunner<
    * logic, but minimizes deadlocks since the rows to insert/update are sorted
    * lexicographically.)
    */
-  protected prependPK(fields: ReadonlyArray<Field<TTable>>) {
+  protected prependPK(fields: ReadonlyArray<Field<TTable>>): string[] {
     return uniq([
       ...(this.schema.table[ID] ? [ID] : this.schema.uniqueKey),
       ...fields,
@@ -418,7 +443,7 @@ export abstract class SQLRunner<
    * Converts a Literal tuple [fmt, ...args] into a string, escaping the args
    * and interpolating them into the format SQL.
    */
-  protected buildLiteral(literal: Literal) {
+  protected buildLiteral(literal: Literal): string {
     if (
       !(literal instanceof Array) ||
       literal.length === 0 ||
@@ -466,7 +491,9 @@ export abstract class SQLRunner<
     }
   }
 
-  delayForSingleQueryRetryOnError(e: unknown) {
+  delayForSingleQueryRetryOnError(
+    e: unknown
+  ): number | "immediate_retry" | "no_retry" {
     // Deadlocks may happen when a simple query involves multiple rows (e.g.
     // deleting a row by ID, but this row has foreign keys, especially with ON
     // DELETE CASCADE).
@@ -477,7 +504,7 @@ export abstract class SQLRunner<
       : "no_retry";
   }
 
-  shouldDebatchOnError(e: unknown) {
+  shouldDebatchOnError(e: unknown): boolean {
     return (
       // Debatch some of SQL WRITE query errors.
       (e instanceof SQLError && e.message.includes(ERROR_DEADLOCK)) ||
@@ -513,7 +540,11 @@ export abstract class SQLRunner<
     prefix: string;
     fields: ReadonlyArray<Field<TTable>>;
     suffix: string;
-  }) {
+  }): {
+    prefix: string;
+    func: (inputs: Iterable<[key: string, input: TInput]>) => string;
+    suffix: string;
+  } {
     const lastField = last(fields)!;
 
     // fieldN IN('aa', 'bb', 'cc', ...)
@@ -608,7 +639,11 @@ export abstract class SQLRunner<
     prefix: string;
     fields: ReadonlyArray<Field<TTable>>;
     suffix: string;
-  }) {
+  }): {
+    prefix: string;
+    func: (entries: Iterable<[key: string, input: TInput]>) => string;
+    suffix: string;
+  } {
     const escapedFields = fields.map((f) => this.escapeField(f));
     return this.createValuesBuilder<TInput>({
       prefix:
@@ -627,7 +662,7 @@ export abstract class SQLRunner<
     specs: TTable,
     where: Where<TTable>,
     isTopLevel: boolean = false
-  ) {
+  ): string {
     const pieces: string[] = [];
     for (const key of Object.keys(where)) {
       const value = where[key];
@@ -719,14 +754,14 @@ export abstract class SQLRunner<
     field: TField,
     binOp: string,
     value: NonNullable<Value<TTable[TField]>>
-  ) {
+  ): string {
     return this.escapeField(field) + binOp + this.escapeValue(field, value);
   }
 
   private buildFieldIsDistinctFrom<TField extends Field<TTable>>(
     field: TField,
     value: Value<TTable[TField]>
-  ) {
+  ): string {
     return (
       this.escapeField(field) +
       " IS DISTINCT FROM " +
@@ -737,7 +772,7 @@ export abstract class SQLRunner<
   private buildFieldEq<TField extends Field<TTable>>(
     field: TField,
     value: Where<TTable>[TField]
-  ) {
+  ): string {
     if (value === null) {
       return this.escapeField(field) + " IS NULL";
     } else if (value instanceof Array) {
@@ -755,7 +790,7 @@ export abstract class SQLRunner<
     specs: TTable,
     op: "OR" | "AND",
     items: Array<Where<TTable>>
-  ) {
+  ): string {
     const clause = op === "OR" ? " OR " : " AND ";
     if (items.length === 0) {
       return ` false /* Empty${clause}*/ `;
@@ -765,14 +800,14 @@ export abstract class SQLRunner<
     return items.length > 1 ? "(" + sql + ")" : sql;
   }
 
-  private buildNot(specs: TTable, where: Where<TTable>) {
+  private buildNot(specs: TTable, where: Where<TTable>): string {
     return "NOT " + this.buildWhere(specs, where);
   }
 
   private buildFieldNe<TField extends Field<TTable>>(
     field: TField,
     value: Value<TTable[TField]> | ReadonlyArray<Value<TTable[TField]>>
-  ) {
+  ): string {
     if (value === null) {
       return this.escapeField(field) + " IS NOT NULL";
     } else if (value instanceof Array) {
@@ -931,7 +966,7 @@ export abstract class SQLRunner<
     field: Field<TTable>,
     fieldValCode: string,
     defSQL?: string
-  ) {
+  ): string {
     const specType = this.schema.table[field]?.type;
     if (!specType && field !== ID) {
       throw Error(`BUG: cannot find the field "${field}" in the schema`);
@@ -976,7 +1011,7 @@ export abstract class SQLRunner<
    * serialize data in SQL format. This allows to remove lots of logic and "ifs"
    * from runtime and speed up hot code paths.
    */
-  private newFunction(...argsAndBody: string[]) {
+  private newFunction(...argsAndBody: string[]): any {
     return new Function(...argsAndBody).bind({
       ...sqlClientMod,
       stringifiers: this.stringifiers,
@@ -1015,7 +1050,9 @@ export abstract class SQLRunner<
    * FROM rows WHERE ROW(tbl.x, tbl.y)=ROW(rows.x, ROW.y)
    * ```
    */
-  private unfoldCompositePK(input: any) {
+  private unfoldCompositePK<TInput extends Record<any, any>>(
+    input: TInput
+  ): TInput {
     if (
       !this.schema.table[ID] &&
       input[ID] !== null &&
@@ -1024,7 +1061,7 @@ export abstract class SQLRunner<
       const compositePK = parseCompositeRow(input[ID]);
       input = { ...input };
       for (const [i, field] of this.schema.uniqueKey.entries()) {
-        input[field] = compositePK[i];
+        input[field] = compositePK[i] as any;
       }
     }
 
@@ -1036,7 +1073,10 @@ export abstract class SQLRunner<
    * schema if the passed data is undefined. Notice that ID is treated as always
    * available in this message.
    */
-  private nullThrowsUnknownField<T>(data: T, field: Field<TTable>) {
+  private nullThrowsUnknownField<T>(
+    data: T,
+    field: Field<TTable>
+  ): Exclude<T, null | undefined> {
     if (data === null || data === undefined) {
       throw Error(
         `Unknown field: ${field}; allowed fields: ` +

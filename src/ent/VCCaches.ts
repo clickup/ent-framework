@@ -12,7 +12,7 @@ export class VCCaches<TKey, TValue> extends Map<TKey, TValue> {
    * Calls the Map's get() and defers cache clearing to the next WeakTicker
    * tick (i.e. schedules clearing on inactivity).
    */
-  override get(key: TKey) {
+  override get(key: TKey): TValue | undefined {
     if (this.expirationMs > 0) {
       weakTicker.schedule(this, this.expirationMs);
     }

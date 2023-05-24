@@ -29,7 +29,7 @@ export abstract class QueryBase<
     public readonly input: TInput
   ) {}
 
-  get IS_WRITE() {
+  get IS_WRITE(): boolean {
     return this.RUNNER_CLASS.IS_WRITE;
   }
 

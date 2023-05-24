@@ -13,7 +13,7 @@ export class SQLError extends ServerError {
     this.stack += ": " + sql.replace(/\s*\n\s*/g, " ");
   }
 
-  isFKError(fkName?: string) {
+  isFKError(fkName?: string): boolean {
     return (
       this.message.includes("foreign key constraint") &&
       (!fkName || this.message.includes(fkName))
