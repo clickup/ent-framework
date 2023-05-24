@@ -8,6 +8,7 @@ import hash from "object-hash";
 import { mapJoin, runInVoid } from "../helpers/misc";
 import type { Client } from "./Client";
 import type { Loggers } from "./Loggers";
+import type { ShardOptions } from "./Shard";
 import { Shard } from "./Shard";
 import { ShardError } from "./ShardError";
 
@@ -159,7 +160,7 @@ export class Cluster<TClient extends Client> {
    */
   @Memoize()
   shardByNo(shardNo: number) {
-    const shardOptions = {
+    const shardOptions: ShardOptions<TClient> = {
       locateIsland: async () => {
         for (let attempt = 0; ; attempt++) {
           try {
