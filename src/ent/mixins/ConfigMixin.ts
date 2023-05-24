@@ -91,7 +91,7 @@ export function ConfigMixin<
   Base: new (...args: any[]) => {},
   cluster: Cluster<TClient>,
   schema: Schema<TTable, TUniqueKey>
-) {
+): ConfigClass<TTable, TUniqueKey, TClient> {
   class ConfigMixin extends Base {
     static Configuration: new (
       c: Configuration<TTable>
@@ -205,5 +205,5 @@ export function ConfigMixin<
     }
   }
 
-  return ConfigMixin as ConfigClass<TTable, TUniqueKey, TClient>;
+  return ConfigMixin;
 }

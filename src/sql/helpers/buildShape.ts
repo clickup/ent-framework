@@ -45,7 +45,7 @@ const RE_IDENTICAL_UNION_ALL = toRegExp`
   )+
 `;
 
-export default function buildShape(sql: string) {
+export default function buildShape(sql: string): string {
   return sql
     .trim()
     .replace(RE_COMMENT, "")
@@ -57,6 +57,6 @@ export default function buildShape(sql: string) {
     .replace(RE_IDENTICAL_UNION_ALL, "$1\n$2 ...");
 }
 
-function toRegExp(template: TemplateStringsArray) {
+function toRegExp(template: TemplateStringsArray): RegExp {
   return new RegExp(template.raw.join("").replace(/\s+/g, ""), "g");
 }

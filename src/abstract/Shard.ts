@@ -32,7 +32,7 @@ export class Shard<TClient extends Client> {
   /**
    * Returns Island where this Shard is currently located.
    */
-  async island() {
+  async island(): Promise<Island<TClient>> {
     return this.options.locateIsland();
   }
 
@@ -95,7 +95,7 @@ export class Shard<TClient extends Client> {
    * Throws if this shard does not exist, or its island is down, or something
    * else is wrong with it.
    */
-  async assertDiscoverable() {
+  async assertDiscoverable(): Promise<void> {
     await this.options.locateIsland();
   }
 
@@ -146,7 +146,9 @@ export class Shard<TClient extends Client> {
    * the island changes, it will be re-calculated.
    */
   @Memoize()
-  private async clients(islandForMemoize: Island<TClient>) {
+  private async clients(
+    islandForMemoize: Island<TClient>
+  ): Promise<{ master: TClient; replicas: TClient[] }> {
     return {
       master: islandForMemoize.master.withShard(this.no),
       replicas: islandForMemoize.replicas.map((client) =>

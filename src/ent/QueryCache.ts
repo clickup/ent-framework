@@ -52,7 +52,7 @@ export class QueryCache {
     op: Op,
     key: string,
     value: Promise<unknown> | undefined
-  ) {
+  ): this {
     if (!this.maxQueries) {
       // Caching is turned off.
       return this;
@@ -82,7 +82,7 @@ export class QueryCache {
   /**
    * Deletes cache slots or keys for an Ent.
    */
-  delete(EntClass: AnyClass, ops: Op[], key?: string) {
+  delete(EntClass: AnyClass, ops: Op[], key?: string): this {
     const byOp = this.byEntClass?.get(EntClass);
     if (!byOp) {
       return this;

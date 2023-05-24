@@ -33,15 +33,15 @@ let replica: TestSQLClient;
 // Overcomplicated a little, but after a 2h struggle with TS & static methods
 // typechecking, let it be like this for now.
 class EncryptedValue {
-  static parse(dbValue: string) {
+  static parse(dbValue: string): EncryptedValue {
     return new this(dbValue);
   }
 
-  static stringify(obj: EncryptedValue) {
+  static stringify(obj: EncryptedValue): string {
     return obj.dbValue;
   }
 
-  static async encrypt(text: string, delta: number) {
+  static async encrypt(text: string, delta: number): Promise<EncryptedValue> {
     return new this(
       "encrypted:" +
         text
@@ -51,7 +51,7 @@ class EncryptedValue {
     );
   }
 
-  async decrypt(delta: number) {
+  async decrypt(delta: number): Promise<string> {
     return this.dbValue
       .replace("encrypted:", "")
       .split("")
@@ -65,7 +65,7 @@ class EncryptedValue {
 async function shardRun<TOutput>(
   query: Query<TOutput>,
   freshness: typeof STALE_REPLICA | null = null
-) {
+): Promise<TOutput> {
   return shard.run(
     query,
     {

@@ -73,7 +73,7 @@ export class VC {
   }: {
     trace?: string;
     cachesExpirationMs?: number;
-  } = {}) {
+  } = {}): VC {
     return new VC(
       new VCTrace(trace),
       GUEST_ID,
@@ -89,7 +89,7 @@ export class VC {
   /**
    * This is to show VCs in console.log() and inspect() nicely.
    */
-  [inspect.custom]() {
+  [inspect.custom](): string {
     return `<${this.toString()}>`;
   }
 
@@ -131,7 +131,7 @@ export class VC {
   loader<TLoadArgs extends any[], TReturn>(HandlerClass: {
     new (vc: VC): Handler<TLoadArgs, TReturn>;
     $loader?: symbol;
-  }) {
+  }): Loader<TLoadArgs, TReturn> {
     let symbol = HandlerClass.$loader;
     if (!symbol) {
       symbol = HandlerClass.$loader = Symbol(HandlerClass.name);
@@ -144,7 +144,7 @@ export class VC {
    * Returns shard+schemaName timeline which tracks replica staleness for the
    * particular schema name (most likely, table).
    */
-  timeline(shard: Shard<Client>, schemaName: string) {
+  timeline(shard: Shard<Client>, schemaName: string): Timeline {
     const key = shard.no + ":" + schemaName;
     let timeline = this.timelines.get(key);
     if (timeline === undefined) {
@@ -160,7 +160,7 @@ export class VC {
    * method always returns a value which is compatible to
    * withDeserializedTimelines() input.
    */
-  serializeTimelines() {
+  serializeTimelines(): string | undefined {
     const timelines: Record<string, string> = {};
     for (const [key, timeline] of this.timelines) {
       const timelineStr = timeline.serialize();
@@ -190,7 +190,9 @@ export class VC {
    * logic.) The timelines are merged according to wal position (greater wal
    * position wins).
    */
-  withDeserializedTimelines(...dataStrs: ReadonlyArray<string | undefined>) {
+  withDeserializedTimelines(
+    ...dataStrs: ReadonlyArray<string | undefined>
+  ): VC {
     let deserialized = false;
     for (const dataStr of dataStrs) {
       if (dataStr) {
@@ -212,7 +214,7 @@ export class VC {
   /**
    * Returns a new VC derived from the current one, but with empty cache.
    */
-  withEmptyCache() {
+  withEmptyCache(): VC {
     return new VC(
       this.trace,
       this.principal,
@@ -229,7 +231,7 @@ export class VC {
    * Returns a new VC derived from the current one, but with master freshness.
    * Master freshness is inherited by ent.vc after an Ent is loaded.
    */
-  withTransitiveMasterFreshness() {
+  withTransitiveMasterFreshness(): VC {
     if (this.freshness === MASTER) {
       return this;
     }
@@ -252,7 +254,7 @@ export class VC {
    * (not transitive): e.g. if an Ent is loaded with STALE_REPLICA freshness,
    * its ent.vc will have the DEFAULT freshness.
    */
-  withOneTimeStaleReplica() {
+  withOneTimeStaleReplica(): VC {
     if (this.freshness === STALE_REPLICA) {
       return this;
     }
@@ -275,7 +277,7 @@ export class VC {
    */
   withFlavor(prepend: "prepend", ...flavors: Array<VCFlavor | undefined>): this;
   withFlavor(...flavors: Array<VCFlavor | undefined>): this;
-  withFlavor(...args: any[]) {
+  withFlavor(...args: any[]): VC {
     const prepend = args[0] === "prepend" ? args.shift() : undefined;
     const pairs = (args as Array<VCFlavor | undefined>)
       .filter((flavor): flavor is VCFlavor => flavor !== undefined)
@@ -311,7 +313,7 @@ export class VC {
   /**
    * Derives the VC with new trace ID.
    */
-  withNewTrace(trace: string | undefined) {
+  withNewTrace(trace: string | undefined): VC {
     return new VC(
       new VCTrace(trace),
       this.principal,
@@ -327,7 +329,7 @@ export class VC {
   /**
    * Derives the VC with the provided heartbeater injected.
    */
-  withHeartbeater(heartbeater: VC["heartbeater"]) {
+  withHeartbeater(heartbeater: VC["heartbeater"]): VC {
     return new VC(
       this.trace,
       this.principal,
@@ -347,7 +349,7 @@ export class VC {
    * to a guest VC (see Ent.ts).
    */
   @Memoize()
-  toOmniDangerous() {
+  toOmniDangerous(): VC {
     return new VC(
       this.trace,
       OMNI_ID,
@@ -364,7 +366,7 @@ export class VC {
    * Creates a new VC downgraded to guest permissions.
    */
   @Memoize()
-  public toGuest() {
+  public toGuest(): VC {
     return new VC(
       this.trace,
       GUEST_ID,
@@ -409,7 +411,7 @@ export class VC {
   /**
    * Used for debugging purposes.
    */
-  toString(withInstanceNumber = false) {
+  toString(withInstanceNumber = false): string {
     const flavorsStr = compact([
       withInstanceNumber && this.instanceNumber,
       ...[...this.flavors.values()].map((flavor) => flavor.toDebugString()),
@@ -459,7 +461,7 @@ export class VC {
    * - isRoot is changed to false once a root VC is switched to a per-user VC
    */
   @Memoize()
-  public toLowerInternal(principal: string | null) {
+  public toLowerInternal(principal: string | null): VC {
     const newPrincipal = principal ? principal.toString() : GUEST_ID;
 
     if (this.principal === newPrincipal && this.freshness !== STALE_REPLICA) {

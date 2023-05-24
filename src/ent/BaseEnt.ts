@@ -5,6 +5,7 @@ import type { Table, UniqueKey } from "../types";
 import { GLOBAL_SHARD } from "./Configuration";
 import { CacheMixin } from "./mixins/CacheMixin";
 import { ConfigMixin } from "./mixins/ConfigMixin";
+import type { HelpersClass } from "./mixins/HelpersMixin";
 import { HelpersMixin } from "./mixins/HelpersMixin";
 import { PrimitiveMixin } from "./mixins/PrimitiveMixin";
 
@@ -32,7 +33,10 @@ export function BaseEnt<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
   TClient extends Client
->(cluster: Cluster<TClient>, schema: Schema<TTable, TUniqueKey>) {
+>(
+  cluster: Cluster<TClient>,
+  schema: Schema<TTable, TUniqueKey>
+): HelpersClass<TTable, TUniqueKey, TClient> {
   return HelpersMixin(
     CacheMixin(PrimitiveMixin(ConfigMixin(class {}, cluster, schema)))
   );

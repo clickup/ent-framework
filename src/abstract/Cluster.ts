@@ -113,7 +113,7 @@ export class Cluster<TClient extends Client> {
    * If called once, keeps the clients pre-warmed, e.g. open. (It's up to the
    * particular Client's implementation, what does a "pre-warmed client" mean.)
    */
-  prewarm() {
+  prewarm(): void {
     for (const island of this.islands.values()) {
       island.master.prewarm();
       island.replicas.forEach((client) => client.prewarm());
@@ -127,7 +127,7 @@ export class Cluster<TClient extends Client> {
    * intentionally, to defer the I/O and possible errors to the moment of the
    * actual query.
    */
-  globalShard() {
+  globalShard(): Shard<TClient> {
     return this.shardByNo(0);
   }
 
@@ -146,7 +146,7 @@ export class Cluster<TClient extends Client> {
    * exceptions to be thrown with a consistent call stack (e.g. at the moment of
    * the query), no matter whether it was an immediate call or a deferred one.
    */
-  shard(id: string) {
+  shard(id: string): Shard<TClient> {
     const shardNo = this.firstIsland.master.shardNoByID(id);
     return this.shardByNo(shardNo);
   }
@@ -159,7 +159,7 @@ export class Cluster<TClient extends Client> {
    * that Shard (and it throws if such Shard hasn't been discovered actually).
    */
   @Memoize()
-  shardByNo(shardNo: number) {
+  shardByNo(shardNo: number): Shard<TClient> {
     const shardOptions: ShardOptions<TClient> = {
       locateIsland: async () => {
         for (let attempt = 0; ; attempt++) {
@@ -204,7 +204,7 @@ export class Cluster<TClient extends Client> {
   /**
    * Returns all currently known (discovered) non-global shards in the cluster.
    */
-  async nonGlobalShards() {
+  async nonGlobalShards(): Promise<ReadonlyArray<Shard<TClient>>> {
     const { nonGlobalShards } = await this.discoverShards();
     return nonGlobalShards;
   }
@@ -213,7 +213,7 @@ export class Cluster<TClient extends Client> {
    * Returns a random shard among the ones which are currently known
    * (discovered) in the cluster.
    */
-  async randomShard(seed?: object) {
+  async randomShard(seed?: object): Promise<Shard<TClient>> {
     const { nonGlobalShards } = await this.discoverShards();
 
     let index;
@@ -235,7 +235,7 @@ export class Cluster<TClient extends Client> {
   /**
    * Returns all currently known (discovered) shards of a particular island.
    */
-  async islandShards(islandNo: number) {
+  async islandShards(islandNo: number): Promise<Array<Shard<TClient>>> {
     const { shardNoToIsland } = await this.discoverShards();
     return compact(
       [...shardNoToIsland.entries()].map(([shardNo, island]) =>
@@ -259,7 +259,9 @@ export class Cluster<TClient extends Client> {
    *   period someone else also wants to reset the cache, this "cache reset"
    *   order will be coalesced with the existing one.
    */
-  private async discoverShards(waitMsAndResetCache = 0) {
+  private async discoverShards(
+    waitMsAndResetCache = 0
+  ): Promise<DiscoveredShards<TClient>> {
     const isLeaderToResetCache =
       waitMsAndResetCache > 0 && !this.discoverShardsCache.wait;
 
@@ -289,7 +291,7 @@ export class Cluster<TClient extends Client> {
       }, this.options.shardsDiscoverIntervalMs);
     }
 
-    return this.discoverShardsCache.cache!;
+    return this.discoverShardsCache.cache;
   }
 
   /**

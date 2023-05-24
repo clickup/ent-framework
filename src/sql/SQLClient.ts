@@ -362,7 +362,7 @@ export abstract class SQLClient extends Client {
     });
   }
 
-  private buildShardName(no: number | string) {
+  private buildShardName(no: number | string): string {
     // e.g. "sh%04d" -> "sh0042"
     return this.shards
       ? this.shards.nameFormat.replace(
@@ -374,7 +374,7 @@ export abstract class SQLClient extends Client {
   }
 }
 
-export function isBigintStr(str: string) {
+export function isBigintStr(str: string): boolean {
   return (
     !!str.match(MAX_BIGINT_RE) &&
     (str.length < MAX_BIGINT.length || str <= MAX_BIGINT)
@@ -481,7 +481,7 @@ export function escapeStringify(v: any, stringify: (v: any) => string): string {
   return v === null || v === undefined ? "NULL" : escapeString(stringify(v));
 }
 
-function parseLsn(lsn: string | null | undefined) {
+function parseLsn(lsn: string | null | undefined): bigint | null {
   if (!lsn) {
     return null;
   }

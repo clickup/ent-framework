@@ -21,20 +21,25 @@ export function CacheMixin<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
   TClient extends Client
->(Base: PrimitiveClass<TTable, TUniqueKey, TClient>) {
+>(
+  Base: PrimitiveClass<TTable, TUniqueKey, TClient>
+): PrimitiveClass<TTable, TUniqueKey, TClient> {
   class CacheMixin extends Base {
     override ["constructor"]!: typeof CacheMixin;
 
     static override async insertIfNotExists(
       vc: VC,
       input: InsertInput<TTable>
-    ) {
+    ): Promise<string | null> {
       const res = await super.insertIfNotExists(vc, input);
       vc.cache(QueryCache).delete(this, ["loadByNullable", "select", "count"]);
       return res;
     }
 
-    static override async upsert(vc: VC, input: InsertInput<TTable>) {
+    static override async upsert(
+      vc: VC,
+      input: InsertInput<TTable>
+    ): Promise<string> {
       const res = super.upsert(vc, input);
       vc.cache(QueryCache).delete(this, [
         "loadNullable",
@@ -49,7 +54,7 @@ export function CacheMixin<
       this: new (...args: any[]) => TEnt,
       vc: VC,
       id: string
-    ) {
+    ): Promise<TEnt | null> {
       return vc
         .cache(QueryCache)
         .through(this, "loadNullable", id, async () =>
@@ -63,7 +68,7 @@ export function CacheMixin<
       this: new (...args: any[]) => TEnt,
       vc: VC,
       input: LoadByInput<TTable, TUniqueKey>
-    ) {
+    ): Promise<TEnt | null> {
       return vc
         .cache(QueryCache)
         .through(this, "loadByNullable", JSON.stringify(input), async () =>
@@ -78,7 +83,7 @@ export function CacheMixin<
       limit: number,
       order?: Order<TTable>,
       custom?: {}
-    ) {
+    ): Promise<TEnt[]> {
       return vc
         .cache(QueryCache)
         .through(
@@ -89,7 +94,10 @@ export function CacheMixin<
         ) as Promise<TEnt[]>;
     }
 
-    static override async count(vc: VC, where: CountInput<TTable>) {
+    static override async count(
+      vc: VC,
+      where: CountInput<TTable>
+    ): Promise<number> {
       return vc
         .cache(QueryCache)
         .through(this, "count", JSON.stringify(where), async () =>
@@ -97,7 +105,10 @@ export function CacheMixin<
         );
     }
 
-    static override async exists(vc: VC, where: ExistsInput<TTable>) {
+    static override async exists(
+      vc: VC,
+      where: ExistsInput<TTable>
+    ): Promise<boolean> {
       return vc
         .cache(QueryCache)
         .through(this, "exists", JSON.stringify(where), async () =>
@@ -105,7 +116,9 @@ export function CacheMixin<
         );
     }
 
-    override async updateOriginal(input: UpdateInput<TTable>) {
+    override async updateOriginal(
+      input: UpdateInput<TTable>
+    ): Promise<boolean> {
       const res = await super.updateOriginal(input);
       this.vc
         .cache(QueryCache)
@@ -114,7 +127,7 @@ export function CacheMixin<
       return res;
     }
 
-    override async deleteOriginal() {
+    override async deleteOriginal(): Promise<boolean> {
       const res = await super.deleteOriginal();
       this.vc
         .cache(QueryCache)
@@ -124,5 +137,5 @@ export function CacheMixin<
     }
   }
 
-  return CacheMixin as PrimitiveClass<TTable, TUniqueKey, TClient>;
+  return CacheMixin;
 }

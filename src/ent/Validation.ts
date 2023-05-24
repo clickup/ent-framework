@@ -155,7 +155,7 @@ export class Validation<TTable extends Table> {
       | typeof EntNotReadableError
       | typeof EntNotInsertableError
       | typeof EntNotUpdatableError
-  ) {
+  ): Promise<void> {
     this.validateTenantUserIDImpl(vc, row, ExceptionClass);
 
     const { allow, results } = await evaluate(rules, vc, row, parallel);
@@ -175,7 +175,7 @@ export class Validation<TTable extends Table> {
       | typeof EntNotReadableError
       | typeof EntNotInsertableError
       | typeof EntNotUpdatableError
-  ) {
+  ): void {
     if (this.tenantPrincipalField === undefined) {
       return;
     }
@@ -199,7 +199,7 @@ export class Validation<TTable extends Table> {
     vc: VC,
     newRow: Row<TTable>,
     input: object
-  ) {
+  ): Promise<void> {
     const { allow, results } = await evaluate(this.validate, vc, newRow, true);
     if (allow) {
       // Quick path (expected to fire most of the time).
@@ -224,7 +224,7 @@ export class Validation<TTable extends Table> {
  * A helper function which returns a debugging text for a list of rule
  * evaluation results.
  */
-function resultsToText(op: string, results: RuleResult[]) {
+function resultsToText(op: string, results: RuleResult[]): string {
   if (results.length === 0) {
     return `No "${op}" rules defined`;
   }

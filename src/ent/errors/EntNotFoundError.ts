@@ -18,7 +18,7 @@ export class EntNotFoundError extends EntAccessError {
   }
 }
 
-function whereToText(where: Record<string, any>) {
+function whereToText(where: Record<string, any>): string {
   if (Object.keys(where).length === 1) {
     const [k, v] = Object.entries(where)[0];
     return `${k}=${sanitizeIDForDebugPrinting(v)}`;

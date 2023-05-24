@@ -85,7 +85,7 @@ export class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
     });
   }
 
-  nameUpper() {
+  nameUpper(): string {
     return this.name.toUpperCase();
   }
 }
@@ -124,11 +124,11 @@ export class EntTestPost extends BaseEnt(testCluster, schemaTestPost) {
     });
   }
 
-  titleUpper() {
+  titleUpper(): string {
     return this.title.toUpperCase();
   }
 
-  async user() {
+  async user(): Promise<EntTestUser> {
     return EntTestUser.loadX(this.vc, this.user_id);
   }
 }
@@ -158,7 +158,7 @@ export class EntTestComment extends BaseEnt(testCluster, schemaTestComment) {
     });
   }
 
-  textUpper() {
+  textUpper(): string {
     return this.text.toUpperCase();
   }
 }
@@ -512,13 +512,16 @@ export async function init(): Promise<[VC, VC]> {
   return [user.vc, otherUser.vc];
 }
 
-export function createVC() {
+export function createVC(): VC {
   const vc = vcTestGuest.withFlavor(new VCWithQueryCache({ maxQueries: 1000 }));
   (vc as any).freshness = null;
   return vc;
 }
 
-export function expectToMatchSnapshot(str: string, snapshotName?: string) {
+export function expectToMatchSnapshot(
+  str: string,
+  snapshotName?: string
+): void {
   const exp = expect(
     str.replace(/\b(vc:\w+)\(\d+\)/g, "$1").replace(/\d{10,}/g, "<id>")
   );

@@ -127,11 +127,13 @@ export function HelpersMixin<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
   TClient extends Client
->(Base: PrimitiveClass<TTable, TUniqueKey, TClient>) {
+>(
+  Base: PrimitiveClass<TTable, TUniqueKey, TClient>
+): HelpersClass<TTable, TUniqueKey, TClient> {
   class HelpersMixin extends Base {
     override ["constructor"]!: typeof HelpersMixin;
 
-    static async insert(vc: VC, input: InsertInput<TTable>) {
+    static async insert(vc: VC, input: InsertInput<TTable>): Promise<string> {
       const id = await this.insertIfNotExists(vc, input);
       if (!id) {
         throw new EntUniqueKeyError(this.name, input);
@@ -140,17 +142,26 @@ export function HelpersMixin<
       return id;
     }
 
-    static async insertReturning(vc: VC, input: InsertInput<TTable>) {
+    static async insertReturning(
+      vc: VC,
+      input: InsertInput<TTable>
+    ): Promise<HelpersMixin> {
       const id = await this.insert(vc, input);
       return this.loadX(vc, id);
     }
 
-    static async upsertReturning(vc: VC, input: InsertInput<TTable>) {
+    static async upsertReturning(
+      vc: VC,
+      input: InsertInput<TTable>
+    ): Promise<HelpersMixin> {
       const id = await this.upsert(vc, input);
       return this.loadX(vc, id);
     }
 
-    static async loadIfReadableNullable(vc: VC, id: string) {
+    static async loadIfReadableNullable(
+      vc: VC,
+      id: string
+    ): Promise<HelpersMixin | null> {
       try {
         return await this.loadNullable(vc, id);
       } catch (e: any) {
@@ -162,7 +173,7 @@ export function HelpersMixin<
       }
     }
 
-    static async loadX(vc: VC, id: string) {
+    static async loadX(vc: VC, id: string): Promise<HelpersMixin> {
       const ent = await this.loadNullable(vc, id);
       if (!ent) {
         throw new EntNotFoundError(this.name, { [ID]: id });
@@ -171,7 +182,10 @@ export function HelpersMixin<
       return ent;
     }
 
-    static async loadByX(vc: VC, input: LoadByInput<TTable, TUniqueKey>) {
+    static async loadByX(
+      vc: VC,
+      input: LoadByInput<TTable, TUniqueKey>
+    ): Promise<HelpersMixin> {
       const ent = await this.loadByNullable(vc, input);
       if (!ent) {
         throw new EntNotFoundError(this.name, input);
@@ -180,7 +194,7 @@ export function HelpersMixin<
       return ent;
     }
 
-    async updateChanged(input: UpdateInput<TTable>) {
+    async updateChanged(input: UpdateInput<TTable>): Promise<boolean> {
       let numChangedAttrs = 0;
       const changedAttrs: UpdateInput<TTable> = {};
 
@@ -231,18 +245,22 @@ export function HelpersMixin<
       return false;
     }
 
-    async updateChangedReturningX(input: UpdateInput<TTable>) {
+    async updateChangedReturningX(
+      input: UpdateInput<TTable>
+    ): Promise<HelpersMixin | this> {
       return (await this.updateChanged(input))
         ? this.constructor.loadX(this.vc, this[ID])
         : this;
     }
 
-    async updateReturningNullable(input: UpdateInput<TTable>) {
+    async updateReturningNullable(
+      input: UpdateInput<TTable>
+    ): Promise<HelpersMixin | null> {
       const updated = await this.updateOriginal(input);
       return updated ? this.constructor.loadNullable(this.vc, this[ID]) : null;
     }
 
-    async updateReturningX(input: UpdateInput<TTable>) {
+    async updateReturningX(input: UpdateInput<TTable>): Promise<HelpersMixin> {
       const res = await this.updateReturningNullable(input);
       if (!res) {
         throw new EntNotFoundError(this.constructor.name, { [ID]: this[ID] });

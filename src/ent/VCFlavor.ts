@@ -13,7 +13,7 @@ export abstract class VCFlavor {
   /**
    * Appended to the end of VC.toString() result.
    */
-  toDebugString() {
+  toDebugString(): string {
     return "";
   }
 }

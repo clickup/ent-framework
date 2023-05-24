@@ -1,8 +1,9 @@
 import { QueryCache } from "../QueryCache";
+import type { VC } from "../VC";
 import { VCWithQueryCache } from "../VCFlavor";
 import { EntTestCompany, vcTestGuest } from "./helpers/test-objects";
 
-function createVC() {
+function createVC(): VC {
   const vc = vcTestGuest.withFlavor(new VCWithQueryCache({ maxQueries: 1000 }));
   (vc as any).freshness = null;
   return vc;

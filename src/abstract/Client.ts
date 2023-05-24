@@ -103,7 +103,7 @@ export abstract class Client {
     where: string,
     error: unknown,
     elapsed: number | null
-  ) {
+  ): void {
     this.loggers.swallowedErrorLogger({
       where: `${this.constructor.name}(${this.name}): ${where}`,
       error,
@@ -117,5 +117,5 @@ export abstract class Client {
    * minimize the time which the very 1st query will take (e.g. pre-cache
    * full-text dictionaries).
    */
-  prewarm() {}
+  prewarm(): void {}
 }

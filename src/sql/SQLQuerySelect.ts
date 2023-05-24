@@ -111,7 +111,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
     return outputs;
   }
 
-  private buildCustom(input: SelectInput<TTable>, sql: string) {
+  private buildCustom(input: SelectInput<TTable>, sql: string): string {
     // This is mostly to do hacks in PostgreSQL queries.
     // Not even exposed by Ent framework.
     const custom = input.custom
@@ -148,7 +148,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
     return sql;
   }
 
-  private buildOptionalOrder(order: Order<TTable> | undefined) {
+  private buildOptionalOrder(order: Order<TTable> | undefined): string {
     if (!order) {
       return "";
     }
@@ -189,7 +189,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
     return pieces.length > 0 ? " ORDER BY " + pieces.join(", ") : "";
   }
 
-  private buildLimit(limit: number) {
+  private buildLimit(limit: number): string {
     return " LIMIT " + (parseInt("" + limit) || 0);
   }
 }

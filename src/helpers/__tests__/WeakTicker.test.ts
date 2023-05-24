@@ -5,7 +5,7 @@ import { WeakTicker } from "../WeakTicker";
 class Target {
   constructor(private ticksOut: number[], public maxTicks: number) {}
 
-  onTick(tickNo: number) {
+  onTick(tickNo: number): "keep" | "unschedule" {
     this.ticksOut.push(tickNo);
     return tickNo < this.maxTicks - 1 ? "keep" : "unschedule";
   }

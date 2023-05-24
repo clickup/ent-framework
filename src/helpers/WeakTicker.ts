@@ -31,7 +31,7 @@ export class WeakTicker {
    *   as needed.
    * - If target.onTick() returns "unschedule", the target will be unscheduled.
    */
-  schedule(target: Target, tickMs: number) {
+  schedule(target: Target, tickMs: number): void {
     // We DO NOT use any closures here! Otherwise, target would be retained in
     // that closures, and it won't be garbage collected.
     let slot = this.slots.get(tickMs);
@@ -55,14 +55,14 @@ export class WeakTicker {
   /**
    * Returns true if there are no targets scheduled at the moment.
    */
-  isEmpty() {
+  isEmpty(): boolean {
     return this.slots.size === 0;
   }
 
   /**
    * Called by internal setInterval().
    */
-  private onTick(tickMs: number) {
+  private onTick(tickMs: number): void {
     const slot = this.slots.get(tickMs)!;
     for (const ref of slot.refs) {
       const target = ref.deref();
