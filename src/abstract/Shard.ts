@@ -1,6 +1,6 @@
 import { Memoize } from "fast-typescript-memoize";
 import type { Client } from "./Client";
-import type { Island } from "./Cluster";
+import type { Island } from "./Island";
 import type { Query } from "./Query";
 import type { QueryAnnotation, WhyClient } from "./QueryAnnotation";
 import type { Timeline } from "./Timeline";
@@ -28,13 +28,6 @@ export class Shard<TClient extends Client> {
     public readonly no: number,
     private options: ShardOptions<TClient>
   ) {}
-
-  /**
-   * Returns Island where this Shard is currently located.
-   */
-  async island(): Promise<Island<TClient>> {
-    return this.options.locateIsland();
-  }
 
   /**
    * Chooses the right client to be used for this shard. We don't memoize,

@@ -347,6 +347,7 @@ test("race condition in insert/loadBy", async () => {
 });
 
 test("inverses are deleted when ent insert DB operation fails", async () => {
+  (testCluster.options as any).locateIslandErrorRetryCount = 0;
   const company = await EntTestCompany.insertReturning(vc, {
     name: "my-company",
   });

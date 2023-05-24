@@ -1,5 +1,6 @@
 import { Client } from "../../../abstract/Client";
-import { Cluster, Island } from "../../../abstract/Cluster";
+import { Cluster } from "../../../abstract/Cluster";
+import { Island } from "../../../abstract/Island";
 import type { TimelineManager } from "../../../abstract/TimelineManager";
 import { nullthrows } from "../../../helpers/misc";
 import buildShape from "../../helpers/buildShape";
