@@ -1,6 +1,45 @@
 import { createHash } from "crypto";
 
 /**
+ * Removes constructor signature from a type.
+ * https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
+ */
+export type OmitNew<T extends new (...args: any[]) => any> = Pick<T, keyof T>;
+
+/**
+ * Adds a type alternative to constructor signature's return value. This is
+ * useful when we e.g. turn an instance of some Ent class into an Instance & Row
+ * type where Row is dynamically inferred from the schema.
+ */
+export type AddNew<
+  TClass extends new (...args: any[]) => any,
+  TRet
+> = OmitNew<TClass> & { new (): InstanceType<TClass> & TRet };
+
+/**
+ * Flattens the interface to make it more readable in IntelliSense. Can be used
+ * when someone modifies (picks, omits, etc.) a huge type.
+ */
+export type Flatten<T> = {} & { [P in keyof T]: T[P] };
+
+/**
+ * Returns a union type of all tuple strict prefixes:
+ * ["a", "b", "c"] -> ["a", "b"] | ["a"]
+ */
+export type TuplePrefixes<T extends readonly unknown[]> = T extends [unknown]
+  ? []
+  : T extends [infer First, ...infer Rest]
+  ? [First, ...TuplePrefixes<Rest>] | [First]
+  : [];
+
+/**
+ * Picks only partial (optional) keys of an object.
+ */
+export type PickPartial<T> = {
+  [K in keyof T as undefined extends T[K] ? K : never]: T[K];
+};
+
+/**
  * Turns a list of Promises to a list of Promise resolution results.
  */
 export async function join<TList extends readonly unknown[]>(
@@ -88,38 +127,6 @@ export async function mapJoin<TElem, TRet>(
 ): Promise<TRet[]> {
   return join((await arr).map((e, idx) => func(e, idx)));
 }
-
-/**
- * Removes constructor signature from a type.
- * https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
- */
-export type OmitNew<T extends new (...args: any[]) => any> = Pick<T, keyof T>;
-
-/**
- * Adds a type alternative to constructor signature's return value. This is
- * useful when we e.g. turn an instance of some Ent class into an Instance & Row
- * type where Row is dynamically inferred from the schema.
- */
-export type AddNew<
-  TClass extends new (...args: any[]) => any,
-  TRet
-> = OmitNew<TClass> & { new (): InstanceType<TClass> & TRet };
-
-/**
- * Flattens the interface to make it more readable in IntelliSense. Can be used
- * when someone modifies (picks, omits, etc.) a huge type.
- */
-export type Flatten<T> = {} & { [P in keyof T]: T[P] };
-
-/**
- * Returns a union type of all tuple strict prefixes:
- * ["a", "b", "c"] -> ["a", "b"] | ["a"]
- */
-export type TuplePrefixes<T extends readonly unknown[]> = T extends [unknown]
-  ? []
-  : T extends [infer First, ...infer Rest]
-  ? [First, ...TuplePrefixes<Rest>] | [First]
-  : [];
 
 /**
  * A wrapper around process.hrtime() to quickly calculate time deltas.

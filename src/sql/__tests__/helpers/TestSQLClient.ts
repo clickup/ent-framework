@@ -1,6 +1,5 @@
 import { Client } from "../../../abstract/Client";
 import { Cluster } from "../../../abstract/Cluster";
-import { Island } from "../../../abstract/Island";
 import type { TimelineManager } from "../../../abstract/TimelineManager";
 import { nullthrows } from "../../../helpers/misc";
 import buildShape from "../../helpers/buildShape";
@@ -86,39 +85,33 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
   }
 }
 
-export const master = new SQLClientPool(
-  {
-    name: "test-pool",
-    shards: {
-      nameFormat: "sh%04d",
-      discoverQuery:
-        "SELECT nspname FROM pg_namespace WHERE nspname ~ 'sh[0-9]+'",
-    },
-    isMaster: true,
-    config: {
-      host: process.env.PGHOST || process.env.DB_HOST_DEFAULT,
-      port: parseInt(process.env.PGPORT || process.env.DB_PORT || "5432"),
-      database: process.env.PGDATABASE || process.env.DB_DATABASE,
-      user: process.env.PGUSER || process.env.DB_USER,
-      password: process.env.PGPASSWORD || process.env.DB_PASS,
-    },
-  },
-  { swallowedErrorLogger: () => {} }
-);
+export const testConfig = {
+  host: process.env.PGHOST || process.env.DB_HOST_DEFAULT,
+  port: parseInt(process.env.PGPORT || process.env.DB_PORT || "5432"),
+  database: process.env.PGDATABASE || process.env.DB_DATABASE,
+  user: process.env.PGUSER || process.env.DB_USER,
+  password: process.env.PGPASSWORD || process.env.DB_PASS,
+};
 
-export const testCluster = new Cluster(
-  [
-    new Island(0, new TestSQLClient(master), [
-      new TestSQLClient(
-        new SQLClientPool({ ...master.dest, isMaster: false }, master.loggers)
-      ),
-    ]),
-  ],
-  {
-    locateIslandErrorRetryCount: 30,
-    locateIslandErrorRetryDelayMs: 1000,
-  }
-);
+export const testCluster = new Cluster({
+  islands: [{ no: 0, nodes: [testConfig, testConfig] }],
+  createClient: (isMaster, config) =>
+    new TestSQLClient(
+      new SQLClientPool({
+        name: "test-pool",
+        shards: {
+          nameFormat: "sh%04d",
+          discoverQuery:
+            "SELECT nspname FROM pg_namespace WHERE nspname ~ 'sh[0-9]+'",
+        },
+        isMaster,
+        config,
+        loggers: { swallowedErrorLogger: () => {} },
+      })
+    ),
+  locateIslandErrorRetryCount: 30,
+  locateIslandErrorRetryDelayMs: 1000,
+});
 
 function indentQuery(query: string): string {
   query = query

@@ -1,7 +1,7 @@
 import delay from "delay";
 import range from "lodash/range";
 import { Pool } from "pg";
-import { master } from "../__tests__/helpers/TestSQLClient";
+import { testConfig } from "../__tests__/helpers/TestSQLClient";
 
 const MAX_TIME_MS = 20000;
 
@@ -28,7 +28,7 @@ let seqKey = 0;
 
 export default async function* (): AsyncGenerator<unknown> {
   const pool = new Pool({
-    ...master.dest.config,
+    ...testConfig,
     min: 1,
     max: 1,
     idleTimeoutMillis: 30000,

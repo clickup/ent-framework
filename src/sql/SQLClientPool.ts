@@ -26,6 +26,7 @@ export interface SQLClientDest {
     prewarmIntervalMs?: number;
     prewarmQuery?: string | (() => string);
   };
+  loggers: Loggers;
 }
 
 // Our extension to Pool connection which adds a couple props to the connection
@@ -61,11 +62,11 @@ export class SQLClientPool extends SQLClient {
     conn.release(needClose);
   }
 
-  constructor(public readonly dest: SQLClientDest, loggers: Loggers) {
+  constructor(public readonly dest: SQLClientDest) {
     super(
       dest.name,
       dest.isMaster,
-      loggers,
+      dest.loggers,
       dest.hints,
       dest.shards,
       dest.config.maxReplicationLagMs,
