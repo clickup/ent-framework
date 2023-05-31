@@ -5,9 +5,10 @@ import omitBy from "lodash/omitBy";
 import random from "lodash/random";
 import hash from "object-hash";
 import { DefaultMap } from "../helpers/DefaultMap";
+import type { PickPartial } from "../helpers/misc";
 import { mapJoin, runInVoid } from "../helpers/misc";
 import type { Client } from "./Client";
-import type { Island } from "./Island";
+import { Island } from "./Island";
 import type { Loggers } from "./Loggers";
 import type { ShardOptions } from "./Shard";
 import { Shard } from "./Shard";
@@ -16,39 +17,46 @@ import { ShardError } from "./ShardError";
 /**
  * Options for Cluster constructor.
  */
-export interface ClusterOptions {
+export interface ClusterOptions<TClient extends Client, TNode> {
+  /** Islands configuration of the cluster. May be changed dynamically by
+   * passing it as a getter. */
+  readonly islands: ReadonlyArray<{ no: number; nodes: readonly TNode[] }>;
+  /** Given a node of some Island, instantiates a Client for this node. Called
+   * when a new node appears in the cluster statically or dynamically. */
+  readonly createClient: (isMaster: boolean, node: TNode) => TClient;
   /** How often to run shards rediscovery in normal circumstances. */
-  readonly shardsDiscoverIntervalMs: number;
+  readonly shardsDiscoverIntervalMs?: number;
   /** If there were DB errors during shards discovery (e.g. transport errors,
    * which is rare), the discovery is retried that many times before giving up
    * and throwing the error through. The number here can be high, because
    * rediscovery happens in background. */
-  readonly shardsDiscoverErrorRetryCount: number;
+  readonly shardsDiscoverErrorRetryCount?: number;
   /** If there were DB errors during shards discovery (rare), this is how much
    * we wait between attempts. */
-  readonly shardsDiscoverErrorRetryDelayMs: number;
+  readonly shardsDiscoverErrorRetryDelayMs?: number;
   /** If we think that we know island of a particular shard, but an attempt to
    * access it fails, this means that maybe the shard is migrating to another
    * island. In this case, we wait a bit and retry that many times. We should
    * not do it too many times though, because all DB requests will be blocked
    * waiting for the resolution. */
-  readonly locateIslandErrorRetryCount: number;
+  readonly locateIslandErrorRetryCount?: number;
   /** How much time to wait between the retries mentioned above. The time here
    * should be just enough to wait for switching the shard from one island to
    * another (typically quick). */
-  readonly locateIslandErrorRetryDelayMs: number;
+  readonly locateIslandErrorRetryDelayMs?: number;
 }
 
 /**
  * Default values for ClusterOptions if not passed.
  */
-const DEFAULT_CLUSTER_OPTIONS: ClusterOptions = {
-  shardsDiscoverIntervalMs: 10000,
-  shardsDiscoverErrorRetryCount: 3,
-  shardsDiscoverErrorRetryDelayMs: 3000,
-  locateIslandErrorRetryCount: 2,
-  locateIslandErrorRetryDelayMs: 1000,
-};
+const DEFAULT_CLUSTER_OPTIONS: Required<PickPartial<ClusterOptions<any, any>>> =
+  {
+    shardsDiscoverIntervalMs: 10000,
+    shardsDiscoverErrorRetryCount: 3,
+    shardsDiscoverErrorRetryDelayMs: 3000,
+    locateIslandErrorRetryCount: 2,
+    locateIslandErrorRetryDelayMs: 1000,
+  };
 
 /**
  * Holds the complete auto-discovered map of shards to figure out, which island
@@ -69,7 +77,7 @@ interface DiscoveredShards {
  *
  * Shard 0 is a special "global" shard.
  */
-export class Cluster<TClient extends Client> {
+export class Cluster<TClient extends Client, TNode = any> {
   private discoverShardsCache = {
     wait: null as Promise<void> | null,
     timeout: null as NodeJS.Timeout | null,
@@ -78,24 +86,33 @@ export class Cluster<TClient extends Client> {
   private firstIsland;
 
   readonly islands: ReadonlyMap<number, Island<TClient>>;
-  readonly options: ClusterOptions;
+  readonly options: Required<ClusterOptions<TClient, TNode>>;
   readonly loggers: Loggers;
 
-  constructor(
-    islands: ReadonlyArray<Island<TClient>>,
-    options: Partial<ClusterOptions> = {}
-  ) {
-    const firstIsland = first(islands);
+  constructor(options: ClusterOptions<TClient, TNode>) {
+    this.islands = new Map(
+      options.islands.map(({ no, nodes }) => [
+        no,
+        new Island(
+          no,
+          options.createClient(true, nodes[0]),
+          nodes.slice(1).map((node) => options.createClient(false, node))
+        ),
+      ])
+    );
+    const firstIsland = first([...this.islands.values()]);
     if (!firstIsland) {
       throw Error("The cluster has no islands");
     }
 
     this.options = {
       ...DEFAULT_CLUSTER_OPTIONS,
-      ...omitBy(options, (v) => v === undefined),
+      ...(omitBy(options, (v) => v === undefined) as ClusterOptions<
+        TClient,
+        TNode
+      >),
     };
     this.firstIsland = firstIsland;
-    this.islands = new Map(islands.map((island) => [island.no, island]));
     this.loggers = this.firstIsland.master.loggers;
   }
 
