@@ -6,12 +6,11 @@ import random from "lodash/random";
 import hash from "object-hash";
 import { DefaultMap } from "../helpers/DefaultMap";
 import type { PickPartial } from "../helpers/misc";
-import { mapJoin, runInVoid } from "../helpers/misc";
+import { nullthrows, mapJoin, runInVoid } from "../helpers/misc";
 import type { Client } from "./Client";
-import { Island } from "./Island";
 import type { Loggers } from "./Loggers";
-import type { ShardOptions } from "./Shard";
-import { Shard } from "./Shard";
+import type { ShardOptions, STALE_REPLICA } from "./Shard";
+import { MASTER, Shard } from "./Shard";
 import { ShardError } from "./ShardError";
 
 /**
@@ -69,11 +68,19 @@ interface DiscoveredShards {
 }
 
 /**
- * Cluster is a collection of islands and an orchestration
- * of shardNo -> island resolution.
+ * An internal interface representing one Island.
+ */
+interface Island<TClient extends Client> {
+  readonly master: TClient;
+  readonly replicas: TClient[];
+}
+
+/**
+ * Cluster is a collection of islands and an orchestration of shardNo -> island
+ * resolution.
  *
- * It's unknown beforehand, which island some particular shard belongs to;
- * the resolution is done asynchronously and lazily.
+ * It's unknown beforehand, which island some particular shard belongs to; the
+ * resolution is done asynchronously and lazily.
  *
  * Shard 0 is a special "global" shard.
  */
@@ -83,24 +90,25 @@ export class Cluster<TClient extends Client, TNode = any> {
     timeout: null as NodeJS.Timeout | null,
     cache: null as Promise<DiscoveredShards> | null,
   };
+  private islandsMap: Map<number, Island<TClient>>;
   private firstIsland;
 
-  readonly islands: ReadonlyMap<number, Island<TClient>>;
   readonly options: Required<ClusterOptions<TClient, TNode>>;
   readonly loggers: Loggers;
 
   constructor(options: ClusterOptions<TClient, TNode>) {
-    this.islands = new Map(
+    this.islandsMap = new Map(
       options.islands.map(({ no, nodes }) => [
         no,
-        new Island(
-          no,
-          options.createClient(true, nodes[0]),
-          nodes.slice(1).map((node) => options.createClient(false, node))
-        ),
+        {
+          master: options.createClient(true, nodes[0]),
+          replicas: nodes
+            .slice(1)
+            .map((node) => options.createClient(false, node)),
+        },
       ])
     );
-    const firstIsland = first([...this.islands.values()]);
+    const firstIsland = first([...this.islandsMap.values()]);
     if (!firstIsland) {
       throw Error("The cluster has no islands");
     }
@@ -121,7 +129,7 @@ export class Cluster<TClient extends Client, TNode = any> {
    * particular Client's implementation, what does a "pre-warmed client" mean.)
    */
   prewarm(): void {
-    for (const island of this.islands.values()) {
+    for (const island of this.islandsMap.values()) {
       island.master.prewarm();
       island.replicas.forEach((client) => client.prewarm());
     }
@@ -182,23 +190,46 @@ export class Cluster<TClient extends Client, TNode = any> {
   }
 
   /**
-   * Returns all currently known (discovered) shards of a particular island.
-   */
-  async islandShards(islandNo: number): Promise<Array<Shard<TClient>>> {
-    const { islandNoToShardNos } = await this.discoverShardsCached();
-    return (
-      islandNoToShardNos
-        .get(islandNo)
-        ?.map((shardNo) => this.shardByNo(shardNo)) ?? []
-    );
-  }
-
-  /**
    * Returns all currently known (discovered) non-global shards in the cluster.
    */
   async nonGlobalShards(): Promise<ReadonlyArray<Shard<TClient>>> {
     const { nonGlobalShardNos } = await this.discoverShardsCached();
     return nonGlobalShardNos.map((shardNo) => this.shardByNo(shardNo));
+  }
+
+  /**
+   * Returns all island numbers in the cluster.
+   */
+  islands(): number[] {
+    return [...this.islandsMap.keys()];
+  }
+
+  /**
+   * Returns all currently known (discovered) shards of a particular island.
+   */
+  async islandShards(island: number): Promise<Array<Shard<TClient>>> {
+    const { islandNoToShardNos } = await this.discoverShardsCached();
+    return (
+      islandNoToShardNos
+        .get(island)
+        ?.map((shardNo) => this.shardByNo(shardNo)) ?? []
+    );
+  }
+
+  /**
+   * Returns a Client of a particular Island.
+   */
+  islandClient(
+    island: number,
+    freshness: typeof MASTER | typeof STALE_REPLICA
+  ): TClient {
+    const { master, replicas } = nullthrows(
+      this.islandsMap.get(island),
+      "Unknown island"
+    );
+    return freshness === MASTER || replicas.length === 0
+      ? master
+      : replicas[Math.trunc(Math.random() * replicas.length)];
   }
 
   /**
@@ -211,23 +242,21 @@ export class Cluster<TClient extends Client, TNode = any> {
   @Memoize()
   private shardByNo(shardNo: number): Shard<TClient> {
     const shardOptions: ShardOptions<TClient> = {
-      locateIsland: async () => {
+      locateClient: async (freshness: typeof MASTER | typeof STALE_REPLICA) => {
         for (let attempt = 0; ; attempt++) {
           try {
             const { shardNoToIslandNo } = await this.discoverShardsCached();
-            const islandNo = shardNoToIslandNo.get(shardNo);
-            const island =
-              islandNo !== undefined ? this.islands.get(islandNo) : undefined;
-            if (!island) {
-              const masterNames = [...this.islands.values()]
-                .map((island) => island.master.name)
+            const island = shardNoToIslandNo.get(shardNo);
+            if (island === undefined) {
+              const masterNames = [...this.islandsMap.entries()]
+                .map(([no, { master }]) => `${no}:${master.name}`)
                 .join(", ");
               throw new ShardError(
                 `Shard ${shardNo} is not discoverable (some islands are down? connections limit? no such shard in the cluster?) on [${masterNames}]`,
                 masterNames
               );
             } else {
-              return island;
+              return this.islandClient(island, freshness);
             }
           } catch (error: unknown) {
             if ((await shardOptions.onRunError(attempt, error)) === "retry") {
@@ -318,29 +347,32 @@ export class Cluster<TClient extends Client, TNode = any> {
       const shardNoToIslandNo = new Map<number, number>();
       const islandNoToShardNos = new DefaultMap<number, number[]>();
       const nonGlobalShardNos: number[] = [];
-      await mapJoin([...this.islands.values()], async (island) => {
-        const shardNos = await island.master.shardNos();
-        for (const shardNo of shardNos) {
-          const otherIslandNo = shardNoToIslandNo.get(shardNo);
-          if (otherIslandNo) {
-            throw Error(
-              `Shard #${shardNo} exists in more than one island (` +
-                island.master.name +
-                " and " +
-                this.islands.get(otherIslandNo)?.master.name +
-                ")"
-            );
+      await mapJoin(
+        [...this.islandsMap.entries()],
+        async ([island, { master }]) => {
+          const shardNos = await master.shardNos();
+          for (const shardNo of shardNos) {
+            const otherIslandNo = shardNoToIslandNo.get(shardNo);
+            if (otherIslandNo) {
+              throw Error(
+                `Shard #${shardNo} exists in more than one island (` +
+                  master.name +
+                  " and " +
+                  this.islandsMap.get(otherIslandNo)?.master.name +
+                  ")"
+              );
+            }
+
+            shardNoToIslandNo.set(shardNo, island);
+            islandNoToShardNos.getOrAdd(island, Array).push(shardNo);
+            if (shardNo !== 0) {
+              nonGlobalShardNos.push(shardNo);
+            }
           }
 
-          shardNoToIslandNo.set(shardNo, island.no);
-          islandNoToShardNos.getOrAdd(island.no, Array).push(shardNo);
-          if (shardNo !== 0) {
-            nonGlobalShardNos.push(shardNo);
-          }
+          islandNoToShardNos.get(island)?.sort((a, b) => a - b);
         }
-
-        islandNoToShardNos.get(island.no)?.sort((a, b) => a - b);
-      });
+      );
       return {
         shardNoToIslandNo,
         islandNoToShardNos,
