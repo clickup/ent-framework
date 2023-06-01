@@ -247,7 +247,7 @@ export abstract class SQLClient extends Client {
         origError instanceof Error &&
         (origError as any).code === PG_CODE_UNDEFINED_TABLE
       ) {
-        throw new ShardError(origError, this.name);
+        throw new ShardError(origError, this.name, "rediscover");
       } else if (origError instanceof Error && (origError as any).severity) {
         // Only wrap the errors which PG sent to us explicitly. Those errors
         // mean that there was some aborted transaction.
@@ -346,7 +346,8 @@ export abstract class SQLClient extends Client {
       const idSafe = sanitizeIDForDebugPrinting(id);
       throw new ShardError(
         `Cannot parse ID ${idSafe} to detect shard number`,
-        this.name
+        this.name,
+        "fail"
       );
     }
 
