@@ -219,10 +219,10 @@ export class Cluster<TClient extends Client, TNode = any> {
   /**
    * Returns a Client of a particular Island.
    */
-  islandClient(
+  async islandClient(
     island: number,
     freshness: typeof MASTER | typeof STALE_REPLICA
-  ): TClient {
+  ): Promise<TClient> {
     const { master, replicas } = nullthrows(
       this.islandsMap.get(island),
       "Unknown island"
@@ -256,7 +256,7 @@ export class Cluster<TClient extends Client, TNode = any> {
                 masterNames
               );
             } else {
-              return this.islandClient(island, freshness);
+              return await this.islandClient(island, freshness);
             }
           } catch (error: unknown) {
             if ((await shardOptions.onRunError(attempt, error)) === "retry") {
