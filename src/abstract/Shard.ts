@@ -1,6 +1,4 @@
-import { Memoize } from "fast-typescript-memoize";
 import type { Client } from "./Client";
-import type { Island } from "./Island";
 import type { Query } from "./Query";
 import type { QueryAnnotation, WhyClient } from "./QueryAnnotation";
 import type { Timeline } from "./Timeline";
@@ -15,8 +13,13 @@ export const MASTER = Symbol("MASTER");
  */
 export const STALE_REPLICA = Symbol("STALE_REPLICA");
 
+/**
+ * Options passed to Shard constructor.
+ */
 export interface ShardOptions<TClient extends Client> {
-  locateIsland: () => Promise<Island<TClient>>;
+  locateClient: (
+    freshness: typeof MASTER | typeof STALE_REPLICA
+  ) => Promise<TClient>;
   onRunError: (attempt: number, error: unknown) => Promise<"retry" | "throw">;
 }
 
@@ -24,6 +27,8 @@ export interface ShardOptions<TClient extends Client> {
  * Shard is a numbered island with one master and N replicas.
  */
 export class Shard<TClient extends Client> {
+  private shardClients = new WeakMap<TClient, TClient>();
+
   constructor(
     public readonly no: number,
     private options: ShardOptions<TClient>
@@ -89,7 +94,7 @@ export class Shard<TClient extends Client> {
    * else is wrong with it.
    */
   async assertDiscoverable(): Promise<void> {
-    await this.options.locateIsland();
+    await this.options.locateClient(MASTER);
   }
 
   /**
@@ -102,22 +107,28 @@ export class Shard<TClient extends Client> {
     timeline: Timeline | typeof MASTER | typeof STALE_REPLICA,
     isWrite: true | undefined
   ): Promise<{ client: TClient; whyClient: WhyClient }> {
-    const island = await this.options.locateIsland();
-    const { master, replicas } = await this.clients(island);
-
     if (isWrite) {
-      return { client: master, whyClient: "master-bc-is-write" };
+      return {
+        client: await this.shardClient(MASTER),
+        whyClient: "master-bc-is-write",
+      };
     }
 
     if (timeline === MASTER) {
-      return { client: master, whyClient: "master-bc-master-freshness" };
+      return {
+        client: await this.shardClient(MASTER),
+        whyClient: "master-bc-master-freshness",
+      };
     }
 
-    if (!replicas.length) {
-      return { client: master, whyClient: "master-bc-no-replicas" };
-    }
+    const replica = await this.shardClient(STALE_REPLICA);
 
-    const replica = replicas[Math.trunc(Math.random() * replicas.length)];
+    if (replica.isMaster) {
+      return {
+        client: replica,
+        whyClient: "master-bc-no-replicas",
+      };
+    }
 
     if (timeline === STALE_REPLICA) {
       return {
@@ -130,23 +141,29 @@ export class Shard<TClient extends Client> {
       await replica.timelineManager.currentPos()
     );
     return isCaughtUp
-      ? { client: replica, whyClient: isCaughtUp }
-      : { client: master, whyClient: "master-bc-replica-not-caught-up" };
+      ? {
+          client: replica,
+          whyClient: isCaughtUp,
+        }
+      : {
+          client: await this.shardClient(MASTER),
+          whyClient: "master-bc-replica-not-caught-up",
+        };
   }
 
   /**
-   * Returns all the clients within this shard. Memoized by island, so in case
-   * the island changes, it will be re-calculated.
+   * Returns a shard-aware Client of a particular freshness.
    */
-  @Memoize()
-  private async clients(
-    islandForMemoize: Island<TClient>
-  ): Promise<{ master: TClient; replicas: TClient[] }> {
-    return {
-      master: islandForMemoize.master.withShard(this.no),
-      replicas: islandForMemoize.replicas.map((client) =>
-        client.withShard(this.no)
-      ),
-    };
+  private async shardClient(
+    freshness: typeof MASTER | typeof STALE_REPLICA
+  ): Promise<TClient> {
+    const client = await this.options.locateClient(freshness);
+    let shardClient = this.shardClients.get(client);
+    if (!shardClient) {
+      shardClient = client.withShard(this.no);
+      this.shardClients.set(client, shardClient);
+    }
+
+    return shardClient;
   }
 }
