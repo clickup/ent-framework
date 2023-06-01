@@ -9,7 +9,7 @@ import type { PickPartial } from "../helpers/misc";
 import { nullthrows, mapJoin, runInVoid } from "../helpers/misc";
 import type { Client } from "./Client";
 import type { Loggers } from "./Loggers";
-import type { ShardOptions, STALE_REPLICA } from "./Shard";
+import type { STALE_REPLICA } from "./Shard";
 import { MASTER, Shard } from "./Shard";
 import { ShardError } from "./ShardError";
 
@@ -19,30 +19,30 @@ import { ShardError } from "./ShardError";
 export interface ClusterOptions<TClient extends Client, TNode> {
   /** Islands configuration of the cluster. May be changed dynamically by
    * passing it as a getter. */
-  readonly islands: ReadonlyArray<{ no: number; nodes: readonly TNode[] }>;
+  islands: ReadonlyArray<{ no: number; nodes: readonly TNode[] }>;
   /** Given a node of some Island, instantiates a Client for this node. Called
    * when a new node appears in the cluster statically or dynamically. */
-  readonly createClient: (isMaster: boolean, node: TNode) => TClient;
+  createClient: (isMaster: boolean, node: TNode) => TClient;
   /** How often to run shards rediscovery in normal circumstances. */
-  readonly shardsDiscoverIntervalMs?: number;
+  shardsDiscoverIntervalMs?: number;
   /** If there were DB errors during shards discovery (e.g. transport errors,
    * which is rare), the discovery is retried that many times before giving up
    * and throwing the error through. The number here can be high, because
    * rediscovery happens in background. */
-  readonly shardsDiscoverErrorRetryCount?: number;
+  shardsDiscoverErrorRetryCount?: number;
   /** If there were DB errors during shards discovery (rare), this is how much
    * we wait between attempts. */
-  readonly shardsDiscoverErrorRetryDelayMs?: number;
+  shardsDiscoverErrorRetryDelayMs?: number;
   /** If we think that we know island of a particular shard, but an attempt to
    * access it fails, this means that maybe the shard is migrating to another
    * island. In this case, we wait a bit and retry that many times. We should
    * not do it too many times though, because all DB requests will be blocked
    * waiting for the resolution. */
-  readonly locateIslandErrorRetryCount?: number;
+  locateIslandErrorRetryCount?: number;
   /** How much time to wait between the retries mentioned above. The time here
    * should be just enough to wait for switching the shard from one island to
    * another (typically quick). */
-  readonly locateIslandErrorRetryDelayMs?: number;
+  locateIslandErrorRetryDelayMs?: number;
 }
 
 /**
@@ -71,8 +71,8 @@ interface DiscoveredShards {
  * An internal interface representing one Island.
  */
 interface Island<TClient extends Client> {
-  readonly master: TClient;
-  readonly replicas: TClient[];
+  master: TClient;
+  replicas: TClient[];
 }
 
 /**
@@ -241,35 +241,27 @@ export class Cluster<TClient extends Client, TNode = any> {
    */
   @Memoize()
   private shardByNo(shardNo: number): Shard<TClient> {
-    const shardOptions: ShardOptions<TClient> = {
+    return new Shard(shardNo, {
       locateClient: async (freshness: typeof MASTER | typeof STALE_REPLICA) => {
-        for (let attempt = 0; ; attempt++) {
-          try {
-            const { shardNoToIslandNo } = await this.discoverShardsCached();
-            const island = shardNoToIslandNo.get(shardNo);
-            if (island === undefined) {
-              const masterNames = [...this.islandsMap.entries()]
-                .map(([no, { master }]) => `${no}:${master.name}`)
-                .join(", ");
-              throw new ShardError(
-                `Shard ${shardNo} is not discoverable (some islands are down? connections limit? no such shard in the cluster?) on [${masterNames}]`,
-                masterNames
-              );
-            } else {
-              return await this.islandClient(island, freshness);
-            }
-          } catch (error: unknown) {
-            if ((await shardOptions.onRunError(attempt, error)) === "retry") {
-              continue;
-            } else {
-              throw error;
-            }
-          }
+        const { shardNoToIslandNo } = await this.discoverShardsCached();
+        const island = shardNoToIslandNo.get(shardNo);
+        if (island === undefined) {
+          const masterNames = [...this.islandsMap.entries()]
+            .map(([no, { master }]) => `${no}:${master.name}`)
+            .join(", ");
+          throw new ShardError(
+            `Shard ${shardNo} is not discoverable (some islands are down? connections limit? no such shard in the cluster?)`,
+            masterNames,
+            "rediscover"
+          );
+        } else {
+          return this.islandClient(island, freshness);
         }
       },
       onRunError: async (attempt: number, error: unknown) => {
         if (
           error instanceof ShardError &&
+          error.postAction === "rediscover" &&
           attempt < this.options.locateIslandErrorRetryCount
         ) {
           await this.discoverShardsCached(
@@ -280,8 +272,7 @@ export class Cluster<TClient extends Client, TNode = any> {
           return "throw";
         }
       },
-    };
-    return new Shard(shardNo, shardOptions);
+    });
   }
 
   /**

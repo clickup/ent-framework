@@ -22,7 +22,7 @@ export class ServerError extends Error {
       copyStack(this, origError);
     }
 
-    this.stack += "\n" + destName;
+    this.stack += `\n    on ${destName}`;
     delete origError.stack;
   }
 }

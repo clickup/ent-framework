@@ -31,7 +31,7 @@ export class Shard<TClient extends Client> {
 
   constructor(
     public readonly no: number,
-    private options: ShardOptions<TClient>
+    public readonly options: ShardOptions<TClient>
   ) {}
 
   /**
@@ -41,8 +41,18 @@ export class Shard<TClient extends Client> {
   async client(
     timeline: Timeline | typeof MASTER | typeof STALE_REPLICA
   ): Promise<TClient> {
-    const { client } = await this.clientEx(timeline, undefined);
-    return client;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        const [client] = await this.clientImpl(timeline, undefined);
+        return client;
+      } catch (error: unknown) {
+        if ((await this.options.onRunError(attempt, error)) === "retry") {
+          continue;
+        } else {
+          throw error;
+        }
+      }
+    }
   }
 
   /**
@@ -56,21 +66,22 @@ export class Shard<TClient extends Client> {
     freshness: null | typeof MASTER | typeof STALE_REPLICA
   ): Promise<TOutput> {
     for (let attempt = 0; ; attempt++) {
-      const { client, whyClient } = await this.clientEx(
-        freshness ?? timeline,
-        query.IS_WRITE ? true : undefined
-      );
-
-      let res;
+      let client, whyClient, res;
       try {
+        // Throws if e.g. we couldn't find an Island for this Shard.
+        [client, whyClient] = await this.clientImpl(
+          freshness ?? timeline,
+          query.IS_WRITE ? true : undefined
+        );
+        // Throws if e.g. the shard was there by the moment we got its client
+        // above, but it probably disappeared (during migration) and appeared on
+        // some other island.
         res = await query.run(client, {
           ...annotation,
           whyClient,
           attempt: annotation.attempt + attempt,
         });
       } catch (error: unknown) {
-        // The shard was there by the moment we got its client, but it probably
-        // disappeared (during migration) and appeared on some other island.
         if ((await this.options.onRunError(attempt, error)) === "retry") {
           continue;
         } else {
@@ -94,7 +105,7 @@ export class Shard<TClient extends Client> {
    * else is wrong with it.
    */
   async assertDiscoverable(): Promise<void> {
-    await this.options.locateClient(MASTER);
+    await this.client(MASTER);
   }
 
   /**
@@ -103,52 +114,34 @@ export class Shard<TClient extends Client> {
    * don't memoize, because the Shard may relocate to another Island during
    * re-discovery.
    */
-  private async clientEx(
+  private async clientImpl(
     timeline: Timeline | typeof MASTER | typeof STALE_REPLICA,
     isWrite: true | undefined
-  ): Promise<{ client: TClient; whyClient: WhyClient }> {
+  ): Promise<[client: TClient, whyClient: WhyClient]> {
     if (isWrite) {
-      return {
-        client: await this.shardClient(MASTER),
-        whyClient: "master-bc-is-write",
-      };
+      return [await this.shardClient(MASTER), "master-bc-is-write"];
     }
 
     if (timeline === MASTER) {
-      return {
-        client: await this.shardClient(MASTER),
-        whyClient: "master-bc-master-freshness",
-      };
+      return [await this.shardClient(MASTER), "master-bc-master-freshness"];
     }
 
     const replica = await this.shardClient(STALE_REPLICA);
 
     if (replica.isMaster) {
-      return {
-        client: replica,
-        whyClient: "master-bc-no-replicas",
-      };
+      return [replica, "master-bc-no-replicas"];
     }
 
     if (timeline === STALE_REPLICA) {
-      return {
-        client: replica,
-        whyClient: "replica-bc-stale-replica-freshness",
-      };
+      return [replica, "replica-bc-stale-replica-freshness"];
     }
 
     const isCaughtUp = timeline.isCaughtUp(
       await replica.timelineManager.currentPos()
     );
     return isCaughtUp
-      ? {
-          client: replica,
-          whyClient: isCaughtUp,
-        }
-      : {
-          client: await this.shardClient(MASTER),
-          whyClient: "master-bc-replica-not-caught-up",
-        };
+      ? [replica, isCaughtUp]
+      : [await this.shardClient(MASTER), "master-bc-replica-not-caught-up"];
   }
 
   /**

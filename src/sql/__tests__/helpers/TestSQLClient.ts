@@ -109,8 +109,6 @@ export const testCluster = new Cluster({
         loggers: { swallowedErrorLogger: () => {} },
       })
     ),
-  locateIslandErrorRetryCount: 30,
-  locateIslandErrorRetryDelayMs: 1000,
 });
 
 function indentQuery(query: string): string {

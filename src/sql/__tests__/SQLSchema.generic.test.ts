@@ -1,11 +1,9 @@
 import delay from "delay";
 import range from "lodash/range";
 import sortBy from "lodash/sortBy";
-import waitForExpect from "wait-for-expect";
 import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
 import { MASTER, STALE_REPLICA } from "../../abstract/Shard";
-import { ShardError } from "../../abstract/ShardError";
 import { Timeline } from "../../abstract/Timeline";
 import { join, nullthrows } from "../../helpers/misc";
 import { ID } from "../../types";
@@ -1077,28 +1075,4 @@ test("test empty $or and $and", async () => {
   expect(all.length).toBe(2);
   expect(emptyOR.length).toBe(0);
   expect(emptyAND.length).toBe(0);
-});
-
-test("shard relocation error when accessing a table", async () => {
-  await master.rows("ALTER TABLE %T RENAME TO %T", TABLE, TABLE_BAK);
-
-  const query = schema.insert({ name: "test", url_name: "test" });
-  const spy = jest.spyOn(query, "run");
-  const idPromise = shardRun(query);
-
-  await waitForExpect(() => expect(spy).toBeCalledTimes(2));
-
-  await expect(spy.mock.results[0].value).rejects.toThrow(ShardError);
-
-  await master.rows("ALTER TABLE %T RENAME TO %T", TABLE_BAK, TABLE);
-  expect(await idPromise).toMatch(/^\d+$/);
-
-  master.toMatchSnapshot();
-});
-
-test("shard relocation error when locating island", async () => {
-  (testCluster.options as any).locateIslandErrorRetryCount = 3;
-  await expect(
-    testCluster.shard("510001234567").client(MASTER)
-  ).rejects.toThrow(ShardError);
 });

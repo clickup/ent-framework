@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`shard relocation error when accessing a table should be retried 1`] = `
+"
+INSERT INTO "schema""discover_test" (id, name) VALUES
+  (id_gen(), 'test') ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "schema""discover_test" (id, name) VALUES
+  (id_gen(), '?') ON CONFLICT DO NOTHING RETURNING id
+
+INSERT INTO "schema""discover_test" (id, name) VALUES
+  (id_gen(), 'test') ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "schema""discover_test" (id, name) VALUES
+  (id_gen(), '?') ON CONFLICT DO NOTHING RETURNING id
+
+INSERT INTO "schema""discover_test" (id, name) VALUES
+  (id_gen(), 'test') ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "schema""discover_test" (id, name) VALUES
+  (id_gen(), '?') ON CONFLICT DO NOTHING RETURNING id
+"
+`;
