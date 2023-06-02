@@ -38,12 +38,14 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
     // upsert (they are only inserted). Not clear how to fix this, because we
     // don't want e.g. created_at to be updated (and it's an autoInsert field).
 
+    const fields = this.addPK(Object.keys(this.schema.table), "prepend");
     const uniqueKeyFields = this.schema.uniqueKey
       .map((field) => this.escapeField(field))
       .join(",");
+
     this.builder = this.createValuesBuilder({
-      prefix: this.fmt("INSERT INTO %T (%INSERT_FIELDS) VALUES"),
-      fields: this.prependPK(Object.keys(this.schema.table)),
+      prefix: this.fmt("INSERT INTO %T (%FIELDS) VALUES", { fields }),
+      fields,
       suffix: this.fmt(
         "\n" +
           `  ON CONFLICT (${uniqueKeyFields}) DO UPDATE ` +

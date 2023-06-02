@@ -16,7 +16,6 @@ import type { TestSQLClient } from "./helpers/TestSQLClient";
 import { testCluster } from "./helpers/TestSQLClient";
 
 const TABLE = 'schema"test';
-const TABLE_BAK = `${TABLE}_bak`;
 const TABLE_NULLABLE_UNIQUE_KEY = 'schema"test_nullable_unique_key';
 const TABLE_2COL = 'schema"test_2col';
 const TABLE_2COL_NULLABLE_UNIQUE_KEY = "schema_test_2col_nullable_unique_key";
@@ -85,7 +84,6 @@ beforeEach(async () => {
   replica = await shard.client(timeline);
 
   await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE);
-  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_BAK);
   await master.rows(
     "DROP TABLE IF EXISTS %T CASCADE",
     TABLE_NULLABLE_UNIQUE_KEY

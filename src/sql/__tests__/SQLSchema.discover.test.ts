@@ -44,6 +44,7 @@ beforeEach(async () => {
   master = await shard.client(MASTER);
 
   await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE);
+  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_BAK);
   await master.rows(
     `CREATE TABLE %T(
       id bigint NOT NULL PRIMARY KEY,

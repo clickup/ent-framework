@@ -58,73 +58,73 @@ SELECT id_gen()
 ----
 SELECT id_gen()
 
-WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
-  ((NULL::"schema""test").id, (NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, '<key>'),
-  ('<id>', 'a', 'u', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'),
-  (id_gen(), 'a', 'u_dup', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'),
-  (id_gen(), 'z''b''c', NULL, true, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'))
-  INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id)
-  SELECT id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id FROM rows OFFSET 1
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, (NULL::"schema""test").id, '<key>'),
+  ('a', 'u', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '<id>', '<key>'),
+  ('a', 'u_dup', false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'),
+  ('z''b''c', NULL, true, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'))
+  INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="schema""test".id), id
 ----
-WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
-  ((NULL::"schema""test").id, (NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, '?'),
-  ('?', '?', '?', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '?'),
-  (id_gen(), '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '?'),
-  (id_gen(), '?', NULL, true, NULL, NULL, NULL, NULL, now(), now(), NULL, '?'))
-  INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id)
-  SELECT id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id FROM rows OFFSET ?
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, (NULL::"schema""test").id, '?'),
+  ('?', '?', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '?', '?'),
+  ('?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '?'),
+  ('?', NULL, true, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '?'))
+  INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET ?
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="schema""test".id), id
 "
 `;
 
 exports[`insert de-batches pg error 1`] = `
 "
-WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
-  ((NULL::"schema""test").id, (NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, '<key>'),
-  (id_gen(), 'other', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '0', '<key>'),
-  (id_gen(), 'some', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'))
-  INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id)
-  SELECT id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id FROM rows OFFSET 1
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, (NULL::"schema""test").id, '<key>'),
+  ('other', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '0', id_gen(), '<key>'),
+  ('some', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'))
+  INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="schema""test".id), id
 ----
-WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
-  ((NULL::"schema""test").id, (NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, '?'),
-  (id_gen(), '?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '?', '?'),
-  (id_gen(), '?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, '?'))
-  INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id)
-  SELECT id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id FROM rows OFFSET ?
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, (NULL::"schema""test").id, '?'),
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '?', id_gen(), '?'),
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '?'))
+  INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET ?
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="schema""test".id), id
 
-INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
-  (id_gen(), 'some', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('some', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
 ----
-INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
-  (id_gen(), '?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
 
-INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
-  (id_gen(), 'other', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '0') ON CONFLICT DO NOTHING RETURNING id
+INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('other', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '0', id_gen()) ON CONFLICT DO NOTHING RETURNING id
 ----
-INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
-  (id_gen(), '?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '?') ON CONFLICT DO NOTHING RETURNING id
+INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '?', id_gen()) ON CONFLICT DO NOTHING RETURNING id
 "
 `;
 
 exports[`insert is never dedupped 1`] = `
 "
-WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
-  ((NULL::"schema""test").id, (NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, '<key>'),
-  (id_gen(), 'aaa', 'uuu', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'),
-  (id_gen(), 'aaa', 'uuu', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'))
-  INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id)
-  SELECT id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id FROM rows OFFSET 1
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, (NULL::"schema""test").id, '<key>'),
+  ('aaa', 'uuu', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'),
+  ('aaa', 'uuu', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'))
+  INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="schema""test".id), id
 ----
-WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
-  ((NULL::"schema""test").id, (NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, '?'),
-  (id_gen(), '?', '?', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '?'), ...)
-  INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id)
-  SELECT id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id FROM rows OFFSET ?
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, (NULL::"schema""test").id, '?'),
+  ('?', '?', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '?'), ...)
+  INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET ?
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="schema""test".id), id
 "
 `;
@@ -139,19 +139,19 @@ SELECT id_gen()
 ----
 SELECT id_gen()
 
-WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
-  ((NULL::"schema""test").id, (NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, '<key>'),
-  ('<id>', 'some', 'aaa', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'),
-  ('<id>', 'some', 'aaa', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '<key>'))
-  INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id)
-  SELECT id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id FROM rows OFFSET 1
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, (NULL::"schema""test").id, '<key>'),
+  ('some', 'aaa', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '<id>', '<key>'),
+  ('some', 'aaa', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '<id>', '<key>'))
+  INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="schema""test".id), id
 ----
-WITH rows(id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, _key) AS (VALUES
-  ((NULL::"schema""test").id, (NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, '?'),
-  ('?', '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '?'), ...)
-  INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id)
-  SELECT id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id FROM rows OFFSET ?
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"schema""test").name, (NULL::"schema""test").url_name, (NULL::"schema""test").some_flag, (NULL::"schema""test").json_text_field, (NULL::"schema""test").json_strongly_typed_field, (NULL::"schema""test").jsonb_field, (NULL::"schema""test").encrypted_field, (NULL::"schema""test").created_at, (NULL::"schema""test").updated_at, (NULL::"schema""test").parent_id, (NULL::"schema""test").id, '?'),
+  ('?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '?', '?'), ...)
+  INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET ?
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="schema""test".id), id
 "
 `;
@@ -162,17 +162,17 @@ SELECT id_gen()
 ----
 SELECT id_gen()
 
-INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
-  ('<id>', 'a''b''c', 'aaa', true, '{"a":10,"b":{"c":20}}', '{"a":42}', '{"a":42}', 'encrypted:ufyu', now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('a''b''c', 'aaa', true, '{"a":10,"b":{"c":20}}', '{"a":42}', '{"a":42}', 'encrypted:ufyu', now(), now(), NULL, '<id>') ON CONFLICT DO NOTHING RETURNING id
 ----
-INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
-  ('?', '?', '?', true, '?', '?', '?', '?', now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', '?', true, '?', '?', '?', '?', now(), now(), NULL, '?') ON CONFLICT DO NOTHING RETURNING id
 
-INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
-  (id_gen(), 'a''b''c', 'aaa_dup', false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('a''b''c', 'aaa_dup', false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
 ----
-INSERT INTO "schema""test" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
-  (id_gen(), '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL) ON CONFLICT DO NOTHING RETURNING id
+INSERT INTO "schema""test" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
 "
 `;
 

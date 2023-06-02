@@ -2,21 +2,21 @@
 
 exports[`batched ops 1`] = `
 "
-WITH rows(tenant_id, user_id, name, _key) AS (VALUES
-  ((NULL::"schema""test_composite").tenant_id, (NULL::"schema""test_composite").user_id, (NULL::"schema""test_composite").name, '<key>'),
-  ('1', '1', 'n1', '<key>'),
-  ('1', '2', 'n2', '<key>'),
-  ('1', '3', 'n3', '<key>'),
-  ('1', '4', 'n4', '<key>'))
-  INSERT INTO "schema""test_composite" (tenant_id, user_id, name)
-  SELECT tenant_id, user_id, name FROM rows OFFSET 1
+WITH rows(name, tenant_id, user_id, _key) AS (VALUES
+  ((NULL::"schema""test_composite").name, (NULL::"schema""test_composite").tenant_id, (NULL::"schema""test_composite").user_id, '<key>'),
+  ('n1', '1', '1', '<key>'),
+  ('n2', '1', '2', '<key>'),
+  ('n3', '1', '3', '<key>'),
+  ('n4', '1', '4', '<key>'))
+  INSERT INTO "schema""test_composite" (name, tenant_id, user_id)
+  SELECT name, tenant_id, user_id FROM rows OFFSET 1
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE ROW(rows.tenant_id,rows.user_id)=ROW("schema""test_composite".tenant_id,"schema""test_composite".user_id)), ROW(tenant_id,user_id) AS id
 ----
-WITH rows(tenant_id, user_id, name, _key) AS (VALUES
-  ((NULL::"schema""test_composite").tenant_id, (NULL::"schema""test_composite").user_id, (NULL::"schema""test_composite").name, '?'),
+WITH rows(name, tenant_id, user_id, _key) AS (VALUES
+  ((NULL::"schema""test_composite").name, (NULL::"schema""test_composite").tenant_id, (NULL::"schema""test_composite").user_id, '?'),
   ('?', '?', '?', '?'), ...)
-  INSERT INTO "schema""test_composite" (tenant_id, user_id, name)
-  SELECT tenant_id, user_id, name FROM rows OFFSET ?
+  INSERT INTO "schema""test_composite" (name, tenant_id, user_id)
+  SELECT name, tenant_id, user_id FROM rows OFFSET ?
   ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE ROW(rows.tenant_id,rows.user_id)=ROW("schema""test_composite".tenant_id,"schema""test_composite".user_id)), ROW(tenant_id,user_id) AS id
 "
 `;
@@ -179,10 +179,10 @@ exports[`batched ops 11`] = `
 
 exports[`single ops 1`] = `
 "
-INSERT INTO "schema""test_composite" (tenant_id, user_id, name) VALUES
-  ('1', '1', 'n1') ON CONFLICT DO NOTHING RETURNING ROW(tenant_id,user_id) AS id
+INSERT INTO "schema""test_composite" (name, tenant_id, user_id) VALUES
+  ('n1', '1', '1') ON CONFLICT DO NOTHING RETURNING ROW(tenant_id,user_id) AS id
 ----
-INSERT INTO "schema""test_composite" (tenant_id, user_id, name) VALUES
+INSERT INTO "schema""test_composite" (name, tenant_id, user_id) VALUES
   ('?', '?', '?') ON CONFLICT DO NOTHING RETURNING ROW(tenant_id,user_id) AS id
 "
 `;

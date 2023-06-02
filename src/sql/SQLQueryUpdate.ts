@@ -124,7 +124,7 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
     // There can be several updates for same id (due to batching), so returning
     // all keys here.
     this.batchBuilder = this.createWithBuilder({
-      fields: this.prependPK(fields),
+      fields: this.addPK(fields, "prepend"),
       suffix: this.fmt(
         "  UPDATE %T SET %UPDATE_FIELD_VALUE_PAIRS(rows)\n" +
           `  FROM rows WHERE %PK(%T)=%PK(rows) RETURNING (SELECT _key FROM rows WHERE %PK(rows)=%PK(%T))`,

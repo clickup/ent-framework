@@ -29,23 +29,26 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);
 
+    const fields = this.addPK(Object.keys(this.schema.table), "append");
+
     this.singleBuilder = this.createValuesBuilder({
-      prefix: this.fmt("INSERT INTO %T (%INSERT_FIELDS) VALUES"),
-      fields: this.prependPK(Object.keys(this.schema.table)),
+      prefix: this.fmt("INSERT INTO %T (%FIELDS) VALUES", { fields }),
+      fields,
       suffix: this.fmt(` ON CONFLICT DO NOTHING RETURNING %PK AS ${ID}`),
     });
 
     // We use WITH clause in INSERT, because "ON CONFLICT DO NOTHING" clause
     // doesn't emit anything in "RETURNING" clause, so we could've not
-    // distinguish rows which were inserted from the rows which were not. Having
-    // WITH solves this (see RETURNING below).
+    // distinguished rows which were inserted from the rows which were not.
+    // Having WITH solves this (see RETURNING below).
     this.batchBuilder = this.createWithBuilder({
-      fields: this.prependPK(Object.keys(this.schema.table)),
+      fields,
       suffix: this.fmt(
-        "  INSERT INTO %T (%INSERT_FIELDS)\n" +
-          "  SELECT %INSERT_FIELDS FROM rows OFFSET 1\n" +
+        "  INSERT INTO %T (%FIELDS)\n" +
+          "  SELECT %FIELDS FROM rows OFFSET 1\n" +
           "  ON CONFLICT DO NOTHING " +
-          `RETURNING (SELECT _key FROM rows WHERE %PK(rows)=%PK(%T)), %PK AS ${ID}`
+          `RETURNING (SELECT _key FROM rows WHERE %PK(rows)=%PK(%T)), %PK AS ${ID}`,
+        { fields }
       ),
     });
   }
