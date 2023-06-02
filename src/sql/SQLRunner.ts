@@ -1,5 +1,6 @@
 import assert from "assert";
 import { inspect } from "util";
+import difference from "lodash/difference";
 import last from "lodash/last";
 import random from "lodash/random";
 import uniq from "lodash/uniq";
@@ -89,7 +90,7 @@ export abstract class SQLRunner<
     args: { fields?: Array<Field<TTable>> } = {}
   ): string {
     return template.replace(
-      /%(?:T|SELECT_FIELDS|INSERT_FIELDS|UPDATE_FIELD_VALUE_PAIRS|PK)(?:\(([%\w]+)\))?/g,
+      /%(?:T|SELECT_FIELDS|FIELDS|UPDATE_FIELD_VALUE_PAIRS|PK)(?:\(([%\w]+)\))?/g,
       (c: string, a?: string) => {
         // Table name.
         if (c === "%T") {
@@ -104,12 +105,10 @@ export abstract class SQLRunner<
             .join(", ");
         }
 
-        // Comma-separated list of ALL fields in the table (never with AS
-        // clause). Always includes primary key fields in the beginning.
-        if (c === "%INSERT_FIELDS") {
-          return this.prependPK(Object.keys(this.schema.table))
-            .map((field) => this.escapeField(field))
-            .join(", ");
+        // Comma-separated list of the passed fields (never with AS clause).
+        if (c === "%FIELDS") {
+          assert(args.fields, `BUG: no args.fields passed in ${template}`);
+          return args.fields.map((field) => this.escapeField(field)).join(", ");
         }
 
         // field1=X.field1, field2=X.field2, ...
@@ -426,17 +425,30 @@ export abstract class SQLRunner<
   }
 
   /**
-   * Prepends a primary key to the list of fields. In case the primary key is
-   * plain (i.e. "id" field), it's just added as a field; otherwise, the unique
-   * key fields are added. (Prepending the primary key fields doesn't affect
-   * logic, but minimizes deadlocks since the rows to insert/update are sorted
-   * lexicographically.)
+   * Prepends or appends a primary key to the list of fields. In case the
+   * primary key is plain (i.e. "id" field), it's just added as a field;
+   * otherwise, the unique key fields are added.
+   *
+   * For INSERT/UPSERT operations, we want to append the primary key, since it's
+   * often types pre-generated as a random-looking value. In many places, we
+   * sort batched lists of rows before e.g. inserting them, so we order them by
+   * their natural data order which prevents deadlocks on unique key conflict
+   * when multiple concurrent transactions try to insert the same set of rows in
+   * different order ("while inserting index tuple").
+   *
+   * For UPDATE operations though, we want to prepend the primary key, to make
+   * sure we run batched updates in the same order in multiple concurrent
+   * transactions. This lowers the chances of deadlocks too.
    */
-  protected prependPK(fields: ReadonlyArray<Field<TTable>>): string[] {
-    return uniq([
-      ...(this.schema.table[ID] ? [ID] : this.schema.uniqueKey),
-      ...fields,
-    ]);
+  protected addPK(
+    fields: ReadonlyArray<Field<TTable>>,
+    mode: "prepend" | "append"
+  ): string[] {
+    const pkFields = this.schema.table[ID] ? [ID] : this.schema.uniqueKey;
+    fields = difference(fields, pkFields);
+    return mode === "prepend"
+      ? [...pkFields, ...fields]
+      : [...fields, ...pkFields];
   }
 
   /**

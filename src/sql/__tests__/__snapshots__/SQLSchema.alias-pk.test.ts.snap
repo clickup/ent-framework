@@ -2,10 +2,10 @@
 
 exports[`single ops 1`] = `
 "
-INSERT INTO "schema""test_alias" (user_id, name) VALUES
-  ('1', 'n1') ON CONFLICT DO NOTHING RETURNING user_id AS id
+INSERT INTO "schema""test_alias" (name, user_id) VALUES
+  ('n1', '1') ON CONFLICT DO NOTHING RETURNING user_id AS id
 ----
-INSERT INTO "schema""test_alias" (user_id, name) VALUES
+INSERT INTO "schema""test_alias" (name, user_id) VALUES
   ('?', '?') ON CONFLICT DO NOTHING RETURNING user_id AS id
 "
 `;
@@ -24,11 +24,11 @@ INSERT INTO "schema""test_alias" (user_id, name) VALUES
 
 exports[`single ops 3`] = `
 "
-INSERT INTO "schema""test_alias" (user_id, name) VALUES
-  (id_gen(), 'n3') ON CONFLICT DO NOTHING RETURNING user_id AS id
+INSERT INTO "schema""test_alias" (name, user_id) VALUES
+  ('n3', id_gen()) ON CONFLICT DO NOTHING RETURNING user_id AS id
 ----
-INSERT INTO "schema""test_alias" (user_id, name) VALUES
-  (id_gen(), '?') ON CONFLICT DO NOTHING RETURNING user_id AS id
+INSERT INTO "schema""test_alias" (name, user_id) VALUES
+  ('?', id_gen()) ON CONFLICT DO NOTHING RETURNING user_id AS id
 "
 `;
 
