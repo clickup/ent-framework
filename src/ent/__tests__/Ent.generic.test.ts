@@ -513,3 +513,14 @@ test("attempt to use guest VC to load Ents", async () => {
     EntTestPost.loadNullable(vc.toGuest(), null as any)
   ).rejects.toThrowErrorMatchingSnapshot();
 });
+
+test("write without affecting timeline", async () => {
+  const preInsertTimeline = vc.serializeTimelines();
+  const vcDerived = vc.withOneTimeStaleReplica();
+  await EntTestPost.insertReturning(vcDerived, {
+    user_id: vc.principal,
+    title: "some_post",
+  });
+  expect(vcDerived.serializeTimelines()).toEqual(preInsertTimeline);
+  expect(vc.serializeTimelines()).toEqual(preInsertTimeline);
+});
