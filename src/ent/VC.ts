@@ -250,9 +250,13 @@ export class VC {
 
   /**
    * Returns a new VC derived from the current one, but which forces an Ent to
-   * be loaded always from replica. Freshness is NOT inherited by Ents
-   * (not transitive): e.g. if an Ent is loaded with STALE_REPLICA freshness,
-   * its ent.vc will have the DEFAULT freshness.
+   * be loaded always from replica. Freshness is NOT inherited by Ents (not
+   * transitive): e.g. if an Ent is loaded with STALE_REPLICA freshness, its
+   * ent.vc will have the DEFAULT freshness.
+   *
+   * Also, if an Ent is inserted with a VC of STALE_REPLICA freshness, its VC
+   * won't remember it, so next immediate reads will go to a replica and not to
+   * the master.
    */
   withOneTimeStaleReplica(): VC {
     if (this.freshness === STALE_REPLICA) {
