@@ -1,5 +1,4 @@
 import pickBy from "lodash/pickBy";
-import { indent } from "../helpers/misc";
 import type {
   InsertFieldsRequired,
   InsertInput,
@@ -15,9 +14,10 @@ import { EntValidationError } from "./errors/EntValidationError";
 import type { Predicate } from "./predicates/Predicate";
 import type { AllowIf } from "./rules/AllowIf";
 import type { DenyIf } from "./rules/DenyIf";
+import { evaluate } from "./rules/evaluate";
 import { Require } from "./rules/Require";
-import type { Rule, RuleResult } from "./rules/Rule";
-import { evaluate, RuleDecision } from "./rules/Rule";
+import type { Rule } from "./rules/Rule";
+import { RuleDecision } from "./rules/Rule";
 import { buildUpdateNewRow } from "./Triggers";
 import type { VC } from "./VC";
 
@@ -94,7 +94,7 @@ export class Validation<TTable extends Table> {
       this.load,
       vc,
       row,
-      false,
+      "sequential",
       EntNotReadableError
     );
   }
@@ -106,7 +106,7 @@ export class Validation<TTable extends Table> {
       this.insert,
       vc,
       input,
-      true, // parallel
+      "parallel",
       EntNotInsertableError
     );
   }
@@ -129,7 +129,7 @@ export class Validation<TTable extends Table> {
       this.update,
       vc,
       newRow,
-      true, // parallel
+      "parallel",
       EntNotUpdatableError
     );
   }
@@ -140,7 +140,7 @@ export class Validation<TTable extends Table> {
       this.delete,
       vc,
       row,
-      true, // parallel
+      "parallel",
       EntNotUpdatableError // same exception as for update
     );
   }
@@ -150,7 +150,7 @@ export class Validation<TTable extends Table> {
     rules: Array<Rule<object>>,
     vc: VC,
     row: object,
-    parallel: boolean,
+    fashion: "parallel" | "sequential",
     ExceptionClass:
       | typeof EntNotReadableError
       | typeof EntNotInsertableError
@@ -158,14 +158,15 @@ export class Validation<TTable extends Table> {
   ): Promise<void> {
     this.validateTenantUserIDImpl(vc, row, ExceptionClass);
 
-    const { allow, results } = await evaluate(rules, vc, row, parallel);
+    const { allow, cause } =
+      rules.length > 0
+        ? await evaluate(vc, row, rules, fashion)
+        : { allow: false, cause: `No "${op}" rules defined` };
     if (allow) {
       return;
     }
 
-    throw new ExceptionClass(this.entName, vc.toString(), row as any, {
-      message: resultsToText(op, results),
-    });
+    throw new ExceptionClass(this.entName, vc.toString(), row as any, cause);
   }
 
   private validateTenantUserIDImpl(
@@ -200,7 +201,12 @@ export class Validation<TTable extends Table> {
     newRow: Row<TTable>,
     input: object
   ): Promise<void> {
-    const { allow, results } = await evaluate(this.validate, vc, newRow, true);
+    const { allow, results } = await evaluate(
+      vc,
+      newRow,
+      this.validate,
+      "parallel"
+    );
     if (allow) {
       // Quick path (expected to fire most of the time).
       return;
@@ -218,25 +224,4 @@ export class Validation<TTable extends Table> {
       throw new EntValidationError(this.entName, failedPredicates);
     }
   }
-}
-
-/**
- * A helper function which returns a debugging text for a list of rule
- * evaluation results.
- */
-function resultsToText(op: string, results: RuleResult[]): string {
-  if (results.length === 0) {
-    return `No "${op}" rules defined`;
-  }
-
-  return results
-    .map(
-      ({ rule, decision, cause }) =>
-        "Rule " +
-        rule.name +
-        " returned " +
-        decision +
-        (cause ? ", because:\n" + indent(cause.message) : "")
-    )
-    .join("\n");
 }

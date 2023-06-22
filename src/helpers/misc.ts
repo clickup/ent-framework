@@ -148,16 +148,19 @@ export function toFloatSec(elapsed: [number, number]): number {
  */
 export function copyStack<TError extends Error>(
   toErr: TError,
-  fromErr: Error
+  fromErr: any
 ): TError {
-  // This is magic, the 1st line in stacktrace must be exactly "ExceptionType:
-  // exception message\n", else jest goes mad and prints the stacktrace
-  // incorrectly (once from err.message and then once from err.stack). See also:
-  // https://stackoverflow.com/questions/42754270/re-throwing-exception-in-nodejs-and-not-losing-stack-trace
-  if (!fromErr.stack) {
+  if (
+    typeof fromErr?.stack !== "string" ||
+    typeof fromErr?.message !== "string"
+  ) {
     return toErr;
   }
 
+  // This is magic, the 1st line in stacktrace must be exactly "ExceptionType:
+  // exception message\n", otherwise jest goes mad and prints the stacktrace
+  // incorrectly (once from err.message and then once from err.stack). See also:
+  // https://stackoverflow.com/questions/42754270/re-throwing-exception-in-nodejs-and-not-losing-stack-trace
   const fromMessageLines = fromErr.message.split("\n").length;
   toErr.stack =
     toErr.toString() + // original toErr message

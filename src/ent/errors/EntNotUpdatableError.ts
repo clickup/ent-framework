@@ -1,4 +1,3 @@
-import { indent } from "../../helpers/misc";
 import type { RowWithID } from "../../types";
 import { ID } from "../../types";
 import { EntAccessError } from "./EntAccessError";
@@ -11,12 +10,12 @@ export class EntNotUpdatableError extends EntAccessError {
     entName: string,
     public readonly vc: string,
     public readonly row: RowWithID,
-    public readonly cause: { message: string } | null = null
+    cause: string | { message: string } | null = null
   ) {
     super(
       entName,
-      `${entName}:${row[ID]} is not updatable/deletable in ${vc}` +
-        (cause ? ", because:\n" + indent(cause.message) : "")
+      `${entName}:${row[ID]} is not updatable/deletable in ${vc}`,
+      cause
     );
   }
 }
