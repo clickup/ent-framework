@@ -231,11 +231,11 @@ exports[`0150: load fails with nice error when all of Or predicates fail 1`] = `
 EntNotInsertableError: table: cannot insert in vc:guest:master, because:
   Rule Require:Or returned DENY, because:
     First: other_table:987 is not readable in vc:guest, because:
-      ent access error
+      { myKey: 'ent access error' }
     Second: false
 --- (what actually happened) ---
 [First threw] EntNotReadableError: other_table:987 is not readable in vc:guest, because:
-  ent access error
+  { myKey: 'ent access error' }
 [Second returned] false"
 `;
 

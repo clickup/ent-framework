@@ -216,7 +216,7 @@ test("0060: load succeeds when any rule allows even if another rule throws EntNo
               "other_table",
               vc.toString(),
               { id: "987" },
-              { message: "ent access error" }
+              "ent access error"
             )
           );
         }),
@@ -349,7 +349,7 @@ test("0120: load fails when DenyIf rule throws", async () => {
               "other_table",
               vc.toString(),
               { id: "987" },
-              { message: "ent access error" }
+              "ent access error"
             )
           );
         }),
@@ -419,7 +419,7 @@ test("0140: load succeeds when some of Or predicates succeed", async () => {
                   "other_table",
                   vc.toString(),
                   { id: "987" },
-                  { message: "ent access error" }
+                  "ent access error"
                 )
               );
             },
@@ -449,7 +449,7 @@ test("0150: load fails with nice error when all of Or predicates fail", async ()
                   "other_table",
                   vc.toString(),
                   { id: "987" },
-                  { message: "ent access error" }
+                  { myKey: "ent access error" }
                 )
               );
             },
