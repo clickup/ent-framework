@@ -186,14 +186,15 @@ export class Validation<TTable extends Table> {
       return;
     }
 
-    throw new ExceptionClass(this.entName, vc.toString(), row as any, {
-      message:
-        this.tenantPrincipalField +
-        " is expected to be " +
+    throw new ExceptionClass(
+      this.entName,
+      vc.toString(),
+      row as any,
+      `${this.tenantPrincipalField} is expected to be ` +
         JSON.stringify(vc.principal) +
         ", but got " +
-        JSON.stringify(rowTenantUserID),
-    });
+        JSON.stringify(rowTenantUserID)
+    );
   }
 
   private async validateUserInputImpl(

@@ -10,7 +10,7 @@ export class EntNotReadableError extends EntAccessError {
     entName: string,
     public readonly vc: string,
     public readonly row: RowWithID,
-    cause: string | { message: string } | null = null
+    cause: unknown = null
   ) {
     super(entName, `${entName}:${row[ID]} is not readable in ${vc}`, cause);
   }

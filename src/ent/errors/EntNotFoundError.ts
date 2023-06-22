@@ -8,13 +8,9 @@ export class EntNotFoundError extends EntAccessError {
   constructor(
     entName: string,
     public readonly where: Record<string, any>,
-    messageSuffix?: string
+    cause: unknown = null
   ) {
-    super(
-      entName,
-      `${entName} not found: ${whereToText(where)}` +
-        (messageSuffix ? ": " + messageSuffix : "")
-    );
+    super(entName, `${entName} not found: ${whereToText(where)}`, cause);
   }
 }
 

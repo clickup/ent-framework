@@ -1,14 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`attempt to use guest VC to load Ents 1`] = `"EntTestPost not found: id=guest: can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID"`;
+exports[`attempt to use guest VC to load Ents 1`] = `
+"EntTestPost not found: id=guest, because:
+  ShardError: can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID"
+`;
 
-exports[`attempt to use guest VC to load Ents 2`] = `"EntTestPost not found: id=guest: can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID"`;
+exports[`attempt to use guest VC to load Ents 2`] = `
+"EntTestPost not found: id=guest, because:
+  ShardError: can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID"
+`;
 
-exports[`attempt to use guest VC to load Ents 3`] = `"EntTestPost not found: post_id=guest: can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID"`;
+exports[`attempt to use guest VC to load Ents 3`] = `
+"EntTestPost not found: post_id=guest, because:
+  ShardError: can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID"
+`;
 
 exports[`attempt to use guest VC to load Ents 4`] = `"EntTestPost: to detect shard in "select" query, non-empty "post_id" field must be present at TOP LEVEL of the input, but got { post_id: null }; EntTestPost.SHARD_AFFINITY=[ 'post_id' ]; EntTestPost.INVERSES=[]"`;
 
-exports[`attempt to use guest VC to load Ents 5`] = `"EntTestPost not found: id=null: can't locate shard"`;
+exports[`attempt to use guest VC to load Ents 5`] = `
+"EntTestPost not found: id=null, because:
+  ShardError: can't locate shard"
+`;
 
 exports[`cannot create posts for different users 1`] = `
 "EntTestPost: cannot insert in vc:<id>, because:
@@ -17,7 +29,10 @@ exports[`cannot create posts for different users 1`] = `
       Rule Require:OutgoingEdgePointsToVC(id) returned DENY"
 `;
 
-exports[`custom shard 1`] = `"EntNotFoundError: EntTestPost not found: $shardOfID="": Cannot parse ID "" to detect shard number"`;
+exports[`custom shard 1`] = `
+"EntNotFoundError: EntTestPost not found: $shardOfID="", because:
+  ShardError: Cannot parse ID "" to detect shard number"
+`;
 
 exports[`load child with no access 1`] = `
 "EntTestComment:<id> is not readable in vc:<id>, because:

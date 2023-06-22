@@ -2,7 +2,7 @@ import type { Client } from "../abstract/Client";
 import type { Cluster } from "../abstract/Cluster";
 import type { Shard } from "../abstract/Shard";
 import { ShardError } from "../abstract/ShardError";
-import { copyStack, mapJoin } from "../helpers/misc";
+import { mapJoin } from "../helpers/misc";
 import { ID } from "../types";
 import type { ShardAffinity } from "./Configuration";
 import { GLOBAL_SHARD } from "./Configuration";
@@ -200,14 +200,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       return shard;
     } catch (origError: unknown) {
       if (origError instanceof ShardError) {
-        throw copyStack(
-          new EntNotFoundError(
-            this.entName,
-            { [field]: id },
-            origError.message
-          ),
-          origError
-        );
+        throw new EntNotFoundError(this.entName, { [field]: id }, origError);
       } else {
         throw origError;
       }
