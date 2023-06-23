@@ -116,10 +116,13 @@ export type PrimitiveClass<
   ) => Promise<TEnt[]>;
 
   /**
-   * Selects the list of Ents by some predicate. The query can span multiple
-   * shards if their locations can be inferred from inverses related to the
-   * fields mentioned in the query. In multi-shard case, ordering of results is
-   * not guaranteed.
+   * Selects the list of Ents by some predicate.
+   * - The query can span multiple shards if their locations can be inferred
+   *   from inverses related to the fields mentioned in the query.
+   * - In multi-shard case, ordering of results is not guaranteed.
+   * - In multi-shard case, it may return more results than requested by limit
+   *   (basically, limit is applied to each shard individually). The caller has
+   *   then freedom to reorder & slice the results as they wish.
    */
   select: <TEnt extends PrimitiveInstance<TTable>>(
     this: new (...args: any[]) => TEnt,
