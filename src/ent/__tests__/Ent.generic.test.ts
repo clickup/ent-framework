@@ -524,3 +524,25 @@ test("write without affecting timeline", async () => {
   expect(vcDerived.serializeTimelines()).toEqual(preInsertTimeline);
   expect(vc.serializeTimelines()).toEqual(preInsertTimeline);
 });
+
+test("should support inserting simple Ents with custom IDs", async () => {
+  const ent = await EntTestUser.insertReturning(vc.toOmniDangerous(), {
+    name: "Test",
+    url_name: null,
+  });
+  await ent.deleteOriginal();
+  const newEnt = await EntTestUser.insertReturning(vc.toOmniDangerous(), ent);
+  expect(newEnt.id).toEqual(ent.id);
+});
+
+test("should support inserting Ents with custom IDs if they have before insert triggers", async () => {
+  const ent = await EntTestCountry.insertReturning(vc.toOmniDangerous(), {
+    name: "Test",
+  });
+  await ent.deleteOriginal();
+  const newEnt = await EntTestCountry.insertReturning(
+    vc.toOmniDangerous(),
+    ent
+  );
+  expect(newEnt.id).toEqual(ent.id);
+});

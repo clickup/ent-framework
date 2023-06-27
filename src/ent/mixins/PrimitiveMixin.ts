@@ -217,12 +217,14 @@ export function PrimitiveMixin<
         // We have some triggers or inverses; that means we must generate an ID
         // separately to let the before-triggers see it before the actual db
         // operation happens.
-        const id2 = await shard.run(
-          this.SCHEMA.idGen(),
-          vc.toAnnotation(),
-          vc.timeline(shard, this.SCHEMA.name),
-          vc.freshness
-        );
+        const id2 = hasKey(ID, input)
+          ? input[ID]
+          : await shard.run(
+              this.SCHEMA.idGen(),
+              vc.toAnnotation(),
+              vc.timeline(shard, this.SCHEMA.name),
+              vc.freshness
+            );
         vc.cache(IDsCacheUpdatable).add(id2); // to enable privacy checks in beforeInsert triggers
 
         // Inverses which we're going to create.
