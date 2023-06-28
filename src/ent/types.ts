@@ -3,10 +3,12 @@ import type {
   CountInput,
   ExistsInput,
   ID,
+  InsertInput,
   LoadByInput,
   Order,
   Table,
   UniqueKey,
+  UpdateInput,
   Where,
 } from "../types";
 import type { Validation } from "./Validation";
@@ -21,10 +23,10 @@ export interface EntClass<TTable extends Table = any> {
   readonly VALIDATION: Validation<TTable>;
   readonly name: string; // class constructor name
 
-  new (): Ent;
-  loadX(vc: VC, id: string): Promise<Ent>;
-  loadNullable(vc: VC, id: string): Promise<Ent | null>;
-  loadIfReadableNullable(vc: VC, id: string): Promise<Ent | null>;
+  new (): Ent<TTable>;
+  loadX(vc: VC, id: string): Promise<Ent<TTable>>;
+  loadNullable(vc: VC, id: string): Promise<Ent<TTable> | null>;
+  loadIfReadableNullable(vc: VC, id: string): Promise<Ent<TTable> | null>;
   count(vc: VC, where: CountInput<TTable>): Promise<number>;
   exists(vc: VC, where: ExistsInput<TTable>): Promise<boolean>;
   select(
@@ -32,22 +34,27 @@ export interface EntClass<TTable extends Table = any> {
     where: Where<TTable>,
     limit: number,
     order?: Order<TTable>
-  ): Promise<Ent[]>;
+  ): Promise<Array<Ent<TTable>>>;
   selectChunked(
     vc: VC,
     where: Where<TTable>,
     chunkSize: number,
     limit: number,
     custom?: {}
-  ): AsyncIterableIterator<Ent[]>;
-  loadByX(vc: VC, keys: LoadByInput<TTable, UniqueKey<TTable>>): Promise<Ent>;
+  ): AsyncIterableIterator<Array<Ent<TTable>>>;
+  loadByX(
+    vc: VC,
+    keys: LoadByInput<TTable, UniqueKey<TTable>>
+  ): Promise<Ent<TTable>>;
+  insert(vc: VC, input: InsertInput<TTable>): Promise<string>;
 }
 
 /**
  * A very shallow interface of one Ent.
  */
-export interface Ent {
+export interface Ent<TTable extends Table = any> {
   readonly [ID]: string;
   readonly vc: VC;
   deleteOriginal(): Promise<boolean>;
+  updateOriginal(input: UpdateInput<TTable>): Promise<boolean>;
 }
