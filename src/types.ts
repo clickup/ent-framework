@@ -4,9 +4,18 @@ import type { TuplePrefixes } from "./helpers/misc";
 export const ID = "id";
 
 /**
- * Literal operation with placeholders.
+ * Literal operation with placeholders. We don't use a tuple type here (like
+ * `[string, ...T[]]`), because it would force us to use `as const` everywhere,
+ * which we don't want to do.
  */
-export type Literal = ReadonlyArray<string | number | Date | null>;
+export type Literal = Array<
+  | string
+  | number
+  | boolean
+  | Date
+  | null
+  | Array<string | number | boolean | Date | null>
+>;
 
 // - Table: an object of Field:Spec
 // - Field: name of the column in the table (and element of a Row)

@@ -3,9 +3,9 @@ import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { QueryBase } from "../abstract/QueryBase";
 import type { Schema } from "../abstract/Schema";
 import { hash, hasKey } from "../helpers/misc";
-import type { Order, Row, SelectInput, Table } from "../types";
+import type { Literal, Order, Row, SelectInput, Table } from "../types";
 import type { SQLClient } from "./SQLClient";
-import { escapeString } from "./SQLClient";
+import { escapeLiteral, escapeString } from "./SQLClient";
 import { SQLRunner } from "./SQLRunner";
 
 export class SQLQuerySelect<TTable extends Table> extends QueryBase<
@@ -116,9 +116,9 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
     // Not even exposed by Ent framework.
     const custom = input.custom
       ? (input.custom as {
-          ctes?: string[][];
-          joins?: string[][];
-          from?: string[];
+          ctes?: Literal[];
+          joins?: Literal[];
+          from?: Literal;
         })
       : {};
     if (custom.joins?.length) {
@@ -127,20 +127,20 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
         (m) =>
           m +
           "\n" +
-          custom.joins!.map((join) => this.buildLiteral(join)).join("\n") +
+          custom.joins!.map((join) => escapeLiteral(join)).join("\n") +
           "\n"
       );
     } else if (custom.from?.length) {
       sql = sql.replace(
         / FROM \S+/,
-        () => " FROM " + this.buildLiteral(custom.from!)
+        () => " FROM " + escapeLiteral(custom.from!)
       );
     }
 
     if (custom.ctes?.length) {
       sql =
         "WITH\n  " +
-        custom.ctes.map((cte) => this.buildLiteral(cte)).join(",\n  ") +
+        custom.ctes.map((cte) => escapeLiteral(cte)).join(",\n  ") +
         "\n" +
         sql;
     }
@@ -171,7 +171,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
           );
         }
 
-        pieces.push(this.buildLiteral(item.$literal));
+        pieces.push(escapeLiteral(item.$literal));
       } else {
         for (const [field, dir] of Object.entries(item)) {
           if (!ALLOWED_ORDER.includes("" + dir)) {
