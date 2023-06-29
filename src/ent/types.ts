@@ -50,6 +50,7 @@ export interface EntClass<TTable extends Table = any> {
     keys: LoadByInput<TTable, UniqueKey<TTable>>
   ): Promise<Ent<TTable>>;
   insert(vc: VC, input: InsertInput<TTable>): Promise<string>;
+  upsert(vc: VC, input: InsertInput<TTable>): Promise<string>;
 }
 
 /**
