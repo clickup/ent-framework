@@ -238,7 +238,12 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     }
 
     // If we have Ent ID as a part of the request, we can just use it.
-    if (input[ID] !== undefined) {
+    if (
+      // Single ID.
+      typeof input[ID] === "string" ||
+      // Array of IDs.
+      typeof input[ID]?.[0] === "string"
+    ) {
       return this.singleShardFromID(ID, input[ID].toString());
     }
 
