@@ -11,6 +11,7 @@ import type {
   UpdateInput,
   Where,
 } from "../types";
+import type { ShardLocator } from "./ShardLocator";
 import type { Validation } from "./Validation";
 import type { VC } from "./VC";
 
@@ -21,6 +22,7 @@ import type { VC } from "./VC";
 export interface EntClass<TTable extends Table = any> {
   readonly SCHEMA: Schema<TTable>;
   readonly VALIDATION: Validation<TTable>;
+  readonly SHARD_LOCATOR: ShardLocator<any, any>;
   readonly name: string; // class constructor name
 
   new (): Ent<TTable>;
