@@ -85,3 +85,51 @@ test("singleShardFromInput with truly random shard", async () => {
     (await testCluster.nonGlobalShards()).length
   );
 });
+
+test("singleShardFromInput with complex filter by ID", async () => {
+  const shardLocator = new ShardLocator({
+    cluster: testCluster,
+    entName: "test",
+    shardAffinity: ["user_id"],
+    uniqueKey: undefined,
+    inverses: [],
+  });
+  const shardNo = await shardLocator.singleShardFromInput(
+    { user_id: "100020000000", id: { $gt: "100010000000" } },
+    "INSERT",
+    true
+  );
+  expect(shardNo).toEqual(testCluster.shard("100020000000"));
+});
+
+test("singleShardFromInput with simple filter by ID", async () => {
+  const shardLocator = new ShardLocator({
+    cluster: testCluster,
+    entName: "test",
+    shardAffinity: ["user_id"],
+    uniqueKey: undefined,
+    inverses: [],
+  });
+  const shardNo = await shardLocator.singleShardFromInput(
+    { user_id: "100020000000", id: "100010000000" },
+    "SELECT",
+    true
+  );
+  expect(shardNo).toEqual(testCluster.shard("100010000000"));
+});
+
+test("singleShardFromInput with simple filter by ID arr", async () => {
+  const shardLocator = new ShardLocator({
+    cluster: testCluster,
+    entName: "test",
+    shardAffinity: ["user_id"],
+    uniqueKey: undefined,
+    inverses: [],
+  });
+  const shardNo = await shardLocator.singleShardFromInput(
+    { user_id: "100020000000", id: ["100010000000", "100030000001"] },
+    "SELECT",
+    true
+  );
+  expect(shardNo).toEqual(testCluster.shard("100010000000"));
+});
