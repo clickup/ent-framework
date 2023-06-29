@@ -1,5 +1,4 @@
 import assert from "assert";
-import { inspect } from "util";
 import difference from "lodash/difference";
 import last from "lodash/last";
 import random from "lodash/random";
@@ -321,7 +320,7 @@ export abstract class SQLRunner<
     );
     return (input: object, literal?: Literal): string => {
       const kvs = func(input);
-      const custom = literal ? this.buildLiteral(literal) : "";
+      const custom = literal ? sqlClientMod.escapeLiteral(literal) : "";
       return kvs && custom ? `${kvs}, ${custom}` : kvs ? kvs : custom;
     };
   }
@@ -443,34 +442,6 @@ export abstract class SQLRunner<
     return mode === "prepend"
       ? [...pkFields, ...fields]
       : [...fields, ...pkFields];
-  }
-
-  /**
-   * Converts a Literal tuple [fmt, ...args] into a string, escaping the args
-   * and interpolating them into the format SQL.
-   */
-  protected buildLiteral(literal: Literal): string {
-    if (
-      !(literal instanceof Array) ||
-      literal.length === 0 ||
-      typeof literal[0] !== "string"
-    ) {
-      throw Error(
-        "Invalid literal value (must be an array with 1st element as a format): " +
-          inspect(literal)
-      );
-    }
-
-    const [fmt, ...args] = literal;
-    if (args.length === 0) {
-      return fmt;
-    }
-
-    return fmt.replace(/\?([i]?)/g, (_, flag) =>
-      flag === "i"
-        ? sqlClientMod.escapeID("" + args.shift())
-        : sqlClientMod.escapeAny(args.shift())
-    );
   }
 
   constructor(
@@ -742,7 +713,7 @@ export abstract class SQLRunner<
       // this OR doesn't interfere with priorities of other operators around, we
       // always wrap the literal with (). We must wrap in WHERE only, not in
       // e.g. ORDER BY or CTEs.
-      pieces.push("(" + this.buildLiteral(where.$literal) + ")");
+      pieces.push("(" + sqlClientMod.escapeLiteral(where.$literal) + ")");
     }
 
     if (!pieces.length) {

@@ -1,3 +1,4 @@
+import { inspect } from "util";
 import type { QueryResult, QueryResultRow } from "pg";
 import { Client } from "../abstract/Client";
 import type { Loggers } from "../abstract/Loggers";
@@ -10,6 +11,7 @@ import {
   sanitizeIDForDebugPrinting,
   toFloatMs,
 } from "../helpers/misc";
+import type { Literal } from "../types";
 import parseCompositeRow from "./helpers/parseCompositeRow";
 import { SQLError } from "./SQLError";
 
@@ -375,6 +377,10 @@ export abstract class SQLClient extends Client {
   }
 }
 
+/**
+ * It's hard to support PG bigint type in JS, so people use strings instead.
+ * THis function checks that a string can be passed to PG as a bigint.
+ */
 export function isBigintStr(str: string): boolean {
   return (
     !!str.match(MAX_BIGINT_RE) &&
@@ -382,27 +388,41 @@ export function isBigintStr(str: string): boolean {
   );
 }
 
+/**
+ * Optionally encloses a PG identifier (like table name) in "".
+ */
 export function escapeIdent(ident: any): string {
   return ident.match(/^[a-z_][a-z_0-9]*$/is)
     ? ident
     : '"' + ident.replace(/"/g, '""') + '"';
 }
 
+/**
+ * Tries its best to escape the value according to its type.
+ *
+ * Try to not use this function; although it protects against SQL injections,
+ * it's not aware of the actual field type, so it e.g. cannot prevent a bigint
+ * overflow SQL error.
+ */
 export function escapeAny(v: any): string {
-  // Try to not use this function; although it protects against SQL injections,
-  // it's not aware of the actual field type, so it e.g. cannot prevent a bigint
-  // overflow SQL error.
+  //
   return v === null || v === undefined
     ? "NULL"
     : typeof v === "number"
-    ? "" + v
+    ? v.toString()
     : typeof v === "boolean"
     ? escapeBoolean(v)
     : v instanceof Date
     ? escapeDate(v)
+    : v instanceof Array
+    ? escapeArray(v)
     : escapeString(v);
 }
 
+/**
+ * Escapes a value implying that it's a PG ID (which is a bigint). This should
+ * be a preferred way of escaping when we know that the value is a bigint.
+ */
 export function escapeID(v: string | null | undefined): string {
   if (v === null || v === undefined) {
     return "NULL";
@@ -416,6 +436,9 @@ export function escapeID(v: string | null | undefined): string {
   return escapeString(str);
 }
 
+/**
+ * Escapes a string as PG string literal.
+ */
 export function escapeString(v: string | null | undefined): string {
   return v === null || v === undefined
     ? "NULL"
@@ -424,6 +447,30 @@ export function escapeString(v: string | null | undefined): string {
       "'" + ("" + v).replace(/\0/g, "").replace(/'/g, "''") + "'";
 }
 
+/**
+ * Escapes an array of strings.
+ */
+export function escapeArray(
+  obj: Array<string | null> | null | undefined
+): string {
+  return obj === null || obj === undefined
+    ? "NULL"
+    : escapeString(
+        "{" +
+          obj
+            .map((v) =>
+              v === null
+                ? "NULL"
+                : `"${v.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`
+            )
+            .join(",") +
+          "}"
+      );
+}
+
+/**
+ * Escapes a date as PG string literal.
+ */
 export function escapeDate(v: Date | null | undefined, field?: string): string {
   try {
     return v === null || v === undefined ? "NULL" : "'" + v.toISOString() + "'";
@@ -432,6 +479,9 @@ export function escapeDate(v: Date | null | undefined, field?: string): string {
   }
 }
 
+/**
+ * Escapes a boolean as PG string literal.
+ */
 export function escapeBoolean(v: boolean | null | undefined): string {
   return v === null || v === undefined ? "NULL" : v ? "true" : "false";
 }
@@ -478,10 +528,48 @@ export function escapeIdentComposite(
   return fields.length > 1 ? `ROW(${list})` : list;
 }
 
+/**
+ * A helper method which additionally calls to a stringify() function before
+ * escaping the value as string.
+ */
 export function escapeStringify(v: any, stringify: (v: any) => string): string {
   return v === null || v === undefined ? "NULL" : escapeString(stringify(v));
 }
 
+/**
+ * Builds a part of SQL query using ?-placeholders to prevent SQL Injection.
+ * Everywhere where we want to accept a piece of SQL, we should instead accept a
+ * Literal tuple.
+ *
+ * The function converts a Literal tuple [fmt, ...args] into a string, escaping
+ * the args and interpolating them into the format SQL where "?" is a
+ * placeholder for the replacing value.
+ */
+export function escapeLiteral(literal: Literal): string {
+  if (
+    !(literal instanceof Array) ||
+    literal.length === 0 ||
+    typeof literal[0] !== "string"
+  ) {
+    throw Error(
+      "Invalid literal value (must be an array with 1st element as a format): " +
+        inspect(literal)
+    );
+  }
+
+  if (literal.length === 1) {
+    return literal[0];
+  }
+
+  const [fmt, ...args] = literal;
+  return fmt.replace(/\?([i]?)/g, (_, flag) =>
+    flag === "i" ? escapeID("" + args.shift()) : escapeAny(args.shift())
+  );
+}
+
+/**
+ * Parses a WAL LSN number into a JS bigint.
+ */
 function parseLsn(lsn: string | null | undefined): bigint | null {
   if (!lsn) {
     return null;
