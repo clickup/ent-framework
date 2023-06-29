@@ -4,7 +4,7 @@ import type { TimelineManager } from "../../../abstract/TimelineManager";
 import { nullthrows } from "../../../helpers/misc";
 import buildShape from "../../helpers/buildShape";
 import type { SQLClient } from "../../SQLClient";
-import { escapeIdent, escapeString } from "../../SQLClient";
+import { escapeLiteral, escapeIdent } from "../../SQLClient";
 import { SQLClientPool } from "../../SQLClientPool";
 
 /**
@@ -33,7 +33,7 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
   async query<TRes>(
     params: Parameters<SQLClient["query"]>[0]
   ): Promise<TRes[]> {
-    this.queries.push(params.query);
+    this.queries.push(escapeLiteral(params.query));
     return this.client.query<TRes>(params);
   }
 
@@ -70,12 +70,11 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
     this.queries.length = 0;
   }
 
-  async rows(query: string, ...values: any[]): Promise<any[]> {
-    query = query.replace(/%T/g, (_) => escapeIdent(values.shift()));
-    query = query.replace(/\?/g, (_) => escapeString(values.shift()));
+  async rows(sql: string, ...values: any[]): Promise<any[]> {
+    sql = sql.replace(/%T/g, (_) => escapeIdent(values.shift()));
     return nullthrows(
       await this.client.query<any>({
-        query,
+        query: [sql, ...values],
         isWrite: true, // because used for BOTH read and write queries in tests
         annotations: [],
         op: "",

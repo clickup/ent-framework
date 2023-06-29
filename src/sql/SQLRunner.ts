@@ -50,7 +50,7 @@ export abstract class SQLRunner<
     batchFactor: number
   ): Promise<TOutput[]> {
     const rows = await this.client.query<TOutput>({
-      query: sql,
+      query: [sql],
       isWrite: this.constructor.IS_WRITE,
       annotations,
       op: this.op,

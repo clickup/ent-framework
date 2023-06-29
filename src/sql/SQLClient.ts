@@ -47,7 +47,7 @@ export abstract class SQLClient extends Client {
     this.isMaster ? null : DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS,
     async () =>
       this.query({
-        query: "SELECT 'TIMELINE_POS_REFRESH'",
+        query: ["SELECT 'TIMELINE_POS_REFRESH'"],
         isWrite: false,
         annotations: [],
         op: "TIMELINE_POS_REFRESH",
@@ -85,7 +85,7 @@ export abstract class SQLClient extends Client {
   }
 
   async query<TRow>({
-    query,
+    query: queryLiteral,
     hints,
     isWrite,
     annotations,
@@ -93,7 +93,7 @@ export abstract class SQLClient extends Client {
     table,
     batchFactor,
   }: {
-    query: string;
+    query: Literal;
     hints?: Record<string, string>;
     isWrite: boolean;
     annotations: QueryAnnotation[];
@@ -103,7 +103,7 @@ export abstract class SQLClient extends Client {
   }): Promise<TRow[]> {
     annotations ??= [];
 
-    query = query.trimEnd();
+    const query = escapeLiteral(queryLiteral).trimEnd();
 
     const queriesPrologue: string[] = [];
     const queriesEpilogue: string[] = [];
@@ -270,7 +270,7 @@ export abstract class SQLClient extends Client {
     try {
       // e.g. sh0000, sh0123 and not e.g. sh1 or sh12345678
       const rows = await this.query<Partial<Record<string, string>>>({
-        query: this.shards.discoverQuery,
+        query: [this.shards.discoverQuery],
         isWrite: false,
         annotations: [],
         op: "SHARDS",
