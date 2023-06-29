@@ -1,3 +1,4 @@
+import type { Client } from "../abstract/Client";
 import type { Schema } from "../abstract/Schema";
 import type {
   CountInput,
@@ -22,7 +23,7 @@ import type { VC } from "./VC";
 export interface EntClass<TTable extends Table = any> {
   readonly SCHEMA: Schema<TTable>;
   readonly VALIDATION: Validation<TTable>;
-  readonly SHARD_LOCATOR: ShardLocator<any, any>;
+  readonly SHARD_LOCATOR: ShardLocator<Client, string>;
   readonly name: string; // class constructor name
 
   new (): Ent<TTable>;
