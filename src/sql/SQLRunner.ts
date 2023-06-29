@@ -34,14 +34,11 @@ export abstract class SQLRunner<
   TInput,
   TOutput
 > extends Runner<TInput, TOutput> {
-  private runtimeEscapers: Partial<Record<string, (value: unknown) => string>> =
-    {};
-  private runtimeOneOfBuilders: Partial<
-    Record<string, (value: unknown[]) => string>
-  > = {};
-  private runtimeParsers: Array<[string, (value: unknown) => any]> = [];
-  private stringifiers: Partial<Record<string, (value: unknown) => string>> =
-    {};
+  private escapers: Partial<Record<string, (v: unknown) => string>> = {};
+  private oneOfBuilders: Partial<Record<string, (v: unknown[]) => string>> = {};
+  private dbValueToJs: Array<[string, (v: unknown) => any]> = [];
+  private stringify: Partial<Record<string, (v: unknown) => string>> = {};
+
   readonly shardName = this.client.shardName;
 
   override ["constructor"]!: typeof SQLRunner;
@@ -66,12 +63,12 @@ export abstract class SQLRunner<
     // necessarily a type of the table's row, it can be something else (in e.g.
     // INSERT or DELETE operations).
     if (rows.length > 0) {
-      for (const [field, parser] of this.runtimeParsers) {
+      for (const [field, dbValueToJs] of this.dbValueToJs) {
         if (field in rows[0]) {
           for (const row of rows) {
             const dbValue = row[field as keyof TOutput];
             if (dbValue !== null && dbValue !== undefined) {
-              row[field as keyof TOutput] = parser(dbValue);
+              row[field as keyof TOutput] = dbValueToJs(dbValue);
             }
           }
         }
@@ -142,10 +139,7 @@ export abstract class SQLRunner<
    *    fields escaping, even at runtime.
    */
   protected escapeValue(field: Field<TTable>, value: unknown): string {
-    const escaper = this.nullThrowsUnknownField(
-      this.runtimeEscapers[field],
-      field
-    );
+    const escaper = this.nullThrowsUnknownField(this.escapers[field], field);
     return escaper(value);
   }
 
@@ -489,16 +483,14 @@ export abstract class SQLRunner<
     // still need an ID escaper (where id looks like "(1,2)" anonymous row).
     for (const field of [ID, ...Object.keys(this.schema.table)]) {
       const body = "return " + this.createEscapeCode(field, "$value");
-      this.runtimeEscapers[field] = this.newFunction("$value", body);
-      this.runtimeOneOfBuilders[field] = this.createOneOfBuilder(field);
+      this.escapers[field] = this.newFunction("$value", body);
+      this.oneOfBuilders[field] = this.createOneOfBuilder(field);
     }
 
     for (const [field, { type }] of Object.entries(this.schema.table)) {
-      // Notice that e.g. Date type has parse() static method, so we require
-      // BOTH parse() and stringify() to be presented in custom types.
-      if (hasKey("parse", type) && hasKey("stringify", type)) {
-        this.runtimeParsers.push([field, type.parse.bind(type)]);
-        this.stringifiers[field] = type.stringify.bind(type);
+      if (hasKey("dbValueToJs", type) && hasKey("stringify", type)) {
+        this.dbValueToJs.push([field, type.dbValueToJs.bind(type)]);
+        this.stringify[field] = type.stringify.bind(type);
       }
     }
   }
@@ -789,7 +781,7 @@ export abstract class SQLRunner<
       return this.escapeField(field) + " IS NULL";
     } else if (value instanceof Array) {
       const inBuilder = this.nullThrowsUnknownField(
-        this.runtimeOneOfBuilders[field],
+        this.oneOfBuilders[field],
         field
       );
       return inBuilder(value);
@@ -971,8 +963,8 @@ export abstract class SQLRunner<
    * '($fieldValCode !== undefined ? this.escapeXyz($fieldValCode) : "$defSQL")'
    *
    * It's expected that, while running the generated code, `this` points to an
-   * object with a) `escapeXyz()` functions, b) `stringifiers` object containing
-   * the table fields custom stringifiers.
+   * object with a) `escapeXyz()` functions, b) `stringify` object containing
+   * the table fields custom to-string converters.
    */
   private createEscapeCode(
     field: Field<TTable>,
@@ -998,7 +990,7 @@ export abstract class SQLRunner<
         : specType === String
         ? `this.escapeString(${fieldValCode})`
         : hasKey("stringify", specType)
-        ? `this.escapeStringify(${fieldValCode}, this.stringifiers.${field})`
+        ? `this.escapeStringify(${fieldValCode}, this.stringify.${field})`
         : (() => {
             throw Error(
               `BUG: unknown spec type ${specType} for field ${field}`
@@ -1026,7 +1018,7 @@ export abstract class SQLRunner<
   private newFunction(...argsAndBody: string[]): any {
     return new Function(...argsAndBody).bind({
       ...sqlClientMod,
-      stringifiers: this.stringifiers,
+      stringify: this.stringify,
     });
   }
 

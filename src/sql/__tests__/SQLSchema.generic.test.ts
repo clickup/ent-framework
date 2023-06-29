@@ -30,12 +30,16 @@ let replica: TestSQLClient;
 // Overcomplicated a little, but after a 2h struggle with TS & static methods
 // typechecking, let it be like this for now.
 class EncryptedValue {
-  static parse(dbValue: string): EncryptedValue {
+  static dbValueToJs(dbValue: string): EncryptedValue {
     return new this(dbValue);
   }
 
   static stringify(obj: EncryptedValue): string {
     return obj.dbValue;
+  }
+
+  static parse(str: string): EncryptedValue {
+    return new this(str);
   }
 
   static async encrypt(text: string, delta: number): Promise<EncryptedValue> {
@@ -102,7 +106,7 @@ beforeEach(async () => {
       url_name text,
       some_flag boolean,
       json_text_field text,
-      json_strongly_typed_field text,
+      json_strongly_typed_field json,
       jsonb_field jsonb,
       encrypted_field text,
       created_at timestamptz NOT NULL,
@@ -182,31 +186,29 @@ const schema = new SQLSchema(
     url_name: { type: String, allowNull: true },
     some_flag: { type: Boolean, allowNull: true, autoInsert: "false" },
     json_text_field: {
-      // "JSON in a text field": we can just use built-in JSON class if we don't
-      // care about having `any` as a value type.
-      type: JSON,
+      type: {
+        dbValueToJs: (v: string) =>
+          JSON.parse(v) as { a: number; b: { c: number } },
+        stringify: JSON.stringify,
+        parse: JSON.parse,
+      },
       allowNull: true,
       autoInsert: "NULL",
     },
     json_strongly_typed_field: {
-      // An illustration on how to use typescript-is.
       type: {
-        parse: (v: string) => JSON.parse(v) as { a: number },
-        stringify: (v: any) => JSON.stringify(v),
+        dbValueToJs: (v: any) => v as { a: number }, // node-postgres does conversion from JSON internally
+        stringify: JSON.stringify,
+        parse: JSON.parse,
       },
       allowNull: true,
       autoInsert: "NULL",
     },
     jsonb_field: {
-      // Node pg natively understands json/jsonb PG types and can
-      // escape/unescape them. The problem is that we don't use the library's
-      // facilities for escaping data (we do escaping by ourselves for various
-      // reasons, like batching queries and better logging). So we can trust the
-      // library on the `parse` path, but have to manually serialize on
-      // `stringify` path.
       type: {
-        parse: (v: any) => v, // node-postgres does conversion from JSON internally
+        dbValueToJs: (v: any) => v, // node-postgres does conversion from JSON internally
         stringify: JSON.stringify,
+        parse: JSON.parse,
       },
       allowNull: true,
       autoInsert: "NULL",
