@@ -49,6 +49,10 @@ export interface EntClass<TTable extends Table = any> {
     vc: VC,
     keys: LoadByInput<TTable, UniqueKey<TTable>>
   ): Promise<Ent<TTable>>;
+  loadByNullable(
+    vc: VC,
+    input: LoadByInput<TTable, UniqueKey<TTable>>
+  ): Promise<Ent<TTable> | null>;
   insert(vc: VC, input: InsertInput<TTable>): Promise<string>;
   upsert(vc: VC, input: InsertInput<TTable>): Promise<string>;
 }
