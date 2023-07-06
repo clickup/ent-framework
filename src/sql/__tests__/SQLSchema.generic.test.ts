@@ -954,7 +954,11 @@ test("select and count batched", async () => {
   const [id1, id2] = await join([
     shardRun(schema.insert({ name: "a\na", url_name: "a1", some_flag: true })),
     shardRun(
-      schema.insert({ name: String.raw`a\a`, url_name: "aa1", some_flag: true })
+      schema.insert({
+        name: String.raw`a\a`,
+        url_name: "aa1",
+        some_flag: true,
+      })
     ),
     shardRun(schema.insert({ name: "c", url_name: "c1" })),
     shardRun(schema.insert({ name: "d", url_name: "d1" })),

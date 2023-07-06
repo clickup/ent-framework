@@ -67,7 +67,11 @@ export class Inverse<TClient extends Client, TTable extends Table> {
     await this.run(
       vc,
       this.shard(id1),
-      this.inverseSchema.insert({ type: this.type, id1: id1 ?? ZERO_NULL, id2 })
+      this.inverseSchema.insert({
+        type: this.type,
+        id1: id1 ?? ZERO_NULL,
+        id2,
+      })
     );
   }
 
