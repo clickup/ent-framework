@@ -6,6 +6,7 @@ import type {
   Row,
   Table,
   UniqueKey,
+  UpdateFields,
   UpdateInput,
 } from "../../types";
 import { ID } from "../../types";
@@ -202,7 +203,7 @@ export function HelpersMixin<
       // symbol fields, we'll always have a "changed" signal since the input Ent
       // doesn't have them (they are to be used in triggers only).
       for (const key of Reflect.ownKeys(this.constructor.SCHEMA.table)) {
-        const field = key as unknown as keyof typeof input;
+        const field = key as UpdateFields<TTable>;
         const value = input[field];
         const existingValue = (this as any)[field];
 

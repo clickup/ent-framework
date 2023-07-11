@@ -44,7 +44,7 @@ export abstract class SQLRunner<
 
   abstract readonly op: string;
 
-  protected async clientQuery<TOutput>(
+  protected async clientQuery<TOutput extends object>(
     sql: string,
     annotations: QueryAnnotation[],
     batchFactor: number
@@ -238,7 +238,7 @@ export abstract class SQLRunner<
    * are always prepended to the list of values since it makes no sense to
    * generate VALUES clause without exact identification of the destination.
    */
-  protected createValuesBuilder<TInput = object>({
+  protected createValuesBuilder<TInput extends object>({
     prefix,
     fields,
     withKey,
@@ -363,7 +363,7 @@ export abstract class SQLRunner<
    * 2. "Plain": the last one builder mentioned above (good to always use for
    *    non-batched queries for instance).
    */
-  protected createWhereBuildersFieldsEq<TInput = object>(args: {
+  protected createWhereBuildersFieldsEq<TInput extends object>(args: {
     prefix: string;
     fields: ReadonlyArray<Field<TTable>>;
     suffix: string;
@@ -507,7 +507,7 @@ export abstract class SQLRunner<
    * - Used in runSingle() (no ORs there) or when optimized builder is not
    *   available (e.g. when unique key contains nullable fields).
    */
-  private createWhereBuilderFieldsEqOrBased<TInput = object>({
+  private createWhereBuilderFieldsEqOrBased<TInput extends object>({
     prefix,
     fields,
     suffix,
@@ -606,7 +606,7 @@ export abstract class SQLRunner<
    * - Used in most of the cases in runBatch(), e.g. when unique key has >1
    *   fields, and they are all non-nullable.
    */
-  private createWhereBuilderFieldsEqTuplesBased<TInput = object>({
+  private createWhereBuilderFieldsEqTuplesBased<TInput extends object>({
     prefix,
     fields,
     suffix,
@@ -1025,9 +1025,8 @@ export abstract class SQLRunner<
    * FROM rows WHERE ROW(tbl.x, tbl.y)=ROW(rows.x, ROW.y)
    * ```
    */
-  private unfoldCompositePK<TInput extends Record<any, any>>(
-    input: TInput
-  ): TInput {
+  private unfoldCompositePK<TInput extends object>(inputIn: TInput): TInput {
+    let input = inputIn as Record<any, any>;
     if (
       !this.schema.table[ID] &&
       input[ID] !== null &&
