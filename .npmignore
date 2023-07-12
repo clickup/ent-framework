@@ -9,3 +9,4 @@ jest.config.js
 tsconfig.*
 yarn-error.log
 *.prev
+coverage
