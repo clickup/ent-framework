@@ -24,6 +24,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
   private uniqueKey;
   private inverses;
   private globalShard;
+  private idAndShardAffinity;
 
   constructor({
     cluster,
@@ -41,6 +42,10 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     this.cluster = cluster;
     this.entName = entName;
     this.shardAffinity = shardAffinity;
+    this.idAndShardAffinity = [
+      ID,
+      ...(this.shardAffinity instanceof Array ? this.shardAffinity : []),
+    ];
     this.uniqueKey = uniqueKey;
     this.inverses = inverses;
     this.globalShard = cluster.globalShard();
@@ -65,7 +70,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     op: string,
     fallbackToRandomShard: boolean
   ): Promise<Shard<TClient>> {
-    let shard = await this.shardFromAffinity(input);
+    let shard = await this.singleShardFromAffinity(input);
 
     if (!shard && fallbackToRandomShard) {
       shard = await this.cluster.randomShard(
@@ -99,7 +104,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     input: Record<string, any>,
     op: string
   ): Promise<Array<Shard<TClient>>> {
-    const singleShard = await this.shardFromAffinity(input);
+    const singleShard = await this.singleShardFromAffinity(input);
     if (singleShard) {
       return [singleShard];
     }
@@ -217,11 +222,16 @@ export class ShardLocator<TClient extends Client, TField extends string> {
   }
 
   /**
-   * Infers shard number from shardAffinity info and the input record. Returns
-   * null if it can't do this; the caller should likely throw in this case
-   * (although not always).
+   * Infers shard number from shardAffinity info and the input record.
+   * - Returns null if it can't do this; the caller should likely throw in this
+   *   case (although not always).
+   * - If a field's value is an array of IDs from multiple shards, then returns
+   *   the 1st inferred shard still. This is the current limitation: we don't
+   *   even try to infer multiple shards if we have some affinity fields in the
+   *   request, which e.g. simplifies Ent creation logic. Cross-shard logic is
+   *   only enabled when using Inverses; see multiShardsFromInput().
    */
-  private async shardFromAffinity(
+  private async singleShardFromAffinity(
     input: Record<string, any>
   ): Promise<Shard<TClient> | null> {
     // For a low number of a very global objects only. ATTENTION: GLOBAL_SHARD
@@ -237,26 +247,14 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       return this.singleShardFromID("$shardOfID", input.$shardOfID?.toString());
     }
 
-    // If we have Ent ID as a part of the request, we can just use it.
-    if (
-      // Single ID.
-      typeof input[ID] === "string" ||
-      // Array of IDs.
-      typeof input[ID]?.[0] === "string"
-    ) {
-      return this.singleShardFromID(ID, input[ID].toString());
-    }
-
     // An explicit list of fields is passed in SHARD_AFFINITY.
-    if (this.shardAffinity instanceof Array) {
-      for (const fromField of this.shardAffinity) {
-        const value =
-          input[fromField] instanceof Array
-            ? input[fromField][0]
-            : input[fromField];
-        if (value) {
-          return this.singleShardFromID(fromField, input[fromField].toString());
-        }
+    for (const fromField of this.idAndShardAffinity) {
+      const value =
+        input[fromField] instanceof Array
+          ? input[fromField][0]
+          : input[fromField];
+      if (typeof value === "string" && value) {
+        return this.singleShardFromID(fromField, value);
       }
     }
 
