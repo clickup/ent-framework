@@ -2,6 +2,7 @@ import delay from "delay";
 import range from "lodash/range";
 import sortBy from "lodash/sortBy";
 import uniq from "lodash/uniq";
+import { collect } from "streaming-iterables";
 import { MASTER } from "../../abstract/Shard";
 import { ShardError } from "../../abstract/ShardError";
 import { join, mapJoin } from "../../helpers/misc";
@@ -278,6 +279,26 @@ test("cross-shard select", async () => {
   ]);
 });
 
+test("cross-shard selectChunked", async () => {
+  const companyID = "1000100000000000912";
+  await mapJoin(range(1, 3), async (shardNo) =>
+    mapJoin(range(5), async () =>
+      createUserInShard({
+        vc,
+        shardNo,
+        startCompanyID: companyID,
+        startTeamID: "1000000000000000001",
+        increment: "teamID",
+      })
+    )
+  );
+  const chunkLens = await mapJoin(
+    collect(EntTestUser.selectChunked(vc, { company_id: companyID }, 2, 8)),
+    async (chunk) => chunk.length
+  );
+  expect(chunkLens).toEqual([2, 2, 1, 2, 1]);
+});
+
 test("optionally sharded colocation", async () => {
   const user = await EntTestUser.insertReturning(vc, {
     company_id: null,
@@ -530,6 +551,7 @@ test("id2s batched", async () => {
   expect(teamUserIDs).toEqual([u5.id].sort());
   master.toMatchSnapshot();
 });
+
 /**
  * Tries to insert EntTestUser multiple times until it succeeds inserting it to
  * shardNo. Since shard number generation is randomly-deterministic by unique
