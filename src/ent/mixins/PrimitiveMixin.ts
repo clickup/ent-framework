@@ -134,10 +134,13 @@ export type PrimitiveClass<
   ) => Promise<TEnt[]>;
 
   /**
-   * Same as select(), but returns data in chunks and uses multiple select()
-   * queries under the hood. The returned Ents are always ordered by ID. Also,
-   * it always pulls data from a single shard and throws if this shard cannot be
-   * unambiguously inferred from the input.
+   * Same as select(), but returns data in chunks.
+   * - Uses multiple select() queries under the hood.
+   * - The query can span multiple shards if their locations can be inferred
+   *   from inverses related to the fields mentioned in the query.
+   * - Ents in each chunk always belong to the same shard and are ordered by ID
+   *   (there is no support for custom ordering). Make sure you have the right
+   *   index in the database.
    */
   selectChunked: <TEnt extends PrimitiveInstance<TTable>>(
     this: new (...args: any[]) => TEnt,
@@ -463,18 +466,14 @@ export function PrimitiveMixin<
       limit: number,
       custom?: {}
     ): AsyncGenerator<Array<PrimitiveInstance<TTable>>, void, unknown> {
-      const [shard] = await join([
-        this.SHARD_LOCATOR.singleShardFromInput(
-          where,
-          "selectChunked",
-          false // fallbackToRandomShard
-        ),
+      const [shards] = await join([
+        this.SHARD_LOCATOR.multiShardsFromInput(vc, where, "selectChunked"),
         vc.heartbeater.heartbeat(),
       ]);
+      let lastSeenID = "0";
 
-      let idCursor: string = "0";
-      for (;;) {
-        if (limit <= 0) {
+      while (true) {
+        if (limit <= 0 || shards.length === 0) {
           return;
         }
 
@@ -484,11 +483,12 @@ export function PrimitiveMixin<
 
         const cursoredWhere = {
           ...where,
-          $and: [{ [ID]: { $gt: idCursor } }, ...(where.$and ?? [])],
+          $and: [{ [ID]: { $gt: lastSeenID } }, ...(where.$and ?? [])],
         };
 
         await vc.heartbeater.heartbeat();
 
+        const shard = shards[0];
         const rows = await shard.run(
           this.SCHEMA.select({
             where: cursoredWhere,
@@ -500,22 +500,19 @@ export function PrimitiveMixin<
           vc.timeline(shard, this.SCHEMA.name),
           vc.freshness
         );
-        const chunk = await mapJoin(rows, async (row) =>
-          this.createEnt(vc, row)
-        );
-        if (chunk.length === 0) {
-          return;
+
+        if (rows.length > 0) {
+          const chunk = await mapJoin(rows, async (row) =>
+            this.createEnt(vc, row)
+          );
+          yield chunk;
+          lastSeenID = chunk[chunk.length - 1][ID];
+          limit -= chunk.length;
         }
 
-        yield chunk;
-
-        idCursor = chunk[chunk.length - 1][ID];
-        limit -= chunk.length;
-
-        // In absolute most of the cases this condition saves one last query
-        // which would returns 0 Ents otherwise.
-        if (chunk.length < chunkSize) {
-          return;
+        if (rows.length === 0 || rows.length < chunkSize) {
+          shards.shift();
+          lastSeenID = "0";
         }
       }
     }
