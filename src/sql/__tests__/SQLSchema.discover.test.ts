@@ -4,18 +4,48 @@ import type { Shard, STALE_REPLICA } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
 import { ShardError } from "../../abstract/ShardError";
 import { Timeline } from "../../abstract/Timeline";
+import { escapeIdent } from "../SQLClient";
 import { SQLSchema } from "../SQLSchema";
-import type { TestSQLClient } from "./helpers/TestSQLClient";
-import { testCluster } from "./helpers/TestSQLClient";
+import type { TestSQLClient } from "./test-utils";
+import { recreateTestTables, testCluster } from "./test-utils";
 
-const TABLE = 'schema"discover_test';
-const TABLE_BAK = `${TABLE}_bak`;
+const schema = new SQLSchema(
+  'sql-schema.discover"table',
+  {
+    id: { type: String, autoInsert: "id_gen()" },
+    name: { type: String },
+  },
+  []
+);
+
+const TABLE_BAK = `${schema.name}_bak`;
 const ID_FROM_UNKNOWN_SHARD = "510001234567";
 
 const timeline = new Timeline();
-
 let shard: Shard<TestSQLClient>;
 let master: TestSQLClient;
+
+beforeEach(async () => {
+  await recreateTestTables([
+    {
+      CREATE: [
+        `DROP TABLE IF EXISTS ${escapeIdent(TABLE_BAK)} CASCADE`,
+        `CREATE TABLE %T(
+          id bigint NOT NULL PRIMARY KEY,
+          name text NOT NULL
+        )`,
+      ],
+      SCHEMA: schema,
+      SHARD_AFFINITY: [],
+    },
+  ]);
+
+  testCluster.options.locateIslandErrorRetryCount = 2;
+  testCluster.options.locateIslandErrorRetryDelayMs = 1000;
+  timeline.reset();
+  shard = await testCluster.randomShard();
+  master = await shard.client(MASTER);
+});
 
 async function shardRun<TOutput>(
   shard: Shard<TestSQLClient>,
@@ -36,38 +66,10 @@ async function shardRun<TOutput>(
   );
 }
 
-beforeEach(async () => {
-  testCluster.options.locateIslandErrorRetryCount = 2;
-  testCluster.options.locateIslandErrorRetryDelayMs = 1000;
-
-  shard = await testCluster.randomShard();
-  master = await shard.client(MASTER);
-
-  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE);
-  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_BAK);
-  await master.rows(
-    `CREATE TABLE %T(
-      id bigint NOT NULL PRIMARY KEY,
-      name text NOT NULL
-    )`,
-    TABLE
-  );
-  timeline.reset();
-});
-
-const schema = new SQLSchema(
-  TABLE,
-  {
-    id: { type: String, autoInsert: "id_gen()" },
-    name: { type: String },
-  },
-  []
-);
-
 test("shard relocation error when accessing a table should be retried", async () => {
   testCluster.options.locateIslandErrorRetryCount = 30;
 
-  await master.rows("ALTER TABLE %T RENAME TO %T", TABLE, TABLE_BAK);
+  await master.rows("ALTER TABLE %T RENAME TO %T", schema.name, TABLE_BAK);
 
   const query = schema.insert({ name: "test" });
   const spyQueryRun = jest.spyOn(query, "run");
@@ -78,7 +80,7 @@ test("shard relocation error when accessing a table should be retried", async ()
   await expect(spyQueryRun.mock.results[0].value).rejects.toThrow(ShardError);
 
   // Now after we have some retries, continue & rename the table back.
-  await master.rows("ALTER TABLE %T RENAME TO %T", TABLE_BAK, TABLE);
+  await master.rows("ALTER TABLE %T RENAME TO %T", TABLE_BAK, schema.name);
   expect(await resPromise).toMatch(/^\d+$/);
 
   master.toMatchSnapshot();

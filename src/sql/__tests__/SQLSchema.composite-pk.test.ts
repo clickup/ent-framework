@@ -6,32 +6,11 @@ import { join, nullthrows } from "../../helpers/misc";
 import { ID } from "../../types";
 import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
 import { SQLSchema } from "../SQLSchema";
-import type { TestSQLClient } from "./helpers/TestSQLClient";
-import { testCluster } from "./helpers/TestSQLClient";
-
-const TABLE = 'schema"test_composite';
-const timeline = new Timeline();
-let shard: Shard<TestSQLClient>;
-let master: TestSQLClient;
-
-beforeEach(async () => {
-  timeline.reset();
-  shard = await testCluster.randomShard();
-  master = await shard.client(MASTER);
-  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE);
-  await master.rows(
-    `CREATE TABLE %T(
-      tenant_id bigint NOT NULL,
-      user_id bigint NOT NULL,
-      name text NOT NULL,
-      PRIMARY KEY (tenant_id, user_id)
-    )`,
-    TABLE
-  );
-});
+import type { TestSQLClient } from "./test-utils";
+import { recreateTestTables, testCluster } from "./test-utils";
 
 const schema = new SQLSchema(
-  TABLE,
+  'sql-schema.composite-pk"table',
   {
     tenant_id: { type: ID },
     user_id: { type: ID },
@@ -39,6 +18,31 @@ const schema = new SQLSchema(
   },
   ["tenant_id", "user_id"]
 );
+
+const timeline = new Timeline();
+let shard: Shard<TestSQLClient>;
+let master: TestSQLClient;
+
+beforeEach(async () => {
+  await recreateTestTables([
+    {
+      CREATE: [
+        `CREATE TABLE %T(
+          tenant_id bigint NOT NULL,
+          user_id bigint NOT NULL,
+          name text NOT NULL,
+          PRIMARY KEY (tenant_id, user_id)
+        )`,
+      ],
+      SCHEMA: schema,
+      SHARD_AFFINITY: [],
+    },
+  ]);
+
+  timeline.reset();
+  shard = await testCluster.randomShard();
+  master = await shard.client(MASTER);
+});
 
 async function shardRun<TOutput>(query: Query<TOutput>): Promise<TOutput> {
   return shard.run(

@@ -6,7 +6,10 @@ import { collect } from "streaming-iterables";
 import { MASTER } from "../../abstract/Shard";
 import { ShardError } from "../../abstract/ShardError";
 import { join, mapJoin } from "../../helpers/misc";
-import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
+import {
+  recreateTestTables,
+  testCluster,
+} from "../../sql/__tests__/test-utils";
 import { SQLSchema } from "../../sql/SQLSchema";
 import { ID } from "../../types";
 import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
@@ -15,28 +18,65 @@ import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
 import type { VC } from "../VC";
-import { createVC } from "./helpers/test-objects";
+import { createVC } from "./test-utils";
 
-const TABLE_USER = 'inv"test_user';
-const TABLE_TOPIC = 'inv"test_topic';
-const TABLE_COMPANY = 'inv"test_company';
-const TABLE_INVERSE = 'inv"test_inverse';
-
-const schemaTestUser = new SQLSchema(
-  TABLE_USER,
-  {
-    id: { type: ID, autoInsert: "id_gen()" },
-    company_id: { type: ID, allowNull: true },
-    team_id: { type: ID, allowNull: true },
-    name: { type: String },
-  },
-  ["company_id", "team_id"]
-);
+const TABLE_INVERSE = 'inverse"test_inverse';
 
 /**
- * A sharded Ent.
+ * An Ent in GLOBAL_SHARD.
  */
-class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
+class EntTestCompany extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'inverse"test_company',
+    {
+      id: { type: String, autoInsert: "id_gen()" },
+      name: { type: String },
+    },
+    ["name"]
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      id bigint NOT NULL PRIMARY KEY,
+      name text NOT NULL
+    )`,
+  ];
+
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: GLOBAL_SHARD,
+      privacyLoad: [new AllowIf(new True())],
+      privacyInsert: [new Require(new True())],
+    });
+  }
+}
+
+/**
+ * An Ent in a random shard with high-cardinality Inverses.
+ */
+class EntTestUser extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'inverse"test_user',
+    {
+      id: { type: ID, autoInsert: "id_gen()" },
+      company_id: { type: ID, allowNull: true },
+      team_id: { type: ID, allowNull: true },
+      name: { type: String },
+    },
+    ["company_id", "team_id"]
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      id bigint NOT NULL PRIMARY KEY,
+      company_id bigint,
+      team_id bigint,
+      name text NOT NULL
+    )`,
+  ];
+
   static override configure() {
     return new this.Configuration({
       shardAffinity: [],
@@ -50,44 +90,36 @@ class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
   }
 }
 
-const schemaTestCompany = new SQLSchema(
-  TABLE_COMPANY,
-  {
-    id: { type: String, autoInsert: "id_gen()" },
-    name: { type: String },
-  },
-  ["name"]
-);
-
-/**
- * An Ent in GLOBAL_SHARD.
- */
-class EntTestCompany extends BaseEnt(testCluster, schemaTestCompany) {
-  static override configure() {
-    return new this.Configuration({
-      shardAffinity: GLOBAL_SHARD,
-      privacyLoad: [new AllowIf(new True())],
-      privacyInsert: [new Require(new True())],
-    });
-  }
-}
-
-const schemaTestTopic = new SQLSchema(
-  TABLE_TOPIC,
-  {
-    id: { type: ID, autoInsert: "id_gen()" },
-    owner_id: { type: ID }, // either EntTestUser (sharded) or EntTestCompany (global)
-    slug: { type: String },
-    sleep: { type: Number, allowNull: true, autoInsert: "0" },
-  },
-  ["owner_id", "slug"]
-);
-
 /**
  * An Ent which is either sharded (if owner_id points to EntTestUser) or in
  * GLOBAL_SHARD (if owner_id points to EntTestCompany).
  */
-class EntTestTopic extends BaseEnt(testCluster, schemaTestTopic) {
+class EntTestTopic extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'inverse"test_topic',
+    {
+      id: { type: ID, autoInsert: "id_gen()" },
+      owner_id: { type: ID }, // either EntTestUser (sharded) or EntTestCompany (global)
+      slug: { type: String },
+      sleep: { type: Number, allowNull: true, autoInsert: "0" },
+    },
+    ["owner_id", "slug"]
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      id bigint NOT NULL PRIMARY KEY,
+      owner_id bigint NOT NULL,
+      slug text NOT NULL,
+      sleep integer NOT NULL,
+      UNIQUE (owner_id, slug)
+    )`,
+    `CREATE OR REPLACE FUNCTION pg_sleep_trigger() RETURNS trigger LANGUAGE plpgsql SET search_path FROM CURRENT AS
+      $$ BEGIN PERFORM pg_sleep(NEW.sleep); RETURN NEW; END $$`,
+    `CREATE TRIGGER pg_sleep_trigger BEFORE INSERT ON %T FOR EACH ROW EXECUTE PROCEDURE pg_sleep_trigger()`,
+  ];
+
   static override configure() {
     return new this.Configuration({
       shardAffinity: ["owner_id"],
@@ -107,92 +139,15 @@ class EntTestTopic extends BaseEnt(testCluster, schemaTestTopic) {
   }
 }
 
-async function init(): Promise<void> {
-  const globalMaster = await testCluster.globalShard().client(MASTER);
-  await join([
-    globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_INVERSE),
-    globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMPANY),
-  ]);
-  await join([
-    globalMaster.rows(
-      `CREATE TABLE %T(
-        id bigint NOT NULL PRIMARY KEY,
-        name text NOT NULL
-      )`,
-      TABLE_COMPANY
-    ),
-    globalMaster.rows(
-      `CREATE TABLE %T(
-        id bigint NOT NULL PRIMARY KEY,
-        id1 bigint,
-        type varchar(32) NOT NULL,
-        id2 bigint NOT NULL,
-        created_at timestamptz NOT NULL
-      )`,
-      TABLE_INVERSE
-    ),
-  ]);
-
-  await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
-    const master = await shard.client(MASTER);
-    await join([
-      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_INVERSE),
-      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_TOPIC),
-      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_USER),
-    ]);
-    await join([
-      master.rows(
-        `CREATE TABLE %T(
-          id bigint NOT NULL PRIMARY KEY,
-          company_id BIGINT,
-          team_id BIGINT,
-          name text NOT NULL
-        )`,
-        TABLE_USER
-      ),
-      master.rows(
-        `CREATE TABLE %T(
-          id bigint NOT NULL PRIMARY KEY,
-          owner_id bigint NOT NULL,
-          slug text NOT NULL,
-          sleep integer NOT NULL,
-          UNIQUE (owner_id, slug)
-        )`,
-        TABLE_TOPIC
-      ),
-      master.rows(
-        `CREATE TABLE %T(
-          id bigint NOT NULL PRIMARY KEY,
-          id1 bigint,
-          type varchar(32) NOT NULL,
-          id2 bigint NOT NULL,
-          created_at timestamptz NOT NULL
-        )`,
-        TABLE_INVERSE
-      ),
-    ]);
-    await master.rows(
-      `CREATE OR REPLACE FUNCTION pg_sleep_trigger() RETURNS trigger LANGUAGE plpgsql SET search_path FROM CURRENT AS
-      $$ BEGIN PERFORM pg_sleep(NEW.sleep); RETURN NEW; END $$`
-    );
-    await master.rows(
-      `CREATE TRIGGER pg_sleep_trigger BEFORE INSERT ON %T FOR EACH ROW EXECUTE PROCEDURE pg_sleep_trigger()`,
-      TABLE_TOPIC
-    );
-  });
-}
-
 let vc: VC;
 
 beforeEach(async () => {
+  await recreateTestTables(
+    [EntTestCompany, EntTestUser, EntTestTopic],
+    TABLE_INVERSE
+  );
+
   vc = createVC();
-  try {
-    await init();
-  } catch (e: any) {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    throw e;
-  }
 });
 
 test("CRUD", async () => {
@@ -374,7 +329,10 @@ test("inverses are deleted when ent insert DB operation fails", async () => {
   });
   await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
     const master = await shard.client(MASTER);
-    await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_TOPIC);
+    await master.rows(
+      "DROP TABLE IF EXISTS %T CASCADE",
+      EntTestTopic.SCHEMA.name
+    );
   });
   await expect(
     EntTestTopic.insertIfNotExists(vc, {

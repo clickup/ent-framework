@@ -2,22 +2,22 @@
 
 exports[`shard relocation error when accessing a table should be retried 1`] = `
 "
-INSERT INTO "schema""discover_test" (name, id) VALUES
+INSERT INTO "sql-schema.discover""table" (name, id) VALUES
   ('test', id_gen()) ON CONFLICT DO NOTHING RETURNING id
 ----
-INSERT INTO "schema""discover_test" (name, id) VALUES
+INSERT INTO "sql-schema.discover""table" (name, id) VALUES
   ('?', id_gen()) ON CONFLICT DO NOTHING RETURNING id
 
-INSERT INTO "schema""discover_test" (name, id) VALUES
+INSERT INTO "sql-schema.discover""table" (name, id) VALUES
   ('test', id_gen()) ON CONFLICT DO NOTHING RETURNING id
 ----
-INSERT INTO "schema""discover_test" (name, id) VALUES
+INSERT INTO "sql-schema.discover""table" (name, id) VALUES
   ('?', id_gen()) ON CONFLICT DO NOTHING RETURNING id
 
-INSERT INTO "schema""discover_test" (name, id) VALUES
+INSERT INTO "sql-schema.discover""table" (name, id) VALUES
   ('test', id_gen()) ON CONFLICT DO NOTHING RETURNING id
 ----
-INSERT INTO "schema""discover_test" (name, id) VALUES
+INSERT INTO "sql-schema.discover""table" (name, id) VALUES
   ('?', id_gen()) ON CONFLICT DO NOTHING RETURNING id
 "
 `;

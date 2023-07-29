@@ -1,7 +1,7 @@
 import groupBy from "lodash/groupBy";
 import range from "lodash/range";
 import { mapJoin } from "../../helpers/misc";
-import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
+import { testCluster } from "../../sql/__tests__/test-utils";
 import { GLOBAL_SHARD } from "../Configuration";
 import { ShardLocator } from "../ShardLocator";
 

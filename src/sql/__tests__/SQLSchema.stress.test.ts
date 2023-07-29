@@ -2,17 +2,44 @@ import delay from "delay";
 import hash from "object-hash";
 import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
-import { MASTER } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
 import { join, mapJoin, nullthrows } from "../../helpers/misc";
 import { SQLSchema } from "../SQLSchema";
-import type { TestSQLClient } from "./helpers/TestSQLClient";
-import { testCluster } from "./helpers/TestSQLClient";
+import type { TestSQLClient } from "./test-utils";
+import { recreateTestTables, testCluster } from "./test-utils";
 
-const TABLE = 'schema"stress_test';
+const schema = new SQLSchema(
+  'sql-schema.stress"table',
+  {
+    id: { type: String, autoInsert: "id_gen()" },
+    prefix: { type: String },
+    name: { type: String },
+  },
+  ["prefix", "name"]
+);
+
 const timeline = new Timeline();
 let shard: Shard<TestSQLClient>;
-let master: TestSQLClient;
+
+beforeEach(async () => {
+  await recreateTestTables([
+    {
+      CREATE: [
+        `CREATE TABLE %T(
+          id bigint NOT NULL PRIMARY KEY,
+          prefix text NOT NULL,
+          name text NOT NULL,
+          UNIQUE (prefix, name)
+        )`,
+      ],
+      SCHEMA: schema,
+      SHARD_AFFINITY: [],
+    },
+  ]);
+
+  timeline.reset();
+  shard = await testCluster.randomShard();
+});
 
 async function shardRun<TOutput>(query: Query<TOutput>): Promise<TOutput> {
   return shard.run(
@@ -28,33 +55,6 @@ async function shardRun<TOutput>(query: Query<TOutput>): Promise<TOutput> {
     null
   );
 }
-
-beforeEach(async () => {
-  shard = await testCluster.randomShard();
-  master = await shard.client(MASTER);
-
-  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE);
-  await master.rows(
-    `CREATE TABLE %T(
-      id bigint NOT NULL PRIMARY KEY,
-      prefix text NOT NULL,
-      name text NOT NULL,
-      UNIQUE (prefix, name)
-    )`,
-    TABLE
-  );
-  timeline.reset();
-});
-
-const schema = new SQLSchema(
-  TABLE,
-  {
-    id: { type: String, autoInsert: "id_gen()" },
-    prefix: { type: String },
-    name: { type: String },
-  },
-  ["prefix", "name"]
-);
 
 test("stress", async () => {
   await runStress(50, 18, async (uniq) => {

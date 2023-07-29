@@ -1,12 +1,29 @@
+import { testCluster } from "../../sql/__tests__/test-utils";
+import { SQLSchema } from "../../sql/SQLSchema";
+import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
+import { True } from "../predicates/True";
 import { QueryCache } from "../QueryCache";
-import type { VC } from "../VC";
-import { VCWithQueryCache } from "../VCFlavor";
-import { EntTestCompany, vcTestGuest } from "./helpers/test-objects";
+import { AllowIf } from "../rules/AllowIf";
+import { createVC } from "./test-utils";
 
-function createVC(): VC {
-  const vc = vcTestGuest.withFlavor(new VCWithQueryCache({ maxQueries: 1000 }));
-  (vc as any).freshness = null;
-  return vc;
+export class EntTestCompany extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'query-cache"company',
+    {
+      id: { type: String, autoInsert: "id_gen()" },
+      name: { type: String },
+    },
+    ["name"]
+  )
+) {
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: GLOBAL_SHARD,
+      privacyLoad: [new AllowIf(new True())],
+      privacyInsert: [],
+    });
+  }
 }
 
 test("simple deletion", async () => {

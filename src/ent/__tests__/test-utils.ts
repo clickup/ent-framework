@@ -1,7 +1,33 @@
 import { inspect } from "util";
-import type { Row, Table, UpdateInput } from "../../../types";
-import type { Validation } from "../../Validation";
-import { vcTestGuest } from "./test-objects";
+import type { Row, Table, UpdateInput } from "../../types";
+import type { Validation } from "../Validation";
+import { VC } from "../VC";
+import { VCWithQueryCache } from "../VCFlavor";
+
+const vcTestGuest =
+  VC.createGuestPleaseDoNotUseCreationPointsMustBeLimited().withTransitiveMasterFreshness();
+
+/**
+ * Creates a test VC.
+ */
+export function createVC(): VC {
+  const vc = vcTestGuest.withFlavor(new VCWithQueryCache({ maxQueries: 1000 }));
+  (vc as any).freshness = null;
+  return vc;
+}
+
+/**
+ * Normalizes the text before matching the snapshot.
+ */
+export function expectToMatchSnapshot(
+  str: string,
+  snapshotName?: string
+): void {
+  const exp = expect(
+    str.replace(/\b(vc:\w+)\(\d+\)/g, "$1").replace(/\d{10,}/g, "<id>")
+  );
+  snapshotName ? exp.toMatchSnapshot(snapshotName) : exp.toMatchSnapshot();
+}
 
 /**
  * A helper class to log some predicate response (plus the row argument) and

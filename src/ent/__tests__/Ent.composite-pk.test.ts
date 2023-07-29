@@ -1,6 +1,7 @@
-import { MASTER } from "../../abstract/Shard";
-import { join, mapJoin } from "../../helpers/misc";
-import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
+import {
+  recreateTestTables,
+  testCluster,
+} from "../../sql/__tests__/test-utils";
 import { SQLSchema } from "../../sql/SQLSchema";
 import { ID } from "../../types";
 import { BaseEnt } from "../BaseEnt";
@@ -10,21 +11,26 @@ import { OutgoingEdgePointsToVC } from "../predicates/OutgoingEdgePointsToVC";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
-import { createVC } from "./helpers/test-objects";
+import { createVC } from "./test-utils";
 
-const TABLE_USER = 'ent"user_composite';
-const TABLE_COMPOSITE = 'ent"composite';
+export class EntTestUser extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'ent.composite-pk"test_user',
+    {
+      userid: { type: ID, autoInsert: "id_gen()" },
+      name: { type: String },
+    },
+    ["userid"]
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      userid bigint NOT NULL PRIMARY KEY,
+      name text
+    )`,
+  ];
 
-const schemaTestUser = new SQLSchema(
-  TABLE_USER,
-  {
-    userid: { type: ID, autoInsert: "id_gen()" },
-    name: { type: String },
-  },
-  ["userid"]
-);
-
-export class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
@@ -36,26 +42,26 @@ export class EntTestUser extends BaseEnt(testCluster, schemaTestUser) {
   }
 }
 
-const schemaTestComposite = new SQLSchema(
-  TABLE_COMPOSITE,
-  {
-    user_id: { type: ID },
-    some_id: { type: ID, autoInsert: "id_gen()" },
-    name: { type: String },
-  },
-  ["user_id", "some_id"]
-);
-
 export class EntTestComposite extends BaseEnt(
   testCluster,
-  schemaTestComposite
+  new SQLSchema(
+    'ent.composite-pk"test_composite',
+    {
+      user_id: { type: ID },
+      some_id: { type: ID, autoInsert: "id_gen()" },
+      name: { type: String },
+    },
+    ["user_id", "some_id"]
+  )
 ) {
-  static TRIGGER_CALLS: Array<{
-    type: string;
-    old?: any;
-    new?: any;
-    input?: any;
-  }> = [];
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      user_id bigint NOT NULL,
+      some_id bigint NOT NULL,
+      name text,
+      UNIQUE(user_id, some_id)
+    )`,
+  ];
 
   static override configure() {
     return new this.Configuration({
@@ -71,37 +77,7 @@ export class EntTestComposite extends BaseEnt(
 let user: EntTestUser;
 
 beforeEach(async () => {
-  const globalMaster = await testCluster.globalShard().client(MASTER);
-  await join([
-    globalMaster.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_USER),
-  ]);
-  await join([
-    globalMaster.rows(
-      `CREATE TABLE %T(
-        userid bigint NOT NULL PRIMARY KEY,
-        name text
-      )`,
-      TABLE_USER
-    ),
-  ]);
-
-  await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
-    const master = await shard.client(MASTER);
-    await join([
-      master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_COMPOSITE),
-    ]);
-    await join([
-      master.rows(
-        `CREATE TABLE %T(
-            user_id bigint NOT NULL,
-            some_id bigint NOT NULL,
-            name text,
-            UNIQUE(user_id, some_id)
-          )`,
-        TABLE_COMPOSITE
-      ),
-    ]);
-  });
+  await recreateTestTables([EntTestUser, EntTestComposite]);
 
   user = await EntTestUser.insertReturning(createVC().toOmniDangerous(), {
     name: "my-name",

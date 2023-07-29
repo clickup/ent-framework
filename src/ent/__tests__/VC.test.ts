@@ -1,6 +1,6 @@
 import { VC } from "../VC";
 import { VCFlavor } from "../VCFlavor";
-import { createVC } from "./helpers/test-objects";
+import { createVC } from "./test-utils";
 
 class Cache extends Map<any, any> {
   constructor() {
