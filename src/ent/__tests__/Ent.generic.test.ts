@@ -1,38 +1,513 @@
 import { inspect } from "util";
 import { collect } from "streaming-iterables";
 import { join } from "../../helpers/misc";
-import { testCluster } from "../../sql/__tests__/helpers/TestSQLClient";
+import {
+  recreateTestTables,
+  testCluster,
+} from "../../sql/__tests__/test-utils";
 import { SQLSchema } from "../../sql/SQLSchema";
 import { ID } from "../../types";
 import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
+import { CanReadOutgoingEdge } from "../predicates/CanReadOutgoingEdge";
+import { CanUpdateOutgoingEdge } from "../predicates/CanUpdateOutgoingEdge";
+import { IncomingEdgeFromVCExists } from "../predicates/IncomingEdgeFromVCExists";
+import { OutgoingEdgePointsToVC } from "../predicates/OutgoingEdgePointsToVC";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
 import type { VC } from "../VC";
-import {
-  $EPHEMERAL,
-  $EPHEMERAL2,
-  EntTestComment,
-  EntTestCountry,
-  EntTestHeadline,
-  EntTestLike,
-  EntTestPost,
-  EntTestUser,
-  expectToMatchSnapshot,
-  init,
-} from "./helpers/test-objects";
+import { createVC, expectToMatchSnapshot } from "./test-utils";
+
+const $EPHEMERAL = Symbol("$EPHEMERAL");
+const $EPHEMERAL2 = Symbol("$EPHEMERAL2");
+
+/**
+ * Company
+ */
+export class EntTestCompany extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'ent.generic"company',
+    {
+      id: { type: String, autoInsert: "id_gen()" },
+      name: { type: String },
+    },
+    ["name"]
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      id bigint NOT NULL PRIMARY KEY,
+      name text NOT NULL
+    )`,
+  ];
+
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: GLOBAL_SHARD,
+      privacyLoad: [
+        new AllowIf(async function VCIsAllSeeing(vc, _company) {
+          const vcUser = await EntTestUser.loadX(vc, vc.principal);
+          return vcUser.is_alseeing;
+        }),
+        new AllowIf(
+          new IncomingEdgeFromVCExists(EntTestUser, "id", "company_id")
+        ),
+      ],
+      privacyInsert: [],
+    });
+  }
+}
+
+/**
+ * User -> Company
+ */
+export class EntTestUser extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'ent.generic"user',
+    {
+      id: { type: ID, autoInsert: "id_gen()" },
+      company_id: { type: ID, allowNull: true, autoInsert: "NULL" },
+      name: { type: String },
+      url_name: { type: String, allowNull: true },
+      is_alseeing: { type: Boolean, autoInsert: "false" },
+      created_at: { type: Date, autoInsert: "now()" },
+      updated_at: { type: Date, autoUpdate: "now()" },
+    },
+    ["name"]
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      id bigint NOT NULL PRIMARY KEY,
+      company_id bigint DEFAULT NULL,
+      name text NOT NULL,
+      url_name text,
+      is_alseeing boolean,
+      created_at timestamptz NOT NULL,
+      updated_at timestamptz NOT NULL,
+      UNIQUE (name)
+    )`,
+  ];
+
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: GLOBAL_SHARD,
+      privacyInferPrincipal: async (_vc, { id }) => id,
+      privacyLoad: [
+        new AllowIf(new OutgoingEdgePointsToVC("id")),
+        new AllowIf(new CanReadOutgoingEdge("company_id", EntTestCompany)),
+      ],
+      privacyInsert: [],
+      privacyUpdate: [new Require(new OutgoingEdgePointsToVC("id"))],
+    });
+  }
+
+  nameUpper(): string {
+    return this.name.toUpperCase();
+  }
+}
+
+/**
+ * Post -> User -> Company
+ */
+export class EntTestPost extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'ent.generic"post',
+    {
+      post_id: { type: ID, autoInsert: "id_gen()" },
+      user_id: { type: ID },
+      title: { type: String },
+      created_at: { type: Date, autoInsert: "now()" },
+    },
+    ["post_id"]
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      post_id bigint NOT NULL PRIMARY KEY,
+      user_id bigint NOT NULL,
+      title text NOT NULL,
+      created_at timestamptz NOT NULL
+    )`,
+  ];
+
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: ["post_id"],
+      privacyLoad: [
+        new AllowIf(new CanReadOutgoingEdge("user_id", EntTestUser)),
+      ],
+      privacyInsert: [
+        new Require(new CanUpdateOutgoingEdge("user_id", EntTestUser)),
+      ],
+      privacyUpdate: [
+        new Require(async function VCInSameCompany(vc, post) {
+          // A post can be updated by anyone in the same company.
+          const postUser = await EntTestUser.loadX(vc, post.user_id);
+          const vcUser = await EntTestUser.loadX(vc, vc.principal);
+          return postUser.company_id === vcUser.company_id;
+        }),
+      ],
+    });
+  }
+
+  titleUpper(): string {
+    return this.title.toUpperCase();
+  }
+
+  async user(): Promise<EntTestUser> {
+    return EntTestUser.loadX(this.vc, this.user_id);
+  }
+}
+
+/**
+ * Comment -> Post -> User -> Company
+ */
+export class EntTestComment extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'ent.generic"comment',
+    {
+      comment_id: { type: String, autoInsert: "id_gen()" },
+      post_id: { type: ID },
+      text: { type: String },
+    },
+    ["comment_id"]
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      comment_id bigint NOT NULL PRIMARY KEY,
+      post_id bigint NOT NULL,
+      text text NOT NULL
+    )`,
+  ];
+
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: ["post_id"],
+      privacyLoad: [
+        new AllowIf(new CanReadOutgoingEdge("post_id", EntTestPost)),
+      ],
+      privacyInsert: [
+        new Require(new CanUpdateOutgoingEdge("post_id", EntTestPost)),
+      ],
+    });
+  }
+
+  textUpper(): string {
+    return this.text.toUpperCase();
+  }
+}
+
+/**
+ * Like -> Post -> User -> Company
+ */
+export class EntTestLike extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'ent.generic"like',
+    {
+      id: { type: ID, autoInsert: "id_gen()" },
+      post_id: { type: ID },
+      user_id: { type: ID },
+    },
+    ["post_id", "user_id"]
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      id bigint NOT NULL PRIMARY KEY,
+      post_id bigint NOT NULL,
+      user_id bigint NOT NULL
+    )`,
+  ];
+
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: ["post_id"],
+      privacyLoad: [
+        new AllowIf(new CanReadOutgoingEdge("post_id", EntTestPost)),
+      ],
+      privacyInsert: [
+        new Require(new CanUpdateOutgoingEdge("post_id", EntTestPost)),
+      ],
+    });
+  }
+}
+
+/**
+ * Headline -> User -> Company
+ */
+export class EntTestHeadline extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'ent.generic"headline',
+    {
+      id: { type: ID, autoInsert: "id_gen()" },
+      user_id: { type: ID },
+      headline: { type: String },
+      name: { type: String, allowNull: true, autoInsert: "NULL" },
+      [$EPHEMERAL]: { type: String, allowNull: true }, // required, but nullable
+      [$EPHEMERAL2]: { type: Number, autoInsert: "NULL" }, // optional (can be skipped), but if present, must be non-nullable
+    },
+    []
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      id bigint NOT NULL PRIMARY KEY,
+      user_id bigint NOT NULL,
+      headline text NOT NULL,
+      name text
+    )`,
+  ];
+
+  static readonly TRIGGER_CALLS: Array<{
+    type: string;
+    old?: any;
+    new?: any;
+    input?: any;
+  }> = [];
+
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: [],
+      privacyLoad: [
+        new AllowIf(new CanReadOutgoingEdge("user_id", EntTestUser)),
+      ],
+      privacyInsert: [
+        new Require(new CanUpdateOutgoingEdge("user_id", EntTestUser)),
+      ],
+      beforeInsert: [
+        async (_vc, { input }) => {
+          EntTestHeadline.TRIGGER_CALLS.push({
+            type: "beforeInsert1",
+            input: { ...input },
+          });
+          input.headline += " added-by-beforeInsert1";
+          if (input[$EPHEMERAL2]) {
+            input[$EPHEMERAL2]! += 1000;
+          }
+        },
+        async (_vc, { input }) => {
+          EntTestHeadline.TRIGGER_CALLS.push({
+            type: "beforeInsert2",
+            input: { ...input },
+          });
+          input.headline += " added-by-beforeInsert2";
+        },
+      ],
+      beforeUpdate: [
+        async (_vc, { newRow, oldRow, input }) => {
+          EntTestHeadline.TRIGGER_CALLS.push({
+            type: "beforeUpdate",
+            old: oldRow,
+            new: newRow,
+            input: { ...input },
+          });
+          input.headline = newRow.headline + " added-by-beforeUpdate";
+          if (input[$EPHEMERAL2]) {
+            input[$EPHEMERAL2]! += 1000000;
+          }
+        },
+      ],
+      beforeDelete: [
+        async (_vc, { oldRow }) => {
+          EntTestHeadline.TRIGGER_CALLS.push({
+            type: "beforeDelete",
+            old: oldRow,
+          });
+        },
+      ],
+      afterInsert: [
+        async (_vc, { input }) => {
+          EntTestHeadline.TRIGGER_CALLS.push({
+            type: "afterInsert",
+            input: { ...input },
+          });
+        },
+      ],
+      afterUpdate: [
+        async (_vc, { newRow, oldRow }) => {
+          EntTestHeadline.TRIGGER_CALLS.push({
+            type: "afterUpdate",
+            old: oldRow,
+            new: newRow,
+          });
+        },
+        [
+          (_vc, row) => JSON.stringify([row.name]),
+          async (_vc, { newRow, oldRow }) => {
+            EntTestHeadline.TRIGGER_CALLS.push({
+              type: "afterUpdate (if name changed)",
+              old: oldRow,
+              new: newRow,
+            });
+          },
+        ],
+      ],
+      afterDelete: [
+        async (_vc, { oldRow }) => {
+          EntTestHeadline.TRIGGER_CALLS.push({
+            type: "afterDelete",
+            old: oldRow,
+          });
+        },
+      ],
+      afterMutation: [
+        async (_vc, { newOrOldRow }) => {
+          EntTestHeadline.TRIGGER_CALLS.push({
+            type: "afterMutation",
+            input: newOrOldRow,
+          });
+        },
+        [
+          (_vc, row) => JSON.stringify([row.name]),
+          async (_vc, { newOrOldRow }) => {
+            EntTestHeadline.TRIGGER_CALLS.push({
+              type: "afterMutation (if name changed)",
+              input: newOrOldRow,
+            });
+          },
+        ],
+      ],
+    });
+  }
+}
+
+/**
+ * Country
+ */
+export class EntTestCountry extends BaseEnt(
+  testCluster,
+  new SQLSchema(
+    'ent.generic"country',
+    {
+      id: { type: String, autoInsert: "id_gen()" },
+      name: { type: String, allowNull: true, autoInsert: "NULL" },
+    },
+    ["name"]
+  )
+) {
+  static readonly CREATE = [
+    `CREATE TABLE %T(
+      id bigint NOT NULL PRIMARY KEY,
+      name text,
+      UNIQUE(name)
+    )`,
+  ];
+
+  static readonly TRIGGER_CALLS: Array<{
+    type: string;
+    old?: any;
+    new?: any;
+    input?: any;
+  }> = [];
+
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: GLOBAL_SHARD,
+      privacyLoad: [new AllowIf(new True())],
+      privacyInsert: [new Require(new True())],
+      beforeInsert: [
+        async (_vc, { input }) => {
+          this.TRIGGER_CALLS.push({
+            type: "beforeInsert",
+            input: { ...input },
+          });
+        },
+      ],
+      beforeUpdate: [
+        async (_vc, { newRow, oldRow, input }) => {
+          this.TRIGGER_CALLS.push({
+            type: "beforeUpdate",
+            old: oldRow,
+            new: newRow,
+            input: { ...input },
+          });
+        },
+      ],
+      beforeDelete: [
+        async (_vc, { oldRow }) => {
+          this.TRIGGER_CALLS.push({
+            type: "beforeDelete",
+            old: oldRow,
+          });
+        },
+      ],
+      afterInsert: [
+        async (_vc, { input }) => {
+          this.TRIGGER_CALLS.push({
+            type: "afterInsert",
+            input: { ...input },
+          });
+        },
+      ],
+      afterUpdate: [
+        async (_vc, { newRow, oldRow }) => {
+          this.TRIGGER_CALLS.push({
+            type: "afterUpdate",
+            old: oldRow,
+            new: newRow,
+          });
+        },
+      ],
+      afterDelete: [
+        async (_vc, { oldRow }) => {
+          this.TRIGGER_CALLS.push({
+            type: "afterDelete",
+            old: oldRow,
+          });
+        },
+      ],
+      afterMutation: [
+        async (_vc, { newOrOldRow }) => {
+          this.TRIGGER_CALLS.push({
+            type: "afterMutation",
+            input: newOrOldRow,
+          });
+        },
+      ],
+    });
+  }
+}
 
 let vc: VC;
 let vcOther: VC;
 
 beforeEach(async () => {
-  try {
-    [vc, vcOther] = await init();
-  } catch (e: any) {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    throw e;
-  }
+  await recreateTestTables([
+    EntTestCompany,
+    EntTestUser,
+    EntTestPost,
+    EntTestComment,
+    EntTestLike,
+    EntTestHeadline,
+    EntTestCountry,
+  ]);
+
+  const company = await EntTestCompany.insertReturning(
+    createVC().toOmniDangerous(),
+    { name: "some" }
+  );
+
+  const user = await EntTestUser.insertReturning(company.vc.toOmniDangerous(), {
+    company_id: company.id,
+    name: "John",
+    url_name: "john",
+  });
+  expect(user.vc.principal).toEqual(user.id);
+  vc = user.vc;
+
+  const otherUser = await EntTestUser.insertReturning(
+    company.vc.toOmniDangerous(),
+    { name: Date.now().toString(), url_name: "" }
+  );
+  vcOther = otherUser.vc;
 });
 
 test("simple use case", async () => {
@@ -394,7 +869,7 @@ test("heisenbug: two different schema field sets make schema hash different", as
 });
 
 test("triggers", async () => {
-  EntTestHeadline.TRIGGER_CALLS = [];
+  EntTestHeadline.TRIGGER_CALLS.splice(0);
   await EntTestHeadline.insertReturning(vc, {
     user_id: vc.principal,
     headline: "xyz",
@@ -405,7 +880,7 @@ test("triggers", async () => {
     "0: insert happened"
   );
 
-  EntTestHeadline.TRIGGER_CALLS = [];
+  EntTestHeadline.TRIGGER_CALLS.splice(0);
   const headline = await EntTestHeadline.insertReturning(vc, {
     user_id: vc.principal,
     headline: "abc",
@@ -420,7 +895,7 @@ test("triggers", async () => {
     "1: insert happened"
   );
 
-  EntTestHeadline.TRIGGER_CALLS = [];
+  EntTestHeadline.TRIGGER_CALLS.splice(0);
   const headline2 = await headline.updateReturningX({
     headline: "xyz-updated",
     name: "new-name",
@@ -432,7 +907,7 @@ test("triggers", async () => {
     "2: update happened"
   );
 
-  EntTestHeadline.TRIGGER_CALLS = [];
+  EntTestHeadline.TRIGGER_CALLS.splice(0);
   const headline3 = await headline.updateReturningX({
     [$EPHEMERAL]: "eph3",
   });
@@ -444,7 +919,7 @@ test("triggers", async () => {
     "3: noop-update happened"
   );
 
-  EntTestHeadline.TRIGGER_CALLS = [];
+  EntTestHeadline.TRIGGER_CALLS.splice(0);
   await headline.updateChanged({
     [$EPHEMERAL]: "eph4",
   });
@@ -453,7 +928,7 @@ test("triggers", async () => {
     "4: updateChanged happened"
   );
 
-  EntTestHeadline.TRIGGER_CALLS = [];
+  EntTestHeadline.TRIGGER_CALLS.splice(0);
   await headline.deleteOriginal();
   expect(await EntTestHeadline.loadNullable(vc, headline.id)).toBeNull();
   expectToMatchSnapshot(
@@ -465,14 +940,14 @@ test("triggers", async () => {
 test("skip after triggers if operation soft fails", async () => {
   await EntTestCountry.insertReturning(vc, { name: "zzz" });
 
-  EntTestCountry.TRIGGER_CALLS = [];
+  EntTestCountry.TRIGGER_CALLS.splice(0);
   const abc = await EntTestCountry.insertReturning(vc, { name: "abc" });
   expectToMatchSnapshot(
     inspect(EntTestCountry.TRIGGER_CALLS),
     "1: insert happened"
   );
 
-  EntTestCountry.TRIGGER_CALLS = [];
+  EntTestCountry.TRIGGER_CALLS.splice(0);
   await EntTestCountry.insertIfNotExists(vc, { name: "abc" });
   expectToMatchSnapshot(
     inspect(EntTestCountry.TRIGGER_CALLS),
@@ -481,14 +956,14 @@ test("skip after triggers if operation soft fails", async () => {
 
   await abc.deleteOriginal();
 
-  EntTestCountry.TRIGGER_CALLS = [];
+  EntTestCountry.TRIGGER_CALLS.splice(0);
   await abc.updateOriginal({ name: "zzz" });
   expectToMatchSnapshot(
     inspect(EntTestCountry.TRIGGER_CALLS),
     "3: update soft-failed on non-existing row"
   );
 
-  EntTestCountry.TRIGGER_CALLS = [];
+  EntTestCountry.TRIGGER_CALLS.splice(0);
   await abc.deleteOriginal();
   expectToMatchSnapshot(
     inspect(EntTestCountry.TRIGGER_CALLS),

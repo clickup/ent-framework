@@ -2,28 +2,28 @@
 
 exports[`id2s batched 1`] = `
 "
-SELECT id, created_at, type, id1, id2 FROM "inv""test_inverse"
+SELECT id, created_at, type, id1, id2 FROM "inverse""test_inverse"
   WHERE (type, id1) IN(VALUES
-  ((NULL::"inv""test_inverse").type, (NULL::"inv""test_inverse").id1),
+  ((NULL::"inverse""test_inverse").type, (NULL::"inverse""test_inverse").id1),
   ('company2users', '<id>'),
   ('company2users', '<id>'),
   ('company2users', '0'),
   ('team2users', '<id>'))
 ----
-SELECT id, created_at, type, id1, id2 FROM "inv""test_inverse"
+SELECT id, created_at, type, id1, id2 FROM "inverse""test_inverse"
   WHERE (type, id1) IN(VALUES
-  ((NULL::"inv""test_inverse").type, (NULL::"inv""test_inverse").id1),
+  ((NULL::"inverse""test_inverse").type, (NULL::"inverse""test_inverse").id1),
   ('?', '?'), ...)
 "
 `;
 
 exports[`id2s single 1`] = `
 "
-SELECT id, created_at, type, id1, id2 FROM "inv""test_inverse"
+SELECT id, created_at, type, id1, id2 FROM "inverse""test_inverse"
   WHERE (type='company2users'
     AND id1='<id>')
 ----
-SELECT id, created_at, type, id1, id2 FROM "inv""test_inverse"
+SELECT id, created_at, type, id1, id2 FROM "inverse""test_inverse"
   WHERE (type='?'
     AND id1='?')
 "

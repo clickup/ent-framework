@@ -1,7 +1,7 @@
 import delay from "delay";
 import range from "lodash/range";
 import { Pool } from "pg";
-import { testConfig } from "../__tests__/helpers/TestSQLClient";
+import { testConfig } from "../__tests__/test-utils";
 
 const MAX_TIME_MS = 20000;
 

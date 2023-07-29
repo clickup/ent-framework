@@ -12,175 +12,11 @@ import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
 import { SQLRunnerIDGen } from "../SQLQueryIDGen";
 import { SQLRunnerInsert } from "../SQLQueryInsert";
 import { SQLSchema } from "../SQLSchema";
-import type { TestSQLClient } from "./helpers/TestSQLClient";
-import { testCluster } from "./helpers/TestSQLClient";
-
-const TABLE = 'schema"test';
-const TABLE_NULLABLE_UNIQUE_KEY = 'schema"test_nullable_unique_key';
-const TABLE_2COL = 'schema"test_2col';
-const TABLE_2COL_NULLABLE_UNIQUE_KEY = "schema_test_2col_nullable_unique_key";
-const TABLE_3COL = 'schema"test_3col';
-const TABLE_DATE = "schema-te[st],_date";
-const timeline = new Timeline();
-
-let shard: Shard<TestSQLClient>;
-let master: TestSQLClient;
-let replica: TestSQLClient;
-
-// Overcomplicated a little, but after a 2h struggle with TS & static methods
-// typechecking, let it be like this for now.
-class EncryptedValue {
-  static dbValueToJs(dbValue: string): EncryptedValue {
-    return new this(dbValue);
-  }
-
-  static stringify(obj: EncryptedValue): string {
-    return obj.dbValue;
-  }
-
-  static parse(str: string): EncryptedValue {
-    return new this(str);
-  }
-
-  static async encrypt(text: string, delta: number): Promise<EncryptedValue> {
-    return new this(
-      "encrypted:" +
-        text
-          .split("")
-          .map((c) => String.fromCharCode(c.charCodeAt(0) + delta))
-          .join("")
-    );
-  }
-
-  async decrypt(delta: number): Promise<string> {
-    return this.dbValue
-      .replace("encrypted:", "")
-      .split("")
-      .map((c) => String.fromCharCode(c.charCodeAt(0) - delta))
-      .join("");
-  }
-
-  private constructor(private dbValue: string) {}
-}
-
-async function shardRun<TOutput>(
-  query: Query<TOutput>,
-  freshness: typeof STALE_REPLICA | null = null
-): Promise<TOutput> {
-  return shard.run(
-    query,
-    {
-      trace: "some-trace",
-      debugStack: "",
-      vc: "some-vc",
-      whyClient: undefined,
-      attempt: 0,
-    },
-    timeline,
-    freshness
-  );
-}
-
-beforeEach(async () => {
-  timeline.reset();
-  shard = await testCluster.randomShard();
-  master = await shard.client(MASTER);
-  replica = await shard.client(timeline);
-
-  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE);
-  await master.rows(
-    "DROP TABLE IF EXISTS %T CASCADE",
-    TABLE_NULLABLE_UNIQUE_KEY
-  );
-  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_2COL);
-  await master.rows(
-    "DROP TABLE IF EXISTS %T CASCADE",
-    TABLE_2COL_NULLABLE_UNIQUE_KEY
-  );
-  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_3COL);
-  await master.rows("DROP TABLE IF EXISTS %T CASCADE", TABLE_DATE);
-  await master.rows(
-    `CREATE TABLE %T(
-      id bigint NOT NULL PRIMARY KEY,
-      name text NOT NULL,
-      url_name text,
-      some_flag boolean,
-      json_text_field text,
-      json_strongly_typed_field json,
-      jsonb_field jsonb,
-      encrypted_field text,
-      created_at timestamptz NOT NULL,
-      updated_at timestamptz NOT NULL,
-      parent_id bigint,
-      UNIQUE (name)
-    )`,
-    TABLE
-  );
-  await master.rows(
-    `ALTER TABLE %T ADD CONSTRAINT fk_parent_id FOREIGN KEY (parent_id) REFERENCES %T(id)`,
-    TABLE,
-    TABLE
-  );
-  await master.rows(
-    `CREATE TABLE %T(
-      id bigint NOT NULL PRIMARY KEY,
-      name text,
-      url_name text,
-      created_at timestamptz NOT NULL,
-      updated_at timestamptz NOT NULL,
-      UNIQUE (url_name)
-    )`,
-    TABLE_NULLABLE_UNIQUE_KEY
-  );
-  await master.rows(
-    `CREATE TABLE %T(
-      id bigint NOT NULL PRIMARY KEY,
-      name text NOT NULL,
-      url_name text NOT NULL,
-      created_at timestamptz NOT NULL,
-      updated_at timestamptz NOT NULL,
-      UNIQUE (name, url_name)
-    )`,
-    TABLE_2COL
-  );
-  await master.rows(
-    `CREATE TABLE %T(
-      id bigint NOT NULL PRIMARY KEY,
-      name text,
-      url_name text,
-      created_at timestamptz NOT NULL,
-      updated_at timestamptz NOT NULL,
-      UNIQUE (name, url_name)
-    )`,
-    TABLE_2COL_NULLABLE_UNIQUE_KEY
-  );
-  await master.rows(
-    `CREATE TABLE %T(
-      id bigint NOT NULL PRIMARY KEY,
-      type text NOT NULL,
-      id1 text NOT NULL,
-      id2 text NOT NULL,
-      created_at timestamptz NOT NULL,
-      updated_at timestamptz NOT NULL,
-      UNIQUE (type, id1, id2)
-    )`,
-    TABLE_3COL
-  );
-  await master.rows(
-    `CREATE TABLE %T(
-      date_id bigint NOT NULL PRIMARY KEY,
-      name text, 
-      some_date timestamptz
-    )`,
-    TABLE_DATE
-  );
-  master.resetSnapshot();
-  replica.resetSnapshot();
-  timeline.reset();
-});
+import type { TestSQLClient } from "./test-utils";
+import { EncryptedValue, recreateTestTables, testCluster } from "./test-utils";
 
 const schema = new SQLSchema(
-  TABLE,
+  'sql-schema.generic"table',
   {
     name: { type: String },
     url_name: { type: String, allowNull: true },
@@ -235,7 +71,7 @@ const schema = new SQLSchema(
 );
 
 const schemaNullableUniqueKey = new SQLSchema(
-  TABLE_NULLABLE_UNIQUE_KEY,
+  'sql-schema.generic"table_nullable_unique_key',
   {
     id: { type: String, autoInsert: "id_gen()" },
     name: { type: String, allowNull: true },
@@ -247,7 +83,7 @@ const schemaNullableUniqueKey = new SQLSchema(
 );
 
 const schema2Col = new SQLSchema(
-  TABLE_2COL,
+  'sql-schema.generic"table_2col',
   {
     id: { type: String, autoInsert: "id_gen()" },
     name: { type: String },
@@ -259,7 +95,7 @@ const schema2Col = new SQLSchema(
 );
 
 const schema2ColNullableUniqueKey = new SQLSchema(
-  TABLE_2COL_NULLABLE_UNIQUE_KEY,
+  'sql-schema.generic"table_2col_nullable_unique_key',
   {
     id: { type: String, autoInsert: "id_gen()" },
     name: { type: String, allowNull: true },
@@ -271,7 +107,7 @@ const schema2ColNullableUniqueKey = new SQLSchema(
 );
 
 const schema3Col = new SQLSchema(
-  TABLE_3COL,
+  'sql-schema.generic"table_3col',
   {
     id: { type: String, autoInsert: "id_gen()" },
     type: { type: String },
@@ -284,7 +120,7 @@ const schema3Col = new SQLSchema(
 );
 
 const schemaDate = new SQLSchema(
-  TABLE_DATE,
+  'sql-schema.generic"table_date',
   {
     date_id: { type: String, autoInsert: "id_gen()" },
     name: { type: String },
@@ -292,6 +128,130 @@ const schemaDate = new SQLSchema(
   },
   ["date_id"]
 );
+
+const timeline = new Timeline();
+let shard: Shard<TestSQLClient>;
+let master: TestSQLClient;
+let replica: TestSQLClient;
+
+beforeEach(async () => {
+  await recreateTestTables([
+    {
+      CREATE: [
+        `CREATE TABLE %T(
+          id bigint NOT NULL PRIMARY KEY,
+          name text NOT NULL,
+          url_name text,
+          some_flag boolean,
+          json_text_field text,
+          json_strongly_typed_field json,
+          jsonb_field jsonb,
+          encrypted_field text,
+          created_at timestamptz NOT NULL,
+          updated_at timestamptz NOT NULL,
+          parent_id bigint,
+          UNIQUE (name)
+        )`,
+        `ALTER TABLE %T ADD CONSTRAINT fk_parent_id FOREIGN KEY (parent_id) REFERENCES %T(id)`,
+      ],
+      SCHEMA: schema,
+      SHARD_AFFINITY: [],
+    },
+    {
+      CREATE: [
+        `CREATE TABLE %T(
+          id bigint NOT NULL PRIMARY KEY,
+          name text,
+          url_name text,
+          created_at timestamptz NOT NULL,
+          updated_at timestamptz NOT NULL,
+          UNIQUE (url_name)
+        )`,
+      ],
+      SCHEMA: schemaNullableUniqueKey,
+      SHARD_AFFINITY: [],
+    },
+    {
+      CREATE: [
+        `CREATE TABLE %T(
+          id bigint NOT NULL PRIMARY KEY,
+          name text NOT NULL,
+          url_name text NOT NULL,
+          created_at timestamptz NOT NULL,
+          updated_at timestamptz NOT NULL,
+          UNIQUE (name, url_name)
+        )`,
+      ],
+      SCHEMA: schema2Col,
+      SHARD_AFFINITY: [],
+    },
+    {
+      CREATE: [
+        `CREATE TABLE %T(
+          id bigint NOT NULL PRIMARY KEY,
+          name text,
+          url_name text,
+          created_at timestamptz NOT NULL,
+          updated_at timestamptz NOT NULL,
+          UNIQUE (name, url_name)
+        )`,
+      ],
+      SCHEMA: schema2ColNullableUniqueKey,
+      SHARD_AFFINITY: [],
+    },
+    {
+      CREATE: [
+        `CREATE TABLE %T(
+          id bigint NOT NULL PRIMARY KEY,
+          type text NOT NULL,
+          id1 text NOT NULL,
+          id2 text NOT NULL,
+          created_at timestamptz NOT NULL,
+          updated_at timestamptz NOT NULL,
+          UNIQUE (type, id1, id2)
+        )`,
+      ],
+      SCHEMA: schema3Col,
+      SHARD_AFFINITY: [],
+    },
+    {
+      CREATE: [
+        `CREATE TABLE %T(
+          date_id bigint NOT NULL PRIMARY KEY,
+          name text, 
+          some_date timestamptz
+        )`,
+      ],
+      SCHEMA: schemaDate,
+      SHARD_AFFINITY: [],
+    },
+  ]);
+
+  timeline.reset();
+  shard = await testCluster.randomShard();
+  master = await shard.client(MASTER);
+  master.resetSnapshot();
+  replica = await shard.client(timeline);
+  replica.resetSnapshot();
+});
+
+async function shardRun<TOutput>(
+  query: Query<TOutput>,
+  freshness: typeof STALE_REPLICA | null = null
+): Promise<TOutput> {
+  return shard.run(
+    query,
+    {
+      trace: "some-trace",
+      debugStack: "",
+      vc: "some-vc",
+      whyClient: undefined,
+      attempt: 0,
+    },
+    timeline,
+    freshness
+  );
+}
 
 test("idGen single", async () => {
   master.resetSnapshot();
@@ -436,7 +396,7 @@ test("upsert single", async () => {
   const id1 = await shardRun(schema.upsert({ name: "a'b'c", url_name: "aaa" }));
   const origRow1 = await master.rows(
     "SELECT created_at FROM %T WHERE id=?",
-    ...[TABLE, id1]
+    ...[schema.name, id1]
   );
   await delay(20); // to check that created_at is constant
 
@@ -449,7 +409,7 @@ test("upsert single", async () => {
   expect(id2).toEqual(id1);
   const rows = await master.rows(
     "SELECT id, name, created_at FROM %T ORDER BY NAME",
-    ...[TABLE, id1]
+    ...[schema.name, id1]
   );
   expect(rows).toMatchObject([
     { id: id1, name: "a'b'c", created_at: origRow1[0].created_at },
@@ -479,7 +439,7 @@ test("upsert batched normal", async () => {
 
   const rows = await master.rows(
     "SELECT id, name, url_name FROM %T ORDER BY name",
-    TABLE
+    schema.name
   );
   expect(rows).toMatchObject([
     { id: id1, url_name: "aaa_new" },
@@ -506,7 +466,7 @@ test("upsert batched with nullable unique key", async () => {
 
   const rows = await master.rows(
     "SELECT id, name, url_name FROM %T ORDER BY name",
-    TABLE_NULLABLE_UNIQUE_KEY
+    schemaNullableUniqueKey.name
   );
   expect(rows).toMatchObject([
     { id: id0, name: "000", url_name: "0" },

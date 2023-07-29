@@ -1,11 +1,14 @@
-import { Client } from "../../../abstract/Client";
-import { Cluster } from "../../../abstract/Cluster";
-import type { TimelineManager } from "../../../abstract/TimelineManager";
-import { nullthrows } from "../../../helpers/misc";
-import buildShape from "../../helpers/buildShape";
-import type { SQLClient } from "../../SQLClient";
-import { escapeLiteral, escapeIdent } from "../../SQLClient";
-import { SQLClientPool } from "../../SQLClientPool";
+import compact from "lodash/compact";
+import { Client } from "../../abstract/Client";
+import { Cluster } from "../../abstract/Cluster";
+import { MASTER } from "../../abstract/Shard";
+import type { TimelineManager } from "../../abstract/TimelineManager";
+import { GLOBAL_SHARD, type ShardAffinity } from "../../ent/Configuration";
+import { join, mapJoin, nullthrows } from "../../helpers/misc";
+import buildShape from "../helpers/buildShape";
+import type { SQLClient } from "../SQLClient";
+import { escapeLiteral, escapeIdent } from "../SQLClient";
+import { SQLClientPool } from "../SQLClientPool";
 
 /**
  * A proxy for an SQLClient which records all the queries passing through and
@@ -84,6 +87,46 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
   }
 }
 
+/**
+ * A custom type example.
+ */
+export class EncryptedValue {
+  static dbValueToJs(dbValue: string): EncryptedValue {
+    return new this(dbValue);
+  }
+
+  static stringify(obj: EncryptedValue): string {
+    return obj.dbValue;
+  }
+
+  static parse(str: string): EncryptedValue {
+    return new this(str);
+  }
+
+  static async encrypt(text: string, delta: number): Promise<EncryptedValue> {
+    return new this(
+      "encrypted:" +
+        text
+          .split("")
+          .map((c) => String.fromCharCode(c.charCodeAt(0) + delta))
+          .join("")
+    );
+  }
+
+  async decrypt(delta: number): Promise<string> {
+    return this.dbValue
+      .replace("encrypted:", "")
+      .split("")
+      .map((c) => String.fromCharCode(c.charCodeAt(0) - delta))
+      .join("");
+  }
+
+  private constructor(private dbValue: string) {}
+}
+
+/**
+ * A SQL client config we use in tests.
+ */
 export const testConfig = {
   host: process.env.PGHOST || process.env.DB_HOST_DEFAULT,
   port: parseInt(process.env.PGPORT || process.env.DB_PORT || "5432"),
@@ -92,6 +135,9 @@ export const testConfig = {
   password: process.env.PGPASSWORD || process.env.DB_PASS,
 };
 
+/**
+ * Test cluster backed by the test config.
+ */
 export const testCluster = new Cluster({
   islands: [{ no: 0, nodes: [testConfig, testConfig] }],
   createClient: (isMaster, config) =>
@@ -109,6 +155,57 @@ export const testCluster = new Cluster({
       })
     ),
 });
+
+/**
+ * Recreates the test tables on the test cluster.
+ */
+export async function recreateTestTables(
+  EntClasses: Array<{
+    CREATE: string[];
+    SCHEMA: { name: string };
+    SHARD_AFFINITY: ShardAffinity<any>;
+  }>,
+  tableInverse?: string
+): Promise<void> {
+  await mapJoin(
+    [testCluster.globalShard(), ...(await testCluster.nonGlobalShards())],
+    async (shard) => {
+      const master = await shard.client(MASTER);
+      await mapJoin(
+        compact([
+          tableInverse,
+          ...EntClasses.map((EntClass) => EntClass.SCHEMA.name),
+        ]),
+        async (table) => master.rows("DROP TABLE IF EXISTS %T CASCADE", table)
+      );
+      await join([
+        tableInverse &&
+          master.rows(
+            `CREATE TABLE %T(
+              id bigint NOT NULL PRIMARY KEY,
+              id1 bigint,
+              type varchar(32) NOT NULL,
+              id2 bigint NOT NULL,
+              created_at timestamptz NOT NULL DEFAULT now()
+            )`,
+            tableInverse
+          ),
+        mapJoin(EntClasses, async (EntClass) => {
+          if ((EntClass.SHARD_AFFINITY === GLOBAL_SHARD) === (shard.no === 0)) {
+            for (const sql of EntClass.CREATE) {
+              await master.rows(
+                sql,
+                EntClass.SCHEMA.name,
+                EntClass.SCHEMA.name,
+                EntClass.SCHEMA.name
+              );
+            }
+          }
+        }),
+      ]);
+    }
+  );
+}
 
 function indentQuery(query: string): string {
   query = query
