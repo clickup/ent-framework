@@ -2,7 +2,7 @@ import { inspect } from "util";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { QueryBase } from "../abstract/QueryBase";
 import type { Schema } from "../abstract/Schema";
-import { hash, hasKey } from "../helpers/misc";
+import { stringHash, hasKey } from "../helpers/misc";
 import type { Literal, Order, Row, SelectInput, Table } from "../types";
 import type { SQLClient } from "./SQLClient";
 import { escapeLiteral, escapeString } from "./SQLClient";
@@ -51,7 +51,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
   override key(input: SelectInput<TTable>): string {
     // Coalesce equal select queries.
     const json = JSON.stringify(input);
-    return hash(json);
+    return stringHash(json);
   }
 
   async runSingle(

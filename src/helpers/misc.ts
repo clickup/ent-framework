@@ -1,4 +1,5 @@
 import { createHash } from "crypto";
+import objectHashModule from "object-hash";
 
 /**
  * Removes constructor signature from a type.
@@ -203,10 +204,22 @@ export function localUniqueInt(): number {
 
 let sequenceValue = 1;
 
-export function hash(s: string): string {
-  // Don't use for crypto purposes!
-  // https://medium.com/@chris_72272/what-is-the-fastest-node-js-hashing-algorithm-c15c1a0e164e
+/**
+ * The quickest string hasher. Don't use for crypto purposes!
+ * https://medium.com/@chris_72272/what-is-the-fastest-node-js-hashing-algorithm-c15c1a0e164e
+ */
+export function stringHash(s: string): string {
   return createHash("sha1").update(s).digest("base64");
+}
+
+/**
+ * Used to calculate stable hashes of e.g. unique keys.
+ */
+export function objectHash(obj: object): Buffer {
+  return objectHashModule(obj, {
+    algorithm: "sha1",
+    encoding: "buffer",
+  });
 }
 
 /**

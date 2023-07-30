@@ -56,16 +56,19 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    * INSERT, UPSERT etc.). If fallbackToRandomShard is true, then returns a
    * random shard in case when it can't infer the shard number from the input
    * (used in e.g. INSERT operations); otherwise throws
-   * EntCannotDetectShardError (happens in e.g. upsert, loadBy etc.).
+   * EntCannotDetectShardError (happens in e.g. UPSERT).
    *
    * The "randomness" of the "random shard" is deterministic by the Ent's unique
    * key (if it's defined), so Ents with the same unique key will map to the
-   * same "random" shard. Notice that this logic mainly applies at creation
-   * time: since we often times add shards to the cluster, we can't rely on it
-   * consistently at select time (but relying at insert time is fine: it
-   * protects against most of "unique key violation" problems).
+   * same "random" shard (considering the total number of discovered shards is
+   * unchanged). Notice that this logic applies at INSERT time: since we often
+   * times add shards to the cluster, we can't rely on it consistently at SELECT
+   * time (but relying at INSERT time is more or less fine: it protects against
+   * most of "unique key violation" problems, although still doesn't prevent all
+   * of them for a fraction of the second when the number of shards has just
+   * been changed).
    */
-  async singleShardFromInput(
+  async singleShardForInsert(
     input: Record<string, any>,
     op: string,
     fallbackToRandomShard: boolean
@@ -95,9 +98,9 @@ export class ShardLocator<TClient extends Client, TField extends string> {
 
   /**
    * Called in a context when multiple shards may be involved, e.g. when
-   * selecting Ents referred by some inverses. May also return the empty list of
-   * shards in case there are fields with inverses in input (i.e. the filtering
-   * is correct), but there are no inverses in the database.
+   * selecting Ents referred by some Inverses. May also return the empty list of
+   * shards when, although there are fields with Inverses in input (i.e. the
+   * filtering is correct), there are no Inverse rows existing in the database.
    */
   async multiShardsFromInput(
     vc: VC,
@@ -109,11 +112,11 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       return [singleShard];
     }
 
-    // Scan inverses from left to right (assuming the leftmost inverses are
+    // Scan Inverses from left to right (assuming the leftmost Inverses are
     // lower in cardinality) and check whether our input has a filtering field
-    // defined for that inverse. If so, locate shards based on that 1st found
-    // field only (because it makes no sense to move to the next inverse if we
-    // can use a previous inverse already).
+    // defined for that Inverse. If so, locate shards based on that 1st found
+    // field only (because it makes no sense to move to the next Inverse if we
+    // can use a previous Inverse already).
     let hadInputFieldWithInverse = false;
     const shards = new Set<Shard<TClient>>();
     for (const inverse of this.inverses) {
