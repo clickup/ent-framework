@@ -5,7 +5,7 @@ import { testCluster } from "../../sql/__tests__/test-utils";
 import { GLOBAL_SHARD } from "../Configuration";
 import { ShardLocator } from "../ShardLocator";
 
-test("singleShardFromInput with colocation affinity", async () => {
+test("singleShardForInsert with colocation affinity", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
     entName: "post",
@@ -13,7 +13,7 @@ test("singleShardFromInput with colocation affinity", async () => {
     uniqueKey: ["user_id", "title"],
     inverses: [],
   });
-  const s1 = await shardLocator.singleShardFromInput(
+  const s1 = await shardLocator.singleShardForInsert(
     { user_id: "100020000000" },
     "INSERT",
     true
@@ -21,7 +21,7 @@ test("singleShardFromInput with colocation affinity", async () => {
   expect(s1).toEqual(testCluster.shard("100020000000"));
 });
 
-test("singleShardFromInput with GLOBAL_SHARD affinity", async () => {
+test("singleShardForInsert with GLOBAL_SHARD affinity", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
     entName: "test",
@@ -29,7 +29,7 @@ test("singleShardFromInput with GLOBAL_SHARD affinity", async () => {
     uniqueKey: ["user_id", "title"],
     inverses: [],
   });
-  const s1 = await shardLocator.singleShardFromInput(
+  const s1 = await shardLocator.singleShardForInsert(
     { user_id: "100020000000" },
     "INSERT",
     true
@@ -37,7 +37,7 @@ test("singleShardFromInput with GLOBAL_SHARD affinity", async () => {
   expect(s1).toEqual(testCluster.globalShard());
 });
 
-test("singleShardFromInput with by-unique-key random shard", async () => {
+test("singleShardForInsert with by-unique-key random shard", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
     entName: "test",
@@ -45,13 +45,13 @@ test("singleShardFromInput with by-unique-key random shard", async () => {
     uniqueKey: ["user_id", "title"],
     inverses: [],
   });
-  const s1 = await shardLocator.singleShardFromInput(
+  const s1 = await shardLocator.singleShardForInsert(
     { company_id: null, user_id: "100020000000", title: new Date(12345) },
     "INSERT",
     true
   );
   for (let i = 0; i < 10; i++) {
-    const s2 = await shardLocator.singleShardFromInput(
+    const s2 = await shardLocator.singleShardForInsert(
       { company_id: null, user_id: "100020000000", title: new Date(12345) },
       "INSERT",
       true
@@ -60,7 +60,7 @@ test("singleShardFromInput with by-unique-key random shard", async () => {
   }
 });
 
-test("singleShardFromInput with truly random shard", async () => {
+test("singleShardForInsert with truly random shard", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
     entName: "test",
@@ -73,7 +73,7 @@ test("singleShardFromInput with truly random shard", async () => {
       range(0, 1000),
       async () =>
         (
-          await shardLocator.singleShardFromInput(
+          await shardLocator.singleShardForInsert(
             { user_id: null },
             "INSERT",
             true
@@ -86,7 +86,7 @@ test("singleShardFromInput with truly random shard", async () => {
   );
 });
 
-test("singleShardFromInput with complex filter by ID", async () => {
+test("singleShardForInsert with complex filter by ID", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
     entName: "test",
@@ -94,7 +94,7 @@ test("singleShardFromInput with complex filter by ID", async () => {
     uniqueKey: undefined,
     inverses: [],
   });
-  const shard = await shardLocator.singleShardFromInput(
+  const shard = await shardLocator.singleShardForInsert(
     { user_id: "100020000000", id: { $gt: "100010000000" } },
     "INSERT",
     true
@@ -102,7 +102,7 @@ test("singleShardFromInput with complex filter by ID", async () => {
   expect(shard.no).toEqual(testCluster.shard("100020000000").no);
 });
 
-test("singleShardFromInput with simple filter by ID", async () => {
+test("singleShardForInsert with simple filter by ID", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
     entName: "test",
@@ -110,7 +110,7 @@ test("singleShardFromInput with simple filter by ID", async () => {
     uniqueKey: undefined,
     inverses: [],
   });
-  const shard = await shardLocator.singleShardFromInput(
+  const shard = await shardLocator.singleShardForInsert(
     { user_id: "100020000000", id: "100010000000" },
     "SELECT",
     true
@@ -118,7 +118,7 @@ test("singleShardFromInput with simple filter by ID", async () => {
   expect(shard.no).toEqual(testCluster.shard("100010000000").no);
 });
 
-test("singleShardFromInput with simple filter by ID arr", async () => {
+test("singleShardForInsert with simple filter by ID arr", async () => {
   const shardLocator = new ShardLocator({
     cluster: testCluster,
     entName: "test",
@@ -126,7 +126,7 @@ test("singleShardFromInput with simple filter by ID arr", async () => {
     uniqueKey: undefined,
     inverses: [],
   });
-  const shard = await shardLocator.singleShardFromInput(
+  const shard = await shardLocator.singleShardForInsert(
     { user_id: "100020000000", id: ["100010000000", "100030000001"] },
     "SELECT",
     true

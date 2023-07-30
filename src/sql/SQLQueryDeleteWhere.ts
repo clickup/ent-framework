@@ -1,7 +1,7 @@
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { QueryBase } from "../abstract/QueryBase";
 import type { Schema } from "../abstract/Schema";
-import { hash } from "../helpers/misc";
+import { stringHash } from "../helpers/misc";
 import type { DeleteWhereInput, Table } from "../types";
 import { ID } from "../types";
 import type { SQLClient } from "./SQLClient";
@@ -38,7 +38,7 @@ export class SQLRunnerDeleteWhere<TTable extends Table> extends SQLRunner<
   override key(input: DeleteWhereInput<TTable>): string {
     // Coalesce equal delete queries.
     const json = JSON.stringify(input);
-    return hash(json);
+    return stringHash(json);
   }
 
   async runSingle(

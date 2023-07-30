@@ -204,7 +204,7 @@ export function PrimitiveMixin<
       input: InsertInput<TTable>
     ): Promise<string | null> {
       const [shard] = await join([
-        this.SHARD_LOCATOR.singleShardFromInput(
+        this.SHARD_LOCATOR.singleShardForInsert(
           input,
           "insert",
           true // fallbackToRandomShard
@@ -323,7 +323,7 @@ export function PrimitiveMixin<
 
     static async upsert(vc: VC, input: InsertInput<TTable>): Promise<string> {
       const [shard] = await join([
-        this.SHARD_LOCATOR.singleShardFromInput(
+        this.SHARD_LOCATOR.singleShardForInsert(
           input,
           "upsert",
           false // fallbackToRandomShard

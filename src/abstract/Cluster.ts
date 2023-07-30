@@ -3,10 +3,9 @@ import { Memoize } from "fast-typescript-memoize";
 import first from "lodash/first";
 import omitBy from "lodash/omitBy";
 import random from "lodash/random";
-import hash from "object-hash";
 import { DefaultMap } from "../helpers/DefaultMap";
 import type { PickPartial } from "../helpers/misc";
-import { nullthrows, mapJoin, runInVoid } from "../helpers/misc";
+import { nullthrows, mapJoin, runInVoid, objectHash } from "../helpers/misc";
 import type { Client } from "./Client";
 import type { Loggers } from "./Loggers";
 import type { STALE_REPLICA } from "./Shard";
@@ -175,10 +174,7 @@ export class Cluster<TClient extends Client, TNode = any> {
 
     let index;
     if (seed !== undefined) {
-      const numHash = hash(seed, {
-        algorithm: "md5",
-        encoding: "buffer",
-      }).readUInt32BE();
+      const numHash = objectHash(seed).readUInt32BE();
       index = numHash % nonGlobalShardNos.length;
     } else {
       // TODO: implement power-of-two algorithm to pick the shard which is

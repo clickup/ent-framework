@@ -13,17 +13,17 @@ import type { VC } from "./VC";
 
 /**
  * No DB unique indexes can include a nullable field and be really unique, so we
- * simulate id1=NULL via just storing "0" in the inverse, and Inverse abstracts
+ * simulate id1=NULL via just storing "0" in the Inverse, and Inverse abstracts
  * this fact from the caller.
  */
 const ZERO_NULL = "0";
 
 /**
- * Represents an inverse assoc manager which knows how to modify/query/fix
- * inverses. Parameter `name` is the inverse's schema name (in SQL like
- * databases, most likely a table name), and `type` holds both the name of the
- * "parent" entity and the field name of the child (e.g. "org2users" when a
- * field "org_id" in EntUser refers an EntOrg row).
+ * Represents an Inverse assoc manager which knows how to modify/query Inverses.
+ * Parameter `name` is the Inverse's schema name (in SQL like databases, most
+ * likely a table name), and `type` holds both the name of the "parent" entity
+ * and the field name of the child (e.g. "org2users" when a field "org_id" in
+ * EntUser refers an EntOrg row).
  */
 export class Inverse<TClient extends Client, TTable extends Table> {
   private cluster;
@@ -133,9 +133,9 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   }
 
   /**
-   * Creates an inverse schema which derives its id field's autoInsert from the
+   * Creates an Inverse schema which derives its id field's autoInsert from the
    * passed id2 schema. The returned schema is heavily cached, so batching for
-   * it works efficiently even for different id2 schemas and different inverse
+   * it works efficiently even for different id2 schemas and different Inverse
    * types (actually, it would work the same way even without @Memoize since
    * Runner batches by schema hash, not by schema object instance, but anyways).
    */
@@ -160,10 +160,10 @@ export class Inverse<TClient extends Client, TTable extends Table> {
 
   /**
    * If the field is already mentioned in shardAffinity, and the referred parent
-   * object (id1) exists, we won't need to create an inverse, because the engine
+   * object (id1) exists, we won't need to create an Inverse, because the engine
    * will be able to infer the target shard from shardAffinity. This method
    * would return true in such a case. In fact, we could've still create an
-   * inverse for this case, but in sake of keeping the database lean, we don't
+   * Inverse for this case, but in sake of keeping the database lean, we don't
    * do it (useful when a field holds a reference to an "optionally sharded"
    * Ent, like sometimes it point so an Ent which is sharded, and sometimes on
    * an Ent in the global shard).
@@ -197,7 +197,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
    * Returns a target shard for an id.
    */
   private shard(id: string | null): Shard<TClient> {
-    // id1=NULL inverse is always put to the global shard.
+    // id1=NULL Inverse is always put to the global shard.
     return id ? this.cluster.shard(id) : this.cluster.globalShard();
   }
 }
