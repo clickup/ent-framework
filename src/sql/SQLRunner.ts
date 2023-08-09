@@ -110,7 +110,7 @@ export abstract class SQLRunner<
         // field1=X.field1, field2=X.field2, ...
         if (c.startsWith("%UPDATE_FIELD_VALUE_PAIRS")) {
           assert(args.fields, `BUG: no args.fields passed in ${template}`);
-          assert(a, `BUG: you must pass an argument, alias name`);
+          assert(a, "BUG: you must pass an argument, alias name");
           return args.fields
             .map(
               (field) =>
@@ -316,7 +316,7 @@ export abstract class SQLRunner<
     );
     const func = this.newFunction(
       "$input",
-      "return " + (parts.length ? parts.join(" + ', ' + ") : `""`)
+      "return " + (parts.length ? parts.join(" + ', ' + ") : '""')
     );
     return (input: object, literal?: Literal): string => {
       const kvs = func(input);

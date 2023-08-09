@@ -117,7 +117,7 @@ class EntTestTopic extends BaseEnt(
     )`,
     `CREATE OR REPLACE FUNCTION pg_sleep_trigger() RETURNS trigger LANGUAGE plpgsql SET search_path FROM CURRENT AS
       $$ BEGIN PERFORM pg_sleep(NEW.sleep); RETURN NEW; END $$`,
-    `CREATE TRIGGER pg_sleep_trigger BEFORE INSERT ON %T FOR EACH ROW EXECUTE PROCEDURE pg_sleep_trigger()`,
+    "CREATE TRIGGER pg_sleep_trigger BEFORE INSERT ON %T FOR EACH ROW EXECUTE PROCEDURE pg_sleep_trigger()",
   ];
 
   static override configure() {
@@ -449,7 +449,7 @@ test("id2s single", async () => {
   const u1 = await EntTestUser.insertReturning(vc, {
     company_id: companyID1,
     team_id: teamID,
-    name: `u1`,
+    name: "u1",
   });
   const master = await testCluster.globalShard().client(MASTER);
   master.resetSnapshot();
@@ -470,27 +470,27 @@ test("id2s batched", async () => {
     EntTestUser.insertReturning(vc, {
       company_id: companyID1,
       team_id: null,
-      name: `u1`,
+      name: "u1",
     }),
     EntTestUser.insertReturning(vc, {
       company_id: companyID1, // same companyID1
       team_id: null,
-      name: `u2`,
+      name: "u2",
     }),
     EntTestUser.insertReturning(vc, {
       company_id: companyID2,
       team_id: null,
-      name: `u3`,
+      name: "u3",
     }),
     EntTestUser.insertReturning(vc, {
       company_id: null,
       team_id: null,
-      name: `u4`,
+      name: "u4",
     }),
     EntTestUser.insertReturning(vc, {
       company_id: null,
       team_id: teamID,
-      name: `u5`,
+      name: "u5",
     }),
   ]);
 

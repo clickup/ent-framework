@@ -140,7 +140,7 @@ async function ruleEvaluate<TInput extends object>(
  */
 function resultsToCause(results: RuleResult[]): string {
   return results.length === 0
-    ? `No rules defined`
+    ? "No rules defined"
     : results
         .map(
           ({ rule, decision, cause }) =>

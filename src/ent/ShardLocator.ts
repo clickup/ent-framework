@@ -180,14 +180,14 @@ export class ShardLocator<TClient extends Client, TField extends string> {
         shard = this.globalShard;
       } else if (id === GUEST_ID) {
         throw new ShardError(
-          `can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID`,
+          "can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID",
           `${this.entName}.${field}`,
           "fail"
         );
       } else {
         if (id === null || id === undefined) {
           throw new ShardError(
-            `can't locate shard`,
+            "can't locate shard",
             `null ID in ${this.entName}.${field}`,
             "fail"
           );

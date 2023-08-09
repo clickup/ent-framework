@@ -152,7 +152,7 @@ beforeEach(async () => {
           parent_id bigint,
           UNIQUE (name)
         )`,
-        `ALTER TABLE %T ADD CONSTRAINT fk_parent_id FOREIGN KEY (parent_id) REFERENCES %T(id)`,
+        "ALTER TABLE %T ADD CONSTRAINT fk_parent_id FOREIGN KEY (parent_id) REFERENCES %T(id)",
       ],
       SCHEMA: schema,
       SHARD_AFFINITY: [],

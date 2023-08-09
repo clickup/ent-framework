@@ -10,12 +10,12 @@ const TBL = "batched_bench";
 const COMMON_HEADER = "SET LOCAL search_path TO public";
 
 const TEMPLATE_BATCHED = [
-  `WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES\n` +
+  "WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES\n" +
     `((NULL::${TBL}).name, (NULL::${TBL}).url_name, (NULL::${TBL}).some_flag, (NULL::${TBL}).json_text_field, (NULL::${TBL}).json_strongly_typed_field, (NULL::${TBL}).jsonb_field, (NULL::${TBL}).encrypted_field, (NULL::${TBL}).created_at, (NULL::${TBL}).updated_at, (NULL::${TBL}).parent_id, (NULL::${TBL}).id, ''),`,
   ` ('abc%s', 'aaa', true, '{"a":10,"b":{"c":20},"m":"%m"}', '{"a":42}', '{"a":"%m","b%m":"10"}', 'encrypted:ufyu', now(), now(), NULL, nextval('${TBL}_id_seq'), %k)`,
-  `)\n` +
+  ")\n" +
     `INSERT INTO ${TBL} (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)\n` +
-    `SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1\n` +
+    "SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1\n" +
     `ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id=${TBL}.id), id`,
 ];
 
@@ -60,7 +60,7 @@ export default async function* (): AsyncGenerator<unknown> {
         CREATE INDEX ${TBL}_jsonb_field ON ${TBL} USING gin (jsonb_field);
         COMMIT;
       `);
-      await pool.query(`CHECKPOINT`);
+      await pool.query("CHECKPOINT");
       await delay(2000);
     },
   };

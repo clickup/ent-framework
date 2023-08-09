@@ -127,7 +127,7 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
       fields: this.addPK(fields, "prepend"),
       suffix: this.fmt(
         "  UPDATE %T SET %UPDATE_FIELD_VALUE_PAIRS(rows)\n" +
-          `  FROM rows WHERE %PK(%T)=%PK(rows) RETURNING (SELECT _key FROM rows WHERE %PK(rows)=%PK(%T))`,
+          "  FROM rows WHERE %PK(%T)=%PK(rows) RETURNING (SELECT _key FROM rows WHERE %PK(rows)=%PK(%T))",
         { fields }
       ),
     });
