@@ -209,7 +209,7 @@ export abstract class SQLRunner<
         `  (${cols.map(([n, _]) => n).join(", ")}),`,
       fields,
       withKey: true,
-      suffix: ")\n" + suffix,
+      suffix: ")\n" + suffix.replace(/^/gm, "  "),
     });
   }
 

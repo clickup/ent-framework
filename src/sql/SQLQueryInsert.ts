@@ -44,10 +44,9 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
     this.batchBuilder = this.createWithBuilder({
       fields,
       suffix: this.fmt(
-        "  INSERT INTO %T (%FIELDS)\n" +
-          "  SELECT %FIELDS FROM rows OFFSET 1\n" +
-          "  ON CONFLICT DO NOTHING " +
-          `RETURNING (SELECT _key FROM rows WHERE %PK(rows)=%PK(%T)), %PK AS ${ID}`,
+        "INSERT INTO %T (%FIELDS)\n" +
+          "SELECT %FIELDS FROM rows OFFSET 1\n" +
+          `ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE %PK(rows)=%PK(%T)), %PK AS ${ID}`,
         { fields }
       ),
     });
