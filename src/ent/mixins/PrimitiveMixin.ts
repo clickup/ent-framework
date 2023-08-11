@@ -220,14 +220,17 @@ export function PrimitiveMixin<
         // We have some triggers or inverses; that means we must generate an ID
         // separately to let the before-triggers see it before the actual db
         // operation happens.
-        const id2 = hasKey(ID, input)
-          ? input[ID]
-          : await shard.run(
-              this.SCHEMA.idGen(),
-              vc.toAnnotation(),
-              vc.timeline(shard, this.SCHEMA.name),
-              vc.freshness
-            );
+        const [id2, id2IsNewlyGenerated] = hasKey(ID, input)
+          ? [input[ID], false]
+          : [
+              await shard.run(
+                this.SCHEMA.idGen(),
+                vc.toAnnotation(),
+                vc.timeline(shard, this.SCHEMA.name),
+                vc.freshness
+              ),
+              true,
+            ];
         vc.cache(IDsCacheUpdatable).add(id2); // to enable privacy checks in beforeInsert triggers
 
         // Inverses which we're going to create.
@@ -235,6 +238,7 @@ export function PrimitiveMixin<
           inverse,
           id1: input[inverse.id2Field] as string | null,
           id2,
+          canUndoInverseInsert: id2IsNewlyGenerated,
         }));
 
         let actuallyInsertedID = null;
@@ -247,9 +251,16 @@ export function PrimitiveMixin<
           // terms of business logic, there is nothing too bad in having some
           // "extra" inverses in the database since they're also used to resolve
           // shard CANDIDATES.
-          await mapJoin(inverseRows, async ({ inverse, id1, id2 }) =>
-            inverse.beforeInsert(vc, id1, id2)
-          );
+          await mapJoin(inverseRows, async (inverseRow) => {
+            const { inverse, id1, id2 } = inverseRow;
+            if (!(await inverse.beforeInsert(vc, id1, id2))) {
+              // We must not allow to even try undoing an Inverse creation in
+              // case we know that we did not create it. (Some Inverses may
+              // already exist beforehand, e.g. for the cases when Ent ID was
+              // explicitly passed during its insertion.)
+              inverseRow.canUndoInverseInsert = false;
+            }
+          });
 
           // Insert the actual Ent. On SQL error, we'll get an exception, and on
           // a duplicate key violation (which is a business logic condition),
@@ -300,13 +311,20 @@ export function PrimitiveMixin<
             // looks scary, but it's exactly how the code looked like in FB; in
             // real lifer, there is always an "inverses fixer" service which
             // removes orphaned inverses asynchronously.
-            this.CLUSTER.loggers.swallowedErrorLogger({
-              where: `(not an error, just a debug warning) PrimitiveMixin.insertIfNotExists(${this.name}), inverses undo`,
-              error: lastError ?? Error("duplicate key on insert"),
-              elapsed: null,
-            });
-            await mapJoin(inverseRows, async ({ inverse, id1, id2 }) =>
-              inverse.afterDelete(vc, id1, id2).catch(() => {})
+            await mapJoin(
+              inverseRows,
+              async ({ inverse, id1, id2, canUndoInverseInsert }) => {
+                if (canUndoInverseInsert) {
+                  this.CLUSTER.loggers.swallowedErrorLogger({
+                    where:
+                      `(not an error, just a debug warning) PrimitiveMixin.insertIfNotExists(${this.name}), ` +
+                      `undoing Inverse ${inverse.type} ${id1}->${id2}`,
+                    error: lastError ?? Error("duplicate key on insert"),
+                    elapsed: null,
+                  });
+                  await inverse.afterDelete(vc, id1, id2).catch(() => {});
+                }
+              }
             );
           }
         }

@@ -379,6 +379,28 @@ test("inverses are not deleted when ent creation times out", async () => {
   expect(await inverse.id2s(vc, company.id)).toHaveLength(1);
 });
 
+test("inverses are not deleted when ent insertion is requested with an existing ID", async () => {
+  const company = await EntTestCompany.insertReturning(vc, {
+    name: "my-company",
+  });
+  const user = await EntTestUser.insertReturning(vc, {
+    company_id: company.id,
+    team_id: null,
+    name: "my-user",
+  });
+
+  const user2id = await EntTestUser.insertIfNotExists(vc, {
+    id: user.id,
+    company_id: company.id,
+    team_id: null,
+    name: "my-user2",
+  });
+  expect(user2id).toBeNull();
+
+  expect(await EntTestUser.INVERSES[0].id2s(vc, company.id)).toHaveLength(1);
+  await EntTestUser.loadByX(vc, { company_id: company.id, team_id: null });
+});
+
 test("loadBy with multiple shard candidates", async () => {
   const companyID = "1000000000000000001";
   // Creates an inverse from companyID to shard 1.

@@ -186,7 +186,8 @@ export async function recreateTestTables(
               id1 bigint,
               type varchar(32) NOT NULL,
               id2 bigint NOT NULL,
-              created_at timestamptz NOT NULL DEFAULT now()
+              created_at timestamptz NOT NULL DEFAULT now(),
+              UNIQUE(type, id1, id2)
             )`,
             tableInverse
           ),
