@@ -58,13 +58,18 @@ export class Inverse<TClient extends Client, TTable extends Table> {
 
   /**
    * Runs before a row with a pre-generated id2 was inserted to the main schema.
+   * Returns true if the Inverse row was actually inserted in the DB.
    */
-  async beforeInsert(vc: VC, id1: string | null, id2: string): Promise<void> {
+  async beforeInsert(
+    vc: VC,
+    id1: string | null,
+    id2: string
+  ): Promise<boolean> {
     if (this.id2ShardIsInferrableFromShardAffinity(id1)) {
-      return;
+      return false;
     }
 
-    await this.run(
+    const id = await this.run(
       vc,
       this.shard(id1),
       this.inverseSchema.insert({
@@ -73,6 +78,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
         id2,
       })
     );
+    return id !== null;
   }
 
   /**
