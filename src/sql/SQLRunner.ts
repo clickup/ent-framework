@@ -88,16 +88,18 @@ export abstract class SQLRunner<
     return template.replace(
       /%(?:T|SELECT_FIELDS|FIELDS|UPDATE_FIELD_VALUE_PAIRS|PK)(?:\(([%\w]+)\))?/g,
       (c: string, a?: string) => {
+        a = a?.replace(/%T/g, this.name);
+
         // Table name.
         if (c === "%T") {
-          return this.name;
+          return sqlClientMod.escapeIdent(this.name);
         }
 
         // Comma-separated list of ALL fields in the table to be used in SELECT
         // clauses (always includes ID field).
         if (c === "%SELECT_FIELDS") {
           return uniq([...Object.keys(this.schema.table), ID])
-            .map((field) => this.escapeField(field, undefined, true))
+            .map((f) => this.escapeField(f) + (f === ID ? ` AS ${ID}` : ""))
             .join(", ");
         }
 
@@ -110,21 +112,22 @@ export abstract class SQLRunner<
         // field1=X.field1, field2=X.field2, ...
         if (c.startsWith("%UPDATE_FIELD_VALUE_PAIRS")) {
           assert(args.fields, `BUG: no args.fields passed in ${template}`);
-          assert(a, "BUG: you must pass an argument, alias name");
+          assert(a, "BUG: you must pass an argument, source table alias name");
           return args.fields
             .map(
               (field) =>
-                `${this.escapeField(field)}=${a}.${this.escapeField(field)}`
+                `${this.escapeField(field)}=` +
+                this.escapeField(field, { withTable: a })
             )
             .join(", ");
         }
 
         // Primary key (simple or composite).
         if (c.startsWith("%PK")) {
-          return this.escapeField(ID, a?.replace(/%T/g, this.name));
+          return this.escapeField(ID, { withTable: a });
         }
 
-        throw Error(`Unknown format spec: ${c}`);
+        throw Error(`Unknown format spec "${c}" in "${template}"`);
       }
     );
   }
@@ -148,17 +151,19 @@ export abstract class SQLRunner<
    */
   protected escapeField(
     field: Field<TTable>,
-    table?: string,
-    withAs?: boolean
+    { withTable }: { withTable?: string } = {}
   ): string {
     if (this.schema.table[field]) {
-      return (table ? `${table}.` : "") + sqlClientMod.escapeIdent(field);
+      return (
+        (withTable ? `${sqlClientMod.escapeIdent(withTable)}.` : "") +
+        sqlClientMod.escapeIdent(field)
+      );
     }
 
     if (field === ID) {
-      return (
-        sqlClientMod.escapeIdentComposite(this.schema.uniqueKey, table) +
-        (withAs ? ` AS ${sqlClientMod.escapeIdent(field)}` : "")
+      return sqlClientMod.escapeIdentComposite(
+        this.schema.uniqueKey,
+        withTable
       );
     }
 
@@ -194,19 +199,19 @@ export abstract class SQLRunner<
     suffix: string;
   } {
     const cols = [
-      ...fields.map((field) => [
-        this.fmt(`(NULL::%T).${this.escapeField(field)}`),
-        this.escapeField(field),
-      ]),
-      ["'k0'", "_key"],
+      ...fields.map((field) => ({
+        field: this.escapeField(field),
+        escapedValue: this.fmt(`(NULL::%T).${this.escapeField(field)}`),
+      })),
+      { field: "_key", escapedValue: "'k0'" },
     ];
 
     // We prepend VALUES with a row which consists of all NULL values, but typed
     // to the actual table's columns types. This hints PG how to cast input.
     return this.createValuesBuilder({
       prefix:
-        `WITH rows(${cols.map(([_, f]) => f).join(", ")}) AS (VALUES\n` +
-        `  (${cols.map(([n, _]) => n).join(", ")}),`,
+        `WITH rows(${cols.map(({ field }) => field).join(", ")}) AS (VALUES\n` +
+        `  (${cols.map(({ escapedValue }) => escapedValue).join(", ")}),`,
       fields,
       withKey: true,
       suffix: ")\n" + suffix.replace(/^/gm, "  "),
@@ -448,7 +453,7 @@ export abstract class SQLRunner<
     public readonly schema: Schema<TTable>,
     private client: sqlClientMod.SQLClient
   ) {
-    super(sqlClientMod.escapeIdent(schema.name));
+    super(schema.name);
 
     // For tables with composite primary key and no explicit "id" column, we
     // still need an ID escaper (where id looks like "(1,2)" anonymous row).

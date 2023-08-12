@@ -523,7 +523,7 @@ export function escapeIdentComposite(
   table?: string
 ): string {
   const list = fields
-    .map((k) => (table ? `${table}.` : "") + escapeIdent(k))
+    .map((k) => (table ? `${escapeIdent(table)}.` : "") + escapeIdent(k))
     .join(",");
   return fields.length > 1 ? `ROW(${list})` : list;
 }
