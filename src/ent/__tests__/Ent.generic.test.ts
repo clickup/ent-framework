@@ -758,6 +758,26 @@ test("updateChangedReturningX", async () => {
   expect(newUser2 === newUser1).toBeTruthy();
 });
 
+test("updateOriginal with CAS", async () => {
+  // There are way more tests for CAS in sql/__tests__, with all corner cases
+  // covered; here we just illustrate the basic syntax.
+  const user = await EntTestUser.loadX(vc, vc.principal);
+  expect(
+    await user.updateOriginal({
+      url_name: "skip",
+      $cas: { updated_at: new Date(42) },
+    })
+  ).toBeFalsy();
+  expect(
+    await user.updateOriginal({
+      url_name: "new",
+      $cas: { updated_at: user.updated_at },
+    })
+  ).toBeTruthy();
+  const newUser = await EntTestUser.loadX(vc, vc.principal);
+  expect(newUser).toMatchObject({ url_name: "new" });
+});
+
 test("delete", async () => {
   const user = await EntTestUser.loadX(vc, vc.principal);
   expect(await user.deleteOriginal()).toBeTruthy();

@@ -2,6 +2,7 @@ import uniq from "lodash/uniq";
 import type { Query } from "../abstract/Query";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import type { Schema } from "../abstract/Schema";
+import { stringHash } from "../helpers/misc";
 import type { Field, Table, UpdateInput } from "../types";
 import { ID } from "../types";
 import type { SQLClient } from "./SQLClient";
@@ -28,6 +29,11 @@ export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
     const fields = this.allFields.filter(
       (field) => field !== ID && this.input[field] !== undefined
     );
+    const casFields = this.input.$cas
+      ? this.allFields.filter(
+          (field) => field !== ID && this.input.$cas![field] !== undefined
+        )
+      : [];
 
     // If there are no known fields to update, skip the entire operation. We
     // return true since we don't know whether the row is in the DB or not, so
@@ -48,7 +54,7 @@ export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
       .batcher(
         this.constructor,
         this.schema,
-        fields.join(":") + ":" + disableBatching,
+        fields.join(":") + ":" + casFields.join(":") + ":" + disableBatching,
         () =>
           // This is run only once per every unique combination of field names,
           // not per every row updated, so it's cheap to do whatever we want.
@@ -56,6 +62,7 @@ export class SQLQueryUpdate<TTable extends Table> implements Query<boolean> {
             this.schema,
             client,
             fields,
+            casFields,
             disableBatching
           )
       )
@@ -100,41 +107,72 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
   constructor(
     schema: Schema<TTable>,
     client: SQLClient,
-    fields: Array<Field<TTable>>,
+    fieldsIn: Array<Field<TTable>>,
+    casFieldsIn: Array<Field<TTable>>,
     private disableBatching: boolean
   ) {
     super(schema, client);
 
     // Always include all autoUpdate fields.
-    fields = uniq([
-      ...fields,
+    const fields = uniq([
+      ...fieldsIn,
       ...Object.keys(this.schema.table).filter(
         (field) => this.schema.table[field].autoUpdate !== undefined
       ),
     ]);
+    const casFields = casFieldsIn.map((field) => ({
+      field,
+      alias: `$cas.${field}`,
+    }));
 
     this.singleBuilder = {
       prefix: this.fmt("UPDATE %T SET "),
       func1: this.createUpdateKVsBuilder(fields),
       midfix: this.fmt(" WHERE %PK="),
       func2: (input: { [ID]: string }) => this.escapeValue(ID, input[ID]),
+      cas:
+        casFields.length > 0
+          ? this.createValuesBuilder({
+              prefix: this.fmt(" AND ROW(%FIELDS) IS NOT DISTINCT FROM ROW", {
+                fields: casFields.map(({ field }) => field),
+                normalize: true,
+              }),
+              indent: "",
+              fields: casFields,
+              suffix: "",
+            })
+          : null,
       suffix: this.fmt(` RETURNING %PK AS ${ID}`),
     };
 
     // There can be several updates for same id (due to batching), so returning
     // all keys here.
     this.batchBuilder = this.createWithBuilder({
-      fields: this.addPK(fields, "prepend"),
-      suffix: this.fmt(
-        "UPDATE %T SET %UPDATE_FIELD_VALUE_PAIRS(rows)\n" +
-          "FROM rows WHERE %PK(%T)=%PK(rows) RETURNING rows._key",
-        { fields }
-      ),
+      fields: [...this.addPK(fields, "prepend"), ...casFields],
+      suffix:
+        this.fmt(
+          "UPDATE %T SET %UPDATE_FIELD_VALUE_PAIRS(rows)\n" +
+            "FROM rows WHERE %PK(%T)=%PK(rows)",
+          { fields }
+        ) +
+        (casFields.length > 0
+          ? " AND " +
+            this.fmt("ROW(%FIELDS(%T))", {
+              fields: casFields.map(({ field }) => field),
+              normalize: true,
+            }) +
+            " IS NOT DISTINCT FROM " +
+            this.fmt("ROW(%FIELDS(rows))", { fields: casFields })
+          : "") +
+        this.fmt(" RETURNING rows._key"),
     });
   }
 
   override key(input: UpdateInput<TTable> & { [ID]: string }): string {
-    return this.runBatch ? input[ID] : super.key(input);
+    return this.runBatch
+      ? input[ID] +
+          (input.$cas ? ":" + stringHash(JSON.stringify(input.$cas)) : "")
+      : super.key(input);
   }
 
   async runSingle(
@@ -147,6 +185,9 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
       this.singleBuilder.func1(input, literal) +
       this.singleBuilder.midfix +
       this.singleBuilder.func2(input) +
+      (this.singleBuilder.cas?.prefix ?? "") +
+      (this.singleBuilder.cas?.func?.([["", input]]) ?? "") +
+      (this.singleBuilder.cas?.suffix ?? "") +
       this.singleBuilder.suffix;
     const rows = await this.clientQuery<{ [ID]: string }>(sql, annotations, 1);
     return rows.length > 0 ? true : false;
