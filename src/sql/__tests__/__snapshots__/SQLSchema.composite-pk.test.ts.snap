@@ -31,13 +31,13 @@ WITH rows(tenant_id, user_id, name, _key) AS (VALUES
   ('1', '2', 'new-name-2', '(1,2)')<reordered for test>,
   ('42', '42', 'absent', '(42,42)')<reordered for test>)
   UPDATE "sql-schema.composite-pk""table" SET name=rows.name
-  FROM rows WHERE ROW("sql-schema.composite-pk""table".tenant_id,"sql-schema.composite-pk""table".user_id)=ROW(rows.tenant_id,rows.user_id) RETURNING (SELECT _key FROM rows WHERE ROW(rows.tenant_id,rows.user_id)=ROW("sql-schema.composite-pk""table".tenant_id,"sql-schema.composite-pk""table".user_id))
+  FROM rows WHERE ROW("sql-schema.composite-pk""table".tenant_id,"sql-schema.composite-pk""table".user_id)=ROW(rows.tenant_id,rows.user_id) RETURNING rows._key
 ----
 WITH rows(tenant_id, user_id, name, _key) AS (VALUES
   ((NULL::"sql-schema.composite-pk""table").tenant_id, (NULL::"sql-schema.composite-pk""table").user_id, (NULL::"sql-schema.composite-pk""table").name, '?'),
   ('?', '?', '?', '?'), ...<reordered for test>)
   UPDATE "sql-schema.composite-pk""table" SET name=rows.name
-  FROM rows WHERE ROW("sql-schema.composite-pk""table".tenant_id,"sql-schema.composite-pk""table".user_id)=ROW(rows.tenant_id,rows.user_id) RETURNING (SELECT _key FROM rows WHERE ROW(rows.tenant_id,rows.user_id)=ROW("sql-schema.composite-pk""table".tenant_id,"sql-schema.composite-pk""table".user_id))
+  FROM rows WHERE ROW("sql-schema.composite-pk""table".tenant_id,"sql-schema.composite-pk""table".user_id)=ROW(rows.tenant_id,rows.user_id) RETURNING rows._key
 "
 `;
 

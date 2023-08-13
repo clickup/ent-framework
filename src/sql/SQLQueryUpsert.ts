@@ -45,6 +45,7 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
 
     this.builder = this.createValuesBuilder({
       prefix: this.fmt("INSERT INTO %T (%FIELDS) VALUES", { fields }),
+      indent: "  ",
       fields,
       suffix: this.fmt(
         "\n" +

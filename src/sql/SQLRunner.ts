@@ -146,8 +146,9 @@ export abstract class SQLRunner<
   }
 
   /**
-   * Escapes field name identifier. In case it's a composite primary key,
-   * returns its `ROW(f1,f2,...)` representation.
+   * Escapes field name identifier.
+   * - In case it's a composite primary key, returns its `ROW(f1,f2,...)`
+   *   representation.
    */
   protected escapeField(
     field: Field<TTable>,
@@ -212,6 +213,7 @@ export abstract class SQLRunner<
       prefix:
         `WITH rows(${cols.map(({ field }) => field).join(", ")}) AS (VALUES\n` +
         `  (${cols.map(({ escapedValue }) => escapedValue).join(", ")}),`,
+      indent: "  ",
       fields,
       withKey: true,
       suffix: ")\n" + suffix.replace(/^/gm, "  "),
@@ -245,12 +247,14 @@ export abstract class SQLRunner<
    */
   protected createValuesBuilder<TInput extends object>({
     prefix,
+    indent,
     fields,
     withKey,
     skipSorting,
     suffix,
   }: {
     prefix: string;
+    indent: string;
     fields: ReadonlyArray<Field<TTable>>;
     withKey?: boolean;
     skipSorting?: boolean;
@@ -271,14 +275,16 @@ export abstract class SQLRunner<
     const rowFunc = this.newFunction(
       "$key",
       "$input",
-      'return "(" + ' +
+      "return " +
+        (indent ? `${JSON.stringify("\n" + indent)} +` : "") +
+        '"(" + ' +
         cols.join(" + ', ' + ") +
         (withKey ? '+ ", " + this.escapeString($key)' : "") +
         '+ ")"'
     );
 
     return {
-      prefix: prefix + "\n  ",
+      prefix,
       func: (entries: Iterable<[key: string, input: TInput]>) => {
         const parts: string[] = [];
         for (const [key, input] of entries) {
@@ -292,7 +298,7 @@ export abstract class SQLRunner<
           parts.sort();
         }
 
-        return parts.join(",\n  ");
+        return parts.join(",");
       },
       suffix,
     };
@@ -632,6 +638,7 @@ export abstract class SQLRunner<
         "  (" +
         escapedFields.map((f) => this.fmt(`(NULL::%T).${f}`)).join(", ") +
         "),",
+      indent: "  ",
       fields,
       skipSorting: true, // for JS perf
       suffix: ")" + suffix,

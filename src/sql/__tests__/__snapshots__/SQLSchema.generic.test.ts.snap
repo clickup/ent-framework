@@ -719,27 +719,27 @@ WITH rows(id, name, some_flag, updated_at, _key) AS (VALUES
   ('42', 'absent', true, now(), '42')<reordered for test>,
   ('<id>', 'a''upd', true, now(), '<id>')<reordered for test>)
   UPDATE "sql-schema.generic""table" SET name=rows.name, some_flag=rows.some_flag, updated_at=rows.updated_at
-  FROM rows WHERE "sql-schema.generic""table".id=rows.id RETURNING (SELECT _key FROM rows WHERE rows.id="sql-schema.generic""table".id)
+  FROM rows WHERE "sql-schema.generic""table".id=rows.id RETURNING rows._key
 ----
 WITH rows(id, name, some_flag, updated_at, _key) AS (VALUES
   ((NULL::"sql-schema.generic""table").id, (NULL::"sql-schema.generic""table").name, (NULL::"sql-schema.generic""table").some_flag, (NULL::"sql-schema.generic""table").updated_at, '?'),
   ('?', '?', true, now(), '?'), ...<reordered for test>)
   UPDATE "sql-schema.generic""table" SET name=rows.name, some_flag=rows.some_flag, updated_at=rows.updated_at
-  FROM rows WHERE "sql-schema.generic""table".id=rows.id RETURNING (SELECT _key FROM rows WHERE rows.id="sql-schema.generic""table".id)
+  FROM rows WHERE "sql-schema.generic""table".id=rows.id RETURNING rows._key
 
 WITH rows(id, name, url_name, updated_at, _key) AS (VALUES
   ((NULL::"sql-schema.generic""table").id, (NULL::"sql-schema.generic""table").name, (NULL::"sql-schema.generic""table").url_name, (NULL::"sql-schema.generic""table").updated_at, '<key>'),
   ('<id>', 'b''upd', NULL, now(), '<id>')<reordered for test>,
   ('<id>', 'null''upd', 'n1', now(), '<id>')<reordered for test>)
   UPDATE "sql-schema.generic""table" SET name=rows.name, url_name=rows.url_name, updated_at=rows.updated_at
-  FROM rows WHERE "sql-schema.generic""table".id=rows.id RETURNING (SELECT _key FROM rows WHERE rows.id="sql-schema.generic""table".id)
+  FROM rows WHERE "sql-schema.generic""table".id=rows.id RETURNING rows._key
 ----
 WITH rows(id, name, url_name, updated_at, _key) AS (VALUES
   ((NULL::"sql-schema.generic""table").id, (NULL::"sql-schema.generic""table").name, (NULL::"sql-schema.generic""table").url_name, (NULL::"sql-schema.generic""table").updated_at, '?'),
   ('?', '?', '?', now(), '?')<reordered for test>,
   ('?', '?', NULL, now(), '?')<reordered for test>)
   UPDATE "sql-schema.generic""table" SET name=rows.name, url_name=rows.url_name, updated_at=rows.updated_at
-  FROM rows WHERE "sql-schema.generic""table".id=rows.id RETURNING (SELECT _key FROM rows WHERE rows.id="sql-schema.generic""table".id)
+  FROM rows WHERE "sql-schema.generic""table".id=rows.id RETURNING rows._key
 "
 `;
 
