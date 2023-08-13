@@ -99,6 +99,14 @@ export type Table = {
 export type Field<TTable extends Table> = keyof TTable & string;
 
 /**
+ * Same as Field, but may optionally hold information about of "alias value
+ * source" for a field name (e.g. `{ field: "abc", alias: "$cas.abc" }`).
+ */
+export type FieldAliased<TTable extends Table> =
+  | Field<TTable>
+  | { field: Field<TTable>; alias: string };
+
+/**
  * (Table) -> "field1" | "field2" | ... where the union contains only fields
  * which can potentially be used as a part of unique key.
  */
@@ -212,11 +220,14 @@ export type UpdateFields<TTable extends Table> = Exclude<
  * - Excludes id Spec entirely and makes all fields optional.
  * - If $literal is passed, it will be appended to the list of updating fields
  *   (engine specific).
+ * - If $cas is passed, only the rows whose fields match the exact values in
+ *   $cas will be updated; the non-matching rows will be skipped.
  */
 export type UpdateInput<TTable extends Table> = {
   [K in UpdateFields<TTable>]?: Value<TTable[K]>;
 } & {
   $literal?: Literal;
+  $cas?: { [K in UpdateFields<TTable>]?: Value<TTable[K]> };
 };
 
 /**

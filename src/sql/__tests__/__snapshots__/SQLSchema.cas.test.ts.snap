@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CAS batched success 1`] = `
+"
+WITH rows(id, name, ts, updated_at, "$cas.name", "$cas.ts", "$cas.updated_at", _key) AS (VALUES
+  ((NULL::"sql-schema.cas""table").id, (NULL::"sql-schema.cas""table").name, (NULL::"sql-schema.cas""table").ts, (NULL::"sql-schema.cas""table").updated_at, (NULL::"sql-schema.cas""table").name, (NULL::"sql-schema.cas""table").ts, (NULL::"sql-schema.cas""table").updated_at, '<key>'),
+  ('<id>', 'a-upd', '<date>', now(), 'a', '<date>', '<date>', '<id>:<hash>')<reordered for test>,
+  ('<id>', 'b-upd', '<date>', now(), 'b', NULL, '<date>', '<id>:<hash>')<reordered for test>)
+  UPDATE "sql-schema.cas""table" SET name=rows.name, ts=rows.ts, updated_at=rows.updated_at
+  FROM rows WHERE "sql-schema.cas""table".id=rows.id AND ROW("sql-schema.cas""table".name, date_trunc('ms', "sql-schema.cas""table".ts), date_trunc('ms', "sql-schema.cas""table".updated_at)) IS NOT DISTINCT FROM ROW(rows."$cas.name", rows."$cas.ts", rows."$cas.updated_at") RETURNING rows._key
+----
+WITH rows(id, name, ts, updated_at, "$cas.name", "$cas.ts", "$cas.updated_at", _key) AS (VALUES
+  ((NULL::"sql-schema.cas""table").id, (NULL::"sql-schema.cas""table").name, (NULL::"sql-schema.cas""table").ts, (NULL::"sql-schema.cas""table").updated_at, (NULL::"sql-schema.cas""table").name, (NULL::"sql-schema.cas""table").ts, (NULL::"sql-schema.cas""table").updated_at, '?'),
+  ('?', '?', '?', now(), '?', '?', '?', '?')<reordered for test>,
+  ('?', '?', '?', now(), '?', NULL, '?', '?')<reordered for test>)
+  UPDATE "sql-schema.cas""table" SET name=rows.name, ts=rows.ts, updated_at=rows.updated_at
+  FROM rows WHERE "sql-schema.cas""table".id=rows.id AND ROW("sql-schema.cas""table".name, date_trunc('?', "sql-schema.cas""table".ts), date_trunc('?', "sql-schema.cas""table".updated_at)) IS NOT DISTINCT FROM ROW(rows."$cas.name", rows."$cas.ts", rows."$cas.updated_at") RETURNING rows._key
+"
+`;
+
+exports[`CAS batched success and skip for the same row 1`] = `
+"
+WITH rows(id, name, updated_at, "$cas.name", "$cas.updated_at", _key) AS (VALUES
+  ((NULL::"sql-schema.cas""table").id, (NULL::"sql-schema.cas""table").name, (NULL::"sql-schema.cas""table").updated_at, (NULL::"sql-schema.cas""table").name, (NULL::"sql-schema.cas""table").updated_at, '<key>'),
+  ('<id>', 'a-skip', now(), 'a', '<date>', '<id>:<hash>')<reordered for test>,
+  ('<id>', 'a-upd', now(), 'a', '<date>', '<id>:<hash>')<reordered for test>)
+  UPDATE "sql-schema.cas""table" SET name=rows.name, updated_at=rows.updated_at
+  FROM rows WHERE "sql-schema.cas""table".id=rows.id AND ROW("sql-schema.cas""table".name, date_trunc('ms', "sql-schema.cas""table".updated_at)) IS NOT DISTINCT FROM ROW(rows."$cas.name", rows."$cas.updated_at") RETURNING rows._key
+----
+WITH rows(id, name, updated_at, "$cas.name", "$cas.updated_at", _key) AS (VALUES
+  ((NULL::"sql-schema.cas""table").id, (NULL::"sql-schema.cas""table").name, (NULL::"sql-schema.cas""table").updated_at, (NULL::"sql-schema.cas""table").name, (NULL::"sql-schema.cas""table").updated_at, '?'),
+  ('?', '?', now(), '?', '?', '?'), ...<reordered for test>)
+  UPDATE "sql-schema.cas""table" SET name=rows.name, updated_at=rows.updated_at
+  FROM rows WHERE "sql-schema.cas""table".id=rows.id AND ROW("sql-schema.cas""table".name, date_trunc('?', "sql-schema.cas""table".updated_at)) IS NOT DISTINCT FROM ROW(rows."$cas.name", rows."$cas.updated_at") RETURNING rows._key
+"
+`;
+
+exports[`CAS single skip 1`] = `
+"
+UPDATE "sql-schema.cas""table" SET name='a-skip', updated_at=now() WHERE id='<id>' AND ROW(name, date_trunc('ms', updated_at)) IS NOT DISTINCT FROM ROW('a-old', '<date>') RETURNING id
+----
+UPDATE "sql-schema.cas""table" SET name='?', updated_at=now() WHERE id='?' AND ROW(name, date_trunc('?', updated_at)) IS NOT DISTINCT FROM ROW('?', '?') RETURNING id
+
+UPDATE "sql-schema.cas""table" SET name='b-skip', updated_at=now() WHERE id='<id>' AND ROW(buffer_field) IS NOT DISTINCT FROM ROW('\\x040506') RETURNING id
+----
+UPDATE "sql-schema.cas""table" SET name='?', updated_at=now() WHERE id='?' AND ROW(buffer_field) IS NOT DISTINCT FROM ROW('?') RETURNING id
+"
+`;
+
+exports[`CAS single success 1`] = `
+"
+UPDATE "sql-schema.cas""table" SET name='a-upd', ts='<date>', updated_at=now() WHERE id='<id>' AND ROW(name, date_trunc('ms', ts), encrypted_field, buffer_field, date_trunc('ms', updated_at)) IS NOT DISTINCT FROM ROW('a', '<date>', 'encrypted:', '\\x010203', '<date>') RETURNING id
+----
+UPDATE "sql-schema.cas""table" SET name='?', ts='?', updated_at=now() WHERE id='?' AND ROW(name, date_trunc('?', ts), encrypted_field, buffer_field, date_trunc('?', updated_at)) IS NOT DISTINCT FROM ROW('?', '?', '?', '?', '?') RETURNING id
+
+UPDATE "sql-schema.cas""table" SET name='b-upd', ts='<date>', updated_at=now() WHERE id='<id>' AND ROW(name, date_trunc('ms', ts), date_trunc('ms', updated_at)) IS NOT DISTINCT FROM ROW('b', NULL, '<date>') RETURNING id
+----
+UPDATE "sql-schema.cas""table" SET name='?', ts='?', updated_at=now() WHERE id='?' AND ROW(name, date_trunc('?', ts), date_trunc('?', updated_at)) IS NOT DISTINCT FROM ROW('?', NULL, '?') RETURNING id
+"
+`;

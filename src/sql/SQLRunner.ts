@@ -7,7 +7,14 @@ import { Runner } from "../abstract/Batcher";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import type { Schema } from "../abstract/Schema";
 import { hasKey } from "../helpers/misc";
-import type { Field, Literal, Table, Value, Where } from "../types";
+import type {
+  Field,
+  FieldAliased,
+  Literal,
+  Table,
+  Value,
+  Where,
+} from "../types";
 import { ID } from "../types";
 import parseCompositeRow from "./helpers/parseCompositeRow";
 import * as sqlClientMod from "./SQLClient";
@@ -83,7 +90,7 @@ export abstract class SQLRunner<
    */
   protected fmt(
     template: string,
-    args: { fields?: Array<Field<TTable>> } = {}
+    args: { fields?: Array<FieldAliased<TTable>>; normalize?: boolean } = {}
   ): string {
     return template.replace(
       /%(?:T|SELECT_FIELDS|FIELDS|UPDATE_FIELD_VALUE_PAIRS|PK)(?:\(([%\w]+)\))?/g,
@@ -104,9 +111,16 @@ export abstract class SQLRunner<
         }
 
         // Comma-separated list of the passed fields (never with AS clause).
-        if (c === "%FIELDS") {
+        if (c.startsWith("%FIELDS")) {
           assert(args.fields, `BUG: no args.fields passed in ${template}`);
-          return args.fields.map((field) => this.escapeField(field)).join(", ");
+          return args.fields
+            .map((field) =>
+              this.escapeField(field, {
+                withTable: a,
+                normalize: args.normalize,
+              })
+            )
+            .join(", ");
         }
 
         // field1=X.field1, field2=X.field2, ...
@@ -149,16 +163,23 @@ export abstract class SQLRunner<
    * Escapes field name identifier.
    * - In case it's a composite primary key, returns its `ROW(f1,f2,...)`
    *   representation.
+   * - A field may be aliased, e.g. if `{ field: "abc", alias: "$cas.abc" }` is
+   *   passed, then the returned value will be `"$cas.abc"`. Basically, `field`
+   *   name is used only to verify that such field is presented in the schema.
    */
   protected escapeField(
-    field: Field<TTable>,
-    { withTable }: { withTable?: string } = {}
+    info: FieldAliased<TTable>,
+    { withTable, normalize }: { withTable?: string; normalize?: boolean } = {}
   ): string {
+    const [field, alias] =
+      typeof info === "string" ? [info, info] : [info.field, info.alias];
+
     if (this.schema.table[field]) {
-      return (
-        (withTable ? `${sqlClientMod.escapeIdent(withTable)}.` : "") +
-        sqlClientMod.escapeIdent(field)
-      );
+      const sql = withTable
+        ? `${sqlClientMod.escapeIdent(withTable)}.` +
+          sqlClientMod.escapeIdent(alias)
+        : sqlClientMod.escapeIdent(alias);
+      return normalize ? this.normalizeSQLExpr(field, sql) : sql;
     }
 
     if (field === ID) {
@@ -192,7 +213,7 @@ export abstract class SQLRunner<
     fields,
     suffix,
   }: {
-    fields: ReadonlyArray<Field<TTable>>;
+    fields: ReadonlyArray<FieldAliased<TTable>>;
     suffix: string;
   }): {
     prefix: string;
@@ -200,10 +221,14 @@ export abstract class SQLRunner<
     suffix: string;
   } {
     const cols = [
-      ...fields.map((field) => ({
-        field: this.escapeField(field),
-        escapedValue: this.fmt(`(NULL::%T).${this.escapeField(field)}`),
-      })),
+      ...fields.map((info) => {
+        const [field, alias] =
+          typeof info === "string" ? [info, info] : [info.field, info.alias];
+        return {
+          field: sqlClientMod.escapeIdent(alias),
+          escapedValue: this.fmt("(NULL::%T).") + this.escapeField(field),
+        };
+      }),
       { field: "_key", escapedValue: "'k0'" },
     ];
 
@@ -241,6 +266,13 @@ export abstract class SQLRunner<
    *
    * The set of columns is passed in fields.
    *
+   * When the builder func is called, the actual values for some field in a row
+   * is extracted from the same-named prop of the row, but if a `{ field,
+   * rowPath }` object is passed in `fields` array, then the value is extracted
+   * from the `rowPath` sub-prop of the row. This is used to e.g. access
+   * `row.$cas.blah` value for a field named blah (in this case,
+   * `rowPath="$cas"`).
+   *
    * Notice that either a simple primary key or a composite primary key columns
    * are always prepended to the list of values since it makes no sense to
    * generate VALUES clause without exact identification of the destination.
@@ -255,7 +287,7 @@ export abstract class SQLRunner<
   }: {
     prefix: string;
     indent: string;
-    fields: ReadonlyArray<Field<TTable>>;
+    fields: ReadonlyArray<FieldAliased<TTable>>;
     withKey?: boolean;
     skipSorting?: boolean;
     suffix: string;
@@ -264,11 +296,15 @@ export abstract class SQLRunner<
     func: (entries: Iterable<[key: string, input: TInput]>) => string;
     suffix: string;
   } {
-    const cols = fields.map((field) => {
+    const cols = fields.map((info) => {
+      const [field, fieldValCode] =
+        typeof info === "string"
+          ? [info, `$input.${info}`]
+          : [info.field, `$input.${info.alias}`];
       const spec = this.nullThrowsUnknownField(this.schema.table[field], field);
       return this.createEscapeCode(
         field,
-        `$input.${field}`,
+        fieldValCode,
         spec.autoInsert !== undefined ? spec.autoInsert : spec.autoUpdate
       );
     });
@@ -1052,6 +1088,25 @@ export abstract class SQLRunner<
     }
 
     return input;
+  }
+
+  /**
+   * Some data types are different between PG and JS. Here we have a chance to
+   * "normalize" them. E.g. in JS, Date is truncated to milliseconds (3 digits),
+   * whilst in PG, it's by default of 6 digits precision (so if we didn't
+   * normalize, then JS Date would've been never equal to a PG timestamp).
+   */
+  private normalizeSQLExpr(field: Field<TTable>, sql: string): string {
+    const spec = this.nullThrowsUnknownField(this.schema.table[field], field);
+    if (spec.type === Date) {
+      // Notice that `CAST(x AS timestamptz(3))` does ROUNDING, and we need
+      // TRUNCATION, since it's the default behavior of postgres-date (they
+      // changed it to rounding once, but then reverted intentionally) and
+      // node-postgres. See https://github.com/brianc/node-postgres/issues/1200
+      sql = `date_trunc('ms', ${sql})`;
+    }
+
+    return sql;
   }
 
   /**

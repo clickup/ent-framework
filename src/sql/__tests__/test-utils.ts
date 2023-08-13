@@ -1,4 +1,5 @@
 import compact from "lodash/compact";
+import { types } from "pg";
 import { Client } from "../../abstract/Client";
 import { Cluster } from "../../abstract/Cluster";
 import { MASTER } from "../../abstract/Shard";
@@ -122,6 +123,25 @@ export class EncryptedValue {
   }
 
   private constructor(private dbValue: string) {}
+}
+
+/**
+ * Another custom type which maps a JS Buffer to PG "bytea" native type.
+ */
+export class ByteaBuffer {
+  static dbValueToJs(dbValue: Buffer): Buffer {
+    // Node-postgres returns "bytea" values as Buffer already.
+    return dbValue;
+  }
+
+  static stringify(jsValue: Buffer): string {
+    // PG's representation: '\xDEADBEEF'
+    return "\\x" + jsValue.toString("hex");
+  }
+
+  static parse(str: string): Buffer {
+    return types.getTypeParser(types.builtins.BYTEA)(str);
+  }
 }
 
 /**

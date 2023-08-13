@@ -136,9 +136,10 @@ export abstract class Schema<
       }
     }
 
-    // For perf reasons and simplicity, we don't identifier-escape FIELD names
-    // in query builder code, so we enforce the field names to be simple and not
-    // require any escaping. (Notice that we DO escape table names though.)
+    // For perf reasons, simplicity and easier CAS support, we don't
+    // identifier-escape field names in query builder code, so here, we enforce
+    // the field names to be simple and not require any escaping. (Notice that
+    // we DO escape table names though.)
     for (const field of Object.keys(this.table)) {
       if (!field.match(/^[_a-z][_a-z0-9]*$/)) {
         throw Error(
