@@ -209,7 +209,9 @@ export type UpdateFields<TTable extends Table> = Exclude<
 
 /**
  * Update: Table -> { field?: string, created_at?: Date, updated_at?: Date }.
- * Excludes id Spec entirely and makes all fields optional.
+ * - Excludes id Spec entirely and makes all fields optional.
+ * - If $literal is passed, it will be appended to the list of updating fields
+ *   (engine specific).
  */
 export type UpdateInput<TTable extends Table> = {
   [K in UpdateFields<TTable>]?: Value<TTable[K]>;

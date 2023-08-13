@@ -33,6 +33,7 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
 
     this.singleBuilder = this.createValuesBuilder({
       prefix: this.fmt("INSERT INTO %T (%FIELDS) VALUES", { fields }),
+      indent: "  ",
       fields,
       suffix: this.fmt(` ON CONFLICT DO NOTHING RETURNING %PK AS ${ID}`),
     });
