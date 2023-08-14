@@ -1,4 +1,4 @@
-import type { Flatten } from "../helpers/misc";
+import type { Flatten, Writeable } from "../helpers/misc";
 import { join } from "../helpers/misc";
 import type {
   InsertInput,
@@ -23,7 +23,16 @@ export type TriggerInsertInput<TTable extends Table> = Flatten<
 >;
 
 /**
- * Table -> trigger's before- and after-update NEW row.
+ * Table -> trigger's before-update input.
+ */
+export type TriggerUpdateInput<TTable extends Table> = Flatten<
+  UpdateInput<TTable>
+>;
+
+/**
+ * Table -> trigger's before- and after-update NEW row. Ephemeral (symbol)
+ * fields may or may not be passed depending on what the user passes to the
+ * update method.
  */
 export type TriggerUpdateNewRow<TTable extends Table> = Flatten<
   Readonly<
@@ -34,19 +43,14 @@ export type TriggerUpdateNewRow<TTable extends Table> = Flatten<
 >;
 
 /**
- * Table -> trigger's before- and after-update (or delete) OLD row.
+ * Table -> trigger's before- and after-update (or delete) OLD row. Ephemeral
+ * (symbol) fields are marked as always presented, but "never" typed, so they
+ * will be available for dereferencing in newOrOldRow of before/after mutation
+ * triggers without guard-checking of op value.
  */
 export type TriggerUpdateOrDeleteOldRow<TTable extends Table> = Flatten<
-  Readonly<Row<TTable>>
+  Readonly<Row<TTable> & Record<keyof TTable & symbol, never>>
 >;
-
-/**
- * Table -> trigger's after-mutation row. We don't know if it's called after
- * INSERT, UPDATE or DELETE, so use the most narrow list of fields.
- */
-export type TriggerAfterMutationNewOrOldRow<TTable extends Table> =
-  | Readonly<TriggerInsertInput<TTable>> // on insert
-  | TriggerUpdateNewRow<TTable>; // on update or delete
 
 /**
  * Triggers could be used to simulate "transactional best-effort behavior" in a
@@ -96,7 +100,7 @@ export type BeforeUpdateTrigger<TTable extends Table> = (
   args: {
     newRow: TriggerUpdateNewRow<TTable>;
     oldRow: TriggerUpdateOrDeleteOldRow<TTable>;
-    input: Flatten<UpdateInput<TTable>>;
+    input: TriggerUpdateInput<TTable>;
   }
 ) => Promise<unknown>;
 
@@ -115,12 +119,45 @@ export type DeleteTrigger<TTable extends Table> = (
   }
 ) => Promise<unknown>;
 
+export type BeforeMutationTrigger<TTable extends Table> = (
+  vc: VC,
+  args:
+    | {
+        op: "INSERT";
+        newOrOldRow: Readonly<TriggerInsertInput<TTable>>;
+        input: TriggerInsertInput<TTable>;
+      }
+    | {
+        op: "UPDATE";
+        newOrOldRow: TriggerUpdateNewRow<TTable>;
+        input: TriggerUpdateInput<TTable>;
+      }
+    | {
+        op: "DELETE";
+        newOrOldRow: TriggerUpdateOrDeleteOldRow<TTable>;
+        /** We allow people to modify input of a DELETE operation, although it
+         * will be a no-op. This is for convenience: if we remained it
+         * read-only, then people would need to check `if (op !== "DELETE") ...`
+         * in their beforeMutation triggers, which is a boilerplate. */
+        input: Writeable<TriggerUpdateOrDeleteOldRow<TTable>>;
+      }
+) => Promise<unknown>;
+
 export type AfterMutationTrigger<TTable extends Table> = (
   vc: VC,
-  args: {
-    newOrOldRow: TriggerAfterMutationNewOrOldRow<TTable>;
-    op: "INSERT" | "UPDATE" | "DELETE";
-  }
+  args:
+    | {
+        op: "INSERT";
+        newOrOldRow: Readonly<TriggerInsertInput<TTable>>;
+      }
+    | {
+        op: "UPDATE";
+        newOrOldRow: TriggerUpdateNewRow<TTable>;
+      }
+    | {
+        op: "DELETE";
+        newOrOldRow: TriggerUpdateOrDeleteOldRow<TTable>;
+      }
 ) => Promise<unknown>;
 
 export type DepsBuilder<TTable extends Table> = (
@@ -131,8 +168,13 @@ export type DepsBuilder<TTable extends Table> = (
 export class Triggers<TTable extends Table> {
   constructor(
     private beforeInsert: Array<InsertTrigger<TTable>>,
-    private beforeUpdate: Array<BeforeUpdateTrigger<TTable>>,
+    private beforeUpdate: Array<
+      [DepsBuilder<TTable> | null, BeforeUpdateTrigger<TTable>]
+    >,
     private beforeDelete: Array<DeleteTrigger<TTable>>,
+    private beforeMutation: Array<
+      [DepsBuilder<TTable> | null, BeforeMutationTrigger<TTable>]
+    >,
     private afterInsert: Array<InsertTrigger<TTable>>,
     private afterUpdate: Array<
       [DepsBuilder<TTable> | null, AfterUpdateTrigger<TTable>]
@@ -146,6 +188,7 @@ export class Triggers<TTable extends Table> {
   hasInsertTriggers(): boolean {
     return (
       this.beforeInsert.length > 0 ||
+      this.beforeMutation.length > 0 ||
       this.afterInsert.length > 0 ||
       this.afterMutation.length > 0
     );
@@ -154,6 +197,7 @@ export class Triggers<TTable extends Table> {
   hasUpdateTriggers(): boolean {
     return (
       this.beforeUpdate.length > 0 ||
+      this.beforeMutation.length > 0 ||
       this.afterUpdate.length > 0 ||
       this.afterMutation.length > 0
     );
@@ -164,12 +208,25 @@ export class Triggers<TTable extends Table> {
     vc: VC,
     input: InsertInput<TTable> & RowWithID
   ): Promise<string | null> {
+    if (!this.hasInsertTriggers()) {
+      return func(input);
+    }
+
     for (const triggerBeforeInsert of this.beforeInsert) {
       // We clone the input to make different triggers calls independent: if the
       // trigger e.g. stores input somewhere by reference, we don't want the
       // next trigger to affect that place.
       input = { ...input };
       await triggerBeforeInsert(vc, { input });
+    }
+
+    for (const [_, triggerBeforeMutation] of this.beforeMutation) {
+      input = { ...input };
+      await triggerBeforeMutation(vc, {
+        op: "INSERT",
+        newOrOldRow: input,
+        input,
+      });
     }
 
     const output = await func(input);
@@ -184,7 +241,7 @@ export class Triggers<TTable extends Table> {
     }
 
     for (const [_, triggerAfterMutation] of this.afterMutation) {
-      await triggerAfterMutation(vc, { newOrOldRow: input, op: "INSERT" });
+      await triggerAfterMutation(vc, { op: "INSERT", newOrOldRow: input });
     }
 
     return output;
@@ -193,20 +250,34 @@ export class Triggers<TTable extends Table> {
   async wrapUpdate(
     func: (input: UpdateInput<TTable>) => Promise<boolean>,
     vc: VC,
-    oldRow: Row<TTable>,
+    oldRow: TriggerUpdateOrDeleteOldRow<TTable>,
     input: UpdateInput<TTable>
   ): Promise<boolean> {
-    if (!this.beforeUpdate && !this.afterUpdate && !this.afterMutation) {
+    if (!this.hasUpdateTriggers()) {
       return func(input);
     }
 
     let newRow = buildUpdateNewRow(oldRow, input);
-    for (const triggerBeforeUpdate of this.beforeUpdate) {
-      await triggerBeforeUpdate(vc, { newRow, oldRow, input });
-      // Each call to triggerBefore() may potentially change the input, so we
-      // need to rebuild newRow each time to feed it to the next call of
-      // triggerBefore() and to the rest of triggerAfter.
-      newRow = buildUpdateNewRow(oldRow, input);
+
+    for (const [depsBuilder, triggerBeforeUpdate] of this.beforeUpdate) {
+      if (await depsBuilderApproves(depsBuilder, vc, oldRow, newRow)) {
+        await triggerBeforeUpdate(vc, { newRow, oldRow, input });
+        // Each call to triggerBefore() may potentially change the input, so we
+        // need to rebuild newRow each time to feed it to the next call of
+        // triggerBefore() and to the rest of triggerAfter.
+        newRow = buildUpdateNewRow(oldRow, input);
+      }
+    }
+
+    for (const [depsBuilder, triggerBeforeMutation] of this.beforeMutation) {
+      if (await depsBuilderApproves(depsBuilder, vc, oldRow, newRow)) {
+        await triggerBeforeMutation(vc, {
+          op: "UPDATE",
+          newOrOldRow: newRow,
+          input,
+        });
+        newRow = buildUpdateNewRow(oldRow, input);
+      }
     }
 
     const output = await func(input);
@@ -217,36 +288,20 @@ export class Triggers<TTable extends Table> {
     }
 
     for (const [depsBuilder, triggerAfterUpdate] of this.afterUpdate) {
-      if (!depsBuilder) {
-        await triggerAfterUpdate(vc, { newRow, oldRow });
-      } else {
-        const [depsOld, depsNew] = await join([
-          depsBuilder(vc, oldRow),
-          depsBuilder(vc, newRow),
-        ]);
-        if (depsOld !== depsNew) {
-          await triggerAfterUpdate(vc, { newRow, oldRow });
-        }
+      if (await depsBuilderApproves(depsBuilder, vc, oldRow, newRow)) {
+        await triggerAfterUpdate(vc, {
+          newRow,
+          oldRow: oldRow as TriggerUpdateOrDeleteOldRow<TTable>,
+        });
       }
     }
 
     for (const [depsBuilder, triggerAfterMutation] of this.afterMutation) {
-      if (!depsBuilder) {
+      if (await depsBuilderApproves(depsBuilder, vc, oldRow, newRow)) {
         await triggerAfterMutation(vc, {
-          newOrOldRow: newRow,
           op: "UPDATE",
+          newOrOldRow: newRow,
         });
-      } else {
-        const [depsOld, depsNew] = await join([
-          depsBuilder(vc, oldRow),
-          depsBuilder(vc, newRow),
-        ]);
-        if (depsOld !== depsNew) {
-          await triggerAfterMutation(vc, {
-            newOrOldRow: newRow,
-            op: "UPDATE",
-          });
-        }
       }
     }
 
@@ -256,10 +311,18 @@ export class Triggers<TTable extends Table> {
   async wrapDelete(
     func: () => Promise<boolean>,
     vc: VC,
-    oldRow: Row<TTable>
+    oldRow: TriggerUpdateOrDeleteOldRow<TTable>
   ): Promise<boolean> {
     for (const triggerBeforeDelete of this.beforeDelete) {
       await triggerBeforeDelete(vc, { oldRow });
+    }
+
+    for (const [_, triggerBeforeMutation] of this.beforeMutation) {
+      await triggerBeforeMutation(vc, {
+        op: "DELETE",
+        newOrOldRow: oldRow,
+        input: oldRow,
+      });
     }
 
     const output = await func();
@@ -275,8 +338,8 @@ export class Triggers<TTable extends Table> {
 
     for (const [_, triggerAfterMutation] of this.afterMutation) {
       await triggerAfterMutation(vc, {
-        newOrOldRow: oldRow as TriggerAfterMutationNewOrOldRow<TTable>,
         op: "DELETE",
+        newOrOldRow: oldRow as any,
       });
     }
 
@@ -306,4 +369,26 @@ export function buildUpdateNewRow<TTable extends Table>(
   }
 
   return newRow;
+}
+
+/**
+ * Returns true if depsBuilder approves running the trigger (i.e. the deps are
+ * changed, or no depsBuilder is presented at all).
+ */
+async function depsBuilderApproves<TTable extends Table>(
+  depsBuilder: DepsBuilder<TTable> | null,
+  vc: VC,
+  oldRow: Row<TTable>,
+  newRow: Row<TTable>
+): Promise<boolean> {
+  if (!depsBuilder) {
+    return true;
+  }
+
+  const [depsOld, depsNew] = await join([
+    depsBuilder(vc, oldRow),
+    depsBuilder(vc, newRow),
+  ]);
+
+  return depsOld !== depsNew;
 }

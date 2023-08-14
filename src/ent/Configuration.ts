@@ -2,6 +2,7 @@ import type { ID, FieldOfIDType, FieldOfIDTypeRequired, Table } from "../types";
 import type {
   AfterMutationTrigger,
   AfterUpdateTrigger,
+  BeforeMutationTrigger,
   BeforeUpdateTrigger,
   DeleteTrigger,
   DepsBuilder,
@@ -100,9 +101,19 @@ export class Configuration<TTable extends Table> {
   /** Triggers run before every insert. */
   readonly beforeInsert?: Array<InsertTrigger<TTable>>;
   /** Triggers run before every update. */
-  readonly beforeUpdate?: Array<BeforeUpdateTrigger<TTable>>;
+  readonly beforeUpdate?: Array<
+    | BeforeUpdateTrigger<TTable>
+    | [DepsBuilder<TTable>, BeforeUpdateTrigger<TTable>]
+  >;
   /** Triggers run before every delete. */
   readonly beforeDelete?: Array<DeleteTrigger<TTable>>;
+  /** Triggers run before every insert/update/delete. Each trigger may also be
+   * passed as "React useEffect-like" tuple where the callback is executed only
+   * if the deps are modified. */
+  readonly beforeMutation?: Array<
+    | BeforeMutationTrigger<TTable>
+    | [DepsBuilder<TTable>, BeforeMutationTrigger<TTable>]
+  >;
   /** Triggers run after every delete. */
   readonly afterInsert?: Array<InsertTrigger<TTable>>;
   /** Triggers run after every update. */

@@ -93,8 +93,10 @@ export class EntTestHeadline extends BaseEnt(
 
   static readonly TRIGGER_CALLS: Array<{
     type: string;
-    old?: any;
-    new?: any;
+    op?: string;
+    oldRow?: any;
+    newRow?: any;
+    newOrOldRow?: any;
     input?: any;
   }> = [];
 
@@ -114,8 +116,9 @@ export class EntTestHeadline extends BaseEnt(
             input: { ...input },
           });
           input.headline += " added-by-beforeInsert1";
+          expectRequired(input[$EPHEMERAL], "yes");
           if (input[$EPHEMERAL2]) {
-            input[$EPHEMERAL2]! += 1000;
+            input[$EPHEMERAL2] += 1000;
           }
         },
         async (_vc, { input }) => {
@@ -130,23 +133,72 @@ export class EntTestHeadline extends BaseEnt(
         async (_vc, { newRow, oldRow, input }) => {
           EntTestHeadline.TRIGGER_CALLS.push({
             type: "beforeUpdate",
-            old: oldRow,
-            new: newRow,
+            oldRow,
+            newRow,
             input: { ...input },
           });
           input.headline = newRow.headline + " added-by-beforeUpdate";
+          expectRequired(newRow[$EPHEMERAL], "no");
+          expectRequired(input[$EPHEMERAL], "no");
           if (input[$EPHEMERAL2]) {
-            input[$EPHEMERAL2]! += 1000000;
+            input[$EPHEMERAL2] += 1000000;
           }
         },
+        [
+          (_vc, row) => JSON.stringify([row.name]),
+          async (_vc, { newRow, oldRow, input }) => {
+            EntTestHeadline.TRIGGER_CALLS.push({
+              type: "beforeUpdate (if name changed)",
+              newRow,
+              oldRow,
+              input: { ...input },
+            });
+          },
+        ],
       ],
       beforeDelete: [
         async (_vc, { oldRow }) => {
           EntTestHeadline.TRIGGER_CALLS.push({
             type: "beforeDelete",
-            old: oldRow,
+            oldRow,
           });
         },
+      ],
+      beforeMutation: [
+        async (_vc, { op, newOrOldRow, input }) => {
+          EntTestHeadline.TRIGGER_CALLS.push({
+            type: "beforeMutation",
+            op,
+            newOrOldRow,
+            input: { ...input },
+          });
+          op === "INSERT" &&
+            expectRequired(newOrOldRow[$EPHEMERAL], "yes") &&
+            expectRequired(input[$EPHEMERAL], "yes");
+          op === "UPDATE" &&
+            expectRequired(newOrOldRow[$EPHEMERAL], "no") &&
+            expectRequired(input[$EPHEMERAL], "no");
+          op === "DELETE" &&
+            expectRequired(newOrOldRow[$EPHEMERAL], "no") &&
+            expectRequired(input[$EPHEMERAL], "no");
+          expectRequired(newOrOldRow[$EPHEMERAL], "no");
+          expectRequired(input[$EPHEMERAL], "no");
+          expectRequired(newOrOldRow[$EPHEMERAL2], "no");
+          if (input.user_id) {
+            input.user_id = input.user_id + ""; // input is not readonly
+          }
+        },
+        [
+          (_vc, row) => JSON.stringify([row.name]),
+          async (_vc, { op, newOrOldRow, input }) => {
+            EntTestHeadline.TRIGGER_CALLS.push({
+              type: "beforeMutation (if name changed or INSERT/DELETE)",
+              op,
+              newOrOldRow,
+              input: { ...input },
+            });
+          },
+        ],
       ],
       afterInsert: [
         async (_vc, { input }) => {
@@ -154,23 +206,27 @@ export class EntTestHeadline extends BaseEnt(
             type: "afterInsert",
             input: { ...input },
           });
+          expectRequired(input[$EPHEMERAL], "yes");
+          expectRequired(input[$EPHEMERAL2], "no");
         },
       ],
       afterUpdate: [
         async (_vc, { newRow, oldRow }) => {
           EntTestHeadline.TRIGGER_CALLS.push({
             type: "afterUpdate",
-            old: oldRow,
-            new: newRow,
+            oldRow,
+            newRow,
           });
+          expectRequired(newRow[$EPHEMERAL], "no");
+          expectRequired(newRow[$EPHEMERAL2], "no");
         },
         [
           (_vc, row) => JSON.stringify([row.name]),
           async (_vc, { newRow, oldRow }) => {
             EntTestHeadline.TRIGGER_CALLS.push({
               type: "afterUpdate (if name changed)",
-              old: oldRow,
-              new: newRow,
+              oldRow,
+              newRow,
             });
           },
         ],
@@ -179,23 +235,30 @@ export class EntTestHeadline extends BaseEnt(
         async (_vc, { oldRow }) => {
           EntTestHeadline.TRIGGER_CALLS.push({
             type: "afterDelete",
-            old: oldRow,
+            oldRow,
           });
         },
       ],
       afterMutation: [
-        async (_vc, { newOrOldRow }) => {
+        async (_vc, { op, newOrOldRow }) => {
           EntTestHeadline.TRIGGER_CALLS.push({
             type: "afterMutation",
-            input: newOrOldRow,
+            op,
+            newOrOldRow,
           });
+          op === "INSERT" && expectRequired(newOrOldRow[$EPHEMERAL], "yes");
+          op === "UPDATE" && expectRequired(newOrOldRow[$EPHEMERAL], "no");
+          op === "DELETE" && expectRequired(newOrOldRow[$EPHEMERAL], "no");
+          expectRequired(newOrOldRow[$EPHEMERAL], "no");
+          expectRequired(newOrOldRow[$EPHEMERAL2], "no");
         },
         [
           (_vc, row) => JSON.stringify([row.name]),
-          async (_vc, { newOrOldRow }) => {
+          async (_vc, { op, newOrOldRow }) => {
             EntTestHeadline.TRIGGER_CALLS.push({
-              type: "afterMutation (if name changed)",
-              input: newOrOldRow,
+              type: "afterMutation (if name changed or INSERT/DELETE)",
+              op,
+              newOrOldRow,
             });
           },
         ],
@@ -428,3 +491,10 @@ test("inserting Ents with custom IDs when they have beforeInsert triggers", asyn
   );
   expect(newEnt.id).toEqual(ent.id);
 });
+
+function expectRequired<T>(
+  _value: T,
+  _flag: [T] extends [never] ? "no" : undefined extends T ? "no" : "yes"
+): true {
+  return true;
+}
