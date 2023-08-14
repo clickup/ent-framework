@@ -145,8 +145,13 @@ export function ConfigMixin<
       Object.defineProperty(this, "TRIGGERS", {
         value: new Triggers(
           cfg.beforeInsert ?? [],
-          cfg.beforeUpdate ?? [],
+          (cfg.beforeUpdate ?? []).map((trigger) =>
+            trigger instanceof Array ? trigger : [null, trigger]
+          ),
           cfg.beforeDelete ?? [],
+          (cfg.beforeMutation ?? []).map((trigger) =>
+            trigger instanceof Array ? trigger : [null, trigger]
+          ),
           cfg.afterInsert ?? [],
           (cfg.afterUpdate ?? []).map((trigger) =>
             trigger instanceof Array ? trigger : [null, trigger]

@@ -23,6 +23,7 @@ import type {
 import { ID } from "../../types";
 import { EntNotInsertableError } from "../errors/EntNotInsertableError";
 import { IDsCacheReadable, IDsCacheUpdatable } from "../predicates/Predicate";
+import type { TriggerUpdateOrDeleteOldRow } from "../Triggers";
 import type { VC } from "../VC";
 import type { ConfigClass, ConfigInstance } from "./ConfigMixin";
 
@@ -617,7 +618,7 @@ export function PrimitiveMixin<
           return updated;
         },
         this.vc,
-        this as Row<TTable>,
+        this as TriggerUpdateOrDeleteOldRow<TTable>,
         input
       );
     }
@@ -662,7 +663,7 @@ export function PrimitiveMixin<
           return deleted;
         },
         this.vc,
-        this as Row<TTable>
+        this as TriggerUpdateOrDeleteOldRow<TTable>
       );
     }
 

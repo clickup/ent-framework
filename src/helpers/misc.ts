@@ -24,6 +24,11 @@ export type AddNew<
 export type Flatten<T> = {} & { [P in keyof T]: T[P] };
 
 /**
+ * Cancels "readonly" specifier on object's properties.
+ */
+export type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
+/**
  * Returns a union type of all tuple strict prefixes:
  * ["a", "b", "c"] -> ["a", "b"] | ["a"]
  */
