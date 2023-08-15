@@ -54,10 +54,12 @@ export abstract class SQLRunner<
   protected async clientQuery<TOutput extends object>(
     sql: string,
     annotations: QueryAnnotation[],
-    batchFactor: number
+    batchFactor: number,
+    hints?: Record<string, string>
   ): Promise<TOutput[]> {
     const rows = await this.client.query<TOutput>({
       query: [sql],
+      hints,
       isWrite: this.constructor.IS_WRITE,
       annotations,
       op: this.op,
