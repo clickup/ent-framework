@@ -405,7 +405,6 @@ export function escapeIdent(ident: any): string {
  * overflow SQL error.
  */
 export function escapeAny(v: any): string {
-  //
   return v === null || v === undefined
     ? "NULL"
     : typeof v === "number"
