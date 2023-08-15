@@ -67,7 +67,10 @@ export class SQLRunnerExists<TTable extends Table> extends SQLRunner<
     const rows = await this.clientQuery<{ i: string; exists: boolean }>(
       sql,
       annotations,
-      inputs.size
+      inputs.size,
+      // The reasonable assumption is that, if someone uses EXISTS, they always
+      // want the query to match some index.
+      { enable_seqscan: "off" }
     );
     const outputs = new Map<string, boolean>();
     let i = 0;
