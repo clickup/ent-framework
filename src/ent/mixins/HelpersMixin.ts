@@ -6,13 +6,13 @@ import type {
   Row,
   Table,
   UniqueKey,
-  UpdateFields,
   UpdateInput,
 } from "../../types";
 import { ID } from "../../types";
 import { EntAccessError } from "../errors/EntAccessError";
 import { EntNotFoundError } from "../errors/EntNotFoundError";
 import { EntUniqueKeyError } from "../errors/EntUniqueKeyError";
+import type { UpdateOriginalInput } from "../types";
 import type { VC } from "../VC";
 import type { PrimitiveClass, PrimitiveInstance } from "./PrimitiveMixin";
 
@@ -20,10 +20,15 @@ export interface HelpersInstance<TTable extends Table>
   extends PrimitiveInstance<TTable> {
   /**
    * Same as updateOriginal(), but updates only the fields which are different
-   * in input and in the current object. If nothing is different, returns
-   * false.
+   * in input and in the current object.
+   * - This method can works with CAS; see $cas property of the passed object.
+   *   If CAS fails, returns false, the same way as updateOriginal() does.
+   * - If there was no such Ent in the DB, returns false, the same way as
+   *   updateOriginal() does.
+   * - If no changed fields are detected, returns null as an indication (it's
+   *   still falsy, but is different from the parent updateOriginal's `false`).
    */
-  updateChanged(input: UpdateInput<TTable>): Promise<boolean>;
+  updateChanged(input: UpdateOriginalInput<TTable>): Promise<boolean | null>;
 
   /**
    * Same as updateChanged(), but returns the updated Ent (or the original one
@@ -195,25 +200,30 @@ export function HelpersMixin<
       return ent;
     }
 
-    async updateChanged(input: UpdateInput<TTable>): Promise<boolean> {
+    async updateChanged(
+      input: UpdateOriginalInput<TTable>
+    ): Promise<boolean | null> {
       let numChangedAttrs = 0;
-      const changedAttrs: UpdateInput<TTable> = {};
+
+      const changedAttrs: UpdateOriginalInput<TTable> = {};
 
       // Iterate over BOTH regular fields AND symbol fields. Notice that for
       // symbol fields, we'll always have a "changed" signal since the input Ent
       // doesn't have them (they are to be used in triggers only).
-      for (const key of Reflect.ownKeys(this.constructor.SCHEMA.table)) {
-        const field = key as UpdateFields<TTable>;
+      for (const keyOrSymbol of Reflect.ownKeys(
+        this.constructor.SCHEMA.table
+      )) {
+        // ID field is always treated as immutable.
+        if (keyOrSymbol === ID) {
+          continue;
+        }
+
+        const field = keyOrSymbol as Exclude<keyof TTable, typeof ID>;
         const value = input[field];
         const existingValue = (this as any)[field];
 
         // Undefined is treated as "do not touch" signal for the field.
         if (value === undefined) {
-          continue;
-        }
-
-        // ID field is always treated as immutable.
-        if (field === ID) {
           continue;
         }
 
@@ -240,16 +250,24 @@ export function HelpersMixin<
       }
 
       if (numChangedAttrs > 0) {
+        if (input.$literal) {
+          changedAttrs.$literal = input.$literal;
+        }
+
+        if (input.$cas) {
+          changedAttrs.$cas = input.$cas;
+        }
+
         return this.updateOriginal(changedAttrs);
       }
 
-      return false;
+      return null;
     }
 
     async updateChangedReturningX(
       input: UpdateInput<TTable>
     ): Promise<HelpersMixin | this> {
-      return (await this.updateChanged(input))
+      return (await this.updateChanged(input as UpdateOriginalInput<TTable>))
         ? this.constructor.loadX(this.vc, this[ID])
         : this;
     }
@@ -257,7 +275,9 @@ export function HelpersMixin<
     async updateReturningNullable(
       input: UpdateInput<TTable>
     ): Promise<HelpersMixin | null> {
-      const updated = await this.updateOriginal(input);
+      const updated = await this.updateOriginal(
+        input as UpdateOriginalInput<TTable>
+      );
       return updated ? this.constructor.loadNullable(this.vc, this[ID]) : null;
     }
 

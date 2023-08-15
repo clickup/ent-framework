@@ -506,6 +506,38 @@ test("updateReturningX", async () => {
   expect(newUser.nameUpper()).toEqual("JOHN");
 });
 
+test("updateChanged ignores $literal when all fields are unchanged", async () => {
+  let user = await EntTestUser.loadX(vc, vc.principal);
+  expect(
+    await user.updateChanged({
+      url_name: "john",
+      $literal: ["url_name=?", "new"],
+    })
+  ).toStrictEqual(null);
+  user = await EntTestUser.loadX(vc, vc.principal);
+  expect(user).toMatchObject({ name: "John", url_name: "john" });
+
+  expect(
+    await user.updateChanged({
+      $literal: ["url_name=?", "new"],
+    })
+  ).toStrictEqual(null);
+  user = await EntTestUser.loadX(vc, vc.principal);
+  expect(user).toMatchObject({ name: "John", url_name: "john" });
+});
+
+test("updateChanged applies $literal when there are changed fields", async () => {
+  let user = await EntTestUser.loadX(vc, vc.principal);
+  expect(
+    await user.updateChanged({
+      name: "Doe",
+      $literal: ["url_name=?", "new"],
+    })
+  ).toStrictEqual(true);
+  user = await EntTestUser.loadX(vc, vc.principal);
+  expect(user).toMatchObject({ name: "Doe", url_name: "new" });
+});
+
 test("updateChangedReturningX", async () => {
   const user = await EntTestUser.loadX(vc, vc.principal);
   const newUser1 = await user.updateChangedReturningX({ url_name: "new" });
@@ -519,20 +551,72 @@ test("updateOriginal with CAS", async () => {
   // There are way more tests for CAS in sql/__tests__, with all corner cases
   // covered; here we just illustrate the basic syntax.
   const user = await EntTestUser.loadX(vc, vc.principal);
+
   expect(
     await user.updateOriginal({
       url_name: "skip",
       $cas: { updated_at: new Date(42) },
     })
   ).toBeFalsy();
+
   expect(
     await user.updateOriginal({
       url_name: "new",
       $cas: { updated_at: user.updated_at },
     })
   ).toBeTruthy();
-  const newUser = await EntTestUser.loadX(vc, vc.principal);
+
+  expect(
+    await user.updateOriginal({
+      url_name: "skip2",
+      $cas: ["updated_at"],
+    })
+  ).toBeFalsy();
+
+  let newUser = await EntTestUser.loadX(vc, vc.principal);
   expect(newUser).toMatchObject({ url_name: "new" });
+  expect(
+    await newUser.updateOriginal({
+      url_name: "newest",
+      $cas: "skip-if-someone-else-changed-updating-ent-props",
+    })
+  ).toBeTruthy();
+
+  newUser = await EntTestUser.loadX(vc, vc.principal);
+  expect(
+    await newUser.updateOriginal({
+      url_name: "newest",
+      $cas: ["updated_at"],
+    })
+  ).toBeTruthy();
+});
+
+test("updateChanged with CAS", async () => {
+  const user = await EntTestUser.loadX(vc, vc.principal);
+  expect(
+    await user.updateChanged({
+      url_name: "skip-by-cas",
+      $cas: { updated_at: new Date(42) },
+    })
+  ).toStrictEqual(false);
+  expect(
+    await user.updateChanged({
+      url_name: user.url_name, // skipped since no fields are changed
+      $cas: { updated_at: new Date(42) }, // CAS doesn't matter
+    })
+  ).toStrictEqual(null);
+  expect(
+    await user.updateChanged({
+      url_name: user.url_name, // skipped since no fields are changed
+      $cas: ["updated_at"], // CAS doesn't matter
+    })
+  ).toStrictEqual(null);
+  expect(
+    await user.updateChanged({
+      url_name: "new", // field changed
+      $cas: ["updated_at"], // CAS succeeded
+    })
+  ).toStrictEqual(true);
 });
 
 test("delete", async () => {

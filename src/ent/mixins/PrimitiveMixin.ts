@@ -24,6 +24,7 @@ import { ID } from "../../types";
 import { EntNotInsertableError } from "../errors/EntNotInsertableError";
 import { IDsCacheReadable, IDsCacheUpdatable } from "../predicates/Predicate";
 import type { TriggerUpdateOrDeleteOldRow } from "../Triggers";
+import type { UpdateOriginalInput } from "../types";
 import type { VC } from "../VC";
 import type { ConfigClass, ConfigInstance } from "./ConfigMixin";
 
@@ -41,9 +42,20 @@ export interface PrimitiveInstance<TTable extends Table>
 
   /**
    * Updates the object in the DB, but doesn't update the Ent itself (since it's
-   * immutable). Returns true if the object was found.
+   * immutable).
+   * - This method can works with CAS; see $cas property of the passed object.
+   * - If a special value "skip-if-someone-else-changed-updating-ent-props" is
+   *   passed to $cas, then the list of props for CAS is brought from the input,
+   *   and the values of these props are brought from the Ent itself (i.e. from
+   *   `this`).
+   * - If a special value, a list of field names, is passed to $cas, then it
+   *   works like described above, but the list of prop names is brought from
+   *   that list of field names.
+   * - Returns false if there is no such object in the DB, or if CAS check
+   *   didn't succeed.
+   * - Returns true if the object was found and updated.
    */
-  updateOriginal(input: UpdateInput<TTable>): Promise<boolean>;
+  updateOriginal(input: UpdateOriginalInput<TTable>): Promise<boolean>;
 
   /**
    * Deletes the object in the DB. Returns true if the object was found. Keeps
@@ -572,7 +584,24 @@ export function PrimitiveMixin<
       return exists.some((v) => v);
     }
 
-    async updateOriginal(input: UpdateInput<TTable>): Promise<boolean> {
+    async updateOriginal(
+      inputIn: UpdateOriginalInput<TTable>
+    ): Promise<boolean> {
+      const cas = inputIn.$cas;
+      const input = (
+        cas === "skip-if-someone-else-changed-updating-ent-props" ||
+        cas instanceof Array
+          ? {
+              ...inputIn,
+              $cas: Object.fromEntries(
+                (cas instanceof Array ? cas : Object.keys(inputIn))
+                  .filter((k) => !!this.constructor.SCHEMA.table[k])
+                  .map((k) => [k, this[k as keyof this] ?? null])
+              ),
+            }
+          : inputIn
+      ) as UpdateInput<TTable>;
+
       const [shard] = await join([
         this.constructor.SHARD_LOCATOR.singleShardFromID(ID, this[ID]),
         this.vc.heartbeater.heartbeat(),
