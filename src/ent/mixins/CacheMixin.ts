@@ -7,10 +7,10 @@ import type {
   Order,
   Table,
   UniqueKey,
-  UpdateInput,
   Where,
 } from "../../types";
 import { QueryCache } from "../QueryCache";
+import type { UpdateOriginalInput } from "../types";
 import type { VC } from "../VC";
 import type { PrimitiveClass, PrimitiveInstance } from "./PrimitiveMixin";
 
@@ -117,7 +117,7 @@ export function CacheMixin<
     }
 
     override async updateOriginal(
-      input: UpdateInput<TTable>
+      input: UpdateOriginalInput<TTable>
     ): Promise<boolean> {
       const res = await super.updateOriginal(input);
       this.vc

@@ -5,11 +5,14 @@ import type {
   ExistsInput,
   ID,
   InsertInput,
+  Literal,
   LoadByInput,
   Order,
   Table,
   UniqueKey,
+  UpdateField,
   UpdateInput,
+  Value,
   Where,
 } from "../types";
 import type { ShardLocator } from "./ShardLocator";
@@ -64,5 +67,20 @@ export interface Ent<TTable extends Table = any> {
   readonly [ID]: string;
   readonly vc: VC;
   deleteOriginal(): Promise<boolean>;
-  updateOriginal(input: UpdateInput<TTable>): Promise<boolean>;
+  updateOriginal(input: UpdateOriginalInput<TTable>): Promise<boolean>;
 }
+
+/**
+ * The input of updateOriginal() method. It supports some additional syntax
+ * sugar for $cas property, so to work-around TS weakness of Omit<> & type
+ * inference, we redefine this type from scratch.
+ */
+export type UpdateOriginalInput<TTable extends Table> = {
+  [K in UpdateField<TTable>]?: Value<TTable[K]>;
+} & {
+  $literal?: Literal;
+  $cas?:
+    | "skip-if-someone-else-changed-updating-ent-props"
+    | ReadonlyArray<UpdateField<TTable>>
+    | UpdateInput<TTable>["$cas"];
+};

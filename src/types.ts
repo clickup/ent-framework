@@ -210,7 +210,7 @@ export type InsertInput<TTable extends Table> = {
 /**
  * Update: Table -> "field1" | "created_at" | "updated_at" | ... deduction.
  */
-export type UpdateFields<TTable extends Table> = Exclude<
+export type UpdateField<TTable extends Table> = Exclude<
   keyof TTable,
   keyof RowWithID
 >;
@@ -224,10 +224,10 @@ export type UpdateFields<TTable extends Table> = Exclude<
  *   $cas will be updated; the non-matching rows will be skipped.
  */
 export type UpdateInput<TTable extends Table> = {
-  [K in UpdateFields<TTable>]?: Value<TTable[K]>;
+  [K in UpdateField<TTable>]?: Value<TTable[K]>;
 } & {
   $literal?: Literal;
-  $cas?: { [K in UpdateFields<TTable>]?: Value<TTable[K]> };
+  $cas?: { [K in UpdateField<TTable>]?: Value<TTable[K]> };
 };
 
 /**
