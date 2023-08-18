@@ -86,15 +86,24 @@ export class Configuration<TTable extends Table> {
   readonly privacyInferPrincipal?: Validation<TTable>["inferPrincipal"];
   /** Privacy rules checked on every row loaded from the DB. */
   readonly privacyLoad!: ValidationRules<TTable>["load"];
-  /** Privacy rules checked before a row is inserted to the DB. If no
-   * update/delete rules are defined, then these rules are also run on
-   * update/delete by default. */
+  /** Privacy rules checked before a row is inserted to the DB.
+   * - It the list is empty, then only omni VC can insert; it's typically a good
+   *   option for Ents representing e.g. a user.
+   * - If no update/delete rules are defined, then privacyInsert rules are also
+   *   run on update/delete by default.
+   * - Unless empty, the rules must include at least one Require() predicate,
+   *   they can't entirely consist of AllowIf(). This is because for write rules
+   *   (privacyInsert, privacyUpdate, privacyDelete) it's important to make sure
+   *   that ALL rules permit the operation, not only one of them allows it; this
+   *   is what Require() is exactly for. */
   readonly privacyInsert!: ValidationRules<TTable>["insert"];
-  /** Privacy rules checked before a row is updated in the DB. If not defined,
-   * privacyInsert rules are used.  */
+  /** Privacy rules checked before a row is updated in the DB.
+   * - If not defined, privacyInsert rules are used.
+   * - The rules must include at least one Require() predicate. */
   readonly privacyUpdate?: ValidationRules<TTable>["update"];
-  /** Privacy rules checked before a row is deleted in the DB. If not defined,
-   * privacyUpdate (or privacyInsert) rules are used.  */
+  /** Privacy rules checked before a row is deleted in the DB.
+   * - If not defined, privacyInsert rules are used.
+   * - The rules must include at least one Require() predicate. */
   readonly privacyDelete?: ValidationRules<TTable>["delete"];
   /** Custom field values validators run before any insert/update. */
   readonly validators?: ValidationRules<TTable>["validate"];
