@@ -290,13 +290,19 @@ export function runInVoid(
 }
 
 /**
- * A typesafe-way to invariant the object's key presence.
+ * A typesafe-way to invariant the object's key presence and being
+ * non-undefined.
  */
 export function hasKey<K extends symbol | string>(
   k: K,
   o: any
 ): o is { [_ in K]: any } {
-  return o && (typeof o === "object" || typeof o === "function") && k in o;
+  return (
+    o &&
+    (typeof o === "object" || typeof o === "function") &&
+    k in o &&
+    o[k] !== undefined
+  );
 }
 
 /**
