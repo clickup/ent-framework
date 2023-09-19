@@ -276,6 +276,29 @@ export class VC {
   }
 
   /**
+   * Creates a new VC with default freshness (i.e. not sticky to master or
+   * replica, auto-detected on request). Generally, it's not a good idea to use
+   * this derivation since we lose some bit of internal knowledge from the past
+   * history of the VC, but for e.g. tests or benchmarks, it's fine.
+   */
+  withDefaultFreshness(): VC {
+    if (this.freshness === null) {
+      return this;
+    }
+
+    return new VC(
+      this.trace,
+      this.principal,
+      null,
+      this.timelines,
+      this.flavors,
+      this.heartbeater,
+      this.isRoot,
+      this.cachesExpirationMs
+    );
+  }
+
+  /**
    * Returns a new VC derived from the current one adding some more flavors to
    * it. If no flavors were added, returns the same VC (`this`).
    */

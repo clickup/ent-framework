@@ -26,6 +26,7 @@ export class QueryCache {
     AnyClass,
     Partial<Record<Op, QuickLRU<string, Promise<unknown>>>>
   >;
+  public readonly whyOff?: string;
 
   /**
    * Creates the QueryCache object. It enable caching only if VCWithQueryCache
@@ -33,11 +34,16 @@ export class QueryCache {
    */
   constructor(vc: VC) {
     if (vc.freshness === MASTER) {
+      this.whyOff = "MASTER freshness";
       return;
     }
 
     const flavor = vc.flavor(VCWithQueryCache);
-    if (flavor?.options.maxQueries) {
+    if (!flavor) {
+      this.whyOff = "No VCWithQueryCache flavor";
+    } else if (flavor.options.maxQueries <= 0) {
+      this.whyOff = "VCWithQueryCache#maxQueries is not positive";
+    } else {
       this.maxQueries = flavor.options.maxQueries;
     }
   }
