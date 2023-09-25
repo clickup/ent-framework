@@ -6,6 +6,7 @@ import type {
   Row,
   Table,
   UniqueKey,
+  UpdateField,
   UpdateInput,
 } from "../../types";
 import { ID } from "../../types";
@@ -27,8 +28,13 @@ export interface HelpersInstance<TTable extends Table>
    *   updateOriginal() does.
    * - If no changed fields are detected, returns null as an indication (it's
    *   still falsy, but is different from the parent updateOriginal's `false`).
+   * - Otherwise, when an update happened, returns the list of fields which were
+   *   different and triggered that change (a truthy value). The order of fields
+   *   in the list matches the order of fields in the Ent schema definition.
    */
-  updateChanged(input: UpdateOriginalInput<TTable>): Promise<boolean | null>;
+  updateChanged(
+    input: UpdateOriginalInput<TTable>
+  ): Promise<Array<UpdateField<TTable>> | false | null>;
 
   /**
    * Same as updateChanged(), but returns the updated Ent (or the original one
@@ -202,10 +208,9 @@ export function HelpersMixin<
 
     async updateChanged(
       input: UpdateOriginalInput<TTable>
-    ): Promise<boolean | null> {
-      let numChangedAttrs = 0;
-
-      const changedAttrs: UpdateOriginalInput<TTable> = {};
+    ): Promise<Array<UpdateField<TTable>> | false | null> {
+      const changedFields: Array<UpdateField<TTable>> = [];
+      const changedInput: UpdateOriginalInput<TTable> = {};
 
       // Iterate over BOTH regular fields AND symbol fields. Notice that for
       // symbol fields, we'll always have a "changed" signal since the input Ent
@@ -245,20 +250,22 @@ export function HelpersMixin<
         }
 
         // There IS a change in this field. Record it.
-        changedAttrs[field] = value;
-        numChangedAttrs++;
+        changedInput[field] = value;
+        changedFields.push(field);
       }
 
-      if (numChangedAttrs > 0) {
+      if (changedFields.length > 0) {
         if (input.$literal) {
-          changedAttrs.$literal = input.$literal;
+          changedInput.$literal = input.$literal;
         }
 
         if (input.$cas) {
-          changedAttrs.$cas = input.$cas;
+          changedInput.$cas = input.$cas;
         }
 
-        return this.updateOriginal(changedAttrs);
+        return (await this.updateOriginal(changedInput))
+          ? changedFields
+          : false;
       }
 
       return null;

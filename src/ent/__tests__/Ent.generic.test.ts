@@ -533,7 +533,7 @@ test("updateChanged applies $literal when there are changed fields", async () =>
       name: "Doe",
       $literal: ["url_name=?", "new"],
     })
-  ).toStrictEqual(true);
+  ).toStrictEqual(["name"]);
   user = await EntTestUser.loadX(vc, vc.principal);
   expect(user).toMatchObject({ name: "Doe", url_name: "new" });
 });
@@ -616,7 +616,7 @@ test("updateChanged with CAS", async () => {
       url_name: "new", // field changed
       $cas: ["updated_at"], // CAS succeeded
     })
-  ).toStrictEqual(true);
+  ).toStrictEqual(["url_name"]);
 });
 
 test("delete", async () => {
