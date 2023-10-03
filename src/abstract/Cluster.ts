@@ -7,6 +7,7 @@ import { DefaultMap } from "../helpers/DefaultMap";
 import type { PickPartial } from "../helpers/misc";
 import { nullthrows, mapJoin, runInVoid, objectHash } from "../helpers/misc";
 import type { Client } from "./Client";
+import { Island } from "./Island";
 import type { Loggers } from "./Loggers";
 import type { STALE_REPLICA } from "./Shard";
 import { MASTER, Shard } from "./Shard";
@@ -67,14 +68,6 @@ interface DiscoveredShards {
 }
 
 /**
- * An internal interface representing one Island.
- */
-interface Island<TClient extends Client> {
-  master: TClient;
-  replicas: TClient[];
-}
-
-/**
  * Cluster is a collection of islands and an orchestration of shardNo -> island
  * resolution.
  *
@@ -99,12 +92,10 @@ export class Cluster<TClient extends Client, TNode = any> {
     this.islandsMap = new Map(
       options.islands.map(({ no, nodes }) => [
         no,
-        {
-          master: options.createClient(true, nodes[0]),
-          replicas: nodes
-            .slice(1)
-            .map((node) => options.createClient(false, node)),
-        },
+        new Island<TClient>(
+          options.createClient(true, nodes[0]),
+          nodes.slice(1).map((node) => options.createClient(false, node))
+        ),
       ])
     );
     const firstIsland = first([...this.islandsMap.values()]);
