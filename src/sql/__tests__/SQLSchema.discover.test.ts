@@ -76,7 +76,11 @@ test("shard relocation error when accessing a table should be retried", async ()
   const resPromise = shardRun(shard, query);
 
   // Pause until we have at least 2 retries happened.
-  await waitForExpect(() => expect(spyQueryRun).toBeCalledTimes(2));
+  await waitForExpect(
+    () => expect(spyQueryRun).toBeCalledTimes(2),
+    testCluster.options.locateIslandErrorRetryDelayMs * 4, // timeout
+    testCluster.options.locateIslandErrorRetryDelayMs // retry interval
+  );
   await expect(spyQueryRun.mock.results[0].value).rejects.toThrow(ShardError);
 
   // Now after we have some retries, continue & rename the table back.

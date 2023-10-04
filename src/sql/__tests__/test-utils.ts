@@ -159,6 +159,7 @@ export const testConfig = {
  * Test cluster backed by the test config.
  */
 export const testCluster = new Cluster({
+  shardsDiscoverIntervalMs: 500,
   islands: [{ no: 0, nodes: [testConfig, testConfig] }],
   createClient: (isMaster, config) =>
     new TestSQLClient(
