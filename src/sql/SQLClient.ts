@@ -262,41 +262,27 @@ export abstract class SQLClient extends Client {
   }
 
   async shardNos(): Promise<readonly number[]> {
+    // An installation without sharding enabled.
     if (!this.shards) {
       return [0];
     }
 
-    const startTime = process.hrtime();
-    try {
-      // e.g. sh0000, sh0123 and not e.g. sh1 or sh12345678
-      const rows = await this.query<Partial<Record<string, string>>>({
-        query: [this.shards.discoverQuery],
-        isWrite: false,
-        annotations: [],
-        op: "SHARDS",
-        table: "pg_catalog",
-      });
-      return rows
-        .map((row) => Object.values(row)[0])
-        .map((name) => {
-          const no = name?.match(/(\d+)/) ? parseInt(RegExp.$1) : null;
-          return no !== null && name === this.buildShardName(no) ? no : null;
-        })
-        .filter((no): no is number => no !== null)
-        .sort();
-    } catch (error: unknown) {
-      // Being unable to access a DB is not a critical error here, we'll just
-      // miss some shards (and other shards will work). DO NOT throw through
-      // here yet! This needs to be addressed holistically and with careful
-      // retries. Also, we have shards rediscovery every N seconds, so a missing
-      // island will self-heal eventually.
-      this.logSwallowedError(
-        "shardNos()",
-        error,
-        toFloatMs(process.hrtime(startTime))
-      );
-      return [];
-    }
+    // e.g. sh0000, sh0123 and not e.g. sh1 or sh12345678
+    const rows = await this.query<Partial<Record<string, string>>>({
+      query: [this.shards.discoverQuery],
+      isWrite: false,
+      annotations: [],
+      op: "SHARDS",
+      table: "pg_catalog",
+    });
+    return rows
+      .map((row) => Object.values(row)[0])
+      .map((name) => {
+        const no = name?.match(/(\d+)/) ? parseInt(RegExp.$1) : null;
+        return no !== null && name === this.buildShardName(no) ? no : null;
+      })
+      .filter((no): no is number => no !== null)
+      .sort();
   }
 
   shardNoByID(id: string): number {

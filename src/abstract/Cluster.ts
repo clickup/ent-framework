@@ -303,28 +303,28 @@ export class Cluster<TClient extends Client, TNode = any> {
       const nonGlobalShardNos: number[] = [];
       await mapJoin(
         [...this.islandsMap.entries()],
-        async ([island, { master }]) => {
-          const shardNos = await master.shardNos();
+        async ([islandNo, island]) => {
+          const shardNos = await island.shardNos();
           for (const shardNo of shardNos) {
             const otherIslandNo = shardNoToIslandNo.get(shardNo);
             if (otherIslandNo) {
               throw Error(
                 `Shard #${shardNo} exists in more than one island (` +
-                  master.name +
+                  island.master.name +
                   " and " +
                   this.islandsMap.get(otherIslandNo)?.master.name +
                   ")"
               );
             }
 
-            shardNoToIslandNo.set(shardNo, island);
-            islandNoToShardNos.getOrAdd(island, Array).push(shardNo);
+            shardNoToIslandNo.set(shardNo, islandNo);
+            islandNoToShardNos.getOrAdd(islandNo, Array).push(shardNo);
             if (shardNo !== 0) {
               nonGlobalShardNos.push(shardNo);
             }
           }
 
-          islandNoToShardNos.get(island)?.sort((a, b) => a - b);
+          islandNoToShardNos.get(islandNo)?.sort((a, b) => a - b);
         }
       );
       return {
