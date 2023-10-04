@@ -3,6 +3,8 @@ import { Memoize } from "fast-typescript-memoize";
 import first from "lodash/first";
 import omitBy from "lodash/omitBy";
 import random from "lodash/random";
+import pTimeout from "p-timeout";
+import { CachedRefreshedValue } from "../helpers/CachedRefreshedValue";
 import { DefaultMap } from "../helpers/DefaultMap";
 import type { PickPartial } from "../helpers/misc";
 import { nullthrows, mapJoin, runInVoid, objectHash } from "../helpers/misc";
@@ -77,11 +79,7 @@ interface DiscoveredShards {
  * Shard 0 is a special "global" shard.
  */
 export class Cluster<TClient extends Client, TNode = any> {
-  private discoverShardsCache = {
-    wait: null as Promise<void> | null,
-    timeout: null as NodeJS.Timeout | null,
-    cache: null as Promise<DiscoveredShards> | null,
-  };
+  private discoverShardsCache: CachedRefreshedValue<DiscoveredShards>;
   private islandsMap: Map<number, Island<TClient>>;
   private firstIsland;
 
@@ -112,6 +110,20 @@ export class Cluster<TClient extends Client, TNode = any> {
     };
     this.firstIsland = firstIsland;
     this.loggers = this.firstIsland.master.loggers;
+    this.discoverShardsCache = new CachedRefreshedValue({
+      // We assume to not spend more than 50% of the time on discovering shards.
+      warningTimeoutMs: this.options.shardsDiscoverIntervalMs,
+      delayMs: this.options.shardsDiscoverIntervalMs,
+      resolverFn: async () => this.discoverShardsExpensive(),
+      delay: async (ms) => delay(ms),
+      onError: (error) => {
+        this.loggers.swallowedErrorLogger({
+          where: `${this.constructor.name}: ${this.discoverShardsExpensive.name}`,
+          error,
+          elapsed: null,
+        });
+      },
+    });
   }
 
   /**
@@ -124,7 +136,7 @@ export class Cluster<TClient extends Client, TNode = any> {
       island.replicas.forEach((client) => client.prewarm());
     }
 
-    runInVoid(this.discoverShardsCached());
+    runInVoid(this.discoverShardsCache.cached());
   }
 
   /**
@@ -161,7 +173,7 @@ export class Cluster<TClient extends Client, TNode = any> {
    * (discovered) in the cluster.
    */
   async randomShard(seed?: object): Promise<Shard<TClient>> {
-    const { nonGlobalShardNos } = await this.discoverShardsCached();
+    const { nonGlobalShardNos } = await this.discoverShardsCache.cached();
 
     let index;
     if (seed !== undefined) {
@@ -180,7 +192,7 @@ export class Cluster<TClient extends Client, TNode = any> {
    * Returns all currently known (discovered) non-global shards in the cluster.
    */
   async nonGlobalShards(): Promise<ReadonlyArray<Shard<TClient>>> {
-    const { nonGlobalShardNos } = await this.discoverShardsCached();
+    const { nonGlobalShardNos } = await this.discoverShardsCache.cached();
     return nonGlobalShardNos.map((shardNo) => this.shardByNo(shardNo));
   }
 
@@ -195,7 +207,7 @@ export class Cluster<TClient extends Client, TNode = any> {
    * Returns all currently known (discovered) shards of a particular island.
    */
   async islandShards(island: number): Promise<Array<Shard<TClient>>> {
-    const { islandNoToShardNos } = await this.discoverShardsCached();
+    const { islandNoToShardNos } = await this.discoverShardsCache.cached();
     return (
       islandNoToShardNos
         .get(island)
@@ -230,7 +242,7 @@ export class Cluster<TClient extends Client, TNode = any> {
   private shardByNo(shardNo: number): Shard<TClient> {
     return new Shard(shardNo, {
       locateClient: async (freshness: typeof MASTER | typeof STALE_REPLICA) => {
-        const { shardNoToIslandNo } = await this.discoverShardsCached();
+        const { shardNoToIslandNo } = await this.discoverShardsCache.cached();
         const island = shardNoToIslandNo.get(shardNo);
         if (island === undefined) {
           const masterNames = [...this.islandsMap.entries()]
@@ -251,8 +263,22 @@ export class Cluster<TClient extends Client, TNode = any> {
           error.postAction === "rediscover" &&
           attempt < this.options.locateIslandErrorRetryCount
         ) {
-          await this.discoverShardsCached(
-            this.options.locateIslandErrorRetryDelayMs
+          await delay(this.options.locateIslandErrorRetryDelayMs);
+          // We must timeout here, otherwise we may wait forever if some island
+          // is totally down.
+          const startedAt = performance.now();
+          await pTimeout(
+            this.discoverShardsCache.waitRefresh(),
+            // Timeout = delay between fetches + warning timeout
+            // for a fetch.
+            this.options.shardsDiscoverIntervalMs * 2,
+            "Timed out while waiting for shards discovery."
+          ).catch((error) =>
+            this.loggers.swallowedErrorLogger({
+              where: `${this.constructor.name}.${this.shardByNo.name}: waitRefresh`,
+              error,
+              elapsed: performance.now() - startedAt,
+            })
           );
           return "retry";
         } else {
@@ -260,56 +286,6 @@ export class Cluster<TClient extends Client, TNode = any> {
         }
       },
     });
-  }
-
-  /**
-   * Returns the cached Shard-to-Island mapping.
-   *
-   * - Once called, we schedule an endless chain of background re-discovery
-   *   operations.
-   * - The result is cached, so next calls will return it immediately in most of
-   *   the cases.
-   * - Once every shardsDiscoverIntervalMs we reset the cache and re-discover.
-   *   If during the re-discovery someone else tries to call the method, this
-   *   call will be coalesced with the re-discovery queries.
-   * - If waitMsAndResetCache is passed, it means that we want to wait that
-   *   number of ms, then reset the cache and rediscover. If during that wait
-   *   period someone else also wants to reset the cache, this "cache reset"
-   *   order will be coalesced with the existing one.
-   */
-  private async discoverShardsCached(
-    waitMsAndResetCache = 0
-  ): Promise<DiscoveredShards> {
-    const isLeaderToResetCache =
-      waitMsAndResetCache > 0 && !this.discoverShardsCache.wait;
-
-    if (isLeaderToResetCache) {
-      this.discoverShardsCache.wait = delay(waitMsAndResetCache);
-    }
-
-    if (waitMsAndResetCache > 0) {
-      await this.discoverShardsCache.wait;
-    }
-
-    if (isLeaderToResetCache) {
-      this.discoverShardsCache.timeout &&
-        clearTimeout(this.discoverShardsCache.timeout);
-      this.discoverShardsCache.wait = null;
-      this.discoverShardsCache.timeout = null;
-      this.discoverShardsCache.cache = null;
-    }
-
-    if (!this.discoverShardsCache.cache) {
-      this.discoverShardsCache.cache = this.discoverShardsExpensive();
-      // Schedule re-discovery in background to refresh the cache in the future.
-      this.discoverShardsCache.timeout = setTimeout(() => {
-        this.discoverShardsCache.timeout = null;
-        this.discoverShardsCache.cache = null;
-        runInVoid(this.discoverShardsCached());
-      }, this.options.shardsDiscoverIntervalMs);
-    }
-
-    return this.discoverShardsCache.cache;
   }
 
   /**
