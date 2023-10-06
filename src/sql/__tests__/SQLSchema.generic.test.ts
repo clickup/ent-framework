@@ -1009,6 +1009,9 @@ test("select custom", async () => {
         ["JOIN cte1 ON true", "1"],
         ["JOIN (SELECT 10+? AS join2_v) join2 ON true", "10"],
       ],
+      hints: {
+        enable_seqscan: "off",
+      },
     },
   };
 
