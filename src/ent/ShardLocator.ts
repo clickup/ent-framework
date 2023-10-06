@@ -1,3 +1,4 @@
+import uniq from "lodash/uniq";
 import type { Client } from "../abstract/Client";
 import type { Cluster } from "../abstract/Cluster";
 import type { Shard } from "../abstract/Shard";
@@ -142,10 +143,10 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       throw new EntCannotDetectShardError(
         this.entName,
         op,
-        [
+        uniq([
           ...(this.shardAffinity instanceof Array ? this.shardAffinity : [ID]),
           ...inverseFields,
-        ],
+        ]),
         input,
         this.shardAffinity,
         inverseFields
