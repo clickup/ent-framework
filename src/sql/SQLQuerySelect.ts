@@ -26,6 +26,19 @@ const ALLOWED_ORDER = [
   "DESC NULLS FIRST",
 ];
 
+/**
+ * This is mostly to do hacks in PostgreSQL queries. Not even exposed by Ent
+ * framework, but can be used by PG-dependent code.
+ */
+export type SelectInputCustom =
+  | {
+      ctes?: Literal[];
+      joins?: Literal[];
+      from?: Literal;
+      hints?: Record<string, string>;
+    }
+  | undefined;
+
 export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
   TTable,
   SelectInput<TTable>,
@@ -58,15 +71,16 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
     input: SelectInput<TTable>,
     annotations: QueryAnnotation[]
   ): Promise<Array<Row<TTable>>> {
-    let sql =
+    const { sql, hints } = this.buildCustom(
+      input,
       this.prefix +
-      this.builder.prefix +
-      this.builder.func(input.where) +
-      this.builder.suffix +
-      this.buildOptionalOrder(input.order) +
-      this.buildLimit(input.limit);
-    sql = this.buildCustom(input, sql);
-    return this.clientQuery<Row<TTable>>(sql, annotations, 1);
+        this.builder.prefix +
+        this.builder.func(input.where) +
+        this.builder.suffix +
+        this.buildOptionalOrder(input.order) +
+        this.buildLimit(input.limit)
+    );
+    return this.clientQuery<Row<TTable>>(sql, annotations, 1, hints);
   }
 
   async runBatch(
@@ -77,24 +91,28 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
     //    UNION ALL
     // SELECT '...' AS _key, ... FROM ... WHERE ...
     const pieces: string[] = [];
+    let allHints: Record<string, string> = {};
     for (const [key, input] of inputs.entries()) {
-      let sql =
+      const { sql, hints } = this.buildCustom(
+        input,
         this.prefixUnion +
-        escapeString(key) +
-        this.midfixUnion +
-        this.builder.prefix +
-        this.builder.func(input.where) +
-        this.builder.suffix +
-        this.buildOptionalOrder(input.order) +
-        this.buildLimit(input.limit);
-      sql = this.buildCustom(input, sql);
+          escapeString(key) +
+          this.midfixUnion +
+          this.builder.prefix +
+          this.builder.func(input.where) +
+          this.builder.suffix +
+          this.buildOptionalOrder(input.order) +
+          this.buildLimit(input.limit)
+      );
       pieces.push("(" + sql + ")");
+      allHints = { ...allHints, ...hints };
     }
 
     const unionRows = await this.clientQuery<{ _key: string } & Row<TTable>>(
       pieces.join("\n  UNION ALL\n"),
       annotations,
-      inputs.size
+      inputs.size,
+      Object.keys(allHints).length > 0 ? allHints : undefined
     );
 
     const outputs = new Map<string, Array<Row<TTable>>>();
@@ -111,17 +129,15 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
     return outputs;
   }
 
-  private buildCustom(input: SelectInput<TTable>, sql: string): string {
-    // This is mostly to do hacks in PostgreSQL queries.
-    // Not even exposed by Ent framework.
-    const custom = input.custom
-      ? (input.custom as {
-          ctes?: Literal[];
-          joins?: Literal[];
-          from?: Literal;
-        })
-      : {};
-    if (custom.joins?.length) {
+  private buildCustom(
+    input: SelectInput<TTable>,
+    sql: string
+  ): {
+    sql: string;
+    hints: Record<string, string> | undefined;
+  } {
+    const custom = input.custom as SelectInputCustom;
+    if (custom?.joins?.length) {
       sql = sql.replace(
         / FROM \S+\s+/,
         (m) =>
@@ -130,14 +146,14 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
           custom.joins!.map((join) => escapeLiteral(join)).join("\n") +
           "\n"
       );
-    } else if (custom.from?.length) {
+    } else if (custom?.from?.length) {
       sql = sql.replace(
         / FROM \S+/,
         () => " FROM " + escapeLiteral(custom.from!)
       );
     }
 
-    if (custom.ctes?.length) {
+    if (custom?.ctes?.length) {
       sql =
         "WITH\n  " +
         custom.ctes.map((cte) => escapeLiteral(cte)).join(",\n  ") +
@@ -145,7 +161,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
         sql;
     }
 
-    return sql;
+    return { sql, hints: custom?.hints };
   }
 
   private buildOptionalOrder(order: Order<TTable> | undefined): string {
