@@ -145,7 +145,7 @@ export class EntTestHeadline extends BaseEnt(
           }
         },
         [
-          (_vc, row) => JSON.stringify([row.name]),
+          (_vc, row) => [row.name],
           async (_vc, { newRow, oldRow, input }) => {
             EntTestHeadline.TRIGGER_CALLS.push({
               type: "beforeUpdate (if name changed)",
@@ -189,7 +189,7 @@ export class EntTestHeadline extends BaseEnt(
           }
         },
         [
-          (_vc, row) => JSON.stringify([row.name]),
+          (_vc, row) => [row.name],
           async (_vc, { op, newOrOldRow, input }) => {
             EntTestHeadline.TRIGGER_CALLS.push({
               type: "beforeMutation (if name changed or INSERT/DELETE)",
@@ -221,7 +221,7 @@ export class EntTestHeadline extends BaseEnt(
           expectRequired(newRow[$EPHEMERAL2], "no");
         },
         [
-          (_vc, row) => JSON.stringify([row.name]),
+          (_vc, row) => [row.name],
           async (_vc, { newRow, oldRow }) => {
             EntTestHeadline.TRIGGER_CALLS.push({
               type: "afterUpdate (if name changed)",
@@ -253,7 +253,7 @@ export class EntTestHeadline extends BaseEnt(
           expectRequired(newOrOldRow[$EPHEMERAL2], "no");
         },
         [
-          (_vc, row) => JSON.stringify([row.name]),
+          (_vc, row) => [row.name],
           async (_vc, { op, newOrOldRow }) => {
             EntTestHeadline.TRIGGER_CALLS.push({
               type: "afterMutation (if name changed or INSERT/DELETE)",

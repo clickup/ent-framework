@@ -1,3 +1,4 @@
+import deepEqual from "../helpers/deepEqual";
 import type { Flatten, Writeable } from "../helpers/misc";
 import { join } from "../helpers/misc";
 import type {
@@ -163,7 +164,7 @@ export type AfterMutationTrigger<TTable extends Table> = (
 export type DepsBuilder<TTable extends Table> = (
   vc: VC,
   row: Flatten<Readonly<Row<TTable>>>
-) => string | Promise<string>;
+) => unknown[] | Promise<unknown[]>;
 
 export class Triggers<TTable extends Table> {
   constructor(
@@ -390,5 +391,5 @@ async function depsBuilderApproves<TTable extends Table>(
     depsBuilder(vc, newRow),
   ]);
 
-  return depsOld !== depsNew;
+  return !deepEqual(depsOld, depsNew);
 }
