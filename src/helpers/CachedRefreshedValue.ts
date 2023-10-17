@@ -60,13 +60,13 @@ export class CachedRefreshedValue<TValue> {
    */
   async waitRefresh(): Promise<void> {
     runInVoid(this.refreshLoop());
-    // We probably started discovery process before we reached here, so we need
-    // to discard the first resolved value. After await resolves here, it's
-    // guaranteed that this.nextValue will be reassigned with a new pDefer (see
-    // refreshLoop() body).
-    await this.nextValue.promise;
-    // So we await once more which would mean we refreshed the value.
-    await this.nextValue.promise;
+    // Keep waiting till we get a value which is fresh enough.
+    const startedAt = performance.now();
+    while (this.latestAt <= startedAt) {
+      // After await resolves here, it's guaranteed that this.nextValue will be
+      // reassigned with a new pDefer (see refreshLoop() body).
+      await this.nextValue.promise;
+    }
   }
 
   /**

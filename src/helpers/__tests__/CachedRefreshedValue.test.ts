@@ -173,9 +173,9 @@ test("waitRefresh()", async () => {
   await cache.waitRefresh();
   expect(await cache.cached()).toBe("delayed 1");
   await cache.waitRefresh();
-  expect(await cache.cached()).toBe("delayed 3");
+  expect(await cache.cached()).toBe("delayed 2");
   await cache.waitRefresh();
-  expect(await cache.cached()).toBe("delayed 5");
+  expect(await cache.cached()).toBe("delayed 3");
 });
 
 test("destroy before cached()", async () => {
@@ -219,4 +219,66 @@ test("destroy stops resolverFn() calls", async () => {
   cache.destroy();
   await delay(OPTIONS.delayMs * 5);
   expect(resolverFn).toBeCalledTimes(1);
+});
+
+test("waitRefresh() returns fresh value", async () => {
+  let resolveDeferred = pDefer();
+  let delayDeferred = pDefer();
+  cache = new CachedRefreshedValue({
+    ...OPTIONS,
+    resolverFn: async () => {
+      const val = await resolveDeferred.promise;
+      resolveDeferred = pDefer();
+      return val;
+    },
+    delay: async () => {
+      await delayDeferred.promise;
+      delayDeferred = pDefer();
+    },
+  });
+
+  resolveDeferred.resolve("init");
+  await cache.cached();
+
+  await delay(1000);
+
+  const freshValue = cache.waitRefresh().then(async () => cache.cached());
+  delayDeferred.resolve();
+  resolveDeferred.resolve("fresh");
+  expect(await freshValue).toBe("fresh");
+});
+
+test("waitRefresh() skips in-flight value", async () => {
+  let resolveCalled = pDefer();
+  let resolveDeferred = pDefer();
+  let delayDeferred = pDefer();
+  cache = new CachedRefreshedValue({
+    ...OPTIONS,
+    resolverFn: async () => {
+      resolveCalled.resolve();
+      resolveCalled = pDefer();
+      const val = await resolveDeferred.promise;
+      resolveDeferred = pDefer();
+      return val;
+    },
+    delay: async () => {
+      await delayDeferred.promise;
+      delayDeferred = pDefer();
+    },
+  });
+
+  resolveDeferred.resolve("init");
+  await cache.cached();
+
+  delayDeferred.resolve();
+  await resolveCalled.promise;
+  const freshValue = cache.waitRefresh().then(async () => cache.cached());
+
+  resolveDeferred.resolve("in-flight");
+  delayDeferred.resolve();
+
+  await resolveCalled.promise;
+  resolveDeferred.resolve("fresh");
+
+  expect(await freshValue).toBe("fresh");
 });
