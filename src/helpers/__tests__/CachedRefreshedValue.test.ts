@@ -282,3 +282,26 @@ test("waitRefresh() skips in-flight value", async () => {
 
   expect(await freshValue).toBe("fresh");
 });
+
+test("waitRefresh() skips delay", async () => {
+  cache = new CachedRefreshedValue({
+    ...OPTIONS,
+    resolverFn: jest
+      .fn()
+      .mockResolvedValueOnce("one")
+      .mockResolvedValueOnce("two")
+      .mockResolvedValueOnce("three")
+      .mockResolvedValueOnce("everything else"),
+    delay: async () =>
+      // Never resolves!
+      delay(1_000_000),
+  });
+
+  await cache.cached();
+
+  await cache.waitRefresh();
+  expect(await cache.cached()).toBe("two");
+
+  await cache.waitRefresh();
+  expect(await cache.cached()).toBe("three");
+}, 10_000 /* timeout */);

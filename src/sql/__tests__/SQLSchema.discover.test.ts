@@ -42,6 +42,7 @@ beforeEach(async () => {
 
   testCluster.options.locateIslandErrorRetryCount = 2;
   testCluster.options.locateIslandErrorRetryDelayMs = 1000;
+  testCluster.options.shardsDiscoverIntervalMs = 1000;
   timeline.reset();
   shard = await testCluster.randomShard();
   master = await shard.client(MASTER);
@@ -111,3 +112,12 @@ test("shard-to-island resolution failure should cause rediscover when just getti
   await expect(shard.client(MASTER)).rejects.toThrow(ShardError);
   expect(spyShardOnRunError).toBeCalledTimes(3);
 });
+
+test("shard-to-island resolution failure should run rediscovery immediately", async () => {
+  testCluster.options.shardsDiscoverIntervalMs = 1_000_000;
+
+  const shard = testCluster.shard(ID_FROM_UNKNOWN_SHARD);
+  await expect(
+    shardRun(shard, schema.load(ID_FROM_UNKNOWN_SHARD))
+  ).rejects.toThrow(ShardError);
+}, 10_000 /* timeout */);
