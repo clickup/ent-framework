@@ -44,6 +44,8 @@ export class CachedRefreshedValue<TValue> {
   private latestAt: number = 0;
   /** Whether the instance is destroyed. Used to prevent memory leaks in unit tests. */
   private destroyedError: Error | null = null;
+  /** Skips current delay call. */
+  private skipDelay: (() => void) | null = null;
 
   constructor(public readonly options: CachedRefreshedValueOptions<TValue>) {}
 
@@ -63,6 +65,8 @@ export class CachedRefreshedValue<TValue> {
     // Keep waiting till we get a value which is fresh enough.
     const startedAt = performance.now();
     while (this.latestAt <= startedAt) {
+      // Skip waiting between loops.
+      this.skipDelay?.();
       // After await resolves here, it's guaranteed that this.nextValue will be
       // reassigned with a new pDefer (see refreshLoop() body).
       await this.nextValue.promise;
@@ -115,7 +119,15 @@ export class CachedRefreshedValue<TValue> {
         clearTimeout(timeout);
       }
 
-      await this.options.delay(this.options.delayMs);
+      // Wait for delayMs with ability to skip it.
+      const delayDeferred = pDefer<void>();
+      this.skipDelay = () => delayDeferred.resolve();
+      runInVoid(
+        this.options
+          .delay(this.options.delayMs)
+          .finally(() => delayDeferred.resolve())
+      );
+      await delayDeferred.promise;
     }
 
     // Mark current instance as destroyed.

@@ -110,10 +110,15 @@ export class Cluster<TClient extends Client, TNode = any> {
     };
     this.firstIsland = firstIsland;
     this.loggers = this.firstIsland.master.loggers;
+    const thisOptions = this.options;
     this.discoverShardsCache = new CachedRefreshedValue({
-      // We assume to not spend more than 50% of the time on discovering shards.
-      warningTimeoutMs: this.options.shardsDiscoverIntervalMs,
-      delayMs: this.options.shardsDiscoverIntervalMs,
+      get warningTimeoutMs() {
+        // We assume to not spend more than 50% of the time on discovering shards.
+        return thisOptions.shardsDiscoverIntervalMs;
+      },
+      get delayMs() {
+        return thisOptions.shardsDiscoverIntervalMs;
+      },
       resolverFn: async () => this.discoverShardsExpensive(),
       delay: async (ms) => delay(ms),
       onError: (error) => {
