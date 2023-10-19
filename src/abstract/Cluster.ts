@@ -337,7 +337,7 @@ export class Cluster<TClient extends Client, TNode = any> {
         islandNoToShardNos,
         nonGlobalShardNos: nonGlobalShardNos.sort((a, b) => a - b),
       };
-    } catch (e) {
+    } catch (e: unknown) {
       if (retriesLeft > 0) {
         await delay(this.options.shardsDiscoverErrorRetryDelayMs);
         return this.discoverShardsExpensive(retriesLeft - 1);

@@ -31,7 +31,7 @@ export class Or<TInput> implements Predicate<TInput> {
           predicate,
           res: await predicate.check(vc, input),
         };
-      } catch (e) {
+      } catch (e: unknown) {
         if (e instanceof EntAccessError) {
           errorEntNames.add(e.entName);
           return { predicate, res: e };

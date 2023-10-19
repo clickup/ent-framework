@@ -19,7 +19,7 @@ export class DenyIf<TInput extends object> extends Rule<TInput> {
       return (await this.predicate.check(vc, input))
         ? { decision: RuleDecision.DENY, rule: this, cause: null }
         : { decision: RuleDecision.SKIP, rule: this, cause: null };
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof EntAccessError) {
         // We carry a cause for this DENY decision too if it was due to an
         // access-related error.

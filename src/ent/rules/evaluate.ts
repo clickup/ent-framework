@@ -121,7 +121,7 @@ async function ruleEvaluate<TInput extends object>(
 ): Promise<RuleResult> {
   try {
     return await rule.evaluate(vc, input);
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof EntAccessError) {
       return {
         decision: RuleDecision.DENY,

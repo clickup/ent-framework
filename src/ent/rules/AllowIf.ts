@@ -17,7 +17,7 @@ export class AllowIf<TInput extends object> extends Rule<TInput> {
       return (await this.predicate.check(vc, input))
         ? { decision: RuleDecision.ALLOW, rule: this, cause: null }
         : { decision: RuleDecision.SKIP, rule: this, cause: null };
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof EntAccessError) {
         // We carry a cause for this SKIP decision too if it was due to an
         // access-related error.
