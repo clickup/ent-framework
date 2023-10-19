@@ -402,6 +402,7 @@ function func1(): void {}
 function func2(): void {}
 
 class MyMap extends Map {}
+
 class MySet extends Set {}
 
 function map(obj: any, Class?: typeof MyMap): Map<any, any> {
