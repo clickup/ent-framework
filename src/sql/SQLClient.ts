@@ -459,7 +459,7 @@ export function escapeArray(
 export function escapeDate(v: Date | null | undefined, field?: string): string {
   try {
     return v === null || v === undefined ? "NULL" : "'" + v.toISOString() + "'";
-  } catch (e) {
+  } catch (e: unknown) {
     throw Error(`Failed to perform escapeDate for "${field}": ${e}`);
   }
 }
