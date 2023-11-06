@@ -254,7 +254,7 @@ export function PrimitiveMixin<
           canUndoInverseInsert: id2IsNewlyGenerated,
         }));
 
-        let actuallyInsertedID = null;
+        let isInserted = false;
         let isKnownServerState = true;
         let lastError: unknown = undefined;
         try {
@@ -262,8 +262,8 @@ export function PrimitiveMixin<
           // insert the main Ent. This avoids race conditions for cases when
           // multiple clients insert and load the main Ent simultaneously: in
           // terms of business logic, there is nothing too bad in having some
-          // "extra" inverses in the database since they're also used to resolve
-          // shard CANDIDATES.
+          // "extra" inverses in the database since they're only "hints" and are
+          // used to resolve shard CANDIDATES.
           await mapJoin(inverseRows, async (inverseRow) => {
             const { inverse, id1, id2 } = inverseRow;
             if (!(await inverse.beforeInsert(vc, id1, id2))) {
@@ -278,52 +278,58 @@ export function PrimitiveMixin<
           // Insert the actual Ent. On SQL error, we'll get an exception, and on
           // a duplicate key violation (which is a business logic condition),
           // we'll get a null returned.
-          actuallyInsertedID = await this.TRIGGERS.wrapInsert(
-            async (input) =>
-              shard
-                .run(
+          return await this.TRIGGERS.wrapInsert(
+            async (input) => {
+              try {
+                // Remember actuallyInsertedID received from exactly shard
+                // INSERT operation, prior to the after-triggers kick in. This
+                // allows to know that ID for inverse undo purposes in case some
+                // after-trigger fails.
+                const id = await shard.run(
                   this.SCHEMA.insert(input),
                   vc.toAnnotation(),
                   vc.timeline(shard, this.SCHEMA.name),
                   vc.freshness
-                )
-                .catch((error) => {
-                  // Do we know for sure whether the server applied the insert
-                  // or not? Some examples are: "connection reset" or pgbouncer
-                  // timeout: in those cases, it's possible that the insert
-                  // actually DID succeed internally, so we must NOT delete
-                  // inverses as a cleanup action.
-                  if (!(error instanceof ServerError)) {
-                    isKnownServerState = false;
-                  }
+                );
+                isInserted = !!id;
+                return id;
+              } catch (error: unknown) {
+                // Do we know for sure whether the server applied the insert or
+                // not? Some examples are: "connection reset" or pgbouncer
+                // timeout: in those cases, it's quite possible that the insert
+                // actually DID succeed internally, but we still received an
+                // error, so we must NOT delete inverses as a cleanup action.
+                if (!(error instanceof ServerError)) {
+                  isKnownServerState = false;
+                }
 
-                  throw error;
-                }),
+                throw error;
+              }
+            },
             vc,
             { ...input, [ID]: id2 }
           );
-          return actuallyInsertedID;
         } catch (e: unknown) {
           lastError = e;
           throw e;
         } finally {
           // There are 3 failure conditions here:
           // 1. There was an exception, but we don't know the state of PG server
-          //    (it might or might not apply the insert).
+          //    (it might or might not have applied the insert).
           // 2. There was an exception during the insert (in this case,
-          //    actuallyInsertedID will be null due to the above
-          //    initialization), and we received the response from PG.
+          //    isInserted will remain null due to the above initialization),
+          //    and we received the response from PG.
           // 3. An insert resulted in a no-op due to unique constraints
-          //    violation (and in this case, insert() will return null to
-          //    actuallyInsertedID).
-          if (actuallyInsertedID === null && isKnownServerState) {
+          //    violation (and in this case, insert() will return null, and we
+          //    will write false to isInserted).
+          if (!isInserted && isKnownServerState) {
             // We couldn't insert the Ent due to an unique key violation or some
-            // other DB error. Try to undo the inverses creation (but if we fail
-            // to undo, it's not a big deal to have stale inverses in the DB
-            // since they only affect shard candidates locating). This logic
-            // looks scary, but it's exactly how the code looked like in FB; in
-            // real lifer, there is always an "inverses fixer" service which
-            // removes orphaned inverses asynchronously.
+            // other DB error for which we know the exact PG server state. Try
+            // to undo the inverses creation (but if we fail to undo, it's not a
+            // big deal to have stale inverses in the DB since they are only
+            // "hints" and affect shard candidates locating). This logic looks
+            // scary, but in real life, there is always an "inverses fixer"
+            // service which removes orphaned inverses asynchronously.
             await mapJoin(
               inverseRows,
               async ({ inverse, id1, id2, canUndoInverseInsert }) => {

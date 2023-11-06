@@ -135,11 +135,19 @@ class EntTestTopic extends BaseEnt(
           }
         },
       ],
+      afterMutation: [
+        async (_vc, { newOrOldRow }) => {
+          if (newOrOldRow.slug === "throwInAfterMutation") {
+            throw Error("thrown in throwInAfterMutation");
+          }
+        },
+      ],
     });
   }
 }
 
 let vc: VC;
+let myCompany: EntTestCompany;
 
 beforeEach(async () => {
   await recreateTestTables(
@@ -148,6 +156,7 @@ beforeEach(async () => {
   );
 
   vc = createVC();
+  myCompany = await EntTestCompany.insertReturning(vc, { name: "my-company" });
 });
 
 test("CRUD", async () => {
@@ -324,9 +333,6 @@ test("race condition in insert/loadBy", async () => {
 
 test("inverses are deleted when ent insert DB operation fails", async () => {
   testCluster.options.locateIslandErrorRetryCount = 0;
-  const company = await EntTestCompany.insertReturning(vc, {
-    name: "my-company",
-  });
   await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
     const master = await shard.client(MASTER);
     await master.rows(
@@ -336,34 +342,39 @@ test("inverses are deleted when ent insert DB operation fails", async () => {
   });
   await expect(
     EntTestTopic.insertIfNotExists(vc, {
-      owner_id: company.id,
+      owner_id: myCompany.id,
       slug: "topic",
     })
   ).rejects.toThrow(ShardError);
   const inverse = EntTestTopic.INVERSES[0];
-  expect(await inverse.id2s(vc, company.id)).toEqual([]);
+  expect(await inverse.id2s(vc, myCompany.id)).toEqual([]);
 });
 
-test("inverses are deleted when beforeInsert trigger throws with any error", async () => {
-  const company = await EntTestCompany.insertReturning(vc, {
-    name: "my-company",
-  });
+test("inverses are deleted when beforeInsert trigger throws any error", async () => {
   await expect(
     EntTestTopic.insertIfNotExists(vc, {
-      owner_id: company.id,
+      owner_id: myCompany.id,
       slug: "throwInBeforeInsert",
     })
   ).rejects.toThrow(Error);
   const inverse = EntTestTopic.INVERSES[0];
-  expect(await inverse.id2s(vc, company.id)).toEqual([]);
+  expect(await inverse.id2s(vc, myCompany.id)).toEqual([]);
+});
+
+test("inverses are NOT deleted when throwInAfterMutation trigger throws any error", async () => {
+  await expect(
+    EntTestTopic.insertIfNotExists(vc, {
+      owner_id: myCompany.id,
+      slug: "throwInAfterMutation",
+    })
+  ).rejects.toThrow(Error);
+  const inverse = EntTestTopic.INVERSES[0];
+  expect(await inverse.id2s(vc, myCompany.id)).toHaveLength(1);
 });
 
 test("inverses are not deleted when ent creation times out", async () => {
-  const company = await EntTestCompany.insertReturning(vc, {
-    name: "my-company",
-  });
   const promise = EntTestTopic.insertIfNotExists(vc, {
-    owner_id: company.id,
+    owner_id: myCompany.id,
     slug: "pg_sleep",
     sleep: 5,
   }).catch((e) => e.message);
@@ -376,29 +387,26 @@ test("inverses are not deleted when ent creation times out", async () => {
   // On an accidental disconnect, we don't know, whether the DB applied the
   // insert or not, so we should expect Ent Framework to NOT delete the inverse.
   const inverse = EntTestTopic.INVERSES[0];
-  expect(await inverse.id2s(vc, company.id)).toHaveLength(1);
+  expect(await inverse.id2s(vc, myCompany.id)).toHaveLength(1);
 });
 
 test("inverses are not deleted when ent insertion is requested with an existing ID", async () => {
-  const company = await EntTestCompany.insertReturning(vc, {
-    name: "my-company",
-  });
   const user = await EntTestUser.insertReturning(vc, {
-    company_id: company.id,
+    company_id: myCompany.id,
     team_id: null,
     name: "my-user",
   });
 
   const user2id = await EntTestUser.insertIfNotExists(vc, {
     id: user.id,
-    company_id: company.id,
+    company_id: myCompany.id,
     team_id: null,
     name: "my-user2",
   });
   expect(user2id).toBeNull();
 
-  expect(await EntTestUser.INVERSES[0].id2s(vc, company.id)).toHaveLength(1);
-  await EntTestUser.loadByX(vc, { company_id: company.id, team_id: null });
+  expect(await EntTestUser.INVERSES[0].id2s(vc, myCompany.id)).toHaveLength(1);
+  await EntTestUser.loadByX(vc, { company_id: myCompany.id, team_id: null });
 });
 
 test("loadBy with multiple shard candidates", async () => {
