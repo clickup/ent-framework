@@ -1,7 +1,7 @@
 import { inspect } from "util";
 import type { QueryResult, QueryResultRow } from "pg";
 import { Client } from "../abstract/Client";
-import type { Loggers } from "../abstract/Loggers";
+import type { ClientQueryLoggerProps, Loggers } from "../abstract/Loggers";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 
 import { ShardError } from "../abstract/ShardError";
@@ -58,6 +58,8 @@ export abstract class SQLClient extends Client {
   protected abstract acquireConn(): Promise<SQLClientConn>;
 
   protected abstract releaseConn(conn: SQLClientConn): void;
+
+  protected abstract poolStats(): ClientQueryLoggerProps["poolStats"];
 
   constructor(
     name: string,
@@ -160,12 +162,14 @@ export abstract class SQLClient extends Client {
 
     try {
       const startTime = process.hrtime();
+      let acquireElapsed: number | null = null;
       let error: string | undefined;
       let connID: number | null = null;
       let res: TRow[] | undefined;
 
       try {
         const conn = await this.acquireConn();
+        acquireElapsed = toFloatMs(process.hrtime(startTime));
         connID = conn.id ?? 0;
         try {
           if (query === "") {
@@ -227,6 +231,7 @@ export abstract class SQLClient extends Client {
         error = "" + e;
         throw e;
       } finally {
+        const totalElapsed = toFloatMs(process.hrtime(startTime));
         this.loggers.clientQueryLogger?.({
           annotations,
           connID: "" + connID,
@@ -237,7 +242,11 @@ export abstract class SQLClient extends Client {
           batchFactor: batchFactor ?? 1,
           msg: debugQueryWithHints,
           output: res ? res : undefined,
-          elapsed: toFloatMs(process.hrtime(startTime)),
+          elapsed: {
+            total: totalElapsed,
+            acquire: acquireElapsed ?? totalElapsed,
+          },
+          poolStats: this.poolStats(),
           error,
           isMaster: this.isMaster,
         });

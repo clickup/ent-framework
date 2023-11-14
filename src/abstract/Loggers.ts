@@ -17,7 +17,15 @@ export interface ClientQueryLoggerProps {
   batchFactor: number;
   msg: string;
   output: any;
-  elapsed: number;
+  elapsed: {
+    total: number;
+    acquire: number;
+  };
+  poolStats: {
+    totalCount: number;
+    waitingCount: number;
+    idleCount: number;
+  };
   error: string | undefined;
   isMaster: boolean;
   backend: string;
