@@ -1,7 +1,7 @@
 import range from "lodash/range";
 import type { Connection, PoolClient, PoolConfig } from "pg";
 import { Pool } from "pg";
-import type { Loggers } from "../abstract/Loggers";
+import type { ClientQueryLoggerProps, Loggers } from "../abstract/Loggers";
 import { runInVoid, toFloatMs } from "../helpers/misc";
 import { SQLClient } from "./SQLClient";
 
@@ -60,6 +60,14 @@ export class SQLClientPool extends SQLClient {
   protected releaseConn(conn: SQLClientPoolClient): void {
     const needClose = !!(conn.closeAt && Date.now() > conn.closeAt);
     conn.release(needClose);
+  }
+
+  protected poolStats(): ClientQueryLoggerProps["poolStats"] {
+    return {
+      totalCount: this.state.pool.totalCount,
+      waitingCount: this.state.pool.waitingCount,
+      idleCount: this.state.pool.idleCount,
+    };
   }
 
   constructor(public readonly dest: SQLClientDest) {
