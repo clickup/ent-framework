@@ -14,20 +14,14 @@ export class FieldIs
     public readonly field: string,
     public readonly validator: (
       fieldValue: any,
-      row: Record<string, any>
-    ) => boolean,
-    public readonly message: string,
-    /** The condition that has to be met to run this check. */
-    private readonly condition?: (vc: VC) => boolean
+      row: Record<string, any>,
+      vc: VC
+    ) => boolean | Promise<boolean>,
+    public readonly message: string
   ) {}
 
   async check(vc: VC, row: Record<string, any>): Promise<boolean> {
-    // If condition is defined then run the check only if it was met.
-    if (this.condition && !this.condition(vc)) {
-      return true;
-    }
-
     const fieldValue = row[this.field];
-    return this.validator(fieldValue, row);
+    return this.validator(fieldValue, row, vc);
   }
 }
