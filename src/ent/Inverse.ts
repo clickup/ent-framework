@@ -167,12 +167,12 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   /**
    * If the field is already mentioned in shardAffinity, and the referred parent
    * object (id1) exists, we won't need to create an Inverse, because the engine
-   * will be able to infer the target shard from shardAffinity. This method
+   * will be able to infer the target Shard from shardAffinity. This method
    * would return true in such a case. In fact, we could've still create an
    * Inverse for this case, but in sake of keeping the database lean, we don't
    * do it (useful when a field holds a reference to an "optionally sharded"
    * Ent, like sometimes it point so an Ent which is sharded, and sometimes on
-   * an Ent in the global shard).
+   * an Ent in the global Shard).
    */
   private id2ShardIsInferrableFromShardAffinity(id1: string | null): boolean {
     return (
@@ -184,7 +184,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   }
 
   /**
-   * A shortcut to run a query on the shard of id1.
+   * A shortcut to run a query on the Shard of id1.
    */
   private async run<TOutput>(
     vc: VC,
@@ -200,10 +200,10 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   }
 
   /**
-   * Returns a target shard for an id.
+   * Returns a target Shard for an id.
    */
   private shard(id: string | null): Shard<TClient> {
-    // id1=NULL Inverse is always put to the global shard.
+    // id1=NULL Inverse is always put to the global Shard.
     return id ? this.cluster.shard(id) : this.cluster.globalShard();
   }
 }

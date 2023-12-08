@@ -2,7 +2,7 @@ import { inspect } from "util";
 
 /**
  * Error: when the system cannot detect the target shard to work with (e.g. an
- * Ent doesn't refer to any other Ent with shard affinity).
+ * Ent doesn't refer to any other Ent with Shard affinity).
  *
  * Throwing of this error signals about a bug in the code, so it is not
  * user-facing (thus, not derived from EntAccessError).

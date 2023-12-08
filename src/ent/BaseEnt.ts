@@ -13,7 +13,7 @@ export { GLOBAL_SHARD };
 
 /**
  * This is a helper function to create new Ent classes. Run once per each
- * Ent+cluster on app boot. See examples in __tests__/TestObjects.ts and
+ * Ent+Cluster on app boot. See examples in __tests__/TestObjects.ts and
  * EntTest.ts.
  *
  * Since all Ent objects are immutable (following the modern practices),

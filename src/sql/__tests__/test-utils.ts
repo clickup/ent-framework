@@ -145,7 +145,7 @@ export class ByteaBuffer {
 }
 
 /**
- * A SQL client config we use in tests.
+ * A SQL Client config we use in tests.
  */
 export const testConfig = {
   host: process.env.PGHOST || process.env.DB_HOST_DEFAULT,
@@ -156,7 +156,7 @@ export const testConfig = {
 };
 
 /**
- * Test cluster backed by the test config.
+ * Test Cluster backed by the test config.
  */
 export const testCluster = new Cluster({
   shardsDiscoverIntervalMs: 500,
@@ -178,7 +178,7 @@ export const testCluster = new Cluster({
 });
 
 /**
- * Recreates the test tables on the test cluster.
+ * Recreates the test tables on the test Cluster.
  */
 export async function recreateTestTables(
   EntClasses: Array<{

@@ -17,7 +17,7 @@ export class TimelineManager {
     public readonly maxLagMs: number,
     /** Up to how often we call triggerRefresh(). */
     private refreshMs: number | null,
-    /** For replica island client, this method is called time to time to refresh
+    /** For replica Island Client, this method is called time to time to refresh
      * the data which is later returned by currentPos(). Makes sense for
      * connections which execute queries rarely: for them, the framework
      * triggers the update when the fresh data is needed. */
@@ -47,7 +47,7 @@ export class TimelineManager {
   }
 
   /**
-   * Sets the actual timeline pos. Must be called by the client after each
+   * Sets the actual timeline pos. Must be called by the Client after each
    * interaction with the database.
    */
   setCurrentPos(pos: bigint): void {

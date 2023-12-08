@@ -71,7 +71,7 @@ export type PrimitiveClass<
 > = OmitNew<ConfigClass<TTable, TUniqueKey, TClient>> & {
   /**
    * Runs INSERT mutation for the Ent.
-   * - The shard is inferred from the input fields using SHARD_AFFINITY.
+   * - The Shard is inferred from the input fields using SHARD_AFFINITY.
    * - Returns ID of the newly inserted row.
    * - Returns null if the Ent violates unique key constraints.
    * - If the Ent has some triggers set up, this will be translated into two
@@ -118,7 +118,7 @@ export type PrimitiveClass<
 
   /**
    * Selects the list of Ents by their unique key prefix. The query can span
-   * multiple shards if their locations can be inferred from inverses related to
+   * multiple Shards if their locations can be inferred from inverses related to
    * the fields mentioned in the query. Ordering of the results is not
    * guaranteed.
    */
@@ -130,11 +130,11 @@ export type PrimitiveClass<
 
   /**
    * Selects the list of Ents by some predicate.
-   * - The query can span multiple shards if their locations can be inferred
+   * - The query can span multiple Shards if their locations can be inferred
    *   from inverses related to the fields mentioned in the query.
-   * - In multi-shard case, ordering of results is not guaranteed.
-   * - In multi-shard case, it may return more results than requested by limit
-   *   (basically, limit is applied to each shard individually). The caller has
+   * - In multi-Shard case, ordering of results is not guaranteed.
+   * - In multi-Shard case, it may return more results than requested by limit
+   *   (basically, limit is applied to each Shard individually). The caller has
    *   then freedom to reorder & slice the results as they wish.
    */
   select: <TEnt extends PrimitiveInstance<TTable>>(
@@ -149,9 +149,9 @@ export type PrimitiveClass<
   /**
    * Same as select(), but returns data in chunks.
    * - Uses multiple select() queries under the hood.
-   * - The query can span multiple shards if their locations can be inferred
+   * - The query can span multiple Shards if their locations can be inferred
    *   from inverses related to the fields mentioned in the query.
-   * - Ents in each chunk always belong to the same shard and are ordered by ID
+   * - Ents in each chunk always belong to the same Shard and are ordered by ID
    *   (there is no support for custom ordering). Make sure you have the right
    *   index in the database.
    */
@@ -166,7 +166,7 @@ export type PrimitiveClass<
 
   /**
    * Returns count of Ents matching a predicate. The query can span multiple
-   * shards if their locations can be inferred from inverses related to the
+   * Shards if their locations can be inferred from inverses related to the
    * fields mentioned in the query.
    */
   count: (vc: VC, where: CountInput<TTable>) => Promise<number>;
@@ -260,7 +260,7 @@ export function PrimitiveMixin<
         try {
           // Preliminarily insert inverse rows to inverses table, even before we
           // insert the main Ent. This avoids race conditions for cases when
-          // multiple clients insert and load the main Ent simultaneously: in
+          // multiple Clients insert and load the main Ent simultaneously: in
           // terms of business logic, there is nothing too bad in having some
           // "extra" inverses in the database since they're only "hints" and are
           // used to resolve shard CANDIDATES.
@@ -327,7 +327,7 @@ export function PrimitiveMixin<
             // other DB error for which we know the exact PG server state. Try
             // to undo the inverses creation (but if we fail to undo, it's not a
             // big deal to have stale inverses in the DB since they are only
-            // "hints" and affect shard candidates locating). This logic looks
+            // "hints" and affect Shard candidates locating). This logic looks
             // scary, but in real life, there is always an "inverses fixer"
             // service which removes orphaned inverses asynchronously.
             await mapJoin(

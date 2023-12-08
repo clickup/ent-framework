@@ -24,7 +24,7 @@ export interface ShardOptions<TClient extends Client> {
 }
 
 /**
- * Shard is a numbered island with one master and N replicas.
+ * Shard lives within an Island with one master and N replicas.
  */
 export class Shard<TClient extends Client> {
   private shardClients = new WeakMap<TClient, TClient>();
@@ -35,7 +35,7 @@ export class Shard<TClient extends Client> {
   ) {}
 
   /**
-   * Chooses the right client to be used for this shard. We don't memoize,
+   * Chooses the right Client to be used for this Shard. We don't memoize,
    * because the Shard may relocate to another Island during re-discovery.
    */
   async client(
@@ -56,8 +56,8 @@ export class Shard<TClient extends Client> {
   }
 
   /**
-   * Runs a query after choosing the right client (destination connection,
-   * shard, annotation etc.)
+   * Runs a query after choosing the right Client (destination connection,
+   * Shard, annotation etc.)
    */
   async run<TOutput>(
     query: Query<TOutput>,
@@ -73,9 +73,9 @@ export class Shard<TClient extends Client> {
           freshness ?? timeline,
           query.IS_WRITE ? true : undefined
         );
-        // Throws if e.g. the shard was there by the moment we got its client
+        // Throws if e.g. the Shard was there by the moment we got its client
         // above, but it probably disappeared (during migration) and appeared on
-        // some other island.
+        // some other Island.
         res = await query.run(client, {
           ...annotation,
           whyClient,
@@ -101,7 +101,7 @@ export class Shard<TClient extends Client> {
   }
 
   /**
-   * Throws if this shard does not exist, or its island is down, or something
+   * Throws if this Shard does not exist, or its Island is down, or something
    * else is wrong with it.
    */
   async assertDiscoverable(): Promise<void> {
@@ -109,7 +109,7 @@ export class Shard<TClient extends Client> {
   }
 
   /**
-   * An extended client selection logic. There are multiple reasons (8+ in total
+   * An extended Client selection logic. There are multiple reasons (8+ in total
    * so far) why a master or a replica may be chosen to send the query to. We
    * don't memoize, because the Shard may relocate to another Island during
    * re-discovery.
@@ -145,7 +145,7 @@ export class Shard<TClient extends Client> {
   }
 
   /**
-   * Returns a shard-aware Client of a particular freshness.
+   * Returns a Shard-aware Client of a particular freshness.
    */
   private async shardClient(
     freshness: typeof MASTER | typeof STALE_REPLICA

@@ -38,7 +38,7 @@ export interface ConfigClass<
   ) => Configuration<TTable>;
 
   /**
-   * A cluster where this Ent lives.
+   * A Cluster where this Ent lives.
    */
   readonly CLUSTER: Cluster<TClient>;
 
@@ -48,7 +48,7 @@ export interface ConfigClass<
   readonly SCHEMA: Schema<TTable, TUniqueKey>;
 
   /**
-   * Defines how to find the right shard during Ent insertion.
+   * Defines how to find the right Shard during Ent insertion.
    */
   readonly SHARD_AFFINITY: ShardAffinity<FieldOfIDType<TTable>>;
 
@@ -81,7 +81,7 @@ export interface ConfigClass<
 
 /**
  * Modifies the passed class adding support for Ent configuration (such as:
- * cluster, table schema, privacy rules, triggers etc.).
+ * Cluster, table schema, privacy rules, triggers etc.).
  */
 export function ConfigMixin<
   TTable extends Table,
