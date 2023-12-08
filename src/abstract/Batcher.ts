@@ -33,7 +33,7 @@ export abstract class Runner<TInput, TOutput> {
   abstract readonly default: TOutput;
 
   /**
-   * Name of the shard for this runner.
+   * Name of the Shard for this Runner.
    */
   abstract readonly shardName: string;
 
@@ -72,7 +72,7 @@ export abstract class Runner<TInput, TOutput> {
    *
    * We can do this, because we know that if some transaction is aborted, it's
    * always safe to retry it. (If we're not sure about the transaction, e.g. the
-   * client doesn't support transactions at all, then the method should return
+   * Client doesn't support transactions at all, then the method should return
    * false.)
    */
   abstract shouldDebatchOnError(error: any): boolean;

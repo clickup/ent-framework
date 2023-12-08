@@ -53,7 +53,7 @@ class EntTestCompany extends BaseEnt(
 }
 
 /**
- * An Ent in a random shard with high-cardinality Inverses.
+ * An Ent in a random Shard with high-cardinality Inverses.
  */
 class EntTestUser extends BaseEnt(
   testCluster,
@@ -411,7 +411,7 @@ test("inverses are not deleted when ent insertion is requested with an existing 
 
 test("loadBy with multiple shard candidates", async () => {
   const companyID = "1000000000000000001";
-  // Creates an inverse from companyID to shard 1.
+  // Creates an inverse from companyID to Shard 1.
   await createUserInShard({
     vc,
     shardNo: 1,
@@ -419,7 +419,7 @@ test("loadBy with multiple shard candidates", async () => {
     startTeamID: "1000000000000000001",
     increment: "teamID",
   });
-  // Creates an inverse from companyID to shard 2.
+  // Creates an inverse from companyID to Shard 2.
   const user2 = await createUserInShard({
     vc,
     shardNo: 2,
@@ -427,8 +427,8 @@ test("loadBy with multiple shard candidates", async () => {
     startTeamID: "1000000000000010001",
     increment: "teamID",
   });
-  // Now for companyID, we'll have 2 shard candidates (1 and 2), and they'll
-  // both be rechecked. Shard 1 will return empty results, and shard 2 will
+  // Now for companyID, we'll have 2 Shard candidates (1 and 2), and they'll
+  // both be rechecked. Shard 1 will return empty results, and Shard 2 will
   // return the user. Make sure that we really get a first non-empty response.
   await EntTestUser.loadByX(vc, {
     company_id: companyID,
@@ -436,9 +436,9 @@ test("loadBy with multiple shard candidates", async () => {
   });
 });
 
-test("multiShardsFromInput returns minimal number of shard candidates", async () => {
+test("multiShardsFromInput returns minimal number of Shard candidates", async () => {
   const sharedTeamID = "1000000000000000011";
-  // Add the 1st inverse to the 1st shard.
+  // Add the 1st inverse to the 1st Shard.
   const user1 = await createUserInShard({
     vc,
     shardNo: 1,
@@ -446,7 +446,7 @@ test("multiShardsFromInput returns minimal number of shard candidates", async ()
     startTeamID: sharedTeamID,
     increment: "companyID",
   });
-  // Add the 2nd inverse to the 2nd shard from the same sharedTeamID
+  // Add the 2nd inverse to the 2nd Shard from the same sharedTeamID
   const user2 = await createUserInShard({
     vc,
     shardNo: 2,
@@ -455,9 +455,9 @@ test("multiShardsFromInput returns minimal number of shard candidates", async ()
     increment: "companyID",
   });
   // Since company_id is mentioned earlier in the list of fields with inverses,
-  // and we filter by it, ShardLocator should only resolve shard candidates
+  // and we filter by it, ShardLocator should only resolve Shard candidates
   // based on company_id and never based on team_id. And we know that only one
-  // user (= one shard) is associated with a user1.company_id.
+  // user (= one Shard) is associated with a user1.company_id.
   expect(user1.company_id).not.toEqual(user2.company_id);
   const shards = await EntTestUser.SHARD_LOCATOR.multiShardsFromInput(
     vc,
@@ -542,7 +542,7 @@ test("id2s batched", async () => {
 
 /**
  * Tries to insert EntTestUser multiple times until it succeeds inserting it to
- * shardNo. Since shard number generation is randomly-deterministic by unique
+ * shardNo. Since Shard number generation is randomly-deterministic by unique
  * key fields (which are [company_id, team_id] in this case), we need to vary
  * either company_id or team_id when inserting more users: we allow the caller
  * to specify, which one to increment.

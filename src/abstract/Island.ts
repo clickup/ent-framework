@@ -12,7 +12,7 @@ export class Island<TClient extends Client> {
   ) {}
 
   /**
-   * Returns all shards on the first available client (master, then replicas).
+   * Returns all Shards on the first available Client (master, then replicas).
    */
   async shardNos(): Promise<readonly number[]> {
     for (const client of [this.master, ...shuffle(this.replicas)]) {
@@ -28,11 +28,11 @@ export class Island<TClient extends Client> {
       }
     }
 
-    // Being unable to access a DB is not a critical error here, we'll just
-    // miss some shards (and other shards will work). DO NOT throw through
-    // here yet! This needs to be addressed holistically and with careful
-    // retries. Also, we have shards rediscovery every N seconds, so a missing
-    // island will self-heal eventually.
+    // Being unable to access a DB is not a critical error here, we'll just miss
+    // some Shards (and other Shards will work). DO NOT throw through here yet!
+    // This needs to be addressed holistically and with careful retries. Also,
+    // we have Shards rediscovery every N seconds, so a missing Island will
+    // self-heal eventually.
     return [];
   }
 }

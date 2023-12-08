@@ -34,17 +34,18 @@ export interface CachedRefreshedValueOptions<TValue> {
  *   this time will get previous value (if available).
  */
 export class CachedRefreshedValue<TValue> {
-  /** Latest value pulled from cache. */
+  /** Latest value pulled from the cache. */
   private latestValue: TValue | null = null;
-  /** Deferred promise containing next value. Fulfilled promises replaced right
-   * away. */
+  /** Deferred promise containing the next value. Fulfilled promises are
+   * replaced right away. */
   private nextValue: DeferredPromise<TValue> = pDefer<TValue>();
-  /** Timestamp at what time the last value was pulled. Implemented for eventual
-   * consistency. */
+  /** Timestamp of the moment when the last value was pulled. Implemented for
+   * eventual consistency. */
   private latestAt: number = 0;
-  /** Whether the instance is destroyed. Used to prevent memory leaks in unit tests. */
+  /** Whether the instance is destroyed or not. Used to prevent memory leaks in
+   * unit tests. */
   private destroyedError: Error | null = null;
-  /** Skips current delay call. */
+  /** A callback to skip the current delay() call. */
   private skipDelay: (() => void) | null = null;
 
   constructor(public readonly options: CachedRefreshedValueOptions<TValue>) {}
@@ -134,7 +135,7 @@ export class CachedRefreshedValue<TValue> {
     this.latestValue = null;
     runInVoid(
       this.nextValue.promise.catch(() => {
-        // Stops unhanded promise rejection errors.
+        // Stops unhandled promise rejection errors.
       })
     );
     this.nextValue.reject(this.destroyedError);

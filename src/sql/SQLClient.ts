@@ -33,7 +33,7 @@ export interface SQLClientConn {
 }
 
 /**
- * An abstract PostgreSQL client which doesn't know how to acquire an actual
+ * An abstract PostgreSQL Client which doesn't know how to acquire an actual
  * connection and send queries; these things are up to the derived classes to
  * implement.
  */
@@ -123,7 +123,7 @@ export abstract class SQLClient extends Client {
     const debugQueryWithHints =
       `/*${this.shardName}*/` + [...queriesPrologue, query].join("; ");
 
-    // Prepend internal per-client hints to the prologue.
+    // Prepend internal per-Client hints to the prologue.
     if (this.hints) {
       queriesPrologue.unshift(
         ...Object.entries(this.hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
@@ -133,10 +133,10 @@ export abstract class SQLClient extends Client {
     // We must always have "public" in search_path, because extensions are by
     // default installed in "public" schema. Some extensions may expose
     // operators (e.g. "citext" exposes comparison operators) which must be
-    // available in all shards by default, so they should live in "public".
+    // available in all Shards by default, so they should live in "public".
     // (There is a way to install an extension to a particular schema, but a)
     // there can be only one such schema, and b) there are be problems running
-    // pg_dump to migrate this shard to another machine since pg_dump doesn't
+    // pg_dump to migrate this Shard to another machine since pg_dump doesn't
     // emit CREATE EXTENSION statement when filtering by schema name).
     queriesPrologue.unshift(
       `SET LOCAL search_path TO ${this.shardName}, public`
@@ -215,7 +215,7 @@ export abstract class SQLClient extends Client {
               ? // Master always has pg_current_wal_insert_lsn defined.
                 nullthrows(parseLsn(lsn.pg_current_wal_insert_lsn))
               : // When pg_last_wal_replay_lsn is returned as null, it means that
-                // the client's database is not a replica, i.e. it doesn't
+                // the Client's database is not a replica, i.e. it doesn't
                 // replay from a master. This happens e.g. on dev environment
                 // when testing replication lag code (typically done by just
                 // manually creating a copy of the database and declaring it as
@@ -306,7 +306,7 @@ export abstract class SQLClient extends Client {
     }
 
     // Composite ID: `(100008888888,1023499999999)` - try extracting non-zero
-    // shard from parts (left to right) first, and if there is none, allow shard
+    // Shard from parts (left to right) first, and if there is none, allow shard
     // zero too.
     if (typeof id === "string" && id.startsWith("(") && id.endsWith(")")) {
       let no = NaN;
@@ -356,7 +356,7 @@ export abstract class SQLClient extends Client {
       ...this,
       shardName: this.buildShardName(no),
       // Notice that timelineManager is DERIVED from the current object; thus,
-      // it's shared across all the clients within the island.
+      // it's shared across all the Clients within the Island.
     });
   }
 

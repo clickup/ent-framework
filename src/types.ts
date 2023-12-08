@@ -42,13 +42,13 @@ export type SpecType =
   | typeof String
   | {
       /** Converts a value of some field returned by the low-level DB engine to
-       * its client representation, which can be reacher (e.g. support
+       * its Client representation, which can be reacher (e.g. support
        * encryption/decryption). Notice that some DB engines already do some
        * conversions internally: e.g. for node-postgres and an array field,
        * dbValue returned by the engine is already an array of things, so
        * dbValueToJs for it will likely do nothing. */
       dbValueToJs: (dbValue: any) => any;
-      /** Converts a client value to the internal stringified representation of
+      /** Converts a Client value to the internal stringified representation of
        * the low-level DB engine, which is suitable for injecting it into a
        * plaintext query (with e.g. ?-placeholders).
        * - Notice that this is intentionally NOT the opposite to dbValueToJs,

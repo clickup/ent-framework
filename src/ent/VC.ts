@@ -141,7 +141,7 @@ export class VC {
   }
 
   /**
-   * Returns shard+schemaName timeline which tracks replica staleness for the
+   * Returns Shard+schemaName timeline which tracks replica staleness for the
    * particular schema name (most likely, table).
    */
   timeline(shard: Shard<Client>, schemaName: string): Timeline {
@@ -156,7 +156,7 @@ export class VC {
   }
 
   /**
-   * Serializes shard timelines (master WAL positions) to a string format. The
+   * Serializes Shard timelines (master WAL positions) to a string format. The
    * method always returns a value which is compatible to
    * withDeserializedTimelines() input.
    */
@@ -538,7 +538,7 @@ export class VC {
      * freshness=MASTER, then all the timeline data is ignored, and all the
      * requests are sent to master. */
     public readonly freshness: null | typeof MASTER | typeof STALE_REPLICA,
-    /** Replication WAL position per shard & Ent. Used to make decisions,
+    /** Replication WAL position per Shard & Ent. Used to make decisions,
      * should a request be sent to a replica or to the master. */
     private timelines: Map<string, Timeline>,
     /** Sticky objects attached to the VC (and inherited when deriving). */
