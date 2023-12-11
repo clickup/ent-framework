@@ -215,6 +215,14 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       }
     }
   }
+  /**
+   * All shards for this particular Ent depending on its affinity.
+   */
+  async allShards(): Promise<ReadonlyArray<Shard<TClient>>> {
+    return this.shardAffinity === GLOBAL_SHARD
+      ? [this.globalShard]
+      : this.cluster.nonGlobalShards();
+  }
 
   /**
    * Infers Shard number from shardAffinity info and the input record.
