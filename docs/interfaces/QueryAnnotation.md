@@ -1,24 +1,13 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / QueryAnnotation
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / QueryAnnotation
 
 # Interface: QueryAnnotation
 
-A debug annotation of an object which runs a query.
+A debug annotation from each individual place which initiated the query. When
+multiple queries are grouped into one large query by Ent Framework (even
+cross-async-trace and cross-VC), the resulting large query is accompanied
+with all those annotations.
 
 ## Properties
-
-### debugStack
-
-• `Readonly` **debugStack**: `string`
-
-Sometimes a query may be annotated by the source stack trace. It's
-typically expensive, so it's likely "" in production. Non-empty string may
-enable detailed SQL logging as well.
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/QueryAnnotation.ts:33](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/QueryAnnotation.ts#L33)
-
-___
 
 ### trace
 
@@ -28,7 +17,7 @@ Trace ID of the series of the queries.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/QueryAnnotation.ts:26](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/QueryAnnotation.ts#L26)
+[src/abstract/QueryAnnotation.ts:29](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L29)
 
 ___
 
@@ -41,7 +30,21 @@ for simplicity, but at this layer of abstractions, there are no Ents.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/QueryAnnotation.ts:29](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/QueryAnnotation.ts#L29)
+[src/abstract/QueryAnnotation.ts:32](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L32)
+
+___
+
+### debugStack
+
+• `Readonly` **debugStack**: `string`
+
+Sometimes a query may be annotated by the source stack trace. It's
+typically expensive, so it's likely "" in production. Non-empty string may
+enable detailed SQL logging as well.
+
+#### Defined in
+
+[src/abstract/QueryAnnotation.ts:36](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L36)
 
 ___
 
@@ -49,8 +52,20 @@ ___
 
 • `Readonly` **whyClient**: `undefined` \| [`WhyClient`](../modules.md#whyclient)
 
-Answers, why exactly this client was selected to send the query to.
+Answers, why exactly this Client was selected to send the query to.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/QueryAnnotation.ts:35](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/QueryAnnotation.ts#L35)
+[src/abstract/QueryAnnotation.ts:38](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L38)
+
+___
+
+### attempt
+
+• `Readonly` **attempt**: `number`
+
+In case it's a retry, the attempt number will be greater than 0.
+
+#### Defined in
+
+[src/abstract/QueryAnnotation.ts:40](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L40)

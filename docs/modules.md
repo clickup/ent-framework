@@ -1,6 +1,6 @@
-[@slapdash/ent-framework](README.md) / Exports
+[@time-loop/ent-framework](README.md) / Exports
 
-# @slapdash/ent-framework
+# @time-loop/ent-framework
 
 ## Enumerations
 
@@ -8,193 +8,171 @@
 
 ## Classes
 
-- [AllowIf](classes/AllowIf.md)
+- [Runner](classes/Runner.md)
 - [Batcher](classes/Batcher.md)
-- [CanReadOutgoingEdge](classes/CanReadOutgoingEdge.md)
-- [CanUpdateOutgoingEdge](classes/CanUpdateOutgoingEdge.md)
 - [Client](classes/Client.md)
 - [Cluster](classes/Cluster.md)
+- [Island](classes/Island.md)
+- [Loader](classes/Loader.md)
+- [QueryBase](classes/QueryBase.md)
+- [Schema](classes/Schema.md)
+- [ServerError](classes/ServerError.md)
+- [Shard](classes/Shard.md)
+- [ShardError](classes/ShardError.md)
+- [Timeline](classes/Timeline.md)
+- [TimelineManager](classes/TimelineManager.md)
 - [Configuration](classes/Configuration.md)
-- [DenyIf](classes/DenyIf.md)
+- [IDsCache](classes/IDsCache.md)
+- [Inverse](classes/Inverse.md)
+- [QueryCache](classes/QueryCache.md)
+- [ShardLocator](classes/ShardLocator.md)
+- [Triggers](classes/Triggers.md)
+- [VC](classes/VC.md)
+- [VCCaches](classes/VCCaches.md)
+- [VCFlavor](classes/VCFlavor.md)
+- [VCWithStacks](classes/VCWithStacks.md)
+- [VCWithQueryCache](classes/VCWithQueryCache.md)
+- [VCTrace](classes/VCTrace.md)
+- [Validation](classes/Validation.md)
 - [EntAccessError](classes/EntAccessError.md)
 - [EntCannotDetectShardError](classes/EntCannotDetectShardError.md)
 - [EntNotFoundError](classes/EntNotFoundError.md)
 - [EntNotInsertableError](classes/EntNotInsertableError.md)
 - [EntNotReadableError](classes/EntNotReadableError.md)
 - [EntNotUpdatableError](classes/EntNotUpdatableError.md)
-- [EntTestComment](classes/EntTestComment.md)
-- [EntTestCompany](classes/EntTestCompany.md)
-- [EntTestCountry](classes/EntTestCountry.md)
-- [EntTestHeadline](classes/EntTestHeadline.md)
-- [EntTestPost](classes/EntTestPost.md)
-- [EntTestUser](classes/EntTestUser.md)
 - [EntUniqueKeyError](classes/EntUniqueKeyError.md)
 - [EntValidationError](classes/EntValidationError.md)
+- [CanReadOutgoingEdge](classes/CanReadOutgoingEdge.md)
+- [CanUpdateOutgoingEdge](classes/CanUpdateOutgoingEdge.md)
 - [FieldIs](classes/FieldIs.md)
+- [IncomingEdgeFromVCExists](classes/IncomingEdgeFromVCExists.md)
+- [Or](classes/Or.md)
+- [OutgoingEdgePointsToVC](classes/OutgoingEdgePointsToVC.md)
 - [FuncToPredicate](classes/FuncToPredicate.md)
-- [IDsCache](classes/IDsCache.md)
-- [IDsCacheCanReadIncomingEdge](classes/IDsCacheCanReadIncomingEdge.md)
 - [IDsCacheReadable](classes/IDsCacheReadable.md)
 - [IDsCacheUpdatable](classes/IDsCacheUpdatable.md)
-- [IncomingEdgeFromVCExists](classes/IncomingEdgeFromVCExists.md)
-- [Inverse](classes/Inverse.md)
-- [Island](classes/Island.md)
-- [Loader](classes/Loader.md)
-- [OutgoingEdgePointsToVC](classes/OutgoingEdgePointsToVC.md)
-- [QueryBase](classes/QueryBase.md)
-- [QueryCache](classes/QueryCache.md)
+- [IDsCacheCanReadIncomingEdge](classes/IDsCacheCanReadIncomingEdge.md)
+- [True](classes/True.md)
+- [VCHasFlavor](classes/VCHasFlavor.md)
+- [AllowIf](classes/AllowIf.md)
+- [DenyIf](classes/DenyIf.md)
 - [Require](classes/Require.md)
 - [Rule](classes/Rule.md)
-- [Runner](classes/Runner.md)
+- [CachedRefreshedValue](classes/CachedRefreshedValue.md)
+- [DefaultMap](classes/DefaultMap.md)
+- [WeakTicker](classes/WeakTicker.md)
+- [SQLClient](classes/SQLClient.md)
 - [SQLClientPool](classes/SQLClientPool.md)
 - [SQLError](classes/SQLError.md)
 - [SQLQueryCount](classes/SQLQueryCount.md)
-- [SQLQueryDelete](classes/SQLQueryDelete.md)
-- [SQLQueryDeleteWhere](classes/SQLQueryDeleteWhere.md)
-- [SQLQueryIDGen](classes/SQLQueryIDGen.md)
-- [SQLQueryInsert](classes/SQLQueryInsert.md)
-- [SQLQueryLoad](classes/SQLQueryLoad.md)
-- [SQLQueryLoadBy](classes/SQLQueryLoadBy.md)
-- [SQLQuerySelect](classes/SQLQuerySelect.md)
-- [SQLQueryUpdate](classes/SQLQueryUpdate.md)
-- [SQLQueryUpsert](classes/SQLQueryUpsert.md)
-- [SQLRunner](classes/SQLRunner.md)
 - [SQLRunnerCount](classes/SQLRunnerCount.md)
+- [SQLQueryDelete](classes/SQLQueryDelete.md)
 - [SQLRunnerDelete](classes/SQLRunnerDelete.md)
+- [SQLQueryDeleteWhere](classes/SQLQueryDeleteWhere.md)
 - [SQLRunnerDeleteWhere](classes/SQLRunnerDeleteWhere.md)
+- [SQLQueryExists](classes/SQLQueryExists.md)
+- [SQLRunnerExists](classes/SQLRunnerExists.md)
+- [SQLQueryIDGen](classes/SQLQueryIDGen.md)
 - [SQLRunnerIDGen](classes/SQLRunnerIDGen.md)
+- [SQLQueryInsert](classes/SQLQueryInsert.md)
 - [SQLRunnerInsert](classes/SQLRunnerInsert.md)
+- [SQLQueryLoad](classes/SQLQueryLoad.md)
 - [SQLRunnerLoad](classes/SQLRunnerLoad.md)
+- [SQLQueryLoadBy](classes/SQLQueryLoadBy.md)
 - [SQLRunnerLoadBy](classes/SQLRunnerLoadBy.md)
+- [SQLQuerySelect](classes/SQLQuerySelect.md)
 - [SQLRunnerSelect](classes/SQLRunnerSelect.md)
+- [SQLQuerySelectBy](classes/SQLQuerySelectBy.md)
+- [SQLRunnerSelectBy](classes/SQLRunnerSelectBy.md)
+- [SQLQueryUpdate](classes/SQLQueryUpdate.md)
 - [SQLRunnerUpdate](classes/SQLRunnerUpdate.md)
+- [SQLQueryUpsert](classes/SQLQueryUpsert.md)
 - [SQLRunnerUpsert](classes/SQLRunnerUpsert.md)
+- [SQLRunner](classes/SQLRunner.md)
 - [SQLSchema](classes/SQLSchema.md)
-- [Schema](classes/Schema.md)
-- [Shard](classes/Shard.md)
-- [ShardLocator](classes/ShardLocator.md)
-- [TestSQLClient](classes/TestSQLClient.md)
-- [Timeline](classes/Timeline.md)
-- [TimelineManager](classes/TimelineManager.md)
-- [Triggers](classes/Triggers.md)
-- [True](classes/True.md)
-- [VC](classes/VC.md)
-- [VCFlavor](classes/VCFlavor.md)
-- [VCHasFlavor](classes/VCHasFlavor.md)
-- [VCTrace](classes/VCTrace.md)
-- [VCWithQueryCache](classes/VCWithQueryCache.md)
-- [VCWithStacks](classes/VCWithStacks.md)
-- [Validation](classes/Validation.md)
-- [ValidationTester](classes/ValidationTester.md)
 
 ## Interfaces
 
-- [ClientQueryLoggerProps](interfaces/ClientQueryLoggerProps.md)
-- [ConfigClass](interfaces/ConfigClass.md)
-- [ConfigInstance](interfaces/ConfigInstance.md)
-- [Ent](interfaces/Ent.md)
-- [EntClass](interfaces/EntClass.md)
-- [EntInputLoggerProps](interfaces/EntInputLoggerProps.md)
-- [EntValidationErrorInfo](interfaces/EntValidationErrorInfo.md)
+- [ClusterOptions](interfaces/ClusterOptions.md)
 - [Handler](interfaces/Handler.md)
-- [HelpersClass](interfaces/HelpersClass.md)
-- [HelpersInstance](interfaces/HelpersInstance.md)
 - [Loggers](interfaces/Loggers.md)
-- [Predicate](interfaces/Predicate.md)
-- [PrimitiveInstance](interfaces/PrimitiveInstance.md)
+- [ClientQueryLoggerProps](interfaces/ClientQueryLoggerProps.md)
+- [SwallowedErrorLoggerProps](interfaces/SwallowedErrorLoggerProps.md)
 - [Query](interfaces/Query.md)
 - [QueryAnnotation](interfaces/QueryAnnotation.md)
-- [RuleResult](interfaces/RuleResult.md)
-- [SQLClient](interfaces/SQLClient.md)
-- [SQLClientDest](interfaces/SQLClientDest.md)
 - [SchemaClass](interfaces/SchemaClass.md)
+- [ShardOptions](interfaces/ShardOptions.md)
+- [EntValidationErrorInfo](interfaces/EntValidationErrorInfo.md)
+- [ConfigInstance](interfaces/ConfigInstance.md)
+- [ConfigClass](interfaces/ConfigClass.md)
+- [HelpersInstance](interfaces/HelpersInstance.md)
+- [HelpersClass](interfaces/HelpersClass.md)
+- [PrimitiveInstance](interfaces/PrimitiveInstance.md)
+- [Predicate](interfaces/Predicate.md)
+- [RuleResult](interfaces/RuleResult.md)
+- [EntClass](interfaces/EntClass.md)
+- [Ent](interfaces/Ent.md)
+- [CachedRefreshedValueOptions](interfaces/CachedRefreshedValueOptions.md)
+- [WeakTickerTarget](interfaces/WeakTickerTarget.md)
+- [SQLClientConn](interfaces/SQLClientConn.md)
+- [SQLClientDest](interfaces/SQLClientDest.md)
 
-## Type aliases
+## Type Aliases
 
-### AddNew
+### WhyClient
 
-Ƭ **AddNew**<`TClass`, `TRet`\>: [`OmitNew`](modules.md#omitnew)<`TClass`\> & {}
+Ƭ **WhyClient**: `Exclude`<[`TimelineCaughtUpReason`](modules.md#timelinecaughtupreason), ``false``\> \| ``"replica-bc-stale-replica-freshness"`` \| ``"master-bc-is-write"`` \| ``"master-bc-master-freshness"`` \| ``"master-bc-no-replicas"`` \| ``"master-bc-replica-not-caught-up"``
 
-Adds a type alternative to constructor signature's return value. This is
-useful when we e.g. turn an instance of some Ent class into an Instance & Row
-type where Row is dynamically inferred from the schema.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TClass` | extends (...`args`: `any`[]) => `any` |
-| `TRet` | `TRet` |
+A reason why master or replica was chosen to send the query too. The most
+noticeable ones are:
+- "replica-bc-master-state-unknown": 99% of cases (since writes are rare)
+- "master-bc-replica-not-caught-up": happens immediately after each write,
+  until the write is propagated to replica
+- "replica-bc-caught-up": must happen eventually (in 0.1-2s) after each write
+- "replica-bc-pos-expired": signals that the replication lag is huge, we
+  should carefully monitor this case and make sure it never happens
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:14](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L14)
+[src/abstract/QueryAnnotation.ts:13](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L13)
 
 ___
 
-### AfterMutationTrigger
+### TimelineCaughtUpReason
 
-Ƭ **AfterMutationTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `newOrOldRow`: [`Flatten`](modules.md#flatten)<[`InsertInputPartialSymbols`](modules.md#insertinputpartialsymbols)<`TTable`\> & [`RowWithID`](modules.md#rowwithid)\> ; `op`: ``"INSERT"`` \| ``"UPDATE"`` \| ``"DELETE"``  }) => `Promise`<`unknown`\>
+Ƭ **TimelineCaughtUpReason**: ``false`` \| ``"replica-bc-master-state-unknown"`` \| ``"replica-bc-caught-up"`` \| ``"replica-bc-pos-expired"``
 
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Type declaration
-
-▸ (`vc`, `args`): `Promise`<`unknown`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](classes/VC.md) |
-| `args` | `Object` |
-| `args.newOrOldRow` | [`Flatten`](modules.md#flatten)<[`InsertInputPartialSymbols`](modules.md#insertinputpartialsymbols)<`TTable`\> & [`RowWithID`](modules.md#rowwithid)\> |
-| `args.op` | ``"INSERT"`` \| ``"UPDATE"`` \| ``"DELETE"`` |
-
-##### Returns
-
-`Promise`<`unknown`\>
+The reason why the decision that this replica timeline is "good enough" has
+been made.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Triggers.ts:86](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L86)
+[src/abstract/Timeline.ts:7](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L7)
 
 ___
 
-### AfterUpdateTrigger
+### ShardAffinity
 
-Ƭ **AfterUpdateTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `newRow`: [`Flatten`](modules.md#flatten)<`Readonly`<[`TriggerRow`](modules.md#triggerrow)<`TTable`\>\>\> ; `oldRow`: [`Flatten`](modules.md#flatten)<`Readonly`<[`TriggerRow`](modules.md#triggerrow)<`TTable`\>\>\>  }) => `Promise`<`unknown`\>
+Ƭ **ShardAffinity**<`TField`, `TF`\>: typeof [`GLOBAL_SHARD`](modules.md#global_shard) \| `TField` extends typeof [`ID`](modules.md#id) ? readonly `TF`[] : readonly [`TF`, ...TF[]]
+
+Defines Ent Shard collocation to some Ent's field when this Ent is inserted.
+The Shard can always be Shard 0 ("global Shard"), be inferred based on the
+value in other Ent field during the insertion ("colocation"), or, in case
+colocation inference didn't succeed, be chosen pseudo-randomly at insertion
+time ("random Shard"). E.g. a random Shard can also be chosen in case an
+empty array is passed to Shard affinity (like "always fallback"), or when a
+field's value points to a global Shard.
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Type declaration
-
-▸ (`vc`, `args`): `Promise`<`unknown`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](classes/VC.md) |
-| `args` | `Object` |
-| `args.newRow` | [`Flatten`](modules.md#flatten)<`Readonly`<[`TriggerRow`](modules.md#triggerrow)<`TTable`\>\>\> |
-| `args.oldRow` | [`Flatten`](modules.md#flatten)<`Readonly`<[`TriggerRow`](modules.md#triggerrow)<`TTable`\>\>\> |
-
-##### Returns
-
-`Promise`<`unknown`\>
+| `TField` | extends `string` |
+| `TF` | `Exclude`<`TField`, typeof [`ID`](modules.md#id)\> |
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Triggers.ts:71](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L71)
+[src/ent/Configuration.ts:27](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L27)
 
 ___
 
@@ -204,7 +182,7 @@ ___
 
 #### Type declaration
 
-• (...`args`)
+• (`...args`)
 
 ##### Parameters
 
@@ -214,47 +192,20 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/QueryCache.ts:8](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/QueryCache.ts#L8)
+[src/ent/QueryCache.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L14)
 
 ___
 
-### BeforeUpdateTrigger
+### TriggerInsertInput
 
-Ƭ **BeforeUpdateTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `input`: [`Flatten`](modules.md#flatten)<[`UpdateInput`](modules.md#updateinput)<`TTable`\>\> ; `newRow`: [`Flatten`](modules.md#flatten)<`Readonly`<[`TriggerRow`](modules.md#triggerrow)<`TTable`\>\>\> ; `oldRow`: [`Flatten`](modules.md#flatten)<`Readonly`<[`TriggerRow`](modules.md#triggerrow)<`TTable`\>\>\>  }) => `Promise`<`unknown`\>
+Ƭ **TriggerInsertInput**<`TTable`\>: [`Flatten`](modules.md#flatten)<[`InsertInput`](modules.md#insertinput)<`TTable`\> & [`RowWithID`](modules.md#rowwithid)\>
 
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Type declaration
-
-▸ (`vc`, `args`): `Promise`<`unknown`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](classes/VC.md) |
-| `args` | `Object` |
-| `args.input` | [`Flatten`](modules.md#flatten)<[`UpdateInput`](modules.md#updateinput)<`TTable`\>\> |
-| `args.newRow` | [`Flatten`](modules.md#flatten)<`Readonly`<[`TriggerRow`](modules.md#triggerrow)<`TTable`\>\>\> |
-| `args.oldRow` | [`Flatten`](modules.md#flatten)<`Readonly`<[`TriggerRow`](modules.md#triggerrow)<`TTable`\>\>\> |
-
-##### Returns
-
-`Promise`<`unknown`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/Triggers.ts:62](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L62)
-
-___
-
-### CountInput
-
-Ƭ **CountInput**<`TTable`\>: [`Where`](modules.md#where)<`TTable`\>
+Table -> trigger's before- and after-insert input. Below, we use InsertInput
+and not Row, because before and even after some INSERT, we may still not know
+some values of the row (they can be filled by the DB in e.g. autoInsert
+clause). InsertInput is almost a subset of Row, but it has stricter symbol
+keys: e.g. if some symbol key is non-optional in INSERT (aka doesn't have
+autoInsert), it will always be required in InsertInput too.
 
 #### Type parameters
 
@@ -264,45 +215,15 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:231](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L231)
+[src/ent/Triggers.ts:22](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L22)
 
 ___
 
-### DeleteTrigger
+### TriggerUpdateInput
 
-Ƭ **DeleteTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `oldRow`: [`Flatten`](modules.md#flatten)<`Readonly`<[`Row`](modules.md#row)<`TTable`\>\>\>  }) => `Promise`<`unknown`\>
+Ƭ **TriggerUpdateInput**<`TTable`\>: [`Flatten`](modules.md#flatten)<[`UpdateInput`](modules.md#updateinput)<`TTable`\>\>
 
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Type declaration
-
-▸ (`vc`, `args`): `Promise`<`unknown`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](classes/VC.md) |
-| `args` | `Object` |
-| `args.oldRow` | [`Flatten`](modules.md#flatten)<`Readonly`<[`Row`](modules.md#row)<`TTable`\>\>\> |
-
-##### Returns
-
-`Promise`<`unknown`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/Triggers.ts:79](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L79)
-
-___
-
-### DeleteWhereInput
-
-Ƭ **DeleteWhereInput**<`TTable`\>: { `id`: `string`[]  } & `Omit`<[`Where`](modules.md#where)<`TTable`\>, typeof [`ID`](modules.md#id)\>
+Table -> trigger's before-update input.
 
 #### Type parameters
 
@@ -312,63 +233,17 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:234](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L234)
+[src/ent/Triggers.ts:29](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L29)
 
 ___
 
-### DepsBuilder
+### TriggerUpdateNewRow
 
-Ƭ **DepsBuilder**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `row`: [`Flatten`](modules.md#flatten)<`Readonly`<[`InsertInputPartialSymbols`](modules.md#insertinputpartialsymbols)<`TTable`\> & [`RowWithID`](modules.md#rowwithid)\>\>) => `string` \| `Promise`<`string`\>
+Ƭ **TriggerUpdateNewRow**<`TTable`\>: [`Flatten`](modules.md#flatten)<`Readonly`<[`Row`](modules.md#row)<`TTable`\> & { [K in keyof TTable & symbol]?: Value<TTable[K]\> }\>\>
 
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Type declaration
-
-▸ (`vc`, `row`): `string` \| `Promise`<`string`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](classes/VC.md) |
-| `row` | [`Flatten`](modules.md#flatten)<`Readonly`<[`InsertInputPartialSymbols`](modules.md#insertinputpartialsymbols)<`TTable`\> & [`RowWithID`](modules.md#rowwithid)\>\> |
-
-##### Returns
-
-`string` \| `Promise`<`string`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/Triggers.ts:96](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L96)
-
-___
-
-### Flatten
-
-Ƭ **Flatten**<`T`\>: {} & { [P in keyof T]: T[P] }
-
-Flattens the interface to make it more readable in IntelliSense. Can be used
-when someone modifies (picks, omits, etc.) a huge type.
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T` |
-
-#### Defined in
-
-[packages/ent-framework/src/helpers.ts:23](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L23)
-
-___
-
-### IDFields
-
-Ƭ **IDFields**<`TTable`\>: { [K in keyof TTable]: K extends string ? TTable[K] extends Object ? K : never : never }[keyof `TTable`]
+Table -> trigger's before- and after-update NEW row. Ephemeral (symbol)
+fields may or may not be passed depending on what the user passes to the
+update method.
 
 #### Type parameters
 
@@ -378,13 +253,18 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:169](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L169)
+[src/ent/Triggers.ts:38](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L38)
 
 ___
 
-### IDFieldsRequired
+### TriggerUpdateOrDeleteOldRow
 
-Ƭ **IDFieldsRequired**<`TTable`\>: [`InsertFieldsRequired`](modules.md#insertfieldsrequired)<`TTable`\> & [`IDFields`](modules.md#idfields)<`TTable`\>
+Ƭ **TriggerUpdateOrDeleteOldRow**<`TTable`\>: [`Flatten`](modules.md#flatten)<`Readonly`<[`Row`](modules.md#row)<`TTable`\> & `Record`<keyof `TTable` & `symbol`, `never`\>\>\>
+
+Table -> trigger's before- and after-update (or delete) OLD row. Ephemeral
+(symbol) fields are marked as always presented, but "never" typed, so they
+will be available for dereferencing in newOrOldRow of before/after mutation
+triggers without guard-checking of op value.
 
 #### Type parameters
 
@@ -394,77 +274,13 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:178](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L178)
-
-___
-
-### InsertFieldsOptional
-
-Ƭ **InsertFieldsOptional**<`TTable`\>: { [K in keyof TTable]: TTable[K] extends Object ? K : TTable[K] extends Object ? K : never }[keyof `TTable`]
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:99](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L99)
-
-___
-
-### InsertFieldsRequired
-
-Ƭ **InsertFieldsRequired**<`TTable`\>: { [K in keyof TTable]: TTable[K] extends Object ? never : TTable[K] extends Object ? never : K }[keyof `TTable`]
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:90](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L90)
-
-___
-
-### InsertInput
-
-Ƭ **InsertInput**<`TTable`\>: { [K in InsertFieldsRequired<TTable\>]: Value<TTable[K]\> } & { [K in InsertFieldsOptional<TTable\>]?: Value<TTable[K]\> }
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:109](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L109)
-
-___
-
-### InsertInputPartialSymbols
-
-Ƭ **InsertInputPartialSymbols**<`TTable`\>: { [K in InsertFieldsRequired<TTable\>]: Value<TTable[K]\> \| (K extends symbol ? undefined : never) } & { [K in InsertFieldsOptional<TTable\>]?: Value<TTable[K]\> }
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:116](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L116)
+[src/ent/Triggers.ts:52](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L52)
 
 ___
 
 ### InsertTrigger
 
-Ƭ **InsertTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `input`: [`Flatten`](modules.md#flatten)<[`InsertInput`](modules.md#insertinput)<`TTable`\> & [`RowWithID`](modules.md#rowwithid)\>  }) => `Promise`<`unknown`\>
+Ƭ **InsertTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `input`: [`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>  }) => `Promise`<`unknown`\>
 
 #### Type parameters
 
@@ -518,7 +334,7 @@ Naming convention for trigger arguments:
 | :------ | :------ |
 | `vc` | [`VC`](classes/VC.md) |
 | `args` | `Object` |
-| `args.input` | [`Flatten`](modules.md#flatten)<[`InsertInput`](modules.md#insertinput)<`TTable`\> & [`RowWithID`](modules.md#rowwithid)\> |
+| `args.input` | [`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\> |
 
 ##### Returns
 
@@ -526,23 +342,271 @@ Naming convention for trigger arguments:
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Triggers.ts:51](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L51)
+[src/ent/Triggers.ts:94](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L94)
 
 ___
 
-### Literal
+### BeforeUpdateTrigger
 
-Ƭ **Literal**: `ReadonlyArray`<`string` \| `number` \| `Date` \| ``null``\>
+Ƭ **BeforeUpdateTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `newRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> ; `oldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> ; `input`: [`TriggerUpdateInput`](modules.md#triggerupdateinput)<`TTable`\>  }) => `Promise`<`unknown`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Type declaration
+
+▸ (`vc`, `args`): `Promise`<`unknown`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](classes/VC.md) |
+| `args` | `Object` |
+| `args.newRow` | [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> |
+| `args.oldRow` | [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> |
+| `args.input` | [`TriggerUpdateInput`](modules.md#triggerupdateinput)<`TTable`\> |
+
+##### Returns
+
+`Promise`<`unknown`\>
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:20](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L20)
+[src/ent/Triggers.ts:99](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L99)
 
 ___
 
-### LoadByInput
+### AfterUpdateTrigger
 
-Ƭ **LoadByInput**<`TTable`, `TUniqueKey`\>: `TUniqueKey` extends `never`[] ? `never` : { [K in UniqueKeyFields<TTable, TUniqueKey\>]: Value<TTable[K]\> }
+Ƭ **AfterUpdateTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `newRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> ; `oldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>  }) => `Promise`<`unknown`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Type declaration
+
+▸ (`vc`, `args`): `Promise`<`unknown`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](classes/VC.md) |
+| `args` | `Object` |
+| `args.newRow` | [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> |
+| `args.oldRow` | [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> |
+
+##### Returns
+
+`Promise`<`unknown`\>
+
+#### Defined in
+
+[src/ent/Triggers.ts:108](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L108)
+
+___
+
+### DeleteTrigger
+
+Ƭ **DeleteTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `oldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>  }) => `Promise`<`unknown`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Type declaration
+
+▸ (`vc`, `args`): `Promise`<`unknown`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](classes/VC.md) |
+| `args` | `Object` |
+| `args.oldRow` | [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> |
+
+##### Returns
+
+`Promise`<`unknown`\>
+
+#### Defined in
+
+[src/ent/Triggers.ts:116](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L116)
+
+___
+
+### BeforeMutationTrigger
+
+Ƭ **BeforeMutationTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`<[`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>\> ; `input`: [`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>  } \| { `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> ; `input`: [`TriggerUpdateInput`](modules.md#triggerupdateinput)<`TTable`\>  } \| { `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> ; `input`: [`Writeable`](modules.md#writeable)<[`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>\>  }) => `Promise`<`unknown`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Type declaration
+
+▸ (`vc`, `args`): `Promise`<`unknown`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](classes/VC.md) |
+| `args` | { `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`<[`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>\> ; `input`: [`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>  } \| { `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> ; `input`: [`TriggerUpdateInput`](modules.md#triggerupdateinput)<`TTable`\>  } \| { `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> ; `input`: [`Writeable`](modules.md#writeable)<[`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>\>  } |
+
+##### Returns
+
+`Promise`<`unknown`\>
+
+#### Defined in
+
+[src/ent/Triggers.ts:123](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L123)
+
+___
+
+### AfterMutationTrigger
+
+Ƭ **AfterMutationTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`<[`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>\>  } \| { `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\>  } \| { `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>  }) => `Promise`<`unknown`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Type declaration
+
+▸ (`vc`, `args`): `Promise`<`unknown`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](classes/VC.md) |
+| `args` | { `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`<[`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>\>  } \| { `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\>  } \| { `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>  } |
+
+##### Returns
+
+`Promise`<`unknown`\>
+
+#### Defined in
+
+[src/ent/Triggers.ts:147](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L147)
+
+___
+
+### DepsBuilder
+
+Ƭ **DepsBuilder**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `row`: [`Flatten`](modules.md#flatten)<`Readonly`<[`Row`](modules.md#row)<`TTable`\>\>\>) => `unknown`[] \| `Promise`<`unknown`[]\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Type declaration
+
+▸ (`vc`, `row`): `unknown`[] \| `Promise`<`unknown`[]\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](classes/VC.md) |
+| `row` | [`Flatten`](modules.md#flatten)<`Readonly`<[`Row`](modules.md#row)<`TTable`\>\>\> |
+
+##### Returns
+
+`unknown`[] \| `Promise`<`unknown`[]\>
+
+#### Defined in
+
+[src/ent/Triggers.ts:164](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L164)
+
+___
+
+### LoadRule
+
+Ƭ **LoadRule**<`TInput`\>: [`AllowIf`](classes/AllowIf.md)<`TInput`\> \| [`DenyIf`](classes/DenyIf.md)<`TInput`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TInput` | extends `object` |
+
+#### Defined in
+
+[src/ent/Validation.ts:24](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L24)
+
+___
+
+### WriteRules
+
+Ƭ **WriteRules**<`TInput`\>: [] \| [[`Require`](classes/Require.md)<`TInput`\>, ...Require<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)<`TInput`\>, [`Require`](classes/Require.md)<`TInput`\>, ...Require<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`Require`](classes/Require.md)<`TInput`\>, ...Require<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`Require`](classes/Require.md)<`TInput`\>, ...Require<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`Require`](classes/Require.md)<`TInput`\>, ...Require<TInput\>[]]
+
+For safety, we enforce all Require rules to be in the end of the
+insert/update/delete privacy list, and have at least one of them. In
+TypeScript, it's not possible to create [...L[], R, ...R[]] type
+(double-variadic) when both L[] and R[] are open-ended (i.e. tuples with
+unknown length), so we have to brute-force.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TInput` | extends `object` |
+
+#### Defined in
+
+[src/ent/Validation.ts:33](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L33)
+
+___
+
+### ValidationRules
+
+Ƭ **ValidationRules**<`TTable`\>: `Object`
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `tenantPrincipalField?` | [`InsertFieldsRequired`](modules.md#insertfieldsrequired)<`TTable`\> & `string` |
+| `inferPrincipal?` | (`vc`: [`VC`](classes/VC.md), `row`: [`Row`](modules.md#row)<`TTable`\>) => `Promise`<`string` \| ``null``\> |
+| `load` | [`Validation`](classes/Validation.md)<`TTable`\>[``"load"``] |
+| `insert` | [`Validation`](classes/Validation.md)<`TTable`\>[``"insert"``] |
+| `update?` | [`Validation`](classes/Validation.md)<`TTable`\>[``"update"``] |
+| `delete?` | [`Validation`](classes/Validation.md)<`TTable`\>[``"delete"``] |
+| `validate?` | [`Predicate`](interfaces/Predicate.md)<[`Row`](modules.md#row)<`TTable`\>\> & [`EntValidationErrorInfo`](interfaces/EntValidationErrorInfo.md)[] |
+
+#### Defined in
+
+[src/ent/Validation.ts:59](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L59)
+
+___
+
+### PrimitiveClass
+
+Ƭ **PrimitiveClass**<`TTable`, `TUniqueKey`, `TClient`\>: [`OmitNew`](modules.md#omitnew)<[`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>\> & (...`args`: `any`[]) => [`PrimitiveInstance`](interfaces/PrimitiveInstance.md)<`TTable`\>
 
 #### Type parameters
 
@@ -550,10 +614,31 @@ ___
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
 | `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:161](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L161)
+[src/ent/mixins/PrimitiveMixin.ts:67](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L67)
+
+___
+
+### UpdateOriginalInput
+
+Ƭ **UpdateOriginalInput**<`TTable`\>: { [K in UpdateField<TTable\>]?: Value<TTable[K]\> } & { `$literal?`: [`Literal`](modules.md#literal) ; `$cas?`: ``"skip-if-someone-else-changed-updating-ent-props"`` \| `ReadonlyArray`<[`UpdateField`](modules.md#updatefield)<`TTable`\>\> \| [`UpdateInput`](modules.md#updateinput)<`TTable`\>[``"$cas"``]  }
+
+The input of updateOriginal() method. It supports some additional syntax
+sugar for $cas property, so to work-around TS weakness of Omit<> & type
+inference, we redefine this type from scratch.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Defined in
+
+[src/ent/types.ts:78](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L78)
 
 ___
 
@@ -572,63 +657,147 @@ https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:7](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L7)
+[src/helpers/misc.ts:8](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L8)
 
 ___
 
-### Order
+### AddNew
 
-Ƭ **Order**<`TTable`\>: `ReadonlyArray`<{ [K in keyof TTable]?: string } & { `$literal?`: [`Literal`](modules.md#literal)  }\>
+Ƭ **AddNew**<`TClass`, `TRet`\>: [`OmitNew`](modules.md#omitnew)<`TClass`\> & () => `InstanceType`<`TClass`\> & `TRet`
+
+Adds a type alternative to constructor signature's return value. This is
+useful when we e.g. turn an instance of some Ent class into an Instance & Row
+type where Row is dynamically inferred from the schema.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TClass` | extends (...`args`: `any`[]) => `any` |
+| `TRet` | `TRet` |
+
+#### Defined in
+
+[src/helpers/misc.ts:15](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L15)
+
+___
+
+### Flatten
+
+Ƭ **Flatten**<`T`\>: {} & { [P in keyof T]: T[P] }
+
+Flattens the interface to make it more readable in IntelliSense. Can be used
+when someone modifies (picks, omits, etc.) a huge type.
 
 #### Type parameters
 
 | Name |
 | :------ |
-| `TTable` |
+| `T` |
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:216](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L216)
+[src/helpers/misc.ts:24](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L24)
 
 ___
 
-### PrimitiveClass
+### Writeable
 
-Ƭ **PrimitiveClass**<`TTable`, `TUniqueKey`, `TClient`\>: [`OmitNew`](modules.md#omitnew)<[`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>\> & { `count`: (`vc`: [`VC`](classes/VC.md), `where`: [`CountInput`](modules.md#countinput)<`TTable`\>) => `Promise`<`number`\> ; `insertIfNotExists`: (`vc`: [`VC`](classes/VC.md), `input`: [`InsertInput`](modules.md#insertinput)<`TTable`\>) => `Promise`<``null`` \| `string`\> ; `loadByNullable`: <TEnt\>(`vc`: [`VC`](classes/VC.md), `input`: [`LoadByInput`](modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>) => `Promise`<``null`` \| `TEnt`\> ; `loadNullable`: <TEnt\>(`vc`: [`VC`](classes/VC.md), `id`: `string`) => `Promise`<``null`` \| `TEnt`\> ; `select`: <TEnt\>(`vc`: [`VC`](classes/VC.md), `where`: [`Where`](modules.md#where)<`TTable`\>, `limit`: `number`, `order?`: [`Order`](modules.md#order)<`TTable`\>, `custom?`: {}) => `Promise`<`TEnt`[]\> ; `selectChunked`: <TEnt\>(`vc`: [`VC`](classes/VC.md), `where`: [`Where`](modules.md#where)<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom?`: {}) => `AsyncIterableIterator`<`TEnt`[]\> ; `upsert`: (`vc`: [`VC`](classes/VC.md), `input`: [`InsertInput`](modules.md#insertinput)<`TTable`\>) => `Promise`<`string`\>  }
+Ƭ **Writeable**<`T`\>: { -readonly [P in keyof T]: T[P] }
+
+Cancels "readonly" specifier on object's properties.
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `T` |
+
+#### Defined in
+
+[src/helpers/misc.ts:29](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L29)
+
+___
+
+### TuplePrefixes
+
+Ƭ **TuplePrefixes**<`T`\>: `T` extends [`unknown`] ? [] : `T` extends [infer First, ...(infer Rest)] ? [`First`, ...TuplePrefixes<Rest\>] \| [`First`] : []
+
+Returns a union type of all tuple strict prefixes:
+["a", "b", "c"] -> ["a", "b"] | ["a"]
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
-| `TClient` | extends [`Client`](classes/Client.md) |
+| `T` | extends readonly `unknown`[] |
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:51](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L51)
+[src/helpers/misc.ts:35](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L35)
 
 ___
 
-### Row
+### PickPartial
 
-Ƭ **Row**<`TTable`\>: [`RowWithID`](modules.md#rowwithid) & { [K in keyof TTable]: K extends symbol ? never : Value<TTable[K]\> }
+Ƭ **PickPartial**<`T`\>: { [K in keyof T as undefined extends T[K] ? K : never]: T[K] }
+
+Picks only partial (optional) keys of an object.
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
+| Name |
+| :------ |
+| `T` |
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:78](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L78)
+[src/helpers/misc.ts:44](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L44)
+
+___
+
+### SQLClientPoolClient
+
+Ƭ **SQLClientPoolClient**: `PoolClient` & { `processID?`: `number` \| ``null`` ; `id?`: `number` ; `closeAt?`: `number`  }
+
+#### Defined in
+
+[src/sql/SQLClientPool.ts:35](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L35)
+
+___
+
+### SelectInputCustom
+
+Ƭ **SelectInputCustom**: { `ctes?`: [`Literal`](modules.md#literal)[] ; `joins?`: [`Literal`](modules.md#literal)[] ; `from?`: [`Literal`](modules.md#literal) ; `hints?`: `Record`<`string`, `string`\>  } \| `undefined`
+
+This is mostly to do hacks in PostgreSQL queries. Not even exposed by Ent
+framework, but can be used by PG-dependent code.
+
+#### Defined in
+
+[src/sql/SQLQuerySelect.ts:33](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQuerySelect.ts#L33)
+
+___
+
+### Literal
+
+Ƭ **Literal**: (`string` \| `number` \| `boolean` \| `Date` \| ``null`` \| (`string` \| `number` \| `boolean` \| `Date` \| ``null``)[])[]
+
+Literal operation with placeholders. We don't use a tuple type here (like
+`[string, ...T[]]`), because it would force us to use `as const` everywhere,
+which we don't want to do.
+
+#### Defined in
+
+[src/types.ts:11](https://github.com/clickup/rest-client/blob/master/src/types.ts#L11)
 
 ___
 
 ### RowWithID
 
 Ƭ **RowWithID**: `Object`
+
+{ id: string }
 
 #### Type declaration
 
@@ -638,52 +807,19 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:30](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L30)
+[src/types.ts:30](https://github.com/clickup/rest-client/blob/master/src/types.ts#L30)
 
 ___
 
-### SelectInput
+### SpecType
 
-Ƭ **SelectInput**<`TTable`\>: `Object`
+Ƭ **SpecType**: typeof `Boolean` \| typeof `Date` \| typeof [`ID`](modules.md#id) \| typeof `Number` \| typeof `String` \| { `dbValueToJs`: (`dbValue`: `any`) => `any` ; `stringify`: (`jsValue`: `any`) => `string` ; `parse`: (`str`: `string`) => `any`  }
 
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Type declaration
-
-| Name | Type |
-| :------ | :------ |
-| `custom?` | {} |
-| `limit` | `number` |
-| `order?` | [`Order`](modules.md#order)<`TTable`\> |
-| `where` | [`Where`](modules.md#where)<`TTable`\> |
+Spec (metadata) of some field.
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:223](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L223)
-
-___
-
-### ShardAffinity
-
-Ƭ **ShardAffinity**<`TField`\>: readonly `TField`[] \| typeof [`RANDOM_SHARD`](modules.md#random_shard) \| typeof [`GLOBAL_SHARD`](modules.md#global_shard)
-
-Defines Ent shard collocation to some Ent's field when this Ent is inserted.
-The shard can either be picked randomly, be always shard 0 or be inferred
-based on the value in other Ent fields during the insertion.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TField` | extends `string` |
-
-#### Defined in
-
-[packages/ent-framework/src/ent/Configuration.ts:32](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Configuration.ts#L32)
+[src/types.ts:37](https://github.com/clickup/rest-client/blob/master/src/types.ts#L37)
 
 ___
 
@@ -691,28 +827,20 @@ ___
 
 Ƭ **Spec**: `Object`
 
+{ type: ..., ... } - one attribute spec.
+
 #### Type declaration
 
 | Name | Type |
 | :------ | :------ |
+| `type` | [`SpecType`](modules.md#spectype) |
 | `allowNull?` | ``true`` |
 | `autoInsert?` | `string` |
 | `autoUpdate?` | `string` |
-| `type` | [`SpecType`](modules.md#spectype) |
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:43](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L43)
-
-___
-
-### SpecType
-
-Ƭ **SpecType**: typeof `Number` \| typeof `String` \| typeof `Boolean` \| typeof [`ID`](modules.md#id) \| typeof `Date` \| { `parse`: (`dbValue`: `any`) => `any` ; `stringify`: (`jsValue`: `any`) => `string`  }
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:34](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L34)
+[src/types.ts:75](https://github.com/clickup/rest-client/blob/master/src/types.ts#L75)
 
 ___
 
@@ -720,38 +848,30 @@ ___
 
 Ƭ **Table**: `Object`
 
+{ id: Spec, name: Spec, ... } - table columns.
+
 #### Index signature
 
 ▪ [K: `string` \| `symbol`]: [`Spec`](modules.md#spec)
 
-#### Type declaration
-
-| Name | Type |
-| :------ | :------ |
-| `id` | [`Spec`](modules.md#spec) |
-
 #### Defined in
 
-[packages/ent-framework/src/types.ts:51](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L51)
+[src/types.ts:85](https://github.com/clickup/rest-client/blob/master/src/types.ts#L85)
 
 ___
 
-### TimelineCaughtUpReason
+### Field
 
-Ƭ **TimelineCaughtUpReason**: ``false`` \| ``"replica-bc-master-state-unknown"`` \| ``"replica-bc-caught-up"`` \| ``"replica-bc-pos-expired"``
+Ƭ **Field**<`TTable`\>: keyof `TTable` & `string`
 
-The reason why the decision that this replica timeline is "good enough" has
-been made.
+A database table's field (no symbols). In regards to some table structure,
+there can be 3 options:
+1. Field<TTable>: only DB-stored attributes, no ephemeral symbols
+2. keyof TTable: both real and ephemeral attributes
+3. keyof TTable & symbol: only "ephemeral" attributes available to triggers
 
-#### Defined in
-
-[packages/ent-framework/src/abstract/Timeline.ts:7](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Timeline.ts#L7)
-
-___
-
-### TriggerRow
-
-Ƭ **TriggerRow**<`TTable`\>: [`RowWithID`](modules.md#rowwithid) & { [K in keyof TTable]: K extends symbol ? Value<TTable[K]\> \| undefined : Value<TTable[K]\> }
+By doing `& string`, we ensure that we select only regular (non-symbol)
+fields.
 
 #### Type parameters
 
@@ -761,13 +881,16 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:83](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L83)
+[src/types.ts:99](https://github.com/clickup/rest-client/blob/master/src/types.ts#L99)
 
 ___
 
-### UniqueKey
+### FieldAliased
 
-Ƭ **UniqueKey**<`TTable`\>: `ReadonlyArray`<{ [K in keyof TTable]: TTable[K] extends Object ? K : never }[keyof `TTable`]\>
+Ƭ **FieldAliased**<`TTable`\>: [`Field`](modules.md#field)<`TTable`\> \| { `field`: [`Field`](modules.md#field)<`TTable`\> ; `alias`: `string`  }
+
+Same as Field, but may optionally hold information about of "alias value
+source" for a field name (e.g. `{ field: "abc", alias: "$cas.abc" }`).
 
 #### Type parameters
 
@@ -777,30 +900,16 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:140](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L140)
+[src/types.ts:105](https://github.com/clickup/rest-client/blob/master/src/types.ts#L105)
 
 ___
 
-### UniqueKeyFields
+### FieldOfPotentialUniqueKey
 
-Ƭ **UniqueKeyFields**<`TConcreteTable`, `TConcreteUniqueKey`\>: `TConcreteUniqueKey`[`number`]
+Ƭ **FieldOfPotentialUniqueKey**<`TTable`\>: { [K in Field<TTable\>]: TTable[K] extends Object ? K : never }[[`Field`](modules.md#field)<`TTable`\>]
 
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TConcreteTable` | extends [`Table`](modules.md#table) |
-| `TConcreteUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TConcreteTable`\> |
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:154](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L154)
-
-___
-
-### UpdateFields
-
-Ƭ **UpdateFields**<`TTable`\>: `Exclude`<keyof `TTable`, keyof [`RowWithID`](modules.md#rowwithid)\>
+(Table) -> "field1" | "field2" | ... where the union contains only fields
+which can potentially be used as a part of unique key.
 
 #### Type parameters
 
@@ -810,13 +919,15 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:125](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L125)
+[src/types.ts:113](https://github.com/clickup/rest-client/blob/master/src/types.ts#L113)
 
 ___
 
-### UpdateInput
+### FieldOfIDType
 
-Ƭ **UpdateInput**<`TTable`\>: { [K in UpdateFields<TTable\>]?: Value<TTable[K]\> } & { `$literal?`: [`Literal`](modules.md#literal)  }
+Ƭ **FieldOfIDType**<`TTable`\>: { [K in Field<TTable\>]: K extends string ? TTable[K] extends Object ? K : never : never }[[`Field`](modules.md#field)<`TTable`\>]
+
+Table -> "user_id" | "some_id" | ...
 
 #### Type parameters
 
@@ -826,13 +937,15 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:132](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L132)
+[src/types.ts:125](https://github.com/clickup/rest-client/blob/master/src/types.ts#L125)
 
 ___
 
-### ValidationRules
+### FieldOfIDTypeRequired
 
-Ƭ **ValidationRules**<`TTable`\>: `Object`
+Ƭ **FieldOfIDTypeRequired**<`TTable`\>: [`InsertFieldsRequired`](modules.md#insertfieldsrequired)<`TTable`\> & [`FieldOfIDType`](modules.md#fieldofidtype)<`TTable`\>
+
+Table -> "user_id" | "some_id" | ...
 
 #### Type parameters
 
@@ -840,20 +953,27 @@ ___
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
 
-#### Type declaration
+#### Defined in
+
+[src/types.ts:136](https://github.com/clickup/rest-client/blob/master/src/types.ts#L136)
+
+___
+
+### ValueRequired
+
+Ƭ **ValueRequired**<`TSpec`\>: `TSpec`[``"type"``] extends typeof `Number` ? `number` : `TSpec`[``"type"``] extends typeof `String` ? `string` : `TSpec`[``"type"``] extends typeof `Boolean` ? `boolean` : `TSpec`[``"type"``] extends typeof [`ID`](modules.md#id) ? `string` : `TSpec`[``"type"``] extends typeof `Date` ? `Date` : `TSpec`[``"type"``] extends { `dbValueToJs`: (`dbValue`: `any`) => infer TJSValue  } ? `TSpec`[``"type"``] extends { `stringify`: (`jsValue`: `TJSValue`) => `string` ; `parse`: (`str`: `string`) => `TJSValue`  } ? `TJSValue` : `never` : `never`
+
+SpecType -> Value deduction (always deduces non-nullable type).
+
+#### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `delete?` | [`Validation`](classes/Validation.md)<`TTable`\>[``"delete"``] |
-| `insert` | [`Validation`](classes/Validation.md)<`TTable`\>[``"insert"``] |
-| `load` | [`Validation`](classes/Validation.md)<`TTable`\>[``"load"``] |
-| `tenantUserIDField?` | [`InsertFieldsRequired`](modules.md#insertfieldsrequired)<`TTable`\> |
-| `update?` | [`Validation`](classes/Validation.md)<`TTable`\>[``"update"``] |
-| `validate?` | [`Predicate`](interfaces/Predicate.md)<[`Row`](modules.md#row)<`TTable`\>\> & [`EntValidationErrorInfo`](interfaces/EntValidationErrorInfo.md)[] |
+| `TSpec` | extends [`Spec`](modules.md#spec) |
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:22](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L22)
+[src/types.ts:142](https://github.com/clickup/rest-client/blob/master/src/types.ts#L142)
 
 ___
 
@@ -861,6 +981,8 @@ ___
 
 Ƭ **Value**<`TSpec`\>: `TSpec` extends { `allowNull`: ``true``  } ? [`ValueRequired`](modules.md#valuerequired)<`TSpec`\> \| ``null`` : [`ValueRequired`](modules.md#valuerequired)<`TSpec`\>
 
+Spec -> nullable Value or non-nullable Value.
+
 #### Type parameters
 
 | Name | Type |
@@ -869,29 +991,188 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:73](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L73)
+[src/types.ts:167](https://github.com/clickup/rest-client/blob/master/src/types.ts#L167)
 
 ___
 
-### ValueRequired
+### Row
 
-Ƭ **ValueRequired**<`TSpec`\>: `TSpec`[``"type"``] extends typeof `Number` ? `number` : `TSpec`[``"type"``] extends typeof `String` ? `string` : `TSpec`[``"type"``] extends typeof `Boolean` ? `boolean` : `TSpec`[``"type"``] extends typeof [`ID`](modules.md#id) ? `string` : `TSpec`[``"type"``] extends typeof `Date` ? `Date` : `TSpec`[``"type"``] extends { `parse`: (`dbValue`: `any`) => `TJSValue`  } ? `TJSValue` : `never`
+Ƭ **Row**<`TTable`\>: [`RowWithID`](modules.md#rowwithid) & { [K in Field<TTable\>]: Value<TTable[K]\> }
+
+Table -> Row deduction (no symbols).
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TSpec` | extends [`Spec`](modules.md#spec) |
+| `TTable` | extends [`Table`](modules.md#table) |
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:57](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L57)
+[src/types.ts:174](https://github.com/clickup/rest-client/blob/master/src/types.ts#L174)
+
+___
+
+### InsertFieldsRequired
+
+Ƭ **InsertFieldsRequired**<`TTable`\>: { [K in keyof TTable]: TTable[K] extends Object ? never : TTable[K] extends Object ? never : K }[keyof `TTable`]
+
+Insert: Table -> "field1" | "field2" |  ... deduction (required).
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Defined in
+
+[src/types.ts:181](https://github.com/clickup/rest-client/blob/master/src/types.ts#L181)
+
+___
+
+### InsertFieldsOptional
+
+Ƭ **InsertFieldsOptional**<`TTable`\>: { [K in keyof TTable]: TTable[K] extends Object ? K : TTable[K] extends Object ? K : never }[keyof `TTable`]
+
+Insert: Table -> "created_at" | "field2" |  ... deduction (optional fields).
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Defined in
+
+[src/types.ts:192](https://github.com/clickup/rest-client/blob/master/src/types.ts#L192)
+
+___
+
+### InsertInput
+
+Ƭ **InsertInput**<`TTable`\>: { [K in InsertFieldsRequired<TTable\>]: Value<TTable[K]\> } & { [K in InsertFieldsOptional<TTable\>]?: Value<TTable[K]\> }
+
+Insert: Table -> { field: string, updated_at?: Date, created_at?: Date... }.
+Excludes id Spec entirely and makes autoInsert/autoUpdate Specs optional.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Defined in
+
+[src/types.ts:204](https://github.com/clickup/rest-client/blob/master/src/types.ts#L204)
+
+___
+
+### UpdateField
+
+Ƭ **UpdateField**<`TTable`\>: `Exclude`<keyof `TTable`, keyof [`RowWithID`](modules.md#rowwithid)\>
+
+Update: Table -> "field1" | "created_at" | "updated_at" | ... deduction.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Defined in
+
+[src/types.ts:213](https://github.com/clickup/rest-client/blob/master/src/types.ts#L213)
+
+___
+
+### UpdateInput
+
+Ƭ **UpdateInput**<`TTable`\>: { [K in UpdateField<TTable\>]?: Value<TTable[K]\> } & { `$literal?`: [`Literal`](modules.md#literal) ; `$cas?`: { [K in UpdateField<TTable\>]?: Value<TTable[K]\> }  }
+
+Update: Table -> { field?: string, created_at?: Date, updated_at?: Date }.
+- Excludes id Spec entirely and makes all fields optional.
+- If $literal is passed, it will be appended to the list of updating fields
+  (engine specific).
+- If $cas is passed, only the rows whose fields match the exact values in
+  $cas will be updated; the non-matching rows will be skipped.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Defined in
+
+[src/types.ts:226](https://github.com/clickup/rest-client/blob/master/src/types.ts#L226)
+
+___
+
+### UniqueKey
+
+Ƭ **UniqueKey**<`TTable`\>: [] \| [[`FieldOfPotentialUniqueKey`](modules.md#fieldofpotentialuniquekey)<`TTable`\>, ...FieldOfPotentialUniqueKey<TTable\>[]]
+
+Table -> ["field1", "field2", ...], list of fields allowed to compose an
+unique key on the table; fields must be allowed in insert/upsert.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Defined in
+
+[src/types.ts:237](https://github.com/clickup/rest-client/blob/master/src/types.ts#L237)
+
+___
+
+### LoadByInput
+
+Ƭ **LoadByInput**<`TTable`, `TUniqueKey`\>: `TUniqueKey` extends [] ? `never` : { [K in TUniqueKey[number]]: Value<TTable[K]\> }
+
+(Table, UniqueKey) -> { field1: number, field2: number, field3: number }.
+loadBy operation is allowed for exact unique key attributes only.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+
+#### Defined in
+
+[src/types.ts:248](https://github.com/clickup/rest-client/blob/master/src/types.ts#L248)
+
+___
+
+### SelectByInput
+
+Ƭ **SelectByInput**<`TTable`, `TUniqueKey`\>: [`LoadByInput`](modules.md#loadbyinput)<`TTable`, [`TuplePrefixes`](modules.md#tupleprefixes)<`TUniqueKey`\>\>
+
+(Table, UniqueKey) -> { field1: number [, field2: number [, ...] ] }.
+selectBy operation is allowed for unique key PREFIX attributes only.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+
+#### Defined in
+
+[src/types.ts:259](https://github.com/clickup/rest-client/blob/master/src/types.ts#L259)
 
 ___
 
 ### Where
 
-Ƭ **Where**<`TTable`\>: { `$not?`: [`WhereWithoutNot`](modules.md#wherewithoutnot)<`TTable`\>  } & [`WhereWithoutNot`](modules.md#wherewithoutnot)<`TTable`\>
+Ƭ **Where**<`TTable`\>: { `$and?`: `ReadonlyArray`<[`Where`](modules.md#where)<`TTable`\>\> ; `$or?`: `ReadonlyArray`<[`Where`](modules.md#where)<`TTable`\>\> ; `$not?`: [`Where`](modules.md#where)<`TTable`\> ; `$literal?`: [`Literal`](modules.md#literal) ; `$shardOfID?`: `string`  } & { `id?`: `TTable` extends { `id`: `unknown`  } ? `unknown` : `string` \| `string`[]  } & { [K in Field<TTable\>]?: Value<TTable[K]\> \| ReadonlyArray<Value<TTable[K]\>\> \| Object \| Object \| Object \| Object \| Object \| Object \| Object }
+
+Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
 #### Type parameters
 
@@ -901,13 +1182,16 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:202](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L202)
+[src/types.ts:267](https://github.com/clickup/rest-client/blob/master/src/types.ts#L267)
 
 ___
 
-### WhereWithoutNot
+### Order
 
-Ƭ **WhereWithoutNot**<`TTable`\>: { `$and?`: `ReadonlyArray`<[`Where`](modules.md#where)<`TTable`\>\> ; `$literal?`: [`Literal`](modules.md#literal) ; `$or?`: `ReadonlyArray`<[`Where`](modules.md#where)<`TTable`\>\>  } & { [K in keyof TTable]?: K extends symbol ? never : Value<TTable[K]\> \| ReadonlyArray<Value<TTable[K]\>\> \| Object \| Object \| Object \| Object \| Object \| Object }
+Ƭ **Order**<`TTable`\>: `ReadonlyArray`<{ [K in Field<TTable\>]?: string } & { `$literal?`: [`Literal`](modules.md#literal)  }\>
+
+Table -> [["f1", "ASC"], ["f2", "DESC"]] or [ [{[$literal]: ["a=?", 10]},
+"ASC"], ["b", "DESC"] ]
 
 #### Type parameters
 
@@ -917,234 +1201,172 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/types.ts:182](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L182)
+[src/types.ts:301](https://github.com/clickup/rest-client/blob/master/src/types.ts#L301)
 
 ___
 
-### WhyClient
+### SelectInput
 
-Ƭ **WhyClient**: `Exclude`<[`TimelineCaughtUpReason`](modules.md#timelinecaughtupreason), ``false``\> \| ``"replica-bc-stale-replica-freshness"`` \| ``"master-bc-is-write"`` \| ``"master-bc-master-freshness"`` \| ``"master-bc-no-replicas"`` \| ``"master-bc-replica-not-caught-up"``
+Ƭ **SelectInput**<`TTable`\>: `Object`
 
-A reason why master or replica was chosen to send the query too. The most
-noticeable ones are:
-- "replica-bc-master-state-unknown": 99% of cases (since writes are rare)
-- "master-bc-replica-not-caught-up": happens immediately after each write,
-  until the write is propagated to replica
-- "replica-bc-caught-up": must happen eventually (in 0.1-2s) after each write
-- "replica-bc-pos-expired": signals that the replication lag is huge, we
-  should carefully monitor this case and make sure it never happens
+Table -> { where: ..., order?: ..., ... }
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `where` | [`Where`](modules.md#where)<`TTable`\> |
+| `order?` | [`Order`](modules.md#order)<`TTable`\> |
+| `custom?` | {} |
+| `limit` | `number` |
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/QueryAnnotation.ts:13](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/QueryAnnotation.ts#L13)
+[src/types.ts:308](https://github.com/clickup/rest-client/blob/master/src/types.ts#L308)
+
+___
+
+### CountInput
+
+Ƭ **CountInput**<`TTable`\>: [`Where`](modules.md#where)<`TTable`\>
+
+Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Defined in
+
+[src/types.ts:318](https://github.com/clickup/rest-client/blob/master/src/types.ts#L318)
+
+___
+
+### ExistsInput
+
+Ƭ **ExistsInput**<`TTable`\>: [`Where`](modules.md#where)<`TTable`\>
+
+Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Defined in
+
+[src/types.ts:323](https://github.com/clickup/rest-client/blob/master/src/types.ts#L323)
+
+___
+
+### DeleteWhereInput
+
+Ƭ **DeleteWhereInput**<`TTable`\>: { `id`: `string`[]  } & `Omit`<[`Where`](modules.md#where)<`TTable`\>, typeof [`ID`](modules.md#id)\>
+
+Table -> { id: ["1", "2", "3"], ... }
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Defined in
+
+[src/types.ts:328](https://github.com/clickup/rest-client/blob/master/src/types.ts#L328)
 
 ## Variables
 
-### $EPHEMERAL
-
-• **$EPHEMERAL**: typeof [`$EPHEMERAL`](modules.md#$ephemeral)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/__tests__/helpers/test-objects.ts:158](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/__tests__/helpers/test-objects.ts#L158)
-
-___
-
-### $EPHEMERAL2
-
-• **$EPHEMERAL2**: typeof [`$EPHEMERAL2`](modules.md#$ephemeral2)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/__tests__/helpers/test-objects.ts:159](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/__tests__/helpers/test-objects.ts#L159)
-
-___
-
-### $and
-
-• **$and**: ``"$and"``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:8](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L8)
-
-___
-
-### $gt
-
-• **$gt**: ``"$>"``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:14](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L14)
-
-___
-
-### $gte
-
-• **$gte**: ``"$>="``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:13](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L13)
-
-___
-
-### $literal
-
-• **$literal**: ``"$literal"``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:17](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L17)
-
-___
-
-### $lt
-
-• **$lt**: ``"$<"``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:12](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L12)
-
-___
-
-### $lte
-
-• **$lte**: ``"$<="``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:11](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L11)
-
-___
-
-### $ne
-
-• **$ne**: ``"$!="``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:15](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L15)
-
-___
-
-### $not
-
-• **$not**: ``"$not"``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:10](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L10)
-
-___
-
-### $or
-
-• **$or**: ``"$or"``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:9](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L9)
-
-___
-
-### $overlap
-
-• **$overlap**: ``"$overlap"``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:16](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L16)
-
-___
-
 ### DEFAULT\_MAX\_BATCH\_SIZE
 
-• **DEFAULT\_MAX\_BATCH\_SIZE**: ``100``
+• `Const` **DEFAULT\_MAX\_BATCH\_SIZE**: ``100``
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:6](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L6)
-
-___
-
-### GLOBAL\_SHARD
-
-• **GLOBAL\_SHARD**: ``"global_shard"``
-
-The table is located in the global shard (shard 0).
-
-#### Defined in
-
-[packages/ent-framework/src/ent/Configuration.ts:20](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Configuration.ts#L20)
-
-___
-
-### ID
-
-• **ID**: ``"id"``
-
-#### Defined in
-
-[packages/ent-framework/src/types.ts:2](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/types.ts#L2)
+[src/abstract/Batcher.ts:8](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L8)
 
 ___
 
 ### MASTER
 
-• **MASTER**: typeof [`MASTER`](modules.md#master)
+• `Const` **MASTER**: typeof [`MASTER`](modules.md#master)
 
 Master freshness: reads always go to master.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Shard.ts:11](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Shard.ts#L11)
-
-___
-
-### RANDOM\_SHARD
-
-• **RANDOM\_SHARD**: ``"random_shard"``
-
-The record is put in a random shard's table when inserted.
-
-#### Defined in
-
-[packages/ent-framework/src/ent/Configuration.ts:25](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Configuration.ts#L25)
+[src/abstract/Shard.ts:9](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L9)
 
 ___
 
 ### STALE\_REPLICA
 
-• **STALE\_REPLICA**: typeof [`STALE_REPLICA`](modules.md#stale_replica)
+• `Const` **STALE\_REPLICA**: typeof [`STALE_REPLICA`](modules.md#stale_replica)
 
 Stale replica freshness: reads always go to a replica, even if it's stale.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Shard.ts:16](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Shard.ts#L16)
+[src/abstract/Shard.ts:14](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L14)
 
 ___
 
-### testCluster
+### GLOBAL\_SHARD
 
-• **testCluster**: [`Cluster`](classes/Cluster.md)<[`TestSQLClient`](classes/TestSQLClient.md)\>
+• `Const` **GLOBAL\_SHARD**: ``"global_shard"``
+
+The table is located in the global Shard (0).
 
 #### Defined in
 
-[packages/ent-framework/src/sql/__tests__/helpers/TestSQLClient.ts:125](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/__tests__/helpers/TestSQLClient.ts#L125)
+[src/ent/Configuration.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L16)
 
 ___
 
-### vcTestGuest
+### GUEST\_ID
 
-• **vcTestGuest**: [`VC`](classes/VC.md)
+• `Const` **GUEST\_ID**: ``"guest"``
+
+Guest VC: has minimum permissions. Typically if the user is not logged in,
+this VC is used.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/__tests__/helpers/test-objects.ts:25](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/__tests__/helpers/test-objects.ts#L25)
+[src/ent/VC.ts:22](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L22)
+
+___
+
+### OMNI\_ID
+
+• `Const` **OMNI\_ID**: ``"omni"``
+
+Temporary "omniscient" VC. Any Ent can be loaded with it, but this VC is
+replaced with lower-pri VC as soon as possible. E.g. when some Ent is loaded
+with omni VC, its ent.vc is assigned to either this Ent's "owner" VC
+(accessible via VC pointing field) or, if not detected, to guest VC.
+
+#### Defined in
+
+[src/ent/VC.ts:30](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L30)
+
+___
+
+### ID
+
+• `Const` **ID**: ``"id"``
+
+#### Defined in
+
+[src/types.ts:4](https://github.com/clickup/rest-client/blob/master/src/types.ts#L4)
 
 ## Functions
 
@@ -1153,7 +1375,7 @@ ___
 ▸ **BaseEnt**<`TTable`, `TUniqueKey`, `TClient`\>(`cluster`, `schema`): [`HelpersClass`](interfaces/HelpersClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
 
 This is a helper function to create new Ent classes. Run once per each
-Ent+cluster on app boot. See examples in __tests__/TestObjects.ts and
+Ent+Cluster on app boot. See examples in __tests__/TestObjects.ts and
 EntTest.ts.
 
 Since all Ent objects are immutable (following the modern practices),
@@ -1174,14 +1396,14 @@ to debug and develop.
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends readonly { [K in string \| number \| symbol]: TTable[K] extends Object ? K : never }[keyof `TTable`][] |
-| `TClient` | extends [`Client`](classes/Client.md)<`TClient`\> |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `cluster` | [`Cluster`](classes/Cluster.md)<`TClient`\> |
+| `cluster` | [`Cluster`](classes/Cluster.md)<`TClient`, `any`\> |
 | `schema` | [`Schema`](classes/Schema.md)<`TTable`, `TUniqueKey`\> |
 
 #### Returns
@@ -1190,178 +1412,13 @@ to debug and develop.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/BaseEnt.ts:31](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/BaseEnt.ts#L31)
+[src/ent/BaseEnt.ts:32](https://github.com/clickup/rest-client/blob/master/src/ent/BaseEnt.ts#L32)
 
 ___
 
-### CacheMixin
+### buildUpdateNewRow
 
-▸ **CacheMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
-
-Modifies the passed class adding VC-stored cache layer to it.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends readonly { [K in string \| number \| symbol]: TTable[K] extends Object ? K : never }[keyof `TTable`][] |
-| `TClient` | extends [`Client`](classes/Client.md)<`TClient`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `Base` | [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\> |
-
-#### Returns
-
-[`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/CacheMixin.ts:19](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/CacheMixin.ts#L19)
-
-___
-
-### ConfigMixin
-
-▸ **ConfigMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`, `cluster`, `schema`): [`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
-
-Modifies the passed class adding support for Ent configuration (such as:
-cluster, table schema, privacy rules, triggers etc.).
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends readonly { [K in string \| number \| symbol]: TTable[K] extends Object ? K : never }[keyof `TTable`][] |
-| `TClient` | extends [`Client`](classes/Client.md)<`TClient`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `Base` | (...`args`: `any`[]) => {} |
-| `cluster` | [`Cluster`](classes/Cluster.md)<`TClient`\> |
-| `schema` | [`Schema`](classes/Schema.md)<`TTable`, `TUniqueKey`\> |
-
-#### Returns
-
-[`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/ConfigMixin.ts:84](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/ConfigMixin.ts#L84)
-
-___
-
-### HelpersMixin
-
-▸ **HelpersMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`HelpersClass`](interfaces/HelpersClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
-
-Modifies the passed class adding convenience methods (like loadX() which
-throws when an Ent can't be loaded instead of returning null as it's done in
-the primitive operations).
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends readonly { [K in string \| number \| symbol]: TTable[K] extends Object ? K : never }[keyof `TTable`][] |
-| `TClient` | extends [`Client`](classes/Client.md)<`TClient`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `Base` | [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\> |
-
-#### Returns
-
-[`HelpersClass`](interfaces/HelpersClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/HelpersMixin.ts:117](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/HelpersMixin.ts#L117)
-
-___
-
-### Memoize
-
-▸ **Memoize**(`hashFunction?`): (`_target`: `Object`, `_propertyKey`: `string` \| `symbol`, `descriptor`: `TypedPropertyDescriptor`<`any`\>) => `void`
-
-Shamelessly stolen from https://www.npmjs.com/package/typescript-memoize
-The only difference is that, if used to memoize async functions, it clears
-the memoize cache if the promise got rejected (i.e. it doesn't memoize
-exceptions in async functions).
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `hashFunction?` | (...`args`: `any`[]) => `any` |
-
-#### Returns
-
-`fn`
-
-▸ (`_target`, `_propertyKey`, `descriptor`): `void`
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `_target` | `Object` |
-| `_propertyKey` | `string` \| `symbol` |
-| `descriptor` | `TypedPropertyDescriptor`<`any`\> |
-
-##### Returns
-
-`void`
-
-#### Defined in
-
-[packages/ent-framework/src/Memoize.ts:7](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/Memoize.ts#L7)
-
-___
-
-### PrimitiveMixin
-
-▸ **PrimitiveMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
-
-Modifies the passed class adding support for the minimal number of basic Ent
-operations. Internally, uses Schema abstractions to run them.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends readonly { [K in string \| number \| symbol]: TTable[K] extends Object ? K : never }[keyof `TTable`][] |
-| `TClient` | extends [`Client`](classes/Client.md)<`TClient`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `Base` | [`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\> |
-
-#### Returns
-
-[`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:156](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L156)
-
-___
-
-### buildNewRow
-
-▸ **buildNewRow**<`TTable`\>(`oldRow`, `input`): [`Row`](modules.md#row)<`TTable`\>
+▸ **buildUpdateNewRow**<`TTable`\>(`oldRow`, `input`): [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\>
 
 Simulates an update for a row, as if it's applied to the Ent.
 
@@ -1380,226 +1437,143 @@ Simulates an update for a row, as if it's applied to the Ent.
 
 #### Returns
 
-[`Row`](modules.md#row)<`TTable`\>
+[`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Triggers.ts:257](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L257)
+[src/ent/Triggers.ts:354](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L354)
 
 ___
 
-### copyStack
+### CacheMixin
 
-▸ **copyStack**(`toErr`, `fromErr`): `Error`
+▸ **CacheMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
 
-Copies a stack-trace from fromErr error into toErr object. Useful for
-lightweight exceptions wrapping.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `toErr` | `Error` |
-| `fromErr` | `Error` |
-
-#### Returns
-
-`Error`
-
-#### Defined in
-
-[packages/ent-framework/src/helpers.ts:46](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L46)
-
-___
-
-### createVC
-
-▸ **createVC**(): [`VC`](classes/VC.md)
-
-#### Returns
-
-[`VC`](classes/VC.md)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/__tests__/helpers/test-objects.ts:459](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/__tests__/helpers/test-objects.ts#L459)
-
-___
-
-### entries
-
-▸ **entries**<`K`, `V`\>(`obj`): [`K`, `V`][]
-
-Same as Object.entries(), but returns strongly-typed entries.
+Modifies the passed class adding VC-stored cache layer to it.
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `K` | extends `string` |
-| `V` | `V` |
+| `TTable` | extends [`Table`](modules.md#table) |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `obj` | `Partial`<`Record`<`K`, `V`\>\> |
+| `Base` | [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\> |
 
 #### Returns
 
-[`K`, `V`][]
+[`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:283](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L283)
+[src/ent/mixins/CacheMixin.ts:20](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/CacheMixin.ts#L20)
 
 ___
 
-### escapeAny
+### ConfigMixin
 
-▸ **escapeAny**(`v`): `string`
+▸ **ConfigMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`, `cluster`, `schema`): [`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
+
+Modifies the passed class adding support for Ent configuration (such as:
+Cluster, table schema, privacy rules, triggers etc.).
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `v` | `any` |
+| `Base` | (...`args`: `any`[]) => {} |
+| `cluster` | [`Cluster`](classes/Cluster.md)<`TClient`, `any`\> |
+| `schema` | [`Schema`](classes/Schema.md)<`TTable`, `TUniqueKey`\> |
 
 #### Returns
 
-`string`
+[`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLClient.ts:20](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClient.ts#L20)
+[src/ent/mixins/ConfigMixin.ts:86](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L86)
 
 ___
 
-### escapeBoolean
+### HelpersMixin
 
-▸ **escapeBoolean**(`v`): `string`
+▸ **HelpersMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`HelpersClass`](interfaces/HelpersClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
+
+Modifies the passed class adding convenience methods (like loadX() which
+throws when an Ent can't be loaded instead of returning null as it's done in
+the primitive operations).
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `v` | `undefined` \| ``null`` \| `boolean` |
+| `Base` | [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\> |
 
 #### Returns
 
-`string`
+[`HelpersClass`](interfaces/HelpersClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLClient.ts:64](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClient.ts#L64)
+[src/ent/mixins/HelpersMixin.ts:138](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L138)
 
 ___
 
-### escapeDate
+### PrimitiveMixin
 
-▸ **escapeDate**(`v`, `field?`): `string`
+▸ **PrimitiveMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
+
+Modifies the passed class adding support for the minimal number of basic Ent
+operations. Internally, uses Schema abstractions to run them.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `v` | `undefined` \| ``null`` \| `Date` |
-| `field?` | `string` |
+| `Base` | [`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\> |
 
 #### Returns
 
-`string`
+[`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLClient.ts:56](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClient.ts#L56)
-
-___
-
-### escapeID
-
-▸ **escapeID**(`v`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `v` | `undefined` \| ``null`` \| `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLClient.ts:35](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClient.ts#L35)
-
-___
-
-### escapeIdent
-
-▸ **escapeIdent**(`ident`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `ident` | `any` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLClient.ts:14](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClient.ts#L14)
-
-___
-
-### escapeString
-
-▸ **escapeString**(`v`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `v` | `undefined` \| ``null`` \| `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLClient.ts:48](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClient.ts#L48)
-
-___
-
-### escapeStringify
-
-▸ **escapeStringify**(`v`, `stringify`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `v` | `any` |
-| `stringify` | (`v`: `any`) => `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLClient.ts:68](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClient.ts#L68)
+[src/ent/mixins/PrimitiveMixin.ts:196](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L196)
 
 ___
 
 ### evaluate
 
-▸ **evaluate**<`TInput`\>(`rules`, `vc`, `input`, `parallel`): `Promise`<{ `allow`: `boolean` ; `results`: [`RuleResult`](interfaces/RuleResult.md)[]  }\>
+▸ **evaluate**<`TInput`\>(`vc`, `input`, `rules`, `fashion`): `Promise`<{ `allow`: `boolean` ; `results`: [`RuleResult`](interfaces/RuleResult.md)[] ; `cause`: `string`  }\>
 
 This is a hearth of permissions checking, a machine which evaluates the rules
 chain from top to bottom (one after another) and makes the decision based on
@@ -1655,115 +1629,34 @@ Example of a chain:
 
 | Name | Type |
 | :------ | :------ |
-| `rules` | [`Rule`](classes/Rule.md)<`TInput`\>[] |
 | `vc` | [`VC`](classes/VC.md) |
 | `input` | `TInput` |
-| `parallel` | `boolean` |
+| `rules` | [`Rule`](classes/Rule.md)<`TInput`\>[] |
+| `fashion` | ``"parallel"`` \| ``"sequential"`` |
 
 #### Returns
 
-`Promise`<{ `allow`: `boolean` ; `results`: [`RuleResult`](interfaces/RuleResult.md)[]  }\>
+`Promise`<{ `allow`: `boolean` ; `results`: [`RuleResult`](interfaces/RuleResult.md)[] ; `cause`: `string`  }\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:105](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L105)
+[src/ent/rules/evaluate.ts:53](https://github.com/clickup/rest-client/blob/master/src/ent/rules/evaluate.ts#L53)
 
 ___
 
-### hasKey
+### deepEqual
 
-▸ **hasKey**<`K`\>(`k`, `o`): o is { [\_ in string \| symbol]: any }
+▸ **deepEqual**(`a`, `b`): `boolean`
 
-A typesafe-way to invariant the object's key presence.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `K` | extends `string` \| `symbol` |
+Deep compares a and b ignoring the order of keys in objects and keys with
+undefined values.
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `k` | `K` |
-| `o` | `any` |
-
-#### Returns
-
-o is { [\_ in string \| symbol]: any }
-
-#### Defined in
-
-[packages/ent-framework/src/helpers.ts:273](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L273)
-
-___
-
-### hash
-
-▸ **hash**(`s`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `s` | `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[packages/ent-framework/src/helpers.ts:97](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L97)
-
-___
-
-### indent
-
-▸ **indent**(`message`): `string`
-
-Indents each line of the text with 2 spaces.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `message` | `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[packages/ent-framework/src/helpers.ts:106](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L106)
-
-___
-
-### init
-
-▸ **init**(): `Promise`<[[`VC`](classes/VC.md), [`VC`](classes/VC.md)]\>
-
-#### Returns
-
-`Promise`<[[`VC`](classes/VC.md), [`VC`](classes/VC.md)]\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/__tests__/helpers/test-objects.ts:371](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/__tests__/helpers/test-objects.ts#L371)
-
-___
-
-### isBigintStr
-
-▸ **isBigintStr**(`str`): `boolean`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `str` | `string` |
+| `a` | `unknown` |
+| `b` | `unknown` |
 
 #### Returns
 
@@ -1771,399 +1664,60 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLClient.ts:7](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClient.ts#L7)
+[src/helpers/deepEqual.ts:36](https://github.com/clickup/rest-client/blob/master/src/helpers/deepEqual.ts#L36)
 
 ___
 
 ### join
 
-▸ **join**<`T1`, `T2`, `T3`, `T4`, `T5`, `T6`\>(`values`): `Promise`<[`T1`, `T2`, `T3`, `T4`, `T5`, `T6`]\>
+▸ **join**<`TList`\>(`promises`): `Promise`<{ -readonly [P in keyof TList]: Awaited<TList[P]\> }\>
 
-Works the same way as Promise-all, but additionally guarantees that ALL OTHER
-promises have settled in case one of them rejects. This is needed to ensure
-that we never have unexpected "dangling" promises continuing running in
-nowhere in case one of the promises rejects early (the behavior of
-Promise.all is to reject eagerly and let the rest of stuff running whilst the
-caller code unfreezes).
-
-The behavior of join() is similar to Promise.allSettled(), but it throws the
-1st exception occurred; this is what's expected in most of the cases, and
-this is how promises are implemented in e.g. Hack.
-
-The benefits of ensuring everything is settled:
-1. We never have surprising entries in our logs (e.g. imagine a request
-   aborted long time ago, and then some "dangling" promises continue running
-   and issue SQL queries as if nothing happened).
-2. Predictable control flow: if we run `await join()`, we know that no side
-   effects from the spawned promises will appear after this await throws or
-   returns.
-
-"Join" is a term from parallel programming (e.g. "join threads"), it’s pretty
-concrete and means that after the call, multiple parallel execution flows
-“join” into one. It's a word to describe having "one" from "many".
-
-What’s interesting is that, besides Promise-all leaks execution flows, it
-still doesn’t trigger UnhandledPromiseRejection for them in case one of them
-throws later, it just swallows all other exceptions.
-
-I.e. Promise-all means "run all in parallel, if one throws - throw
-immediately and let the others continue running in nowhere; if some of THAT
-others throws, swallow their exceptions".
-
-And join() means "run all in parallel, if one throws - wait until everyone
-finishes, and then throw the 1st exception; if some of others throw, swallow
-their exceptions".
-
-See also https://en.wikipedia.org/wiki/Fork%E2%80%93join_model
+Turns a list of Promises to a list of Promise resolution results.
 
 #### Type parameters
 
-| Name |
-| :------ |
-| `T1` |
-| `T2` |
-| `T3` |
-| `T4` |
-| `T5` |
-| `T6` |
+| Name | Type |
+| :------ | :------ |
+| `TList` | extends readonly `unknown`[] |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `values` | [`T1` \| `PromiseLike`<`T1`\>, `T2` \| `PromiseLike`<`T2`\>, `T3` \| `PromiseLike`<`T3`\>, `T4` \| `PromiseLike`<`T4`\>, `T5` \| `PromiseLike`<`T5`\>, `T6` \| `PromiseLike`<`T6`\>] |
+| `promises` | `TList` |
 
 #### Returns
 
-`Promise`<[`T1`, `T2`, `T3`, `T4`, `T5`, `T6`]\>
+`Promise`<{ -readonly [P in keyof TList]: Awaited<TList[P]\> }\>
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:125](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L125)
+[src/helpers/misc.ts:51](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L51)
 
-▸ **join**<`T1`, `T2`, `T3`, `T4`, `T5`\>(`values`): `Promise`<[`T1`, `T2`, `T3`, `T4`, `T5`]\>
+▸ **join**<`TRec`\>(`promises`): `Promise`<{ -readonly [K in keyof TRec]: Awaited<TRec[K]\> }\>
 
-Works the same way as Promise-all, but additionally guarantees that ALL OTHER
-promises have settled in case one of them rejects. This is needed to ensure
-that we never have unexpected "dangling" promises continuing running in
-nowhere in case one of the promises rejects early (the behavior of
-Promise.all is to reject eagerly and let the rest of stuff running whilst the
-caller code unfreezes).
-
-The behavior of join() is similar to Promise.allSettled(), but it throws the
-1st exception occurred; this is what's expected in most of the cases, and
-this is how promises are implemented in e.g. Hack.
-
-The benefits of ensuring everything is settled:
-1. We never have surprising entries in our logs (e.g. imagine a request
-   aborted long time ago, and then some "dangling" promises continue running
-   and issue SQL queries as if nothing happened).
-2. Predictable control flow: if we run `await join()`, we know that no side
-   effects from the spawned promises will appear after this await throws or
-   returns.
-
-"Join" is a term from parallel programming (e.g. "join threads"), it’s pretty
-concrete and means that after the call, multiple parallel execution flows
-“join” into one. It's a word to describe having "one" from "many".
-
-What’s interesting is that, besides Promise-all leaks execution flows, it
-still doesn’t trigger UnhandledPromiseRejection for them in case one of them
-throws later, it just swallows all other exceptions.
-
-I.e. Promise-all means "run all in parallel, if one throws - throw
-immediately and let the others continue running in nowhere; if some of THAT
-others throws, swallow their exceptions".
-
-And join() means "run all in parallel, if one throws - wait until everyone
-finishes, and then throw the 1st exception; if some of others throw, swallow
-their exceptions".
-
-See also https://en.wikipedia.org/wiki/Fork%E2%80%93join_model
+Turns an object where some values are Promises to an object with values as
+Promise resolution results.
 
 #### Type parameters
 
-| Name |
-| :------ |
-| `T1` |
-| `T2` |
-| `T3` |
-| `T4` |
-| `T5` |
+| Name | Type |
+| :------ | :------ |
+| `TRec` | extends `Readonly`<`Record`<`string`, `unknown`\>\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `values` | [`T1` \| `PromiseLike`<`T1`\>, `T2` \| `PromiseLike`<`T2`\>, `T3` \| `PromiseLike`<`T3`\>, `T4` \| `PromiseLike`<`T4`\>, `T5` \| `PromiseLike`<`T5`\>] |
+| `promises` | `TRec` |
 
 #### Returns
 
-`Promise`<[`T1`, `T2`, `T3`, `T4`, `T5`]\>
+`Promise`<{ -readonly [K in keyof TRec]: Awaited<TRec[K]\> }\>
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:136](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L136)
-
-▸ **join**<`T1`, `T2`, `T3`, `T4`\>(`values`): `Promise`<[`T1`, `T2`, `T3`, `T4`]\>
-
-Works the same way as Promise-all, but additionally guarantees that ALL OTHER
-promises have settled in case one of them rejects. This is needed to ensure
-that we never have unexpected "dangling" promises continuing running in
-nowhere in case one of the promises rejects early (the behavior of
-Promise.all is to reject eagerly and let the rest of stuff running whilst the
-caller code unfreezes).
-
-The behavior of join() is similar to Promise.allSettled(), but it throws the
-1st exception occurred; this is what's expected in most of the cases, and
-this is how promises are implemented in e.g. Hack.
-
-The benefits of ensuring everything is settled:
-1. We never have surprising entries in our logs (e.g. imagine a request
-   aborted long time ago, and then some "dangling" promises continue running
-   and issue SQL queries as if nothing happened).
-2. Predictable control flow: if we run `await join()`, we know that no side
-   effects from the spawned promises will appear after this await throws or
-   returns.
-
-"Join" is a term from parallel programming (e.g. "join threads"), it’s pretty
-concrete and means that after the call, multiple parallel execution flows
-“join” into one. It's a word to describe having "one" from "many".
-
-What’s interesting is that, besides Promise-all leaks execution flows, it
-still doesn’t trigger UnhandledPromiseRejection for them in case one of them
-throws later, it just swallows all other exceptions.
-
-I.e. Promise-all means "run all in parallel, if one throws - throw
-immediately and let the others continue running in nowhere; if some of THAT
-others throws, swallow their exceptions".
-
-And join() means "run all in parallel, if one throws - wait until everyone
-finishes, and then throw the 1st exception; if some of others throw, swallow
-their exceptions".
-
-See also https://en.wikipedia.org/wiki/Fork%E2%80%93join_model
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T1` |
-| `T2` |
-| `T3` |
-| `T4` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `values` | [`T1` \| `PromiseLike`<`T1`\>, `T2` \| `PromiseLike`<`T2`\>, `T3` \| `PromiseLike`<`T3`\>, `T4` \| `PromiseLike`<`T4`\>] |
-
-#### Returns
-
-`Promise`<[`T1`, `T2`, `T3`, `T4`]\>
-
-#### Defined in
-
-[packages/ent-framework/src/helpers.ts:146](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L146)
-
-▸ **join**<`T1`, `T2`, `T3`\>(`values`): `Promise`<[`T1`, `T2`, `T3`]\>
-
-Works the same way as Promise-all, but additionally guarantees that ALL OTHER
-promises have settled in case one of them rejects. This is needed to ensure
-that we never have unexpected "dangling" promises continuing running in
-nowhere in case one of the promises rejects early (the behavior of
-Promise.all is to reject eagerly and let the rest of stuff running whilst the
-caller code unfreezes).
-
-The behavior of join() is similar to Promise.allSettled(), but it throws the
-1st exception occurred; this is what's expected in most of the cases, and
-this is how promises are implemented in e.g. Hack.
-
-The benefits of ensuring everything is settled:
-1. We never have surprising entries in our logs (e.g. imagine a request
-   aborted long time ago, and then some "dangling" promises continue running
-   and issue SQL queries as if nothing happened).
-2. Predictable control flow: if we run `await join()`, we know that no side
-   effects from the spawned promises will appear after this await throws or
-   returns.
-
-"Join" is a term from parallel programming (e.g. "join threads"), it’s pretty
-concrete and means that after the call, multiple parallel execution flows
-“join” into one. It's a word to describe having "one" from "many".
-
-What’s interesting is that, besides Promise-all leaks execution flows, it
-still doesn’t trigger UnhandledPromiseRejection for them in case one of them
-throws later, it just swallows all other exceptions.
-
-I.e. Promise-all means "run all in parallel, if one throws - throw
-immediately and let the others continue running in nowhere; if some of THAT
-others throws, swallow their exceptions".
-
-And join() means "run all in parallel, if one throws - wait until everyone
-finishes, and then throw the 1st exception; if some of others throw, swallow
-their exceptions".
-
-See also https://en.wikipedia.org/wiki/Fork%E2%80%93join_model
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T1` |
-| `T2` |
-| `T3` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `values` | [`T1` \| `PromiseLike`<`T1`\>, `T2` \| `PromiseLike`<`T2`\>, `T3` \| `PromiseLike`<`T3`\>] |
-
-#### Returns
-
-`Promise`<[`T1`, `T2`, `T3`]\>
-
-#### Defined in
-
-[packages/ent-framework/src/helpers.ts:155](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L155)
-
-▸ **join**<`T1`, `T2`\>(`values`): `Promise`<[`T1`, `T2`]\>
-
-Works the same way as Promise-all, but additionally guarantees that ALL OTHER
-promises have settled in case one of them rejects. This is needed to ensure
-that we never have unexpected "dangling" promises continuing running in
-nowhere in case one of the promises rejects early (the behavior of
-Promise.all is to reject eagerly and let the rest of stuff running whilst the
-caller code unfreezes).
-
-The behavior of join() is similar to Promise.allSettled(), but it throws the
-1st exception occurred; this is what's expected in most of the cases, and
-this is how promises are implemented in e.g. Hack.
-
-The benefits of ensuring everything is settled:
-1. We never have surprising entries in our logs (e.g. imagine a request
-   aborted long time ago, and then some "dangling" promises continue running
-   and issue SQL queries as if nothing happened).
-2. Predictable control flow: if we run `await join()`, we know that no side
-   effects from the spawned promises will appear after this await throws or
-   returns.
-
-"Join" is a term from parallel programming (e.g. "join threads"), it’s pretty
-concrete and means that after the call, multiple parallel execution flows
-“join” into one. It's a word to describe having "one" from "many".
-
-What’s interesting is that, besides Promise-all leaks execution flows, it
-still doesn’t trigger UnhandledPromiseRejection for them in case one of them
-throws later, it just swallows all other exceptions.
-
-I.e. Promise-all means "run all in parallel, if one throws - throw
-immediately and let the others continue running in nowhere; if some of THAT
-others throws, swallow their exceptions".
-
-And join() means "run all in parallel, if one throws - wait until everyone
-finishes, and then throw the 1st exception; if some of others throw, swallow
-their exceptions".
-
-See also https://en.wikipedia.org/wiki/Fork%E2%80%93join_model
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T1` |
-| `T2` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `values` | [`T1` \| `PromiseLike`<`T1`\>, `T2` \| `PromiseLike`<`T2`\>] |
-
-#### Returns
-
-`Promise`<[`T1`, `T2`]\>
-
-#### Defined in
-
-[packages/ent-framework/src/helpers.ts:159](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L159)
-
-▸ **join**<`T`\>(`values`): `Promise`<`T`[]\>
-
-Works the same way as Promise-all, but additionally guarantees that ALL OTHER
-promises have settled in case one of them rejects. This is needed to ensure
-that we never have unexpected "dangling" promises continuing running in
-nowhere in case one of the promises rejects early (the behavior of
-Promise.all is to reject eagerly and let the rest of stuff running whilst the
-caller code unfreezes).
-
-The behavior of join() is similar to Promise.allSettled(), but it throws the
-1st exception occurred; this is what's expected in most of the cases, and
-this is how promises are implemented in e.g. Hack.
-
-The benefits of ensuring everything is settled:
-1. We never have surprising entries in our logs (e.g. imagine a request
-   aborted long time ago, and then some "dangling" promises continue running
-   and issue SQL queries as if nothing happened).
-2. Predictable control flow: if we run `await join()`, we know that no side
-   effects from the spawned promises will appear after this await throws or
-   returns.
-
-"Join" is a term from parallel programming (e.g. "join threads"), it’s pretty
-concrete and means that after the call, multiple parallel execution flows
-“join” into one. It's a word to describe having "one" from "many".
-
-What’s interesting is that, besides Promise-all leaks execution flows, it
-still doesn’t trigger UnhandledPromiseRejection for them in case one of them
-throws later, it just swallows all other exceptions.
-
-I.e. Promise-all means "run all in parallel, if one throws - throw
-immediately and let the others continue running in nowhere; if some of THAT
-others throws, swallow their exceptions".
-
-And join() means "run all in parallel, if one throws - wait until everyone
-finishes, and then throw the 1st exception; if some of others throw, swallow
-their exceptions".
-
-See also https://en.wikipedia.org/wiki/Fork%E2%80%93join_model
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `values` | (`T` \| `PromiseLike`<`T`\>)[] |
-
-#### Returns
-
-`Promise`<`T`[]\>
-
-#### Defined in
-
-[packages/ent-framework/src/helpers.ts:163](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L163)
-
-___
-
-### localUniqueInt
-
-▸ **localUniqueInt**(): `number`
-
-A simple sequence generator which never returns the same value twice within
-the same process. It's NOT random, NOT for cryptography, NOT stored (so
-starts from scratch on a process restart) and is NOT shared with other
-processes.
-
-#### Returns
-
-`number`
-
-#### Defined in
-
-[packages/ent-framework/src/helpers.ts:91](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L91)
+[src/helpers/misc.ts:59](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L59)
 
 ___
 
@@ -2185,7 +1739,7 @@ A shortcut for `await join(arr.map(async ...))`.
 | Name | Type |
 | :------ | :------ |
 | `arr` | readonly `TElem`[] \| `Promise`<readonly `TElem`[]\> |
-| `func` | (`e`: `TElem`, `idx`: `number`) => `PromiseLike`<`TRet`\> |
+| `func` | (`e`: `TElem`, `idx`: `number`) => `TRet` \| `PromiseLike`<`TRet`\> |
 
 #### Returns
 
@@ -2193,46 +1747,37 @@ A shortcut for `await join(arr.map(async ...))`.
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:226](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L226)
+[src/helpers/misc.ts:130](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L130)
 
 ___
 
-### memoize2
+### copyStack
 
-▸ **memoize2**<`TTag`, `TArg1`, `TArg2`, `TResult`\>(`obj`, `tag`, `func`): typeof `func`
+▸ **copyStack**<`TError`\>(`toErr`, `fromErr`): `TError`
 
-A simple intrusive 1-slot cache memoization helper for 2 parameters
-functions. It's useful when we have a very high chance of hit rate and is
-faster (and more memory efficient) than a Map<TArg1, Map<TArg2, TResult>>
-based approach since it doesn't create intermediate maps.
-
-This method works seamlessly for async functions too: the returned Promise is
-eagerly memoized, so all the callers will subscribe to the same Promise.
+Copies a stack-trace from fromErr error into toErr object. Useful for
+lightweight exceptions wrapping.
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TTag` | extends `symbol` |
-| `TArg1` | `TArg1` |
-| `TArg2` | `TArg2` |
-| `TResult` | `TResult` |
+| `TError` | extends `Error` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `obj` | `object` |
-| `tag` | `TTag` |
-| `func` | (`arg1`: `TArg1`, `arg2`: `TArg2`) => `TResult` |
+| `toErr` | `TError` |
+| `fromErr` | `any` |
 
 #### Returns
 
-typeof `func`
+`TError`
 
 #### Defined in
 
-[packages/ent-framework/src/memoize2.ts:10](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/memoize2.ts#L10)
+[src/helpers/misc.ts:141](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L141)
 
 ___
 
@@ -2256,7 +1801,117 @@ test with snapshot for examples.
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:70](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L70)
+[src/helpers/misc.ts:171](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L171)
+
+___
+
+### localUniqueInt
+
+▸ **localUniqueInt**(): `number`
+
+A simple sequence generator which never returns the same value twice within
+the same process. It's NOT random, NOT for cryptography, NOT stored (so
+starts from scratch on a process restart) and is NOT shared with other
+processes.
+
+#### Returns
+
+`number`
+
+#### Defined in
+
+[src/helpers/misc.ts:192](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L192)
+
+___
+
+### stringHash
+
+▸ **stringHash**(`s`): `string`
+
+The quickest string hasher. Don't use for crypto purposes!
+https://medium.com/@chris_72272/what-is-the-fastest-node-js-hashing-algorithm-c15c1a0e164e
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `s` | `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/helpers/misc.ts:202](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L202)
+
+___
+
+### objectHash
+
+▸ **objectHash**(`obj`): `Buffer`
+
+Used to calculate stable hashes of e.g. unique keys.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `obj` | `object` |
+
+#### Returns
+
+`Buffer`
+
+#### Defined in
+
+[src/helpers/misc.ts:209](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L209)
+
+___
+
+### indent
+
+▸ **indent**(`message`): `string`
+
+Indents each line of the text with 2 spaces.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `message` | `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/helpers/misc.ts:219](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L219)
+
+___
+
+### sanitizeIDForDebugPrinting
+
+▸ **sanitizeIDForDebugPrinting**(`idIn`): `string`
+
+Prepares something which is claimed to be an ID for debug printing in e.g.
+exception messages. We replace all non-ASCII characters to their \u
+representations.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `idIn` | `any` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/helpers/misc.ts:228](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L228)
 
 ___
 
@@ -2283,27 +1938,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:233](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L233)
-
-___
-
-### parseLsn
-
-▸ **parseLsn**(`lsn`): ``null`` \| `bigint`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `lsn` | `undefined` \| ``null`` \| `string` |
-
-#### Returns
-
-``null`` \| `bigint`
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLClient.ts:72](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClient.ts#L72)
+[src/helpers/misc.ts:241](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L241)
 
 ___
 
@@ -2335,23 +1970,103 @@ It's like an analog of "async on intent" comment in the code.
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:259](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L259)
+[src/helpers/misc.ts:267](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L267)
 
 ___
 
-### sanitizeIDForDebugPrinting
+### hasKey
 
-▸ **sanitizeIDForDebugPrinting**(`id`): `string`
+▸ **hasKey**<`K`\>(`k`, `o`): o is { [\_ in string \| symbol]: any }
 
-Prepares something which is claimed to be an ID for debug printing in e.g.
-exception messages. We replace all non-ASCII characters to their \u
-representations.
+A typesafe-way to invariant the object's key presence and being
+non-undefined.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `K` | extends `string` \| `symbol` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `id` | `any` |
+| `k` | `K` |
+| `o` | `any` |
+
+#### Returns
+
+o is { [\_ in string \| symbol]: any }
+
+#### Defined in
+
+[src/helpers/misc.ts:282](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L282)
+
+___
+
+### entries
+
+▸ **entries**<`K`, `V`\>(`obj`): [`K`, `V`][]
+
+Same as Object.entries(), but returns strongly-typed entries.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `K` | extends `string` |
+| `V` | `V` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `obj` | `Partial`<`Record`<`K`, `V`\>\> |
+
+#### Returns
+
+[`K`, `V`][]
+
+#### Defined in
+
+[src/helpers/misc.ts:297](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L297)
+
+___
+
+### isBigintStr
+
+▸ **isBigintStr**(`str`): `boolean`
+
+It's hard to support PG bigint type in JS, so people use strings instead.
+THis function checks that a string can be passed to PG as a bigint.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `str` | `string` |
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/sql/SQLClient.ts:375](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L375)
+
+___
+
+### escapeIdent
+
+▸ **escapeIdent**(`ident`): `string`
+
+Optionally encloses a PG identifier (like table name) in "".
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `ident` | `any` |
 
 #### Returns
 
@@ -2359,51 +2074,313 @@ representations.
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:115](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L115)
+[src/sql/SQLClient.ts:385](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L385)
 
 ___
 
-### toFloatMs
+### escapeAny
 
-▸ **toFloatMs**(`elapsed`): `number`
+▸ **escapeAny**(`v`): `string`
 
-A wrapper around process.hrtime() to quickly calculate time deltas:
-const timeStart = process.hrtime();
-...
-const elapsedMs = toFloatMs(process.hrtime(timeStart));
+Tries its best to escape the value according to its type.
+
+Try to not use this function; although it protects against SQL injections,
+it's not aware of the actual field type, so it e.g. cannot prevent a bigint
+overflow SQL error.
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `elapsed` | [`number`, `number`] |
+| `v` | `any` |
 
 #### Returns
 
-`number`
+`string`
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:31](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L31)
+[src/sql/SQLClient.ts:398](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L398)
 
 ___
 
-### toFloatSec
+### escapeID
 
-▸ **toFloatSec**(`elapsed`): `number`
+▸ **escapeID**(`v`): `string`
 
-Same as toFloatMs(), but returns seconds.
+Escapes a value implying that it's a PG ID (which is a bigint). This should
+be a preferred way of escaping when we know that the value is a bigint.
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `elapsed` | [`number`, `number`] |
+| `v` | `undefined` \| ``null`` \| `string` |
 
 #### Returns
 
-`number`
+`string`
 
 #### Defined in
 
-[packages/ent-framework/src/helpers.ts:38](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/helpers.ts#L38)
+[src/sql/SQLClient.ts:416](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L416)
+
+___
+
+### escapeString
+
+▸ **escapeString**(`v`): `string`
+
+Escapes a string as PG string literal.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `v` | `undefined` \| ``null`` \| `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/sql/SQLClient.ts:432](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L432)
+
+___
+
+### escapeArray
+
+▸ **escapeArray**(`obj`): `string`
+
+Escapes an array of strings.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `obj` | `undefined` \| ``null`` \| (``null`` \| `string`)[] |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/sql/SQLClient.ts:443](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L443)
+
+___
+
+### escapeDate
+
+▸ **escapeDate**(`v`, `field?`): `string`
+
+Escapes a date as PG string literal.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `v` | `undefined` \| ``null`` \| `Date` |
+| `field?` | `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/sql/SQLClient.ts:464](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L464)
+
+___
+
+### escapeBoolean
+
+▸ **escapeBoolean**(`v`): `string`
+
+Escapes a boolean as PG string literal.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `v` | `undefined` \| ``null`` \| `boolean` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/sql/SQLClient.ts:475](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L475)
+
+___
+
+### escapeComposite
+
+▸ **escapeComposite**(`v`): `string`
+
+PostgreSQL doesn't allow comparison like `WHERE (a, b) = '(1,2)'` - it throws
+"Input of anonymous composite types is not implemented" error. So to compare,
+we have to convert the stringified row representation to ROW() notation
+manually: `WHERE (a, b) = ROW('1', '2')`
+
+Notice that we don't work with ROWs consisting of 1 element; instead, we
+treat them as the element itself. I.e. instead of emitting "(123)" or
+"ROW(123)", we always emit just "123".
+
+- "1" => "1"
+- "(1)" => "1"
+- "(1,2)" => "ROW('1','2')"
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `v` | `undefined` \| ``null`` \| `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/sql/SQLClient.ts:493](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L493)
+
+___
+
+### escapeIdentComposite
+
+▸ **escapeIdentComposite**(`fields`, `table?`): `string`
+
+A pair for escapeComposite(), but works with a list of identifiers (e.g. list
+of unique key fields), not with values.
+
+- fields=["some_id"], table="tbl"  => "tbl.some_id"
+- fields=["f1", "f2"], table="tbl" => "(tbl.f1,tbl.f2)"
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `fields` | readonly `string`[] |
+| `table?` | `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/sql/SQLClient.ts:511](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L511)
+
+___
+
+### escapeStringify
+
+▸ **escapeStringify**(`v`, `stringify`): `string`
+
+A helper method which additionally calls to a stringify() function before
+escaping the value as string.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `v` | `any` |
+| `stringify` | (`v`: `any`) => `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/sql/SQLClient.ts:525](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L525)
+
+___
+
+### escapeLiteral
+
+▸ **escapeLiteral**(`literal`): `string`
+
+Builds a part of SQL query using ?-placeholders to prevent SQL Injection.
+Everywhere where we want to accept a piece of SQL, we should instead accept a
+Literal tuple.
+
+The function converts a Literal tuple [fmt, ...args] into a string, escaping
+the args and interpolating them into the format SQL where "?" is a
+placeholder for the replacing value.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `literal` | [`Literal`](modules.md#literal) |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/sql/SQLClient.ts:538](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L538)
+
+___
+
+### default
+
+▸ **default**(): `AsyncGenerator`<`unknown`\>
+
+#### Returns
+
+`AsyncGenerator`<`unknown`\>
+
+#### Defined in
+
+[src/sql/__benchmarks__/batched-inserts.benchmark.ts:29](https://github.com/clickup/rest-client/blob/master/src/sql/__benchmarks__/batched-inserts.benchmark.ts#L29)
+
+___
+
+### buildShape
+
+▸ **buildShape**(`sql`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `sql` | `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/sql/helpers/buildShape.ts:48](https://github.com/clickup/rest-client/blob/master/src/sql/helpers/buildShape.ts#L48)
+
+___
+
+### parseCompositeRow
+
+▸ **parseCompositeRow**(`str`): (`string` \| ``null``)[]
+
+Parses composite row input into parts. See references at:
+- https://www.postgresql.org/docs/current/rowtypes.html
+- https://github.com/DmitryKoterov/db_type/blob/master/lib/DB/Type/Pgsql/Row.php
+- unit tests of this function
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `str` | `string` |
+
+#### Returns
+
+(`string` \| ``null``)[]
+
+#### Defined in
+
+[src/sql/helpers/parseCompositeRow.ts:7](https://github.com/clickup/rest-client/blob/master/src/sql/helpers/parseCompositeRow.ts#L7)

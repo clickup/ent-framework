@@ -1,6 +1,9 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / HelpersClass
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / HelpersClass
 
 # Interface: HelpersClass<TTable, TUniqueKey, TClient\>
+
+Removes constructor signature from a type.
+https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
 
 ## Type parameters
 
@@ -20,7 +23,7 @@
 
 ### constructor
 
-• **new HelpersClass**(...`args`)
+• **new HelpersClass**(`...args`)
 
 TS requires us to have a public constructor to infer instance types in
 various places. We make this constructor throw if it's called.
@@ -37,25 +40,9 @@ OmitNew<PrimitiveClass<TTable, TUniqueKey, TClient\>\>.constructor
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/HelpersMixin.ts:109](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/HelpersMixin.ts#L109)
+[src/ent/mixins/HelpersMixin.ts:130](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L130)
 
 ## Properties
-
-### CLUSTER
-
-• `Readonly` **CLUSTER**: [`Cluster`](../classes/Cluster.md)<`TClient`\>
-
-A cluster where this Ent lives.
-
-#### Inherited from
-
-OmitNew.CLUSTER
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/ConfigMixin.ts:41](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/ConfigMixin.ts#L41)
-
-___
 
 ### Configuration
 
@@ -63,7 +50,7 @@ ___
 
 #### Type declaration
 
-• **new HelpersClass**(`cfg`)
+• **new Configuration**(`cfg`)
 
 A helper class to work-around TS weakness in return value type inference:
 https://github.com/Microsoft/TypeScript/issues/31273. It could've been just
@@ -81,23 +68,23 @@ OmitNew.Configuration
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/ConfigMixin.ts:34](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/ConfigMixin.ts#L34)
+[src/ent/mixins/ConfigMixin.ts:36](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L36)
 
 ___
 
-### INVERSES
+### CLUSTER
 
-• `Readonly` **INVERSES**: [`Inverse`](../classes/Inverse.md)<`TClient`, `TTable`\>[]
+• `Readonly` **CLUSTER**: [`Cluster`](../classes/Cluster.md)<`TClient`, `any`\>
 
-Inverse assoc managers for fields.
+A Cluster where this Ent lives.
 
 #### Inherited from
 
-OmitNew.INVERSES
+OmitNew.CLUSTER
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/ConfigMixin.ts:71](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/ConfigMixin.ts#L71)
+[src/ent/mixins/ConfigMixin.ts:43](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L43)
 
 ___
 
@@ -113,15 +100,15 @@ OmitNew.SCHEMA
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/ConfigMixin.ts:46](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/ConfigMixin.ts#L46)
+[src/ent/mixins/ConfigMixin.ts:48](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L48)
 
 ___
 
 ### SHARD\_AFFINITY
 
-• `Readonly` **SHARD\_AFFINITY**: [`ShardAffinity`](../modules.md#shardaffinity)<[`IDFields`](../modules.md#idfields)<`TTable`\>\>
+• `Readonly` **SHARD\_AFFINITY**: [`ShardAffinity`](../modules.md#shardaffinity)<[`FieldOfIDType`](../modules.md#fieldofidtype)<`TTable`\>\>
 
-Defines how to find the right shard during Ent insertion.
+Defines how to find the right Shard during Ent insertion.
 
 #### Inherited from
 
@@ -129,13 +116,13 @@ OmitNew.SHARD\_AFFINITY
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/ConfigMixin.ts:51](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/ConfigMixin.ts#L51)
+[src/ent/mixins/ConfigMixin.ts:53](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L53)
 
 ___
 
 ### SHARD\_LOCATOR
 
-• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)<`TClient`, [`IDFields`](../modules.md#idfields)<`TTable`\>\>
+• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)<`TClient`, [`FieldOfIDType`](../modules.md#fieldofidtype)<`TTable`\>\>
 
 Shard locator for this Ent, responsible for resolving IDs into Shard objects.
 
@@ -145,23 +132,7 @@ OmitNew.SHARD\_LOCATOR
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/ConfigMixin.ts:56](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/ConfigMixin.ts#L56)
-
-___
-
-### TRIGGERS
-
-• `Readonly` **TRIGGERS**: [`Triggers`](../classes/Triggers.md)<`TTable`\>
-
-Triggers for this Ent class.
-
-#### Inherited from
-
-OmitNew.TRIGGERS
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/ConfigMixin.ts:66](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/ConfigMixin.ts#L66)
+[src/ent/mixins/ConfigMixin.ts:58](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L58)
 
 ___
 
@@ -177,7 +148,594 @@ OmitNew.VALIDATION
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/ConfigMixin.ts:61](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/ConfigMixin.ts#L61)
+[src/ent/mixins/ConfigMixin.ts:63](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L63)
+
+___
+
+### TRIGGERS
+
+• `Readonly` **TRIGGERS**: [`Triggers`](../classes/Triggers.md)<`TTable`\>
+
+Triggers for this Ent class.
+
+#### Inherited from
+
+OmitNew.TRIGGERS
+
+#### Defined in
+
+[src/ent/mixins/ConfigMixin.ts:68](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L68)
+
+___
+
+### INVERSES
+
+• `Readonly` **INVERSES**: [`Inverse`](../classes/Inverse.md)<`TClient`, `TTable`\>[]
+
+Inverse assoc managers for fields.
+
+#### Inherited from
+
+OmitNew.INVERSES
+
+#### Defined in
+
+[src/ent/mixins/ConfigMixin.ts:73](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L73)
+
+___
+
+### insert
+
+• **insert**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`string`\>
+
+#### Type declaration
+
+▸ (`vc`, `input`): `Promise`<`string`\>
+
+Same as insertIfNotExists(), but throws if the Ent violates unique key
+constraints.
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+
+##### Returns
+
+`Promise`<`string`\>
+
+#### Defined in
+
+[src/ent/mixins/HelpersMixin.ts:76](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L76)
+
+___
+
+### insertReturning
+
+• **insertReturning**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`TEnt`\>
+
+#### Type declaration
+
+▸ <`TEnt`\>(`this`, `vc`, `input`): `Promise`<`TEnt`\>
+
+Same as insert(), but returns the created Ent.
+
+##### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | (...`args`: `any`[]) => `TEnt` |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+
+##### Returns
+
+`Promise`<`TEnt`\>
+
+#### Defined in
+
+[src/ent/mixins/HelpersMixin.ts:81](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L81)
+
+___
+
+### upsertReturning
+
+• **upsertReturning**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`TEnt`\>
+
+#### Type declaration
+
+▸ <`TEnt`\>(`this`, `vc`, `input`): `Promise`<`TEnt`\>
+
+Same, but returns the created/updated Ent.
+
+##### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | (...`args`: `any`[]) => `TEnt` |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+
+##### Returns
+
+`Promise`<`TEnt`\>
+
+#### Defined in
+
+[src/ent/mixins/HelpersMixin.ts:90](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L90)
+
+___
+
+### loadIfReadableNullable
+
+• **loadIfReadableNullable**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<``null`` \| `TEnt`\>
+
+#### Type declaration
+
+▸ <`TEnt`\>(`this`, `vc`, `id`): `Promise`<``null`` \| `TEnt`\>
+
+Same as loadNullable(), but if no permissions to read, returns null and
+doesn't throw. It's more a convenience function rather than a concept.
+
+##### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | (...`args`: `any`[]) => `TEnt` |
+| `vc` | [`VC`](../classes/VC.md) |
+| `id` | `string` |
+
+##### Returns
+
+`Promise`<``null`` \| `TEnt`\>
+
+#### Defined in
+
+[src/ent/mixins/HelpersMixin.ts:100](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L100)
+
+___
+
+### loadX
+
+• **loadX**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<`TEnt`\>
+
+#### Type declaration
+
+▸ <`TEnt`\>(`this`, `vc`, `id`): `Promise`<`TEnt`\>
+
+Loads an Ent by its ID. Throws if no such Ent is found.
+This method is used VERY often.
+
+##### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | (...`args`: `any`[]) => `TEnt` |
+| `vc` | [`VC`](../classes/VC.md) |
+| `id` | `string` |
+
+##### Returns
+
+`Promise`<`TEnt`\>
+
+#### Defined in
+
+[src/ent/mixins/HelpersMixin.ts:110](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L110)
+
+___
+
+### loadByX
+
+• **loadByX**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>) => `Promise`<`TEnt`\>
+
+#### Type declaration
+
+▸ <`TEnt`\>(`this`, `vc`, `input`): `Promise`<`TEnt`\>
+
+Loads an Ent by its ID. Throws if no such Ent is found.
+This method is used VERY often.
+
+##### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | (...`args`: `any`[]) => `TEnt` |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\> |
+
+##### Returns
+
+`Promise`<`TEnt`\>
+
+#### Defined in
+
+[src/ent/mixins/HelpersMixin.ts:120](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L120)
+
+___
+
+### insertIfNotExists
+
+• **insertIfNotExists**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<``null`` \| `string`\>
+
+#### Type declaration
+
+▸ (`vc`, `input`): `Promise`<``null`` \| `string`\>
+
+Runs INSERT mutation for the Ent.
+- The Shard is inferred from the input fields using SHARD_AFFINITY.
+- Returns ID of the newly inserted row.
+- Returns null if the Ent violates unique key constraints.
+- If the Ent has some triggers set up, this will be translated into two
+  schema operations: idGen() and insert(), and before-triggers will run in
+  between having the ID known in advance.
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+
+##### Returns
+
+`Promise`<``null`` \| `string`\>
+
+#### Inherited from
+
+OmitNew.insertIfNotExists
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:81](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L81)
+
+___
+
+### upsert
+
+• **upsert**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`string`\>
+
+#### Type declaration
+
+▸ (`vc`, `input`): `Promise`<`string`\>
+
+Inserts an Ent or updates an existing one if unique key matches.
+- Don't use upsert() too often, because upsert may still delete IDs even
+  if the object was updated, not inserted (there is no good ways to solve
+  this in some DB engines like SQL so far).
+- Upsert can't work if some triggers are defined for the Ent, because we
+  don't know Ent ID in advance (whether the upsert succeeds or skips on
+  duplication).
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+
+##### Returns
+
+`Promise`<`string`\>
+
+#### Inherited from
+
+OmitNew.upsert
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:95](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L95)
+
+___
+
+### loadNullable
+
+• **loadNullable**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<``null`` \| `TEnt`\>
+
+#### Type declaration
+
+▸ <`TEnt`\>(`this`, `vc`, `id`): `Promise`<``null`` \| `TEnt`\>
+
+Loads an Ent by its ID. Returns null if no such Ent exists. Try to use
+loadX() instead as much as you can.
+
+##### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\> |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | (...`args`: `any`[]) => `TEnt` |
+| `vc` | [`VC`](../classes/VC.md) |
+| `id` | `string` |
+
+##### Returns
+
+`Promise`<``null`` \| `TEnt`\>
+
+#### Inherited from
+
+OmitNew.loadNullable
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:101](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L101)
+
+___
+
+### loadByNullable
+
+• **loadByNullable**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>) => `Promise`<``null`` \| `TEnt`\>
+
+#### Type declaration
+
+▸ <`TEnt`\>(`this`, `vc`, `input`): `Promise`<``null`` \| `TEnt`\>
+
+Loads an Ent by its unique key. Returns null if no such Ent exists. Notice
+that the key must be REALLY unique, otherwise the database may return
+multiple items, and the API will break. Don't try to use this method with
+non-unique keys!
+
+##### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\> |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | (...`args`: `any`[]) => `TEnt` |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\> |
+
+##### Returns
+
+`Promise`<``null`` \| `TEnt`\>
+
+#### Inherited from
+
+OmitNew.loadByNullable
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:113](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L113)
+
+___
+
+### selectBy
+
+• **selectBy**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, [`TuplePrefixes`](../modules.md#tupleprefixes)<`TUniqueKey`\>\>) => `Promise`<`TEnt`[]\>
+
+#### Type declaration
+
+▸ <`TEnt`\>(`this`, `vc`, `input`): `Promise`<`TEnt`[]\>
+
+Selects the list of Ents by their unique key prefix. The query can span
+multiple Shards if their locations can be inferred from inverses related to
+the fields mentioned in the query. Ordering of the results is not
+guaranteed.
+
+##### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\> |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | (...`args`: `any`[]) => `TEnt` |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, [`TuplePrefixes`](../modules.md#tupleprefixes)<`TUniqueKey`\>\> |
+
+##### Returns
+
+`Promise`<`TEnt`[]\>
+
+#### Inherited from
+
+OmitNew.selectBy
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:125](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L125)
+
+___
+
+### select
+
+• **select**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)<`TTable`\>, `limit`: `number`, `order?`: [`Order`](../modules.md#order)<`TTable`\>, `custom?`: {}) => `Promise`<`TEnt`[]\>
+
+#### Type declaration
+
+▸ <`TEnt`\>(`this`, `vc`, `where`, `limit`, `order?`, `custom?`): `Promise`<`TEnt`[]\>
+
+Selects the list of Ents by some predicate.
+- The query can span multiple Shards if their locations can be inferred
+  from inverses related to the fields mentioned in the query.
+- In multi-Shard case, ordering of results is not guaranteed.
+- In multi-Shard case, it may return more results than requested by limit
+  (basically, limit is applied to each Shard individually). The caller has
+  then freedom to reorder & slice the results as they wish.
+
+##### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\> |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | (...`args`: `any`[]) => `TEnt` |
+| `vc` | [`VC`](../classes/VC.md) |
+| `where` | [`Where`](../modules.md#where)<`TTable`\> |
+| `limit` | `number` |
+| `order?` | [`Order`](../modules.md#order)<`TTable`\> |
+| `custom?` | `Object` |
+
+##### Returns
+
+`Promise`<`TEnt`[]\>
+
+#### Inherited from
+
+OmitNew.select
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:140](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L140)
+
+___
+
+### selectChunked
+
+• **selectChunked**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom?`: {}) => `AsyncIterableIterator`<`TEnt`[]\>
+
+#### Type declaration
+
+▸ <`TEnt`\>(`this`, `vc`, `where`, `chunkSize`, `limit`, `custom?`): `AsyncIterableIterator`<`TEnt`[]\>
+
+Same as select(), but returns data in chunks.
+- Uses multiple select() queries under the hood.
+- The query can span multiple Shards if their locations can be inferred
+  from inverses related to the fields mentioned in the query.
+- Ents in each chunk always belong to the same Shard and are ordered by ID
+  (there is no support for custom ordering). Make sure you have the right
+  index in the database.
+
+##### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\> |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | (...`args`: `any`[]) => `TEnt` |
+| `vc` | [`VC`](../classes/VC.md) |
+| `where` | [`Where`](../modules.md#where)<`TTable`\> |
+| `chunkSize` | `number` |
+| `limit` | `number` |
+| `custom?` | `Object` |
+
+##### Returns
+
+`AsyncIterableIterator`<`TEnt`[]\>
+
+#### Inherited from
+
+OmitNew.selectChunked
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:158](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L158)
+
+___
+
+### count
+
+• **count**: (`vc`: [`VC`](../classes/VC.md), `where`: [`CountInput`](../modules.md#countinput)<`TTable`\>) => `Promise`<`number`\>
+
+#### Type declaration
+
+▸ (`vc`, `where`): `Promise`<`number`\>
+
+Returns count of Ents matching a predicate. The query can span multiple
+Shards if their locations can be inferred from inverses related to the
+fields mentioned in the query.
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `where` | [`CountInput`](../modules.md#countinput)<`TTable`\> |
+
+##### Returns
+
+`Promise`<`number`\>
+
+#### Inherited from
+
+OmitNew.count
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:172](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L172)
+
+___
+
+### exists
+
+• **exists**: (`vc`: [`VC`](../classes/VC.md), `where`: [`ExistsInput`](../modules.md#existsinput)<`TTable`\>) => `Promise`<`boolean`\>
+
+#### Type declaration
+
+▸ (`vc`, `where`): `Promise`<`boolean`\>
+
+A more optimal approach than count() when we basically just need to know
+whether we have "0 or not 0" rows.
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `where` | [`ExistsInput`](../modules.md#existsinput)<`TTable`\> |
+
+##### Returns
+
+`Promise`<`boolean`\>
+
+#### Inherited from
+
+OmitNew.exists
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:178](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L178)
 
 ## Methods
 
@@ -201,419 +759,4 @@ OmitNew.configure
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/ConfigMixin.ts:27](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/ConfigMixin.ts#L27)
-
-___
-
-### count
-
-▸ **count**(`vc`, `where`): `Promise`<`number`\>
-
-Returns count of Ents matching a predicate. The query can span multiple
-shards if their locations can be inferred from inverses related to the
-fields mentioned in the query.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`CountInput`](../modules.md#countinput)<`TTable`\> |
-
-#### Returns
-
-`Promise`<`number`\>
-
-#### Inherited from
-
-OmitNew.count
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:138](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L138)
-
-___
-
-### insert
-
-▸ **insert**(`vc`, `input`): `Promise`<`string`\>
-
-Same as insertIfNotExists(), but throws if the Ent violates unique key
-constraints.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
-
-#### Returns
-
-`Promise`<`string`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/HelpersMixin.ts:55](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/HelpersMixin.ts#L55)
-
-___
-
-### insertIfNotExists
-
-▸ **insertIfNotExists**(`vc`, `input`): `Promise`<``null`` \| `string`\>
-
-Runs INSERT mutation for the Ent.
-- The shard is inferred from the input fields using SHARD_AFFINITY.
-- Returns ID of the newly inserted row.
-- Returns null if the Ent violates unique key constraints.
-- If the Ent has some triggers set up, this will be translated into two
-  schema operations: idGen() and insert(), and before-triggers will run in
-  between having the ID known in advance.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
-
-#### Returns
-
-`Promise`<``null`` \| `string`\>
-
-#### Inherited from
-
-OmitNew.insertIfNotExists
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:65](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L65)
-
-___
-
-### insertReturning
-
-▸ **insertReturning**<`TEnt`\>(`vc`, `input`): `Promise`<`TEnt`\>
-
-Same as insert(), but returns the created Ent.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`, `TEnt`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
-
-#### Returns
-
-`Promise`<`TEnt`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/HelpersMixin.ts:60](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/HelpersMixin.ts#L60)
-
-___
-
-### loadByNullable
-
-▸ **loadByNullable**<`TEnt`\>(`vc`, `input`): `Promise`<``null`` \| `TEnt`\>
-
-Loads an Ent by its unique key. Returns null if no such Ent exists. Notice
-that the key must be REALLY unique, otherwise the database may return
-multiple items, and the API will break. Don't try to use this method with
-non-unique keys!
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`, `TEnt`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\> |
-
-#### Returns
-
-`Promise`<``null`` \| `TEnt`\>
-
-#### Inherited from
-
-OmitNew.loadByNullable
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:97](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L97)
-
-___
-
-### loadByX
-
-▸ **loadByX**<`TEnt`\>(`vc`, `input`): `Promise`<`TEnt`\>
-
-Loads an Ent by its ID. Throws if no such Ent is found.
-This method is used VERY often.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`, `TEnt`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\> |
-
-#### Returns
-
-`Promise`<`TEnt`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/HelpersMixin.ts:99](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/HelpersMixin.ts#L99)
-
-___
-
-### loadIfReadableNullable
-
-▸ **loadIfReadableNullable**<`TEnt`\>(`vc`, `id`): `Promise`<``null`` \| `TEnt`\>
-
-Same as loadNullable(), but if no permissions to read, returns null and
-doesn't throw. It's more a convenience function rather than a concept.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`, `TEnt`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `id` | `string` |
-
-#### Returns
-
-`Promise`<``null`` \| `TEnt`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/HelpersMixin.ts:79](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/HelpersMixin.ts#L79)
-
-___
-
-### loadNullable
-
-▸ **loadNullable**<`TEnt`\>(`vc`, `id`): `Promise`<``null`` \| `TEnt`\>
-
-Loads an Ent by its ID. Returns null if no such Ent exists. Try to use
-loadX() instead as much as you can.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`, `TEnt`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `id` | `string` |
-
-#### Returns
-
-`Promise`<``null`` \| `TEnt`\>
-
-#### Inherited from
-
-OmitNew.loadNullable
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:85](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L85)
-
-___
-
-### loadX
-
-▸ **loadX**<`TEnt`\>(`vc`, `id`): `Promise`<`TEnt`\>
-
-Loads an Ent by its ID. Throws if no such Ent is found.
-This method is used VERY often.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`, `TEnt`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `id` | `string` |
-
-#### Returns
-
-`Promise`<`TEnt`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/HelpersMixin.ts:89](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/HelpersMixin.ts#L89)
-
-___
-
-### select
-
-▸ **select**<`TEnt`\>(`vc`, `where`, `limit`, `order?`, `custom?`): `Promise`<`TEnt`[]\>
-
-Loads the list of Ents by some predicate. The query can span multiple
-shards if their locations can be inferred from inverses related to the
-fields mentioned in the query. In multi-shard case, ordering of results is
-not guaranteed.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`, `TEnt`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`Where`](../modules.md#where)<`TTable`\> |
-| `limit` | `number` |
-| `order?` | [`Order`](../modules.md#order)<`TTable`\> |
-| `custom?` | `Object` |
-
-#### Returns
-
-`Promise`<`TEnt`[]\>
-
-#### Inherited from
-
-OmitNew.select
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:109](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L109)
-
-___
-
-### selectChunked
-
-▸ **selectChunked**<`TEnt`\>(`vc`, `where`, `chunkSize`, `limit`, `custom?`): `AsyncIterableIterator`<`TEnt`[]\>
-
-Same as select(), but returns data in chunks and uses multiple select()
-queries under the hood. The returned Ents are always ordered by ID. Also,
-it always pulls data from a single shard and throws if this shard cannot be
-unambiguously inferred from the input.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`, `TEnt`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`Where`](../modules.md#where)<`TTable`\> |
-| `chunkSize` | `number` |
-| `limit` | `number` |
-| `custom?` | `Object` |
-
-#### Returns
-
-`AsyncIterableIterator`<`TEnt`[]\>
-
-#### Inherited from
-
-OmitNew.selectChunked
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:124](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L124)
-
-___
-
-### upsert
-
-▸ **upsert**(`vc`, `input`): `Promise`<`string`\>
-
-Inserts an Ent or updates an existing one if unique key matches.
-- Don't use upsert() too often, because upsert may still delete IDs even
-  if the object was updated, not inserted (there is no good ways to solve
-  this in some DB engines like SQL so far).
-- Upsert can't work if some triggers are defined for the Ent, because we
-  don't know Ent ID in advance (whether the upsert succeeds or skips on
-  duplication).
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
-
-#### Returns
-
-`Promise`<`string`\>
-
-#### Inherited from
-
-OmitNew.upsert
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:79](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L79)
-
-___
-
-### upsertReturning
-
-▸ **upsertReturning**<`TEnt`\>(`vc`, `input`): `Promise`<`TEnt`\>
-
-Same, but returns the created/updated Ent.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`, `TEnt`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
-
-#### Returns
-
-`Promise`<`TEnt`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/HelpersMixin.ts:69](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/HelpersMixin.ts#L69)
+[src/ent/mixins/ConfigMixin.ts:29](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L29)

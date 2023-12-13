@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / ClientQueryLoggerProps
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ClientQueryLoggerProps
 
 # Interface: ClientQueryLoggerProps
 
@@ -10,37 +10,7 @@
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Client.ts:8](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L8)
-
-___
-
-### backend
-
-• **backend**: `string`
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Client.ts:20](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L20)
-
-___
-
-### backendPID
-
-• **backendPID**: `number`
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Client.ts:19](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L19)
-
-___
-
-### batchFactor
-
-• **batchFactor**: `number`
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Client.ts:13](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L13)
+[src/abstract/Loggers.ts:12](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L12)
 
 ___
 
@@ -50,47 +20,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Client.ts:9](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L9)
-
-___
-
-### elapsed
-
-• **elapsed**: `number`
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Client.ts:16](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L16)
-
-___
-
-### error
-
-• **error**: `undefined` \| `string`
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Client.ts:17](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L17)
-
-___
-
-### isMaster
-
-• **isMaster**: `boolean`
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Client.ts:18](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L18)
-
-___
-
-### msg
-
-• **msg**: `string`
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Client.ts:14](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L14)
+[src/abstract/Loggers.ts:13](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L13)
 
 ___
 
@@ -100,17 +30,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Client.ts:10](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L10)
-
-___
-
-### output
-
-• **output**: `any`
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Client.ts:15](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L15)
+[src/abstract/Loggers.ts:14](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L14)
 
 ___
 
@@ -120,7 +40,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Client.ts:11](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L11)
+[src/abstract/Loggers.ts:15](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L15)
 
 ___
 
@@ -130,4 +50,99 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Client.ts:12](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L12)
+[src/abstract/Loggers.ts:16](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L16)
+
+___
+
+### batchFactor
+
+• **batchFactor**: `number`
+
+#### Defined in
+
+[src/abstract/Loggers.ts:17](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L17)
+
+___
+
+### msg
+
+• **msg**: `string`
+
+#### Defined in
+
+[src/abstract/Loggers.ts:18](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L18)
+
+___
+
+### output
+
+• **output**: `any`
+
+#### Defined in
+
+[src/abstract/Loggers.ts:19](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L19)
+
+___
+
+### elapsed
+
+• **elapsed**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `total` | `number` |
+| `acquire` | `number` |
+
+#### Defined in
+
+[src/abstract/Loggers.ts:20](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L20)
+
+___
+
+### poolStats
+
+• **poolStats**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `totalCount` | `number` |
+| `waitingCount` | `number` |
+| `idleCount` | `number` |
+
+#### Defined in
+
+[src/abstract/Loggers.ts:24](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L24)
+
+___
+
+### error
+
+• **error**: `undefined` \| `string`
+
+#### Defined in
+
+[src/abstract/Loggers.ts:29](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L29)
+
+___
+
+### isMaster
+
+• **isMaster**: `boolean`
+
+#### Defined in
+
+[src/abstract/Loggers.ts:30](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L30)
+
+___
+
+### backend
+
+• **backend**: `string`
+
+#### Defined in
+
+[src/abstract/Loggers.ts:31](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L31)

@@ -21,7 +21,7 @@ import { RuleDecision } from "./rules/Rule";
 import { buildUpdateNewRow } from "./Triggers";
 import type { VC } from "./VC";
 
-type LoadRule<TInput extends object> = AllowIf<TInput> | DenyIf<TInput>;
+export type LoadRule<TInput extends object> = AllowIf<TInput> | DenyIf<TInput>;
 
 /**
  * For safety, we enforce all Require rules to be in the end of the
@@ -30,7 +30,7 @@ type LoadRule<TInput extends object> = AllowIf<TInput> | DenyIf<TInput>;
  * (double-variadic) when both L[] and R[] are open-ended (i.e. tuples with
  * unknown length), so we have to brute-force.
  */
-type WriteRules<TInput extends object> =
+export type WriteRules<TInput extends object> =
   | []
   | [Require<TInput>, ...Array<Require<TInput>>]
   | [LoadRule<TInput>, Require<TInput>, ...Array<Require<TInput>>]

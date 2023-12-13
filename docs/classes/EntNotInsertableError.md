@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / EntNotInsertableError
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntNotInsertableError
 
 # Class: EntNotInsertableError
 
@@ -23,7 +23,7 @@ Error: thrown when an Ent cannot be inserted due to privacy reasons.
 | `entName` | `string` | `undefined` |
 | `vc` | `string` | `undefined` |
 | `row` | `object` | `undefined` |
-| `cause` | ``null`` \| `string` \| { `message`: `string`  } | `null` |
+| `cause` | `unknown` | `null` |
 
 #### Overrides
 
@@ -31,13 +31,21 @@ Error: thrown when an Ent cannot be inserted due to privacy reasons.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/errors/EntNotInsertableError.ts:8](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/errors/EntNotInsertableError.ts#L8)
+[src/ent/errors/EntNotInsertableError.ts:7](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntNotInsertableError.ts#L7)
 
 ## Properties
 
 ### cause
 
-• `Readonly` **cause**: ``null`` \| `string` \| { `message`: `string`  } = `null`
+• `Readonly` **cause**: ``null`` \| `string` \| `Error`
+
+#### Inherited from
+
+[EntAccessError](EntAccessError.md).[cause](EntAccessError.md#cause)
+
+#### Defined in
+
+[src/ent/errors/EntAccessError.ts:9](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L9)
 
 ___
 
@@ -49,53 +57,9 @@ ___
 
 [EntAccessError](EntAccessError.md).[entName](EntAccessError.md#entname)
 
-___
-
-### message
-
-• **message**: `string`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[message](EntAccessError.md#message)
-
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:1023
-
-___
-
-### name
-
-• **name**: `string`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[name](EntAccessError.md#name)
-
-#### Defined in
-
-node_modules/typescript/lib/lib.es5.d.ts:1022
-
-___
-
-### row
-
-• `Readonly` **row**: `object`
-
-___
-
-### stack
-
-• `Optional` **stack**: `string`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[stack](EntAccessError.md#stack)
-
-#### Defined in
-
-node_modules/typescript/lib/lib.es5.d.ts:1024
+[src/ent/errors/EntAccessError.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L12)
 
 ___
 
@@ -103,76 +67,16 @@ ___
 
 • `Readonly` **vc**: `string`
 
-___
-
-### prepareStackTrace
-
-▪ `Static` `Optional` **prepareStackTrace**: (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any`
-
-#### Type declaration
-
-▸ (`err`, `stackTraces`): `any`
-
-Optional override for formatting stack traces
-
-**`see`** https://v8.dev/docs/stack-trace-api#customizing-stack-traces
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `err` | `Error` |
-| `stackTraces` | `CallSite`[] |
-
-##### Returns
-
-`any`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[prepareStackTrace](EntAccessError.md#preparestacktrace)
-
 #### Defined in
 
-node_modules/@types/node/globals.d.ts:11
+[src/ent/errors/EntNotInsertableError.ts:9](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntNotInsertableError.ts#L9)
 
 ___
 
-### stackTraceLimit
+### row
 
-▪ `Static` **stackTraceLimit**: `number`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[stackTraceLimit](EntAccessError.md#stacktracelimit)
+• `Readonly` **row**: `object`
 
 #### Defined in
 
-node_modules/@types/node/globals.d.ts:13
-
-## Methods
-
-### captureStackTrace
-
-▸ `Static` **captureStackTrace**(`targetObject`, `constructorOpt?`): `void`
-
-Create .stack property on a target object
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `targetObject` | `object` |
-| `constructorOpt?` | `Function` |
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[captureStackTrace](EntAccessError.md#capturestacktrace)
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:4
+[src/ent/errors/EntNotInsertableError.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntNotInsertableError.ts#L10)

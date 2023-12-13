@@ -1,15 +1,25 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / EntClass
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntClass
 
 # Interface: EntClass<TTable\>
 
 A very shallow interface of Ent class (as a collection of static methods).
-User in some places where we need the very minimum from the Ent.
+Used in some places where we need the very minimum from the Ent.
 
 ## Type parameters
 
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](../modules.md#table) = `any` |
+
+## Constructors
+
+### constructor
+
+• **new EntClass**()
+
+#### Defined in
+
+[src/ent/types.ts:32](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L32)
 
 ## Properties
 
@@ -19,7 +29,7 @@ User in some places where we need the very minimum from the Ent.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/types.ts:18](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L18)
+[src/ent/types.ts:27](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L27)
 
 ___
 
@@ -29,7 +39,17 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/types.ts:19](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L19)
+[src/ent/types.ts:28](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L28)
+
+___
+
+### SHARD\_LOCATOR
+
+• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)<[`Client`](../classes/Client.md), `string`\>
+
+#### Defined in
+
+[src/ent/types.ts:29](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L29)
 
 ___
 
@@ -39,9 +59,72 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/types.ts:20](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L20)
+[src/ent/types.ts:30](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L30)
 
 ## Methods
+
+### loadX
+
+▸ **loadX**(`vc`, `id`): `Promise`<[`Ent`](Ent.md)<`TTable`\>\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `id` | `string` |
+
+#### Returns
+
+`Promise`<[`Ent`](Ent.md)<`TTable`\>\>
+
+#### Defined in
+
+[src/ent/types.ts:33](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L33)
+
+___
+
+### loadNullable
+
+▸ **loadNullable**(`vc`, `id`): `Promise`<``null`` \| [`Ent`](Ent.md)<`TTable`\>\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `id` | `string` |
+
+#### Returns
+
+`Promise`<``null`` \| [`Ent`](Ent.md)<`TTable`\>\>
+
+#### Defined in
+
+[src/ent/types.ts:34](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L34)
+
+___
+
+### loadIfReadableNullable
+
+▸ **loadIfReadableNullable**(`vc`, `id`): `Promise`<``null`` \| [`Ent`](Ent.md)<`TTable`\>\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `id` | `string` |
+
+#### Returns
+
+`Promise`<``null`` \| [`Ent`](Ent.md)<`TTable`\>\>
+
+#### Defined in
+
+[src/ent/types.ts:35](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L35)
+
+___
 
 ### count
 
@@ -60,97 +143,34 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/types.ts:25](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L25)
+[src/ent/types.ts:36](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L36)
 
 ___
 
-### loadByX
+### exists
 
-▸ **loadByX**(`vc`, `keys`): `Promise`<[`Ent`](Ent.md)\>
+▸ **exists**(`vc`, `where`): `Promise`<`boolean`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](../classes/VC.md) |
-| `keys` | { [K in string \| number \| symbol]: Value<TTable[K]\> } |
+| `where` | [`ExistsInput`](../modules.md#existsinput)<`TTable`\> |
 
 #### Returns
 
-`Promise`<[`Ent`](Ent.md)\>
+`Promise`<`boolean`\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/types.ts:32](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L32)
-
-___
-
-### loadIfReadableNullable
-
-▸ **loadIfReadableNullable**(`vc`, `id`): `Promise`<``null`` \| [`Ent`](Ent.md)\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `id` | `string` |
-
-#### Returns
-
-`Promise`<``null`` \| [`Ent`](Ent.md)\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/types.ts:24](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L24)
-
-___
-
-### loadNullable
-
-▸ **loadNullable**(`vc`, `id`): `Promise`<``null`` \| [`Ent`](Ent.md)\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `id` | `string` |
-
-#### Returns
-
-`Promise`<``null`` \| [`Ent`](Ent.md)\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/types.ts:23](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L23)
-
-___
-
-### loadX
-
-▸ **loadX**(`vc`, `id`): `Promise`<[`Ent`](Ent.md)\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `id` | `string` |
-
-#### Returns
-
-`Promise`<[`Ent`](Ent.md)\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/types.ts:22](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L22)
+[src/ent/types.ts:37](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L37)
 
 ___
 
 ### select
 
-▸ **select**(`vc`, `where`, `limit`, `order?`): `Promise`<[`Ent`](Ent.md)[]\>
+▸ **select**(`vc`, `where`, `limit`, `order?`): `Promise`<[`Ent`](Ent.md)<`TTable`\>[]\>
 
 #### Parameters
 
@@ -163,8 +183,116 @@ ___
 
 #### Returns
 
-`Promise`<[`Ent`](Ent.md)[]\>
+`Promise`<[`Ent`](Ent.md)<`TTable`\>[]\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/types.ts:26](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L26)
+[src/ent/types.ts:38](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L38)
+
+___
+
+### selectChunked
+
+▸ **selectChunked**(`vc`, `where`, `chunkSize`, `limit`, `custom?`): `AsyncIterableIterator`<[`Ent`](Ent.md)<`TTable`\>[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `where` | [`Where`](../modules.md#where)<`TTable`\> |
+| `chunkSize` | `number` |
+| `limit` | `number` |
+| `custom?` | `Object` |
+
+#### Returns
+
+`AsyncIterableIterator`<[`Ent`](Ent.md)<`TTable`\>[]\>
+
+#### Defined in
+
+[src/ent/types.ts:44](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L44)
+
+___
+
+### loadByX
+
+▸ **loadByX**(`vc`, `keys`): `Promise`<[`Ent`](Ent.md)<`TTable`\>\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `keys` | { [K in string]: Value<TTable[K]\> } |
+
+#### Returns
+
+`Promise`<[`Ent`](Ent.md)<`TTable`\>\>
+
+#### Defined in
+
+[src/ent/types.ts:51](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L51)
+
+___
+
+### loadByNullable
+
+▸ **loadByNullable**(`vc`, `input`): `Promise`<``null`` \| [`Ent`](Ent.md)<`TTable`\>\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | { [K in string]: Value<TTable[K]\> } |
+
+#### Returns
+
+`Promise`<``null`` \| [`Ent`](Ent.md)<`TTable`\>\>
+
+#### Defined in
+
+[src/ent/types.ts:55](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L55)
+
+___
+
+### insert
+
+▸ **insert**(`vc`, `input`): `Promise`<`string`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+
+#### Returns
+
+`Promise`<`string`\>
+
+#### Defined in
+
+[src/ent/types.ts:59](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L59)
+
+___
+
+### upsert
+
+▸ **upsert**(`vc`, `input`): `Promise`<`string`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](../classes/VC.md) |
+| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+
+#### Returns
+
+`Promise`<`string`\>
+
+#### Defined in
+
+[src/ent/types.ts:60](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L60)

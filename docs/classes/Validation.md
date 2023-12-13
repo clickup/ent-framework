@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Validation
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Validation
 
 # Class: Validation<TTable\>
 
@@ -29,57 +29,82 @@
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:39](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L39)
+[src/ent/Validation.ts:81](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L81)
 
 ## Properties
 
-### delete
+### tenantPrincipalField
 
-• `Readonly` **delete**: [`Rule`](Rule.md)<[`Row`](../modules.md#row)<`TTable`\>\>[]
+• `Optional` `Readonly` **tenantPrincipalField**: [`InsertFieldsRequired`](../modules.md#insertfieldsrequired)<`TTable`\> & `string`
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:36](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L36)
+[src/ent/Validation.ts:73](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L73)
 
 ___
 
-### insert
+### inferPrincipal
 
-• `Readonly` **insert**: [`Rule`](Rule.md)<[`InsertInput`](../modules.md#insertinput)<`TTable`\>\>[]
+• `Optional` `Readonly` **inferPrincipal**: (`vc`: [`VC`](VC.md), `row`: [`Row`](../modules.md#row)<`TTable`\>) => `Promise`<``null`` \| `string`\>
+
+#### Type declaration
+
+▸ (`vc`, `row`): `Promise`<``null`` \| `string`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](VC.md) |
+| `row` | [`Row`](../modules.md#row)<`TTable`\> |
+
+##### Returns
+
+`Promise`<``null`` \| `string`\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:34](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L34)
+[src/ent/Validation.ts:74](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L74)
 
 ___
 
 ### load
 
-• `Readonly` **load**: [`Rule`](Rule.md)<[`Row`](../modules.md#row)<`TTable`\>\>[]
+• `Readonly` **load**: [`LoadRule`](../modules.md#loadrule)<[`Row`](../modules.md#row)<`TTable`\>\>[]
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:33](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L33)
+[src/ent/Validation.ts:75](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L75)
 
 ___
 
-### tenantUserIDField
+### insert
 
-• `Optional` `Readonly` **tenantUserIDField**: [`InsertFieldsRequired`](../modules.md#insertfieldsrequired)<`TTable`\>
+• `Readonly` **insert**: [`WriteRules`](../modules.md#writerules)<[`InsertInput`](../modules.md#insertinput)<`TTable`\>\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:32](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L32)
+[src/ent/Validation.ts:76](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L76)
 
 ___
 
 ### update
 
-• `Readonly` **update**: [`Rule`](Rule.md)<[`Row`](../modules.md#row)<`TTable`\>\>[]
+• `Readonly` **update**: [`WriteRules`](../modules.md#writerules)<[`Row`](../modules.md#row)<`TTable`\>\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:35](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L35)
+[src/ent/Validation.ts:77](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L77)
+
+___
+
+### delete
+
+• `Readonly` **delete**: [`WriteRules`](../modules.md#writerules)<[`Row`](../modules.md#row)<`TTable`\>\>
+
+#### Defined in
+
+[src/ent/Validation.ts:78](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L78)
 
 ___
 
@@ -89,13 +114,13 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:37](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L37)
+[src/ent/Validation.ts:79](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L79)
 
 ## Methods
 
-### validateDelete
+### validateLoad
 
-▸ **validateDelete**(`vc`, `row`): `Promise`<`void`\>
+▸ **validateLoad**(`vc`, `row`): `Promise`<`void`\>
 
 #### Parameters
 
@@ -110,7 +135,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:94](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L94)
+[src/ent/Validation.ts:91](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L91)
 
 ___
 
@@ -131,28 +156,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:59](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L59)
-
-___
-
-### validateLoad
-
-▸ **validateLoad**(`vc`, `row`): `Promise`<`void`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](VC.md) |
-| `row` | [`Row`](../modules.md#row)<`TTable`\> |
-
-#### Returns
-
-`Promise`<`void`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/Validation.ts:48](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L48)
+[src/ent/Validation.ts:102](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L102)
 
 ___
 
@@ -175,4 +179,25 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Validation.ts:71](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Validation.ts#L71)
+[src/ent/Validation.ts:114](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L114)
+
+___
+
+### validateDelete
+
+▸ **validateDelete**(`vc`, `row`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](VC.md) |
+| `row` | [`Row`](../modules.md#row)<`TTable`\> |
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Defined in
+
+[src/ent/Validation.ts:137](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L137)

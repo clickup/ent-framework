@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Triggers
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Triggers
 
 # Class: Triggers<TTable\>
 
@@ -12,7 +12,7 @@
 
 ### constructor
 
-• **new Triggers**<`TTable`\>(`beforeInsert`, `beforeUpdate`, `beforeDelete`, `afterInsert`, `afterUpdate`, `afterDelete`, `afterMutation`)
+• **new Triggers**<`TTable`\>(`beforeInsert`, `beforeUpdate`, `beforeDelete`, `beforeMutation`, `afterInsert`, `afterUpdate`, `afterDelete`, `afterMutation`)
 
 #### Type parameters
 
@@ -25,8 +25,9 @@
 | Name | Type |
 | :------ | :------ |
 | `beforeInsert` | [`InsertTrigger`](../modules.md#inserttrigger)<`TTable`\>[] |
-| `beforeUpdate` | [`BeforeUpdateTrigger`](../modules.md#beforeupdatetrigger)<`TTable`\>[] |
+| `beforeUpdate` | [``null`` \| [`DepsBuilder`](../modules.md#depsbuilder)<`TTable`\>, [`BeforeUpdateTrigger`](../modules.md#beforeupdatetrigger)<`TTable`\>][] |
 | `beforeDelete` | [`DeleteTrigger`](../modules.md#deletetrigger)<`TTable`\>[] |
+| `beforeMutation` | [``null`` \| [`DepsBuilder`](../modules.md#depsbuilder)<`TTable`\>, [`BeforeMutationTrigger`](../modules.md#beforemutationtrigger)<`TTable`\>][] |
 | `afterInsert` | [`InsertTrigger`](../modules.md#inserttrigger)<`TTable`\>[] |
 | `afterUpdate` | [``null`` \| [`DepsBuilder`](../modules.md#depsbuilder)<`TTable`\>, [`AfterUpdateTrigger`](../modules.md#afterupdatetrigger)<`TTable`\>][] |
 | `afterDelete` | [`DeleteTrigger`](../modules.md#deletetrigger)<`TTable`\>[] |
@@ -34,7 +35,7 @@
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Triggers.ts:102](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L102)
+[src/ent/Triggers.ts:170](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L170)
 
 ## Methods
 
@@ -48,7 +49,7 @@
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Triggers.ts:116](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L116)
+[src/ent/Triggers.ts:189](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L189)
 
 ___
 
@@ -62,29 +63,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Triggers.ts:124](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L124)
-
-___
-
-### wrapDelete
-
-▸ **wrapDelete**(`func`, `vc`, `oldRow`): `Promise`<`boolean`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `func` | () => `Promise`<`boolean`\> |
-| `vc` | [`VC`](VC.md) |
-| `oldRow` | [`Row`](../modules.md#row)<`TTable`\> |
-
-#### Returns
-
-`Promise`<`boolean`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/Triggers.ts:226](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L226)
+[src/ent/Triggers.ts:198](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L198)
 
 ___
 
@@ -106,7 +85,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Triggers.ts:132](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L132)
+[src/ent/Triggers.ts:207](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L207)
 
 ___
 
@@ -120,7 +99,7 @@ ___
 | :------ | :------ |
 | `func` | (`input`: [`UpdateInput`](../modules.md#updateinput)<`TTable`\>) => `Promise`<`boolean`\> |
 | `vc` | [`VC`](VC.md) |
-| `oldRow` | [`Row`](../modules.md#row)<`TTable`\> |
+| `oldRow` | { [P in string \| symbol]: Readonly<RowWithID & { [K in string]: Value<TTable[K]\> } & Record<keyof TTable & symbol, never\>\>[P] } |
 | `input` | [`UpdateInput`](../modules.md#updateinput)<`TTable`\> |
 
 #### Returns
@@ -129,4 +108,26 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Triggers.ts:163](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Triggers.ts#L163)
+[src/ent/Triggers.ts:251](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L251)
+
+___
+
+### wrapDelete
+
+▸ **wrapDelete**(`func`, `vc`, `oldRow`): `Promise`<`boolean`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `func` | () => `Promise`<`boolean`\> |
+| `vc` | [`VC`](VC.md) |
+| `oldRow` | { [P in string \| symbol]: Readonly<RowWithID & { [K in string]: Value<TTable[K]\> } & Record<keyof TTable & symbol, never\>\>[P] } |
+
+#### Returns
+
+`Promise`<`boolean`\>
+
+#### Defined in
+
+[src/ent/Triggers.ts:312](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L312)

@@ -1,9 +1,9 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Island
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Island
 
 # Class: Island<TClient\>
 
-Island is 1 master + N replicas.
-One island typically hosts multiple shards.
+Island is a collection of DB connections (represented as Clients) that
+contains a single master server and any number of replicas.
 
 ## Type parameters
 
@@ -15,25 +15,24 @@ One island typically hosts multiple shards.
 
 ### constructor
 
-• **new Island**<`TClient`\>(`no`, `master`, `replicas`)
+• **new Island**<`TClient`\>(`master`, `replicas`)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TClient` | extends [`Client`](Client.md)<`TClient`\> |
+| `TClient` | extends [`Client`](Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `no` | `number` |
 | `master` | `TClient` |
 | `replicas` | `TClient`[] |
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Cluster.ts:17](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Cluster.ts#L17)
+[src/abstract/Island.ts:9](https://github.com/clickup/rest-client/blob/master/src/abstract/Island.ts#L9)
 
 ## Properties
 
@@ -41,14 +40,32 @@ One island typically hosts multiple shards.
 
 • `Readonly` **master**: `TClient`
 
-___
+#### Defined in
 
-### no
-
-• `Readonly` **no**: `number`
+[src/abstract/Island.ts:10](https://github.com/clickup/rest-client/blob/master/src/abstract/Island.ts#L10)
 
 ___
 
 ### replicas
 
 • `Readonly` **replicas**: `TClient`[]
+
+#### Defined in
+
+[src/abstract/Island.ts:11](https://github.com/clickup/rest-client/blob/master/src/abstract/Island.ts#L11)
+
+## Methods
+
+### shardNos
+
+▸ **shardNos**(): `Promise`<readonly `number`[]\>
+
+Returns all Shards on the first available Client (master, then replicas).
+
+#### Returns
+
+`Promise`<readonly `number`[]\>
+
+#### Defined in
+
+[src/abstract/Island.ts:17](https://github.com/clickup/rest-client/blob/master/src/abstract/Island.ts#L17)

@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / IDsCacheUpdatable
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / IDsCacheUpdatable
 
 # Class: IDsCacheUpdatable
 
@@ -19,6 +19,30 @@
 [IDsCache](IDsCache.md).[constructor](IDsCache.md#constructor)
 
 ## Methods
+
+### has
+
+▸ **has**(`id`): `boolean`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `id` | `string` |
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[IDsCache](IDsCache.md).[has](IDsCache.md#has)
+
+#### Defined in
+
+[src/ent/IDsCache.ts:6](https://github.com/clickup/rest-client/blob/master/src/ent/IDsCache.ts#L6)
+
+___
 
 ### add
 
@@ -41,7 +65,7 @@
 
 #### Defined in
 
-[packages/ent-framework/src/ent/IDsCache.ts:10](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/IDsCache.ts#L10)
+[src/ent/IDsCache.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/IDsCache.ts#L10)
 
 ___
 
@@ -65,28 +89,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/IDsCache.ts:14](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/IDsCache.ts#L14)
-
-___
-
-### has
-
-▸ **has**(`id`): `boolean`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `id` | `string` |
-
-#### Returns
-
-`boolean`
-
-#### Inherited from
-
-[IDsCache](IDsCache.md).[has](IDsCache.md#has)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/IDsCache.ts:6](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/IDsCache.ts#L6)
+[src/ent/IDsCache.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/IDsCache.ts#L14)

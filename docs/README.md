@@ -1,12 +1,12 @@
-@slapdash/ent-framework / [Exports](modules.md)
+@time-loop/ent-framework / [Exports](modules.md)
 
-# @slapdash/ent-framework: Graph database library
+# @time-loop/ent-framework: Graph database library
 
-See also [Full API documentation](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/docs/modules.md).
+See also [Full API documentation](https://github.com/time-loop/slapdash/blob/master/docs/modules.md).
 
 ## How to Publish a New Version
 
-Use slapdash-engineering account from DashLane.
+Use engineering-slapdash account from 1Password.
 
     yarn login
     yarn publish

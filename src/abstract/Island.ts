@@ -16,14 +16,14 @@ export class Island<TClient extends Client> {
    */
   async shardNos(): Promise<readonly number[]> {
     for (const client of [this.master, ...shuffle(this.replicas)]) {
-      const startedAt = performance.now();
+      const startTime = performance.now();
       try {
         return await client.shardNos();
       } catch (error: unknown) {
         client.loggers.swallowedErrorLogger({
           where: `${client.constructor.name}(${client.name}): ${this.shardNos.name}()`,
           error,
-          elapsed: performance.now() - startedAt,
+          elapsed: performance.now() - startTime,
         });
       }
     }

@@ -1,6 +1,9 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryUpdate
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryUpdate
 
 # Class: SQLQueryUpdate<TTable\>
+
+A very lean interface for a Query. In practice each query is so different
+that this interface is the only common part of them all.
 
 ## Type parameters
 
@@ -34,9 +37,19 @@
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLQueryUpdate.ts:14](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryUpdate.ts#L14)
+[src/sql/SQLQueryUpdate.ts:16](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryUpdate.ts#L16)
 
 ## Properties
+
+### input
+
+• `Readonly` **input**: { [K in string \| number \| symbol]?: Value<TTable[K]\> } & { `$literal?`: [`Literal`](../modules.md#literal) ; `$cas?`: { [K in string \| number \| symbol]?: Value<TTable[K]\> }  } & { `id`: `string`  }
+
+#### Defined in
+
+[src/sql/SQLQueryUpdate.ts:13](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryUpdate.ts#L13)
+
+___
 
 ### IS\_WRITE
 
@@ -48,23 +61,17 @@
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLQueryUpdate.ts:12](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryUpdate.ts#L12)
-
-___
-
-### input
-
-• `Readonly` **input**: { [K in string \| number \| symbol]?: Value<TTable[K]\> } & { `$literal?`: [`Literal`](../modules.md#literal)  } & { `id`: `string`  }
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLQueryUpdate.ts:11](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryUpdate.ts#L11)
+[src/sql/SQLQueryUpdate.ts:14](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryUpdate.ts#L14)
 
 ___
 
 ### schema
 
 • `Readonly` **schema**: [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\>
+
+#### Defined in
+
+[src/sql/SQLQueryUpdate.ts:17](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryUpdate.ts#L17)
 
 ## Methods
 
@@ -76,7 +83,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `client` | [`SQLClient`](../interfaces/SQLClient.md) |
+| `client` | [`SQLClient`](SQLClient.md) |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
 #### Returns
@@ -89,4 +96,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLQueryUpdate.ts:23](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryUpdate.ts#L23)
+[src/sql/SQLQueryUpdate.ts:25](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryUpdate.ts#L25)

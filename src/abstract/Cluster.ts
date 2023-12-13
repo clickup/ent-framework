@@ -262,7 +262,7 @@ export class Cluster<TClient extends Client, TNode = any> {
           await delay(this.options.locateIslandErrorRetryDelayMs);
           // We must timeout here, otherwise we may wait forever if some Island
           // is totally down.
-          const startedAt = performance.now();
+          const startTime = performance.now();
           await pTimeout(
             this.discoverShardsCache.waitRefresh(),
             // Timeout = delay between fetches + warning timeout
@@ -273,7 +273,7 @@ export class Cluster<TClient extends Client, TNode = any> {
             this.loggers.swallowedErrorLogger({
               where: `${this.constructor.name}.${this.shardByNo.name}: waitRefresh`,
               error,
-              elapsed: performance.now() - startedAt,
+              elapsed: performance.now() - startTime,
             })
           );
           return "retry";

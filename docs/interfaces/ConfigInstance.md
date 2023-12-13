@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / ConfigInstance
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ConfigInstance
 
 # Interface: ConfigInstance
 

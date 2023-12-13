@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Query
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Query
 
 # Interface: Query<TOutput\>
 
@@ -14,6 +14,7 @@ that this interface is the only common part of them all.
 ## Implemented by
 
 - [`QueryBase`](../classes/QueryBase.md)
+- [`SQLQuerySelectBy`](../classes/SQLQuerySelectBy.md)
 - [`SQLQueryUpdate`](../classes/SQLQueryUpdate.md)
 
 ## Properties
@@ -24,7 +25,7 @@ that this interface is the only common part of them all.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Query.ts:12](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Query.ts#L12)
+[src/abstract/Query.ts:9](https://github.com/clickup/rest-client/blob/master/src/abstract/Query.ts#L9)
 
 ## Methods
 
@@ -45,4 +46,4 @@ that this interface is the only common part of them all.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Query.ts:13](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Query.ts#L13)
+[src/abstract/Query.ts:10](https://github.com/clickup/rest-client/blob/master/src/abstract/Query.ts#L10)

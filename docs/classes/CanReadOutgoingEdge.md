@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / CanReadOutgoingEdge
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / CanReadOutgoingEdge
 
 # Class: CanReadOutgoingEdge<TField\>
 
@@ -43,15 +43,9 @@ to another ent with ID equals to the value of our ent's field.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/CanReadOutgoingEdge.ts:22](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/CanReadOutgoingEdge.ts#L22)
+[src/ent/predicates/CanReadOutgoingEdge.ts:23](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L23)
 
 ## Properties
-
-### field
-
-• `Readonly` **field**: `TField`
-
-___
 
 ### name
 
@@ -63,13 +57,27 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/CanReadOutgoingEdge.ts:20](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/CanReadOutgoingEdge.ts#L20)
+[src/ent/predicates/CanReadOutgoingEdge.ts:21](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L21)
+
+___
+
+### field
+
+• `Readonly` **field**: `TField`
+
+#### Defined in
+
+[src/ent/predicates/CanReadOutgoingEdge.ts:24](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L24)
 
 ___
 
 ### toEntClass
 
 • `Readonly` **toEntClass**: [`EntClass`](../interfaces/EntClass.md)<`any`\>
+
+#### Defined in
+
+[src/ent/predicates/CanReadOutgoingEdge.ts:25](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L25)
 
 ## Methods
 
@@ -94,4 +102,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/CanReadOutgoingEdge.ts:27](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/CanReadOutgoingEdge.ts#L27)
+[src/ent/predicates/CanReadOutgoingEdge.ts:28](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L28)

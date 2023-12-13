@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Rule
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Rule
 
 # Class: Rule<TInput\>
 
@@ -53,19 +53,9 @@ interpret the result.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:47](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L47)
+[src/ent/rules/Rule.ts:48](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L48)
 
 ## Properties
-
-### name
-
-• `Readonly` **name**: `string`
-
-#### Defined in
-
-[packages/ent-framework/src/ent/rules/Rule.ts:45](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L45)
-
-___
 
 ### predicate
 
@@ -73,7 +63,17 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:44](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L44)
+[src/ent/rules/Rule.ts:43](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L43)
+
+___
+
+### name
+
+• `Readonly` **name**: `string`
+
+#### Defined in
+
+[src/ent/rules/Rule.ts:44](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L44)
 
 ## Methods
 
@@ -94,4 +94,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:57](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L57)
+[src/ent/rules/Rule.ts:46](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L46)

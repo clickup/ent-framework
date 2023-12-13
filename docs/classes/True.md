@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / True
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / True
 
 # Class: True
 
@@ -26,20 +26,19 @@ Always passes; used for e.g. globally accessed objects.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/True.ts:8](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/True.ts#L8)
+[src/ent/predicates/True.ts:8](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/True.ts#L8)
 
 ## Methods
 
 ### check
 
-▸ **check**(`_vc`, `_row`): `Promise`<`boolean`\>
+▸ **check**(`_vc`): `Promise`<`boolean`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `_vc` | [`VC`](VC.md) |
-| `_row` | `object` |
 
 #### Returns
 
@@ -51,4 +50,4 @@ Always passes; used for e.g. globally accessed objects.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/True.ts:10](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/True.ts#L10)
+[src/ent/predicates/True.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/True.ts#L10)

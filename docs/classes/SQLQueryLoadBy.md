@@ -1,6 +1,12 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryLoadBy
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryLoadBy
 
 # Class: SQLQueryLoadBy<TTable, TUniqueKey\>
+
+A convenient base class for most (but not all) of the queries, where the
+Runner instance is the same for different query input shapes. If the query
+doesn't fit the QueryBase framework (like SQLQueryUpdate for instance where
+we have separate Runner instances for separate set of updated fields), a
+Query is used directly instead.
 
 ## Type parameters
 
@@ -11,7 +17,7 @@
 
 ## Hierarchy
 
-- [`QueryBase`](QueryBase.md)<`TTable`, [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>, [`Row`](../modules.md#row)<`TTable`\> \| ``null``, [`SQLClient`](../interfaces/SQLClient.md)\>
+- [`QueryBase`](QueryBase.md)<`TTable`, [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>, [`Row`](../modules.md#row)<`TTable`\> \| ``null``, [`SQLClient`](SQLClient.md)\>
 
   ↳ **`SQLQueryLoadBy`**
 
@@ -26,7 +32,7 @@
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends readonly { [K in string \| number \| symbol]: TTable[K] extends Object ? K : never }[keyof `TTable`][] |
+| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)<`TTable`\> |
 
 #### Parameters
 
@@ -41,21 +47,21 @@
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Query.ts:28](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Query.ts#L28)
+[src/abstract/QueryBase.ts:27](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L27)
 
 ## Properties
 
-### RUNNER\_CLASS
+### schema
 
-• `Protected` `Readonly` **RUNNER\_CLASS**: typeof [`SQLRunnerLoadBy`](SQLRunnerLoadBy.md) = `SQLRunnerLoadBy`
+• `Readonly` **schema**: [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\>
 
-#### Overrides
+#### Inherited from
 
-[QueryBase](QueryBase.md).[RUNNER_CLASS](QueryBase.md#runner_class)
+[QueryBase](QueryBase.md).[schema](QueryBase.md#schema)
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLQueryLoadBy.ts:17](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryLoadBy.ts#L17)
+[src/abstract/QueryBase.ts:28](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L28)
 
 ___
 
@@ -67,15 +73,23 @@ ___
 
 [QueryBase](QueryBase.md).[input](QueryBase.md#input)
 
+#### Defined in
+
+[src/abstract/QueryBase.ts:29](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L29)
+
 ___
 
-### schema
+### RUNNER\_CLASS
 
-• `Readonly` **schema**: [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\>
+• `Protected` `Readonly` **RUNNER\_CLASS**: typeof [`SQLRunnerLoadBy`](SQLRunnerLoadBy.md) = `SQLRunnerLoadBy`
 
-#### Inherited from
+#### Overrides
 
-[QueryBase](QueryBase.md).[schema](QueryBase.md#schema)
+[QueryBase](QueryBase.md).[RUNNER_CLASS](QueryBase.md#runner_class)
+
+#### Defined in
+
+[src/sql/SQLQueryLoadBy.ts:17](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryLoadBy.ts#L17)
 
 ## Accessors
 
@@ -93,7 +107,7 @@ QueryBase.IS\_WRITE
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Query.ts:38](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Query.ts#L38)
+[src/abstract/QueryBase.ts:32](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L32)
 
 ## Methods
 
@@ -105,7 +119,7 @@ QueryBase.IS\_WRITE
 
 | Name | Type |
 | :------ | :------ |
-| `client` | [`SQLClient`](../interfaces/SQLClient.md) |
+| `client` | [`SQLClient`](SQLClient.md) |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
 #### Returns
@@ -118,4 +132,4 @@ QueryBase.IS\_WRITE
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Query.ts:42](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Query.ts#L42)
+[src/abstract/QueryBase.ts:36](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L36)

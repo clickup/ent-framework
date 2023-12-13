@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Runner
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Runner
 
 # Class: Runner<TInput, TOutput\>
 
@@ -41,32 +41,19 @@ Parameter `name` is typically a table name.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:47](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L47)
+[src/abstract/Batcher.ts:83](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L83)
 
 ## Properties
 
-### default
+### IS\_WRITE
 
-• `Readonly` `Abstract` **default**: `TOutput`
+▪ `Static` `Readonly` **IS\_WRITE**: `boolean`
 
-In case undefined is returned from batching, this value will be returned
-instead.
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Batcher.ts:32](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L32)
-
-___
-
-### isMaster
-
-• `Readonly` `Abstract` **isMaster**: `boolean`
-
-Is it a master or a replica connection.
+If true, it's a write operation.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:42](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L42)
+[src/abstract/Batcher.ts:20](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L20)
 
 ___
 
@@ -78,13 +65,20 @@ Maximum batch size for this type of operations.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:26](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L26)
+[src/abstract/Batcher.ts:27](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L27)
 
 ___
 
-### name
+### default
 
-• `Readonly` **name**: `string`
+• `Readonly` `Abstract` **default**: `TOutput`
+
+In case undefined is returned from batching, this value will be returned
+instead.
+
+#### Defined in
+
+[src/abstract/Batcher.ts:33](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L33)
 
 ___
 
@@ -92,25 +86,70 @@ ___
 
 • `Readonly` `Abstract` **shardName**: `string`
 
-Name of the shard for this runner.
+Name of the Shard for this Runner.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:37](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L37)
+[src/abstract/Batcher.ts:38](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L38)
 
 ___
 
-### IS\_WRITE
+### name
 
-▪ `Static` `Readonly` **IS\_WRITE**: `boolean`
-
-If true, it's a write operation.
+• `Readonly` **name**: `string`
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:21](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L21)
+[src/abstract/Batcher.ts:83](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L83)
 
 ## Methods
+
+### runSingle
+
+▸ `Abstract` **runSingle**(`input`, `annotations`): `Promise`<`undefined` \| `TOutput`\>
+
+Method runSingle is to e.g. produce simple SQL requests when we have only
+one input to process, not many.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `input` | `TInput` |
+| `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
+
+#### Returns
+
+`Promise`<`undefined` \| `TOutput`\>
+
+#### Defined in
+
+[src/abstract/Batcher.ts:44](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L44)
+
+___
+
+### runBatch
+
+▸ `Optional` `Abstract` **runBatch**(`inputs`, `annotations`): `Promise`<`Map`<`string`, `TOutput`\>\>
+
+Typically issues complex queries with magic.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `inputs` | `Map`<`string`, `TInput`\> |
+| `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
+
+#### Returns
+
+`Promise`<`Map`<`string`, `TOutput`\>\>
+
+#### Defined in
+
+[src/abstract/Batcher.ts:52](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L52)
+
+___
 
 ### delayForSingleQueryRetryOnError
 
@@ -131,7 +170,39 @@ error), returns the number of milliseconds to wait before retrying.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:85](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L85)
+[src/abstract/Batcher.ts:61](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L61)
+
+___
+
+### shouldDebatchOnError
+
+▸ `Abstract` **shouldDebatchOnError**(`error`): `boolean`
+
+If this method returns true for an error object, the batch is split back
+into sub-queries, they are executed individually, and then the response of
+each query is delivered to each caller individually. Used mostly for e.g.
+batch-deadlock errors or for FK constraint errors when it makes sense to
+retry other members of the batch and not fail it entirely hurting other
+innocent queries.
+
+We can do this, because we know that if some transaction is aborted, it's
+always safe to retry it. (If we're not sure about the transaction, e.g. the
+Client doesn't support transactions at all, then the method should return
+false.)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `error` | `any` |
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/abstract/Batcher.ts:78](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L78)
 
 ___
 
@@ -155,83 +226,4 @@ into one input; e.g. this is needed for inserts).
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:54](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L54)
-
-___
-
-### runBatch
-
-▸ `Optional` `Abstract` **runBatch**(`inputs`, `annotations`): `Promise`<`Map`<`string`, `TOutput`\>\>
-
-Typically issues complex queries with magic.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `inputs` | `Map`<`string`, `TInput`\> |
-| `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
-
-#### Returns
-
-`Promise`<`Map`<`string`, `TOutput`\>\>
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Batcher.ts:76](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L76)
-
-___
-
-### runSingle
-
-▸ `Abstract` **runSingle**(`input`, `annotations`): `Promise`<`undefined` \| `TOutput`\>
-
-Method runSingle is to e.g. produce simple SQL requests when we have only
-one input to process, not many.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `input` | `TInput` |
-| `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
-
-#### Returns
-
-`Promise`<`undefined` \| `TOutput`\>
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Batcher.ts:68](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L68)
-
-___
-
-### shouldDebatchOnError
-
-▸ `Abstract` **shouldDebatchOnError**(`error`): `boolean`
-
-If this method returns true for an error object, the batch is split back
-into sub-queries, they are executed individually, and then the response of
-each query is delivered to each caller individually. Used mostly for e.g.
-batch-deadlock errors or for FK constraint errors when it makes sense to
-retry other members of the batch and not fail it entirely hurting other
-innocent queries.
-
-We can do this, because we know that if some transaction is aborted, it's
-always safe to retry it. (If we're not sure about the transaction, e.g. the
-client doesn't support transactions at all, then the method should return
-false.)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `error` | `any` |
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Batcher.ts:102](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L102)
+[src/abstract/Batcher.ts:90](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L90)

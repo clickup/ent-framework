@@ -1,8 +1,8 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Shard
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Shard
 
 # Class: Shard<TClient\>
 
-Shard is a numbered island with one master and N replicas.
+Shard lives within an Island with one master and N replicas.
 
 ## Type parameters
 
@@ -14,24 +14,24 @@ Shard is a numbered island with one master and N replicas.
 
 ### constructor
 
-• **new Shard**<`TClient`\>(`no`, `locateIsland`)
+• **new Shard**<`TClient`\>(`no`, `options`)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TClient` | extends [`Client`](Client.md)<`TClient`\> |
+| `TClient` | extends [`Client`](Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `no` | `number` |
-| `locateIsland` | () => `Promise`<[`Island`](Island.md)<`TClient`\>\> |
+| `options` | [`ShardOptions`](../interfaces/ShardOptions.md)<`TClient`\> |
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Shard.ts:22](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Shard.ts#L22)
+[src/abstract/Shard.ts:32](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L32)
 
 ## Properties
 
@@ -39,13 +39,28 @@ Shard is a numbered island with one master and N replicas.
 
 • `Readonly` **no**: `number`
 
+#### Defined in
+
+[src/abstract/Shard.ts:33](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L33)
+
+___
+
+### options
+
+• `Readonly` **options**: [`ShardOptions`](../interfaces/ShardOptions.md)<`TClient`\>
+
+#### Defined in
+
+[src/abstract/Shard.ts:34](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L34)
+
 ## Methods
 
 ### client
 
 ▸ **client**(`timeline`): `Promise`<`TClient`\>
 
-Chooses the right client to be used for this shard.
+Chooses the right Client to be used for this Shard. We don't memoize,
+because the Shard may relocate to another Island during re-discovery.
 
 #### Parameters
 
@@ -59,7 +74,7 @@ Chooses the right client to be used for this shard.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Shard.ts:30](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Shard.ts#L30)
+[src/abstract/Shard.ts:41](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L41)
 
 ___
 
@@ -67,8 +82,8 @@ ___
 
 ▸ **run**<`TOutput`\>(`query`, `annotation`, `timeline`, `freshness`): `Promise`<`TOutput`\>
 
-Runs a query after choosing the right client (destination connection,
-shard, annotation etc.)
+Runs a query after choosing the right Client (destination connection,
+Shard, annotation etc.)
 
 #### Type parameters
 
@@ -91,4 +106,21 @@ shard, annotation etc.)
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Shard.ts:41](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Shard.ts#L41)
+[src/abstract/Shard.ts:62](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L62)
+
+___
+
+### assertDiscoverable
+
+▸ **assertDiscoverable**(): `Promise`<`void`\>
+
+Throws if this Shard does not exist, or its Island is down, or something
+else is wrong with it.
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Defined in
+
+[src/abstract/Shard.ts:107](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L107)

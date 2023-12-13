@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Handler
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Handler
 
 # Interface: Handler<TLoadArgs, TReturn\>
 
@@ -9,56 +9,92 @@
 | `TLoadArgs` | extends `any`[] |
 | `TReturn` | `TReturn` |
 
-## Methods
+## Properties
 
 ### onCollect
 
-▸ **onCollect**(...`args`): `void`
+• **onCollect**: (...`args`: `TLoadArgs`) => `void` \| ``"flush"`` \| ``"wait"``
 
-#### Parameters
+#### Type declaration
+
+▸ (`...args`): `void` \| ``"flush"`` \| ``"wait"``
+
+##### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `...args` | `TLoadArgs` |
 
-#### Returns
+##### Returns
 
-`void`
+`void` \| ``"flush"`` \| ``"wait"``
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Loader.ts:4](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Loader.ts#L4)
+[src/abstract/Loader.ts:5](https://github.com/clickup/rest-client/blob/master/src/abstract/Loader.ts#L5)
 
 ___
 
-### onFlush
+### onWait
 
-▸ **onFlush**(): `Promise`<`void`\>
+• `Optional` **onWait**: () => `Promise`<`void`\>
 
-#### Returns
+#### Type declaration
+
+▸ (): `Promise`<`void`\>
+
+##### Returns
 
 `Promise`<`void`\>
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Loader.ts:6](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Loader.ts#L6)
+[src/abstract/Loader.ts:6](https://github.com/clickup/rest-client/blob/master/src/abstract/Loader.ts#L6)
+
+___
+
+### onFlush
+
+• **onFlush**: (`collected`: `number`) => `Promise`<`void`\>
+
+#### Type declaration
+
+▸ (`collected`): `Promise`<`void`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `collected` | `number` |
+
+##### Returns
+
+`Promise`<`void`\>
+
+#### Defined in
+
+[src/abstract/Loader.ts:7](https://github.com/clickup/rest-client/blob/master/src/abstract/Loader.ts#L7)
 
 ___
 
 ### onReturn
 
-▸ **onReturn**(...`args`): `TReturn`
+• **onReturn**: (...`args`: `TLoadArgs`) => `TReturn`
 
-#### Parameters
+#### Type declaration
+
+▸ (`...args`): `TReturn`
+
+##### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `...args` | `TLoadArgs` |
 
-#### Returns
+##### Returns
 
 `TReturn`
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Loader.ts:5](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Loader.ts#L5)
+[src/abstract/Loader.ts:8](https://github.com/clickup/rest-client/blob/master/src/abstract/Loader.ts#L8)

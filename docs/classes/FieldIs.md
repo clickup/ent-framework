@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / FieldIs
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / FieldIs
 
 # Class: FieldIs
 
@@ -13,42 +13,21 @@ Checks that the validator function returns true for the value in some field.
 
 ### constructor
 
-• **new FieldIs**(`field`, `validator`, `message`, `condition?`)
+• **new FieldIs**(`field`, `validator`, `message`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `field` | `string` |
-| `validator` | (`fieldValue`: `any`, `row`: `Record`<`string`, `any`\>) => `boolean` |
+| `validator` | (`fieldValue`: `any`, `row`: `Record`<`string`, `any`\>, `vc`: [`VC`](VC.md)) => `boolean` \| `Promise`<`boolean`\> |
 | `message` | `string` |
-| `condition?` | (`vc`: [`VC`](VC.md)) => `boolean` |
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/FieldIs.ts:13](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/FieldIs.ts#L13)
+[src/ent/predicates/FieldIs.ts:13](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L13)
 
 ## Properties
-
-### field
-
-• `Readonly` **field**: `string`
-
-#### Implementation of
-
-[EntValidationErrorInfo](../interfaces/EntValidationErrorInfo.md).[field](../interfaces/EntValidationErrorInfo.md#field)
-
-___
-
-### message
-
-• `Readonly` **message**: `string`
-
-#### Implementation of
-
-[EntValidationErrorInfo](../interfaces/EntValidationErrorInfo.md).[message](../interfaces/EntValidationErrorInfo.md#message)
-
-___
 
 ### name
 
@@ -60,17 +39,31 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/FieldIs.ts:11](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/FieldIs.ts#L11)
+[src/ent/predicates/FieldIs.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L11)
+
+___
+
+### field
+
+• `Readonly` **field**: `string`
+
+#### Implementation of
+
+[EntValidationErrorInfo](../interfaces/EntValidationErrorInfo.md).[field](../interfaces/EntValidationErrorInfo.md#field)
+
+#### Defined in
+
+[src/ent/predicates/FieldIs.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L14)
 
 ___
 
 ### validator
 
-• `Readonly` **validator**: (`fieldValue`: `any`, `row`: `Record`<`string`, `any`\>) => `boolean`
+• `Readonly` **validator**: (`fieldValue`: `any`, `row`: `Record`<`string`, `any`\>, `vc`: [`VC`](VC.md)) => `boolean` \| `Promise`<`boolean`\>
 
 #### Type declaration
 
-▸ (`fieldValue`, `row`): `boolean`
+▸ (`fieldValue`, `row`, `vc`): `boolean` \| `Promise`<`boolean`\>
 
 ##### Parameters
 
@@ -78,10 +71,29 @@ ___
 | :------ | :------ |
 | `fieldValue` | `any` |
 | `row` | `Record`<`string`, `any`\> |
+| `vc` | [`VC`](VC.md) |
 
 ##### Returns
 
-`boolean`
+`boolean` \| `Promise`<`boolean`\>
+
+#### Defined in
+
+[src/ent/predicates/FieldIs.ts:15](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L15)
+
+___
+
+### message
+
+• `Readonly` **message**: `string`
+
+#### Implementation of
+
+[EntValidationErrorInfo](../interfaces/EntValidationErrorInfo.md).[message](../interfaces/EntValidationErrorInfo.md#message)
+
+#### Defined in
+
+[src/ent/predicates/FieldIs.ts:20](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L20)
 
 ## Methods
 
@@ -106,4 +118,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/FieldIs.ts:24](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/FieldIs.ts#L24)
+[src/ent/predicates/FieldIs.ts:23](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L23)

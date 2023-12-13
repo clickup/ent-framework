@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Timeline
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Timeline
 
 # Class: Timeline
 
@@ -16,45 +16,52 @@ Tracks replication timeline position at master per "user" and Ent.
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
-| `state` | ``"unknown"`` \| { `expiresAt`: `number` ; `pos`: `bigint`  } | `"unknown"` |
+| `state` | { `pos`: `bigint` ; `expiresAt`: `number`  } \| ``"unknown"`` | `"unknown"` |
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Timeline.ts:24](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Timeline.ts#L24)
+[src/abstract/Timeline.ts:24](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L24)
 
 ## Methods
 
-### isCaughtUp
+### deserialize
 
-▸ **isCaughtUp**(`replicaPos`): [`TimelineCaughtUpReason`](../modules.md#timelinecaughtupreason)
+▸ `Static` **deserialize**(`data`, `prevTimeline`): [`Timeline`](Timeline.md)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `replicaPos` | `bigint` |
+| `data` | `undefined` \| `string` |
+| `prevTimeline` | ``null`` \| [`Timeline`](Timeline.md) |
 
 #### Returns
 
-[`TimelineCaughtUpReason`](../modules.md#timelinecaughtupreason)
+[`Timeline`](Timeline.md)
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Timeline.ts:79](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Timeline.ts#L79)
+[src/abstract/Timeline.ts:30](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L30)
 
 ___
 
-### reset
+### cloneMap
 
-▸ **reset**(): `void`
+▸ `Static` **cloneMap**(`timelines`): `Map`<`string`, [`Timeline`](Timeline.md)\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `timelines` | `ReadonlyMap`<`string`, [`Timeline`](Timeline.md)\> |
 
 #### Returns
 
-`void`
+`Map`<`string`, [`Timeline`](Timeline.md)\>
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Timeline.ts:89](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Timeline.ts#L89)
+[src/abstract/Timeline.ts:52](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L52)
 
 ___
 
@@ -68,7 +75,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Timeline.ts:63](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Timeline.ts#L63)
+[src/abstract/Timeline.ts:65](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L65)
 
 ___
 
@@ -89,45 +96,38 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Timeline.ts:70](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Timeline.ts#L70)
+[src/abstract/Timeline.ts:72](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L72)
 
 ___
 
-### cloneMap
+### isCaughtUp
 
-▸ `Static` **cloneMap**(`timelines`): `Map`<`string`, [`Timeline`](Timeline.md)\>
+▸ **isCaughtUp**(`replicaPos`): [`TimelineCaughtUpReason`](../modules.md#timelinecaughtupreason)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `timelines` | `ReadonlyMap`<`string`, [`Timeline`](Timeline.md)\> |
+| `replicaPos` | `bigint` |
 
 #### Returns
 
-`Map`<`string`, [`Timeline`](Timeline.md)\>
+[`TimelineCaughtUpReason`](../modules.md#timelinecaughtupreason)
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Timeline.ts:52](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Timeline.ts#L52)
+[src/abstract/Timeline.ts:81](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L81)
 
 ___
 
-### deserialize
+### reset
 
-▸ `Static` **deserialize**(`data`, `prevTimeline`): [`Timeline`](Timeline.md)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `data` | `undefined` \| `string` |
-| `prevTimeline` | ``null`` \| [`Timeline`](Timeline.md) |
+▸ **reset**(): `void`
 
 #### Returns
 
-[`Timeline`](Timeline.md)
+`void`
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Timeline.ts:30](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Timeline.ts#L30)
+[src/abstract/Timeline.ts:91](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L91)

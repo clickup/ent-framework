@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Batcher
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Batcher
 
 # Class: Batcher<TInput, TOutput\>
 
@@ -21,7 +21,7 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 ### constructor
 
-• **new Batcher**<`TInput`, `TOutput`\>(`runner`, `entInputLogger?`, `maxBatchSize?`)
+• **new Batcher**<`TInput`, `TOutput`\>(`runner`, `maxBatchSize?`, `batchDelayMs?`)
 
 #### Type parameters
 
@@ -35,12 +35,12 @@ Batcher is similar to DataLoader, but with a few important differences:
 | Name | Type | Default value |
 | :------ | :------ | :------ |
 | `runner` | [`Runner`](Runner.md)<`TInput`, `TOutput`\> | `undefined` |
-| `entInputLogger?` | (`props`: [`EntInputLoggerProps`](../interfaces/EntInputLoggerProps.md)) => `void` | `undefined` |
 | `maxBatchSize` | `number` | `0` |
+| `batchDelayMs` | `number` \| () => `number` | `0` |
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:134](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L134)
+[src/abstract/Batcher.ts:183](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L183)
 
 ## Methods
 
@@ -54,21 +54,7 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:181](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L181)
-
-___
-
-### flushQueueCaller
-
-▸ `Protected` **flushQueueCaller**(): `void`
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[packages/ent-framework/src/abstract/Batcher.ts:256](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L256)
+[src/abstract/Batcher.ts:125](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L125)
 
 ___
 
@@ -89,4 +75,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:144](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L144)
+[src/abstract/Batcher.ts:196](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L196)

@@ -64,8 +64,8 @@ export class CachedRefreshedValue<TValue> {
   async waitRefresh(): Promise<void> {
     runInVoid(this.refreshLoop());
     // Keep waiting till we get a value which is fresh enough.
-    const startedAt = performance.now();
-    while (this.latestAt <= startedAt) {
+    const startTime = performance.now();
+    while (this.latestAt <= startTime) {
       // Skip waiting between loops.
       this.skipDelay?.();
       // After await resolves here, it's guaranteed that this.nextValue will be
@@ -87,7 +87,7 @@ export class CachedRefreshedValue<TValue> {
   @Memoize()
   private async refreshLoop(): Promise<void> {
     while (!this.destroyedError) {
-      const startedAt = performance.now();
+      const startTime = performance.now();
       const timeout = setTimeout(() => {
         try {
           this.options.onError(
@@ -101,8 +101,8 @@ export class CachedRefreshedValue<TValue> {
       }, this.options.warningTimeoutMs);
       try {
         const val = await this.options.resolverFn();
-        if (this.latestAt < startedAt) {
-          this.latestAt = startedAt;
+        if (this.latestAt < startTime) {
+          this.latestAt = startTime;
           this.latestValue = val;
           // We must ensure that we fulfill and replace the promise during one
           // event loop iteration.

@@ -1,43 +1,50 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / SQLClientPool
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLClientPool
 
 # Class: SQLClientPool
 
+An abstract PostgreSQL Client which doesn't know how to acquire an actual
+connection and send queries; these things are up to the derived classes to
+implement.
+
 ## Hierarchy
 
-- [`Client`](Client.md)
+- [`SQLClient`](SQLClient.md)
 
   ↳ **`SQLClientPool`**
-
-## Implements
-
-- [`SQLClient`](../interfaces/SQLClient.md)
 
 ## Constructors
 
 ### constructor
 
-• **new SQLClientPool**(`dest`, `loggers`)
+• **new SQLClientPool**(`dest`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `dest` | [`SQLClientDest`](../interfaces/SQLClientDest.md) |
-| `loggers` | [`Loggers`](../interfaces/Loggers.md) |
 
 #### Overrides
 
-[Client](Client.md).[constructor](Client.md#constructor)
+[SQLClient](SQLClient.md).[constructor](SQLClient.md#constructor)
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLClientPool.ts:64](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClientPool.ts#L64)
+[src/sql/SQLClientPool.ts:73](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L73)
 
 ## Properties
 
-### dest
+### name
 
-• `Readonly` **dest**: [`SQLClientDest`](../interfaces/SQLClientDest.md)
+• `Readonly` **name**: `string`
+
+#### Inherited from
+
+[SQLClient](SQLClient.md).[name](SQLClient.md#name)
+
+#### Defined in
+
+[src/abstract/Client.ts:52](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L52)
 
 ___
 
@@ -45,13 +52,13 @@ ___
 
 • `Readonly` **isMaster**: `boolean`
 
-#### Implementation of
-
-[SQLClient](../interfaces/SQLClient.md).[isMaster](../interfaces/SQLClient.md#ismaster)
-
 #### Inherited from
 
-[Client](Client.md).[isMaster](Client.md#ismaster)
+[SQLClient](SQLClient.md).[isMaster](SQLClient.md#ismaster)
+
+#### Defined in
+
+[src/abstract/Client.ts:53](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L53)
 
 ___
 
@@ -59,49 +66,31 @@ ___
 
 • `Readonly` **loggers**: [`Loggers`](../interfaces/Loggers.md)
 
-#### Implementation of
-
-[SQLClient](../interfaces/SQLClient.md).[loggers](../interfaces/SQLClient.md#loggers)
-
 #### Inherited from
 
-[Client](Client.md).[loggers](Client.md#loggers)
+[SQLClient](SQLClient.md).[loggers](SQLClient.md#loggers)
 
-___
+#### Defined in
 
-### name
-
-• `Readonly` **name**: `string`
-
-#### Implementation of
-
-[SQLClient](../interfaces/SQLClient.md).[name](../interfaces/SQLClient.md#name)
-
-#### Inherited from
-
-[Client](Client.md).[name](Client.md#name)
+[src/abstract/Client.ts:54](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L54)
 
 ___
 
 ### shardName
 
-• `Readonly` **shardName**: ``"public"``
+• `Readonly` **shardName**: `string` = `"public"`
 
-Each Client may be bound to some shard, so the queries executed via it will
-be namespaced to this shard. E.g. in PostgreSQL, shard name is schema name
-(or "public" if the client wasn't created by withShard() method).
+Each Client may be bound to some Shard, so the queries executed via it will
+be namespaced to this Shard. E.g. in PostgreSQL, Shard name is schema name
+(or "public" if the Client wasn't created by withShard() method).
 
-#### Implementation of
+#### Inherited from
 
-[SQLClient](../interfaces/SQLClient.md).[shardName](../interfaces/SQLClient.md#shardname)
-
-#### Overrides
-
-[Client](Client.md).[shardName](Client.md#shardname)
+[SQLClient](SQLClient.md).[shardName](SQLClient.md#shardname)
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLClientPool.ts:46](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClientPool.ts#L46)
+[src/sql/SQLClient.ts:39](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L39)
 
 ___
 
@@ -110,19 +99,25 @@ ___
 • `Readonly` **timelineManager**: [`TimelineManager`](TimelineManager.md)
 
 Tracks the master/replica replication timeline position. Shared across all
-the clients within the same island.
+the Clients within the same Island.
 
-#### Implementation of
+#### Inherited from
 
-[SQLClient](../interfaces/SQLClient.md).[timelineManager](../interfaces/SQLClient.md#timelinemanager)
-
-#### Overrides
-
-[Client](Client.md).[timelineManager](Client.md#timelinemanager)
+[SQLClient](SQLClient.md).[timelineManager](SQLClient.md#timelinemanager)
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLClientPool.ts:48](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClientPool.ts#L48)
+[src/sql/SQLClient.ts:41](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L41)
+
+___
+
+### dest
+
+• `Readonly` **dest**: [`SQLClientDest`](../interfaces/SQLClientDest.md)
+
+#### Defined in
+
+[src/sql/SQLClientPool.ts:73](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L73)
 
 ## Methods
 
@@ -130,9 +125,9 @@ the clients within the same island.
 
 ▸ **batcher**<`TInput`, `TOutput`\>(`_QueryClass`, `_schema`, `_additionalShape`, `runnerCreator`): [`Batcher`](Batcher.md)<`TInput`, `TOutput`\>
 
-Batcher is per-client per-query-type per-table-name-and-shape:
-- Per-client means that batchers are removed as soon as the client is
-  removed, i.e. the client owns all the batchers for all tables.
+Batcher is per-Client per-query-type per-table-name-and-shape:
+- Per-Client means that batchers are removed as soon as the Client is
+  removed, i.e. the Client owns all the batchers for all tables.
 - Per-query-type means that the batcher for a SELECT query is different
   from the batcher for an INSERT query (obviously).
 - Per-table-name-and-shape means that each table has its own set of
@@ -141,11 +136,11 @@ Batcher is per-client per-query-type per-table-name-and-shape:
   updating.
 
 Also, for every Batcher, there is exactly one Runner (which knows how to
-build the actual query in the context of the current client). Batchers are
+build the actual query in the context of the current Client). Batchers are
 generic (like DataLoader, but more general), and Runners are very custom to
 the query (and are private to these queries).
 
-All that means that in a 1000-shard 20-table cluster we'll eventually have
+All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 1000x20x8 Batchers/Runners (assuming we have 8 different operations).
 
 #### Type parameters
@@ -168,17 +163,246 @@ All that means that in a 1000-shard 20-table cluster we'll eventually have
 
 [`Batcher`](Batcher.md)<`TInput`, `TOutput`\>
 
-#### Implementation of
-
-[SQLClient](../interfaces/SQLClient.md).[batcher](../interfaces/SQLClient.md#batcher)
-
 #### Inherited from
 
-[Client](Client.md).[batcher](Client.md#batcher)
+[SQLClient](SQLClient.md).[batcher](SQLClient.md#batcher)
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Client.ts:88](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L88)
+[src/abstract/Client.ts:81](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L81)
+
+___
+
+### query
+
+▸ **query**<`TRow`\>(`«destructured»`): `Promise`<`TRow`[]\>
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `TRow` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `query` | [`Literal`](../modules.md#literal) |
+| › `hints?` | `Record`<`string`, `string`\> |
+| › `isWrite` | `boolean` |
+| › `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
+| › `op` | `string` |
+| › `table` | `string` |
+| › `batchFactor?` | `number` |
+
+#### Returns
+
+`Promise`<`TRow`[]\>
+
+#### Inherited from
+
+[SQLClient](SQLClient.md).[query](SQLClient.md#query)
+
+#### Defined in
+
+[src/sql/SQLClient.ts:85](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L85)
+
+___
+
+### shardNos
+
+▸ **shardNos**(): `Promise`<readonly `number`[]\>
+
+Returns all Shard numbers discoverable via the connection to the Client's
+database.
+
+#### Returns
+
+`Promise`<readonly `number`[]\>
+
+#### Inherited from
+
+[SQLClient](SQLClient.md).[shardNos](SQLClient.md#shardnos)
+
+#### Defined in
+
+[src/sql/SQLClient.ts:269](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L269)
+
+___
+
+### shardNoByID
+
+▸ **shardNoByID**(`id`): `number`
+
+Extracts Shard number from an ID.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `id` | `string` |
+
+#### Returns
+
+`number`
+
+#### Inherited from
+
+[SQLClient](SQLClient.md).[shardNoByID](SQLClient.md#shardnobyid)
+
+#### Defined in
+
+[src/sql/SQLClient.ts:293](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L293)
+
+___
+
+### withShard
+
+▸ **withShard**(`no`): [`SQLClientPool`](SQLClientPool.md)
+
+Creates a new Client which is namespaced to the provided Shard number. The
+new Client will share the same connection pool with the parent's Client.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `no` | `number` |
+
+#### Returns
+
+[`SQLClientPool`](SQLClientPool.md)
+
+#### Inherited from
+
+[SQLClient](SQLClient.md).[withShard](SQLClient.md#withshard)
+
+#### Defined in
+
+[src/sql/SQLClient.ts:350](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L350)
+
+___
+
+### acquireConn
+
+▸ `Protected` **acquireConn**(): `Promise`<`PoolClient`\>
+
+#### Returns
+
+`Promise`<`PoolClient`\>
+
+#### Overrides
+
+[SQLClient](SQLClient.md).[acquireConn](SQLClient.md#acquireconn)
+
+#### Defined in
+
+[src/sql/SQLClientPool.ts:56](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L56)
+
+___
+
+### releaseConn
+
+▸ `Protected` **releaseConn**(`conn`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `conn` | [`SQLClientPoolClient`](../modules.md#sqlclientpoolclient) |
+
+#### Returns
+
+`void`
+
+#### Overrides
+
+[SQLClient](SQLClient.md).[releaseConn](SQLClient.md#releaseconn)
+
+#### Defined in
+
+[src/sql/SQLClientPool.ts:60](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L60)
+
+___
+
+### poolStats
+
+▸ `Protected` **poolStats**(): `Object`
+
+#### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `totalCount` | `number` |
+| `waitingCount` | `number` |
+| `idleCount` | `number` |
+
+#### Overrides
+
+[SQLClient](SQLClient.md).[poolStats](SQLClient.md#poolstats)
+
+#### Defined in
+
+[src/sql/SQLClientPool.ts:65](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L65)
+
+___
+
+### logSwallowedError
+
+▸ **logSwallowedError**(`where`, `e`, `elapsed`): `void`
+
+Calls swallowedErrorLogger() doing some preliminary amendment.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `where` | `string` |
+| `e` | `unknown` |
+| `elapsed` | ``null`` \| `number` |
+
+#### Returns
+
+`void`
+
+#### Overrides
+
+[SQLClient](SQLClient.md).[logSwallowedError](SQLClient.md#logswallowederror)
+
+#### Defined in
+
+[src/sql/SQLClientPool.ts:116](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L116)
+
+___
+
+### end
+
+▸ **end**(`forceDisconnect?`): `Promise`<`void`\>
+
+Closes the connections to let the caller destroy the Client. By default,
+the pending queries are awaited to finish before returning, but if you pass
+forceDisconnect, all of the connections will be closed immediately.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `forceDisconnect?` | `boolean` |
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Overrides
+
+[SQLClient](SQLClient.md).[end](SQLClient.md#end)
+
+#### Defined in
+
+[src/sql/SQLClientPool.ts:126](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L126)
 
 ___
 
@@ -195,134 +419,10 @@ full-text dictionaries).
 
 `void`
 
-#### Implementation of
-
-[SQLClient](../interfaces/SQLClient.md).[prewarm](../interfaces/SQLClient.md#prewarm)
-
 #### Overrides
 
-[Client](Client.md).[prewarm](Client.md#prewarm)
+[SQLClient](SQLClient.md).[prewarm](SQLClient.md#prewarm)
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLClientPool.ts:274](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClientPool.ts#L274)
-
-___
-
-### query
-
-▸ **query**<`TRow`\>(`query`, `op`, `table`, `annotations`, `batchFactor`): `Promise`<`TRow`[]\>
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `TRow` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `query` | `string` \| { `hints`: `Record`<`string`, `string`\> ; `query`: `string`  } |
-| `op` | `string` |
-| `table` | `string` |
-| `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
-| `batchFactor` | `number` |
-
-#### Returns
-
-`Promise`<`TRow`[]\>
-
-#### Implementation of
-
-[SQLClient](../interfaces/SQLClient.md).[query](../interfaces/SQLClient.md#query)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLClientPool.ts:92](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClientPool.ts#L92)
-
-___
-
-### shardNoByID
-
-▸ **shardNoByID**(`id`): `number`
-
-Extracts shard number from an ID.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `id` | `string` |
-
-#### Returns
-
-`number`
-
-#### Implementation of
-
-[SQLClient](../interfaces/SQLClient.md).[shardNoByID](../interfaces/SQLClient.md#shardnobyid)
-
-#### Overrides
-
-[Client](Client.md).[shardNoByID](Client.md#shardnobyid)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLClientPool.ts:247](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClientPool.ts#L247)
-
-___
-
-### shardNos
-
-▸ **shardNos**(): `Promise`<readonly `number`[]\>
-
-Returns all shard numbers discoverable via the connection to the Client's
-database.
-
-#### Returns
-
-`Promise`<readonly `number`[]\>
-
-#### Implementation of
-
-[SQLClient](../interfaces/SQLClient.md).[shardNos](../interfaces/SQLClient.md#shardnos)
-
-#### Overrides
-
-[Client](Client.md).[shardNos](Client.md#shardnos)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLClientPool.ts:218](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClientPool.ts#L218)
-
-___
-
-### withShard
-
-▸ **withShard**(`no`): [`SQLClientPool`](SQLClientPool.md)
-
-Creates a new Client which is namespaced to the provided shard number. The
-new client will share the same connection pool with the parent's Client.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `no` | `number` |
-
-#### Returns
-
-[`SQLClientPool`](SQLClientPool.md)
-
-#### Implementation of
-
-[SQLClient](../interfaces/SQLClient.md).[withShard](../interfaces/SQLClient.md#withshard)
-
-#### Overrides
-
-[Client](Client.md).[withShard](Client.md#withshard)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLClientPool.ts:265](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLClientPool.ts#L265)
+[src/sql/SQLClientPool.ts:143](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L143)

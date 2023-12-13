@@ -1,43 +1,56 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Loggers
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Loggers
 
 # Interface: Loggers
 
-## Methods
+## Properties
 
 ### clientQueryLogger
 
-▸ `Optional` **clientQueryLogger**(`props`): `void`
+• `Optional` **clientQueryLogger**: (`props`: [`ClientQueryLoggerProps`](ClientQueryLoggerProps.md)) => `void`
 
-#### Parameters
+#### Type declaration
+
+▸ (`props`): `void`
+
+Logs actual queries to the database (e.g. raw SQL queries, after
+batching).
+
+##### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `props` | [`ClientQueryLoggerProps`](ClientQueryLoggerProps.md) |
 
-#### Returns
+##### Returns
 
 `void`
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Client.ts:40](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L40)
+[src/abstract/Loggers.ts:6](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L6)
 
 ___
 
-### entInputLogger
+### swallowedErrorLogger
 
-▸ `Optional` **entInputLogger**(`props`): `void`
+• **swallowedErrorLogger**: (`props`: [`SwallowedErrorLoggerProps`](SwallowedErrorLoggerProps.md)) => `void`
 
-#### Parameters
+#### Type declaration
+
+▸ (`props`): `void`
+
+Logs errors which did not throw through (typically recoverable).
+
+##### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `props` | [`EntInputLoggerProps`](EntInputLoggerProps.md) |
+| `props` | [`SwallowedErrorLoggerProps`](SwallowedErrorLoggerProps.md) |
 
-#### Returns
+##### Returns
 
 `void`
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Client.ts:42](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Client.ts#L42)
+[src/abstract/Loggers.ts:8](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L8)

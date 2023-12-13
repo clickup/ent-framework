@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / EntNotFoundError
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntNotFoundError
 
 # Class: EntNotFoundError
 
@@ -14,15 +14,15 @@ Error: non-existing ID in the database.
 
 ### constructor
 
-• **new EntNotFoundError**(`entName`, `idOrUniqueKey`, `messageSuffix?`)
+• **new EntNotFoundError**(`entName`, `where`, `cause?`)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `entName` | `string` |
-| `idOrUniqueKey` | `any` |
-| `messageSuffix?` | `string` |
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `entName` | `string` | `undefined` |
+| `where` | `Record`<`string`, `any`\> | `undefined` |
+| `cause` | `unknown` | `null` |
 
 #### Overrides
 
@@ -30,9 +30,23 @@ Error: non-existing ID in the database.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/errors/EntNotFoundError.ts:9](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/errors/EntNotFoundError.ts#L9)
+[src/ent/errors/EntNotFoundError.ts:8](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntNotFoundError.ts#L8)
 
 ## Properties
+
+### cause
+
+• `Readonly` **cause**: ``null`` \| `string` \| `Error`
+
+#### Inherited from
+
+[EntAccessError](EntAccessError.md).[cause](EntAccessError.md#cause)
+
+#### Defined in
+
+[src/ent/errors/EntAccessError.ts:9](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L9)
+
+___
 
 ### entName
 
@@ -42,124 +56,16 @@ Error: non-existing ID in the database.
 
 [EntAccessError](EntAccessError.md).[entName](EntAccessError.md#entname)
 
-___
-
-### idOrUniqueKey
-
-• `Readonly` **idOrUniqueKey**: `any`
-
-___
-
-### message
-
-• **message**: `string`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[message](EntAccessError.md#message)
-
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:1023
+[src/ent/errors/EntAccessError.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L12)
 
 ___
 
-### name
+### where
 
-• **name**: `string`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[name](EntAccessError.md#name)
+• `Readonly` **where**: `Record`<`string`, `any`\>
 
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:1022
-
-___
-
-### stack
-
-• `Optional` **stack**: `string`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[stack](EntAccessError.md#stack)
-
-#### Defined in
-
-node_modules/typescript/lib/lib.es5.d.ts:1024
-
-___
-
-### prepareStackTrace
-
-▪ `Static` `Optional` **prepareStackTrace**: (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any`
-
-#### Type declaration
-
-▸ (`err`, `stackTraces`): `any`
-
-Optional override for formatting stack traces
-
-**`see`** https://v8.dev/docs/stack-trace-api#customizing-stack-traces
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `err` | `Error` |
-| `stackTraces` | `CallSite`[] |
-
-##### Returns
-
-`any`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[prepareStackTrace](EntAccessError.md#preparestacktrace)
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:11
-
-___
-
-### stackTraceLimit
-
-▪ `Static` **stackTraceLimit**: `number`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[stackTraceLimit](EntAccessError.md#stacktracelimit)
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:13
-
-## Methods
-
-### captureStackTrace
-
-▸ `Static` **captureStackTrace**(`targetObject`, `constructorOpt?`): `void`
-
-Create .stack property on a target object
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `targetObject` | `object` |
-| `constructorOpt?` | `Function` |
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[captureStackTrace](EntAccessError.md#capturestacktrace)
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:4
+[src/ent/errors/EntNotFoundError.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntNotFoundError.ts#L10)

@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / CanUpdateOutgoingEdge
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / CanUpdateOutgoingEdge
 
 # Class: CanUpdateOutgoingEdge<TField\>
 
@@ -36,15 +36,9 @@ CanReadOutgoingEdge comments for more details.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/CanUpdateOutgoingEdge.ts:14](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/CanUpdateOutgoingEdge.ts#L14)
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:15](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L15)
 
 ## Properties
-
-### field
-
-• `Readonly` **field**: `TField`
-
-___
 
 ### name
 
@@ -56,13 +50,27 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/CanUpdateOutgoingEdge.ts:12](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/CanUpdateOutgoingEdge.ts#L12)
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:13](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L13)
+
+___
+
+### field
+
+• `Readonly` **field**: `TField`
+
+#### Defined in
+
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L16)
 
 ___
 
 ### toEntClass
 
 • `Readonly` **toEntClass**: [`EntClass`](../interfaces/EntClass.md)<`any`\>
+
+#### Defined in
+
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:17](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L17)
 
 ## Methods
 
@@ -87,4 +95,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/CanUpdateOutgoingEdge.ts:19](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/CanUpdateOutgoingEdge.ts#L19)
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:20](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L20)

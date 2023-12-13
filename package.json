@@ -8,7 +8,7 @@
     "dev": "tight-loop.sh tsc.sh --watch",
     "lint": "lint.sh",
     "test": "test.sh",
-    "docs": "rm -rf docs; typedoc 2>&1 | grep -v 'unsupported TypeScript version' || true",
+    "docs": "rm -rf docs && typedoc --plugin typedoc-plugin-markdown --plugin typedoc-plugin-merge-modules && sed -i '' -E 's#packages/[^/]+/##g' $(find docs -type f -name '*.md')",
     "prepack": "yarn build"
   },
   "dependencies": {

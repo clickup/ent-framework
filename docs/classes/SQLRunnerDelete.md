@@ -1,6 +1,13 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerDelete
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerDelete
 
 # Class: SQLRunnerDelete<TTable\>
+
+A convenient pile of helper methods usable by most of SQLQuery* classes. In
+some sense it's an anti-pattern, but still reduces the boilerplate.
+
+SQLRunner is also responsible for stringifying the values passed to the
+queries and parsing values returned from the DB according to the field types
+specs.
 
 ## Type parameters
 
@@ -20,8 +27,6 @@
 
 • **new SQLRunnerDelete**<`TTable`\>(`schema`, `client`)
 
-Parameter `name` is typically a table name.
-
 #### Type parameters
 
 | Name | Type |
@@ -33,29 +38,75 @@ Parameter `name` is typically a table name.
 | Name | Type |
 | :------ | :------ |
 | `schema` | [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\> |
-| `client` | [`SQLClient`](../interfaces/SQLClient.md) |
+| `client` | [`SQLClient`](SQLClient.md) |
 
-#### Inherited from
+#### Overrides
 
-[SQLRunner](SQLRunner.md).[constructor](SQLRunner.md#constructor)
+[SQLRunner](SQLRunner.md).[constructor](SQLRunner.md#constructor-1)
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLRunner.ts:58](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L58)
+[src/sql/SQLQueryDelete.ts:28](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L28)
 
 ## Properties
 
-### constructor
+### maxBatchSize
 
-• **constructor**: typeof [`SQLRunner`](SQLRunner.md)
+• `Readonly` **maxBatchSize**: `number` = `DEFAULT_MAX_BATCH_SIZE`
+
+Maximum batch size for this type of operations.
 
 #### Inherited from
 
-SQLRunner.constructor
+[SQLRunner](SQLRunner.md).[maxBatchSize](SQLRunner.md#maxbatchsize)
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLRunner.ts:46](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L46)
+[src/abstract/Batcher.ts:27](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L27)
+
+___
+
+### name
+
+• `Readonly` **name**: `string`
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[name](SQLRunner.md#name)
+
+#### Defined in
+
+[src/abstract/Batcher.ts:83](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L83)
+
+___
+
+### IS\_WRITE
+
+▪ `Static` `Readonly` **IS\_WRITE**: ``true``
+
+If true, it's a write operation.
+
+#### Overrides
+
+[SQLRunner](SQLRunner.md).[IS_WRITE](SQLRunner.md#is_write)
+
+#### Defined in
+
+[src/sql/SQLQueryDelete.ts:23](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L23)
+
+___
+
+### op
+
+• `Readonly` **op**: ``"DELETE"``
+
+#### Overrides
+
+[SQLRunner](SQLRunner.md).[op](SQLRunner.md#op)
+
+#### Defined in
+
+[src/sql/SQLQueryDelete.ts:25](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L25)
 
 ___
 
@@ -72,63 +123,37 @@ instead.
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLQueryDelete.ts:29](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryDelete.ts#L29)
+[src/sql/SQLQueryDelete.ts:26](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L26)
 
 ___
 
-### isMaster
+### shardName
 
-• `Readonly` **isMaster**: `boolean`
+• `Readonly` **shardName**: `string`
 
-Is it a master or a replica connection.
+Name of the Shard for this Runner.
 
 #### Inherited from
 
-[SQLRunner](SQLRunner.md).[isMaster](SQLRunner.md#ismaster)
+[SQLRunner](SQLRunner.md).[shardName](SQLRunner.md#shardname)
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLRunner.ts:51](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L51)
+[src/sql/SQLRunner.ts:48](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L48)
 
 ___
 
-### maxBatchSize
+### constructor
 
-• `Readonly` **maxBatchSize**: `number` = `DEFAULT_MAX_BATCH_SIZE`
-
-Maximum batch size for this type of operations.
+• **constructor**: typeof [`SQLRunner`](SQLRunner.md)
 
 #### Inherited from
 
-[SQLRunner](SQLRunner.md).[maxBatchSize](SQLRunner.md#maxbatchsize)
+SQLRunner.constructor
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Batcher.ts:26](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Batcher.ts#L26)
-
-___
-
-### name
-
-• `Readonly` **name**: `string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[name](SQLRunner.md#name)
-
-___
-
-### op
-
-• `Readonly` **op**: ``"DELETE"``
-
-#### Overrides
-
-[SQLRunner](SQLRunner.md).[op](SQLRunner.md#op)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLQueryDelete.ts:22](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryDelete.ts#L22)
+[src/sql/SQLRunner.ts:50](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L50)
 
 ___
 
@@ -140,499 +165,11 @@ ___
 
 [SQLRunner](SQLRunner.md).[schema](SQLRunner.md#schema)
 
-___
-
-### shardName
-
-• `Readonly` **shardName**: `string`
-
-Name of the shard for this runner.
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[shardName](SQLRunner.md#shardname)
-
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLRunner.ts:50](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L50)
-
-___
-
-### IS\_WRITE
-
-▪ `Static` `Readonly` **IS\_WRITE**: ``true``
-
-If true, it's a write operation.
-
-#### Overrides
-
-[SQLRunner](SQLRunner.md).[IS_WRITE](SQLRunner.md#is_write)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLQueryDelete.ts:21](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryDelete.ts#L21)
+[src/sql/SQLRunner.ts:497](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L497)
 
 ## Methods
-
-### buildFieldBinOp
-
-▸ `Protected` **buildFieldBinOp**(`field`, `binOp`, `value`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `field` | keyof `TTable` |
-| `binOp` | `string` |
-| `value` | `NonNullable`<[`Value`](../modules.md#value)<`TTable`[keyof `TTable`]\>\> |
-
-#### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[buildFieldBinOp](SQLRunner.md#buildfieldbinop)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:414](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L414)
-
-___
-
-### buildFieldEq
-
-▸ `Protected` **buildFieldEq**(`field`, `value`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `field` | keyof `TTable` |
-| `value` | [`Where`](../modules.md#where)<`TTable`\>[keyof `TTable`] |
-
-#### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[buildFieldEq](SQLRunner.md#buildfieldeq)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:450](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L450)
-
-___
-
-### buildLiteral
-
-▸ `Protected` **buildLiteral**(`literal`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `literal` | [`Literal`](../modules.md#literal) |
-
-#### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[buildLiteral](SQLRunner.md#buildliteral)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:494](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L494)
-
-___
-
-### buildLogical
-
-▸ `Protected` **buildLogical**(`specs`, `op`, `items`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `specs` | `TTable` |
-| `op` | ``"OR"`` \| ``"AND"`` |
-| `items` | [`Where`](../modules.md#where)<`TTable`\>[] |
-
-#### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[buildLogical](SQLRunner.md#buildlogical)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:476](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L476)
-
-___
-
-### buildNot
-
-▸ `Protected` **buildNot**(`specs`, `where`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `specs` | `TTable` |
-| `where` | [`Where`](../modules.md#where)<`TTable`\> |
-
-#### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[buildNot](SQLRunner.md#buildnot)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:490](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L490)
-
-___
-
-### buildOptionalWhere
-
-▸ `Protected` **buildOptionalWhere**(`specs`, `where`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `specs` | `TTable` |
-| `where` | `undefined` \| [`Where`](../modules.md#where)<`TTable`\> |
-
-#### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[buildOptionalWhere](SQLRunner.md#buildoptionalwhere)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:313](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L313)
-
-___
-
-### buildWhere
-
-▸ `Protected` **buildWhere**(`specs`, `where`, `isTopLevel?`): `string`
-
-#### Parameters
-
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `specs` | `TTable` | `undefined` |
-| `where` | [`Where`](../modules.md#where)<`TTable`\> | `undefined` |
-| `isTopLevel` | `boolean` | `false` |
-
-#### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[buildWhere](SQLRunner.md#buildwhere)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:324](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L324)
-
-___
-
-### clientQuery
-
-▸ `Protected` **clientQuery**<`TOutput`\>(`sql`, `annotations`, `batchFactor`): `Promise`<`TOutput`[]\>
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `TOutput` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `sql` | `string` |
-| `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
-| `batchFactor` | `number` |
-
-#### Returns
-
-`Promise`<`TOutput`[]\>
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[clientQuery](SQLRunner.md#clientquery)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:100](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L100)
-
-___
-
-### createInBuilder
-
-▸ `Protected` **createInBuilder**(`field`, `fieldCode?`): (`values`: `Iterable`<`any`\>) => `string`
-
-Returns a newly created JS function which, when called with an array
-of values, returns one of following SQL clause:
-
-- $field IN('aaa', 'bbb', 'ccc')
-- ($field IN('aaa', 'bbb') OR $field IS NULL)
-- $field IS NULL
-- false
-
-If $subField is passed, then $f is "$subField.$field"
-
-#### Parameters
-
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `field` | keyof `TTable` | `undefined` |
-| `fieldCode` | `string` | `"value"` |
-
-#### Returns
-
-`fn`
-
-▸ (`values`): `string`
-
-Returns a newly created JS function which, when called with an array
-of values, returns one of following SQL clause:
-
-- $field IN('aaa', 'bbb', 'ccc')
-- ($field IN('aaa', 'bbb') OR $field IS NULL)
-- $field IS NULL
-- false
-
-If $subField is passed, then $f is "$subField.$field"
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `values` | `Iterable`<`any`\> |
-
-##### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[createInBuilder](SQLRunner.md#createinbuilder)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:282](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L282)
-
-___
-
-### createUpdateKVsBuilder
-
-▸ `Protected` **createUpdateKVsBuilder**<`TInput`\>(`specs`): (`input`: `TInput`) => `string`
-
-Returns a newly created JS function which, when called with an object,
-returns the following SQL clause:
-
-id='123', a='xyz', b='nnn'
-
-The set of columns is passed in specs, all other columns are ignored.
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `TInput` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `specs` | `Partial`<[`Table`](../modules.md#table)\> |
-
-#### Returns
-
-`fn`
-
-▸ (`input`): `string`
-
-Returns a newly created JS function which, when called with an object,
-returns the following SQL clause:
-
-id='123', a='xyz', b='nnn'
-
-The set of columns is passed in specs, all other columns are ignored.
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `input` | `TInput` |
-
-##### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[createUpdateKVsBuilder](SQLRunner.md#createupdatekvsbuilder)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:255](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L255)
-
-___
-
-### createValuesBuilder
-
-▸ `Protected` **createValuesBuilder**<`TRow`\>(`specs`, `noKey?`): `Object`
-
-Returns a newly created JS function which, when called with a row set,
-returns the following SQL clause:
-
-WITH rows(id, a, b, _key) AS (VALUES
-  ((NULL::tbl).id, (NULL::tbl).a, (NULL::tbl).b, 'k0'),
-  ('123',          'xyz',         'nn',          'kSome'),
-  ('456',          'abc',         'nn',          'kOther'),
-  ...
-)
-
-The set of columns is passed in specs; if noKey is false, then no _key
-field is emitted in the end.
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `TRow` |
-
-#### Parameters
-
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `specs` | [`Table`](../modules.md#table) | `undefined` |
-| `noKey` | `boolean` | `false` |
-
-#### Returns
-
-`Object`
-
-| Name | Type |
-| :------ | :------ |
-| `prefix` | `string` |
-| `suffix` | `string` |
-| `func` | (`$key`: `string`, `$input`: `TRow`) => `string` |
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[createValuesBuilder](SQLRunner.md#createvaluesbuilder)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:203](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L203)
-
-___
-
-### delayForSingleQueryRetryOnError
-
-▸ **delayForSingleQueryRetryOnError**(`e`): `number` \| ``"immediate_retry"`` \| ``"no_retry"``
-
-If the single query's error needs to be retried (e.g. it's a deadlock
-error), returns the number of milliseconds to wait before retrying.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `e` | `any` |
-
-#### Returns
-
-`number` \| ``"immediate_retry"`` \| ``"no_retry"``
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[delayForSingleQueryRetryOnError](SQLRunner.md#delayforsinglequeryretryonerror)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:79](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L79)
-
-___
-
-### escape
-
-▸ `Protected` **escape**(`field`, `value`): `string`
-
-Does escaping at runtime using the codegen above. We use escapers table for
-the following reasons:
-1. We want to be sure that we know in advance, how to escape all table
-   fields (and not fail in run-time).
-2. We want to make createEscapeCode() the single source of truth about
-   fields escaping.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `field` | keyof `TTable` |
-| `value` | `any` |
-
-#### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[escape](SQLRunner.md#escape)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:175](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L175)
-
-___
-
-### fmt
-
-▸ `Protected` **fmt**(`template`, `args?`): `string`
-
-Formats the prefixes/suffixes of various compound SQL clauses.
-Don't use on performance-critical path!
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `template` | `string` |
-| `args` | `Object` |
-| `args.specs?` | `Partial`<[`Table`](../modules.md#table)\> |
-
-#### Returns
-
-`string`
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[fmt](SQLRunner.md#fmt)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLRunner.ts:136](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L136)
-
-___
 
 ### key
 
@@ -658,34 +195,7 @@ into one input; e.g. this is needed for inserts).
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLQueryDelete.ts:31](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryDelete.ts#L31)
-
-___
-
-### runBatch
-
-▸ **runBatch**(`inputs`, `annotations`): `Promise`<`Map`<`string`, `boolean`\>\>
-
-Typically issues complex queries with magic.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `inputs` | `Map`<`string`, `string`\> |
-| `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
-
-#### Returns
-
-`Promise`<`Map`<`string`, `boolean`\>\>
-
-#### Overrides
-
-[SQLRunner](SQLRunner.md).[runBatch](SQLRunner.md#runbatch)
-
-#### Defined in
-
-[packages/ent-framework/src/sql/SQLQueryDelete.ts:44](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryDelete.ts#L44)
+[src/sql/SQLQueryDelete.ts:37](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L37)
 
 ___
 
@@ -713,7 +223,548 @@ one input to process, not many.
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLQueryDelete.ts:35](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLQueryDelete.ts#L35)
+[src/sql/SQLQueryDelete.ts:41](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L41)
+
+___
+
+### runBatch
+
+▸ **runBatch**(`inputs`, `annotations`): `Promise`<`Map`<`string`, `boolean`\>\>
+
+Typically issues complex queries with magic.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `inputs` | `Map`<`string`, `string`\> |
+| `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
+
+#### Returns
+
+`Promise`<`Map`<`string`, `boolean`\>\>
+
+#### Overrides
+
+[SQLRunner](SQLRunner.md).[runBatch](SQLRunner.md#runbatch)
+
+#### Defined in
+
+[src/sql/SQLQueryDelete.ts:51](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L51)
+
+___
+
+### clientQuery
+
+▸ `Protected` **clientQuery**<`TOutput`\>(`sql`, `annotations`, `batchFactor`, `hints?`): `Promise`<`TOutput`[]\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TOutput` | extends `object` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `sql` | `string` |
+| `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
+| `batchFactor` | `number` |
+| `hints?` | `Record`<`string`, `string`\> |
+
+#### Returns
+
+`Promise`<`TOutput`[]\>
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[clientQuery](SQLRunner.md#clientquery)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:54](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L54)
+
+___
+
+### fmt
+
+▸ `Protected` **fmt**(`template`, `args?`): `string`
+
+Formats prefixes/suffixes of various compound SQL clauses. Don't use on
+performance-critical path!
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `template` | `string` |
+| `args` | `Object` |
+| `args.fields?` | [`FieldAliased`](../modules.md#fieldaliased)<`TTable`\>[] |
+| `args.normalize?` | `boolean` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[fmt](SQLRunner.md#fmt)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:93](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L93)
+
+___
+
+### escapeValue
+
+▸ `Protected` **escapeValue**(`field`, `value`): `string`
+
+Escapes a value at runtime using the codegen functions created above. We
+use escapers table and the codegen for the following reasons:
+1. We want to be sure that we know in advance, how to escape all table
+   fields (and not fail at runtime).
+2. We want to make createEscapeCode() the single source of truth about
+   fields escaping, even at runtime.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `field` | [`Field`](../modules.md#field)<`TTable`\> |
+| `value` | `unknown` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[escapeValue](SQLRunner.md#escapevalue)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:159](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L159)
+
+___
+
+### escapeField
+
+▸ `Protected` **escapeField**(`info`, `«destructured»?`): `string`
+
+Escapes field name identifier.
+- In case it's a composite primary key, returns its `ROW(f1,f2,...)`
+  representation.
+- A field may be aliased, e.g. if `{ field: "abc", alias: "$cas.abc" }` is
+  passed, then the returned value will be `"$cas.abc"`. Basically, `field`
+  name is used only to verify that such field is presented in the schema.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `info` | [`FieldAliased`](../modules.md#fieldaliased)<`TTable`\> |
+| `«destructured»` | `Object` |
+| › `withTable?` | `string` |
+| › `normalize?` | `boolean` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[escapeField](SQLRunner.md#escapefield)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:172](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L172)
+
+___
+
+### createWithBuilder
+
+▸ `Protected` **createWithBuilder**(`«destructured»`): `Object`
+
+Returns a newly created JS function which, when called with a row set,
+returns the following SQL clause:
+
+```
+WITH rows(id, a, b, _key) AS (VALUES
+  ((NULL::tbl).id, (NULL::tbl).a, (NULL::tbl).b, 'k0'),
+  ('123',          'xyz',         'nn',          'kSome'),
+  ('456',          'abc',         'nn',          'kOther'),
+  ...
+)
+{suffix}
+```
+
+For composite primary key, its parts (fields) are always prepended. The set
+of columns is passed in specs.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `fields` | readonly [`FieldAliased`](../modules.md#fieldaliased)<`TTable`\>[] |
+| › `suffix` | `string` |
+
+#### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `prefix` | `string` |
+| `func` | (`entries`: `Iterable`<[key: string, input: object]\>) => `string` |
+| `suffix` | `string` |
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[createWithBuilder](SQLRunner.md#createwithbuilder)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:214](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L214)
+
+___
+
+### createValuesBuilder
+
+▸ `Protected` **createValuesBuilder**<`TInput`\>(`«destructured»`): `Object`
+
+Returns a newly created JS function which, when called with a row set,
+returns the following SQL clause (when called with withKey=true):
+
+```
+  ('123', 'xyz', 'nn', 'kSome'),
+  ('456', 'abc', 'nn', 'kOther'),
+  ...
+)
+```
+
+or (when called without withKey):
+
+```
+  ('123', 'xyz', 'nn'),
+  ('456', 'abc', 'nn'),
+  ...
+```
+
+The set of columns is passed in fields.
+
+When the builder func is called, the actual values for some field in a row
+is extracted from the same-named prop of the row, but if a `{ field,
+rowPath }` object is passed in `fields` array, then the value is extracted
+from the `rowPath` sub-prop of the row. This is used to e.g. access
+`row.$cas.blah` value for a field named blah (in this case,
+`rowPath="$cas"`).
+
+Notice that either a simple primary key or a composite primary key columns
+are always prepended to the list of values since it makes no sense to
+generate VALUES clause without exact identification of the destination.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TInput` | extends `object` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `prefix` | `string` |
+| › `indent` | `string` |
+| › `fields` | readonly [`FieldAliased`](../modules.md#fieldaliased)<`TTable`\>[] |
+| › `withKey?` | `boolean` |
+| › `skipSorting?` | `boolean` |
+| › `suffix` | `string` |
+
+#### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `prefix` | `string` |
+| `func` | (`entries`: `Iterable`<[key: string, input: TInput]\>) => `string` |
+| `suffix` | `string` |
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[createValuesBuilder](SQLRunner.md#createvaluesbuilder)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:282](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L282)
+
+___
+
+### createUpdateKVsBuilder
+
+▸ `Protected` **createUpdateKVsBuilder**(`fields`): (`input`: `object`, `literal?`: [`Literal`](../modules.md#literal)) => `string`
+
+Returns a newly created JS function which, when called with an object,
+returns the following SQL clause:
+
+id='123', a='xyz', b='nnn' [, {literal}]
+
+The set of columns is passed in specs, all other columns are ignored.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `fields` | [`Field`](../modules.md#field)<`TTable`\>[] |
+
+#### Returns
+
+`fn`
+
+▸ (`input`, `literal?`): `string`
+
+Returns a newly created JS function which, when called with an object,
+returns the following SQL clause:
+
+id='123', a='xyz', b='nnn' [, {literal}]
+
+The set of columns is passed in specs, all other columns are ignored.
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `input` | `object` |
+| `literal?` | [`Literal`](../modules.md#literal) |
+
+##### Returns
+
+`string`
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[createUpdateKVsBuilder](SQLRunner.md#createupdatekvsbuilder)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:353](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L353)
+
+___
+
+### createOneOfBuilder
+
+▸ `Protected` **createOneOfBuilder**(`field`, `fieldValCode?`): (`values`: `Iterable`<`unknown`\>) => `string`
+
+Prefers to do utilize createAnyBuilder() if it can (i.e. build
+a=ANY('{...}') clause). Otherwise, builds an IN(...) clause.
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `field` | [`Field`](../modules.md#field)<`TTable`\> | `undefined` |
+| `fieldValCode` | `string` | `"$value"` |
+
+#### Returns
+
+`fn`
+
+▸ (`values`): `string`
+
+Prefers to do utilize createAnyBuilder() if it can (i.e. build
+a=ANY('{...}') clause). Otherwise, builds an IN(...) clause.
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `values` | `Iterable`<`unknown`\> |
+
+##### Returns
+
+`string`
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[createOneOfBuilder](SQLRunner.md#createoneofbuilder)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:381](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L381)
+
+___
+
+### createWhereBuildersFieldsEq
+
+▸ `Protected` **createWhereBuildersFieldsEq**<`TInput`\>(`args`): `Object`
+
+Given a list of fields, returns two builders:
+
+1. "Optimized": a newly created JS function which, when called with a row
+   set, returns one the following SQL clauses:
+
+```
+WHERE (field1, field2) IN(VALUES
+  ((NULL::tbl).field1, (NULL::tbl).field2),
+  ('aa', 'bb'),
+  ('cc', 'dd'))
+
+or
+
+WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
+       ^^^^^^^^^^prefix^^^^^^^^^               ^^^^^^^^ins^^^^^^^
+```
+
+2. "Plain": the last one builder mentioned above (good to always use for
+   non-batched queries for instance).
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TInput` | extends `object` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `args` | `Object` |
+| `args.prefix` | `string` |
+| `args.fields` | readonly [`Field`](../modules.md#field)<`TTable`\>[] |
+| `args.suffix` | `string` |
+
+#### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `plain` | { `prefix`: `string` ; `func`: (`inputs`: `Iterable`<[key: string, input: TInput]\>) => `string` ; `suffix`: `string`  } |
+| `plain.prefix` | `string` |
+| `plain.func` | (`inputs`: `Iterable`<[key: string, input: TInput]\>) => `string` |
+| `plain.suffix` | `string` |
+| `optimized` | { `prefix`: `string` ; `func`: (`inputs`: `Iterable`<[key: string, input: TInput]\>) => `string` ; `suffix`: `string`  } |
+| `optimized.prefix` | `string` |
+| `optimized.func` | (`inputs`: `Iterable`<[key: string, input: TInput]\>) => `string` |
+| `optimized.suffix` | `string` |
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[createWhereBuildersFieldsEq](SQLRunner.md#createwherebuildersfieldseq)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:415](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L415)
+
+___
+
+### createWhereBuilder
+
+▸ `Protected` **createWhereBuilder**(`«destructured»`): `Object`
+
+Returns a newly created JS function which, when called with a Where object,
+returns the generated SQL WHERE clause.
+
+- The building is relatively expensive, since it traverses the Where object
+  at run-time and doesn't know the shape beforehand.
+- If the Where object is undefined, skips the entire WHERE clause.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `prefix` | `string` |
+| › `suffix` | `string` |
+
+#### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `prefix` | `string` |
+| `func` | (`where`: [`Where`](../modules.md#where)<`TTable`\>) => `string` |
+| `suffix` | `string` |
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[createWhereBuilder](SQLRunner.md#createwherebuilder)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:450](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L450)
+
+___
+
+### addPK
+
+▸ `Protected` **addPK**(`fields`, `mode`): `string`[]
+
+Prepends or appends a primary key to the list of fields. In case the
+primary key is plain (i.e. "id" field), it's just added as a field;
+otherwise, the unique key fields are added.
+
+For INSERT/UPSERT operations, we want to append the primary key, since it's
+often types pre-generated as a random-looking value. In many places, we
+sort batched lists of rows before e.g. inserting them, so we order them by
+their natural data order which prevents deadlocks on unique key conflict
+when multiple concurrent transactions try to insert the same set of rows in
+different order ("while inserting index tuple").
+
+For UPDATE operations though, we want to prepend the primary key, to make
+sure we run batched updates in the same order in multiple concurrent
+transactions. This lowers the chances of deadlocks too.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `fields` | readonly [`Field`](../modules.md#field)<`TTable`\>[] |
+| `mode` | ``"prepend"`` \| ``"append"`` |
+
+#### Returns
+
+`string`[]
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[addPK](SQLRunner.md#addpk)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:485](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L485)
+
+___
+
+### delayForSingleQueryRetryOnError
+
+▸ **delayForSingleQueryRetryOnError**(`e`): `number` \| ``"immediate_retry"`` \| ``"no_retry"``
+
+If the single query's error needs to be retried (e.g. it's a deadlock
+error), returns the number of milliseconds to wait before retrying.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `e` | `unknown` |
+
+#### Returns
+
+`number` \| ``"immediate_retry"`` \| ``"no_retry"``
+
+#### Inherited from
+
+[SQLRunner](SQLRunner.md).[delayForSingleQueryRetryOnError](SQLRunner.md#delayforsinglequeryretryonerror)
+
+#### Defined in
+
+[src/sql/SQLRunner.ts:518](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L518)
 
 ___
 
@@ -730,14 +781,14 @@ innocent queries.
 
 We can do this, because we know that if some transaction is aborted, it's
 always safe to retry it. (If we're not sure about the transaction, e.g. the
-client doesn't support transactions at all, then the method should return
+Client doesn't support transactions at all, then the method should return
 false.)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `e` | `any` |
+| `e` | `unknown` |
 
 #### Returns
 
@@ -749,4 +800,4 @@ false.)
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLRunner.ts:90](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLRunner.ts#L90)
+[src/sql/SQLRunner.ts:531](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L531)

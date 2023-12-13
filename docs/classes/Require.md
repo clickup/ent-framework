@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Require
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Require
 
 # Class: Require<TInput\>
 
@@ -43,21 +43,17 @@ Returns TOLERATE if the predicate succeeds, otherwise DENY.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:47](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L47)
+[src/ent/rules/Rule.ts:48](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L48)
 
 ## Properties
 
-### name
+### \_TAG
 
-• `Readonly` **name**: `string`
-
-#### Inherited from
-
-[Rule](Rule.md).[name](Rule.md#name)
+• `Readonly` **\_TAG**: ``"Require"``
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:45](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L45)
+[src/ent/rules/Require.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Require.ts#L12)
 
 ___
 
@@ -71,7 +67,21 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:44](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L44)
+[src/ent/rules/Rule.ts:43](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L43)
+
+___
+
+### name
+
+• `Readonly` **name**: `string`
+
+#### Inherited from
+
+[Rule](Rule.md).[name](Rule.md#name)
+
+#### Defined in
+
+[src/ent/rules/Rule.ts:44](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L44)
 
 ## Methods
 
@@ -96,4 +106,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Require.ts:11](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Require.ts#L11)
+[src/ent/rules/Require.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Require.ts#L14)
