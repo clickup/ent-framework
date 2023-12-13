@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / EntAccessError
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntAccessError
 
 # Class: EntAccessError
 
@@ -25,13 +25,15 @@ them as a DENY/SKIP.
 
 ### constructor
 
-• **new EntAccessError**(`message`)
+• **new EntAccessError**(`entName`, `message`, `cause?`)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `message` | `string` |
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `entName` | `string` | `undefined` |
+| `message` | `string` | `undefined` |
+| `cause` | `unknown` | `null` |
 
 #### Overrides
 
@@ -39,130 +41,24 @@ Error.constructor
 
 #### Defined in
 
-[packages/ent-framework/src/ent/errors/EntAccessError.ts:8](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/errors/EntAccessError.ts#L8)
+[src/ent/errors/EntAccessError.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L11)
 
 ## Properties
 
+### cause
+
+• `Readonly` **cause**: ``null`` \| `string` \| `Error`
+
+#### Defined in
+
+[src/ent/errors/EntAccessError.ts:9](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L9)
+
+___
+
 ### entName
 
-• `Readonly` `Abstract` **entName**: `string`
+• `Readonly` **entName**: `string`
 
 #### Defined in
 
-[packages/ent-framework/src/ent/errors/EntAccessError.ts:6](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/errors/EntAccessError.ts#L6)
-
-___
-
-### message
-
-• **message**: `string`
-
-#### Inherited from
-
-Error.message
-
-#### Defined in
-
-node_modules/typescript/lib/lib.es5.d.ts:1023
-
-___
-
-### name
-
-• **name**: `string`
-
-#### Inherited from
-
-Error.name
-
-#### Defined in
-
-node_modules/typescript/lib/lib.es5.d.ts:1022
-
-___
-
-### stack
-
-• `Optional` **stack**: `string`
-
-#### Inherited from
-
-Error.stack
-
-#### Defined in
-
-node_modules/typescript/lib/lib.es5.d.ts:1024
-
-___
-
-### prepareStackTrace
-
-▪ `Static` `Optional` **prepareStackTrace**: (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any`
-
-#### Type declaration
-
-▸ (`err`, `stackTraces`): `any`
-
-Optional override for formatting stack traces
-
-**`see`** https://v8.dev/docs/stack-trace-api#customizing-stack-traces
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `err` | `Error` |
-| `stackTraces` | `CallSite`[] |
-
-##### Returns
-
-`any`
-
-#### Inherited from
-
-Error.prepareStackTrace
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:11
-
-___
-
-### stackTraceLimit
-
-▪ `Static` **stackTraceLimit**: `number`
-
-#### Inherited from
-
-Error.stackTraceLimit
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:13
-
-## Methods
-
-### captureStackTrace
-
-▸ `Static` **captureStackTrace**(`targetObject`, `constructorOpt?`): `void`
-
-Create .stack property on a target object
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `targetObject` | `object` |
-| `constructorOpt?` | `Function` |
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-Error.captureStackTrace
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:4
+[src/ent/errors/EntAccessError.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L12)

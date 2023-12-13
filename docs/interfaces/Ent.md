@@ -1,8 +1,14 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Ent
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Ent
 
-# Interface: Ent
+# Interface: Ent<TTable\>
 
 A very shallow interface of one Ent.
+
+## Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](../modules.md#table) = `any` |
 
 ## Properties
 
@@ -12,7 +18,7 @@ A very shallow interface of one Ent.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/types.ts:39](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L39)
+[src/ent/types.ts:67](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L67)
 
 ___
 
@@ -22,7 +28,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/types.ts:40](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L40)
+[src/ent/types.ts:68](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L68)
 
 ## Methods
 
@@ -36,4 +42,24 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/types.ts:41](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/types.ts#L41)
+[src/ent/types.ts:69](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L69)
+
+___
+
+### updateOriginal
+
+▸ **updateOriginal**(`input`): `Promise`<`boolean`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `input` | [`UpdateOriginalInput`](../modules.md#updateoriginalinput)<`TTable`\> |
+
+#### Returns
+
+`Promise`<`boolean`\>
+
+#### Defined in
+
+[src/ent/types.ts:70](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L70)

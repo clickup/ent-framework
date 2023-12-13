@@ -6,11 +6,7 @@ import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 
 import { ShardError } from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
-import {
-  nullthrows,
-  sanitizeIDForDebugPrinting,
-  toFloatMs,
-} from "../helpers/misc";
+import { nullthrows, sanitizeIDForDebugPrinting } from "../helpers/misc";
 import type { Literal } from "../types";
 import parseCompositeRow from "./helpers/parseCompositeRow";
 import { SQLError } from "./SQLError";
@@ -161,7 +157,7 @@ export abstract class SQLClient extends Client {
     const queries = [...queriesPrologue, query, ...queriesEpilogue];
 
     try {
-      const startTime = process.hrtime();
+      const startTime = performance.now();
       let acquireElapsed: number | null = null;
       let error: string | undefined;
       let connID: number | null = null;
@@ -169,7 +165,7 @@ export abstract class SQLClient extends Client {
 
       try {
         const conn = await this.acquireConn();
-        acquireElapsed = toFloatMs(process.hrtime(startTime));
+        acquireElapsed = performance.now() - startTime;
         connID = conn.id ?? 0;
         try {
           if (query === "") {
@@ -231,7 +227,7 @@ export abstract class SQLClient extends Client {
         error = "" + e;
         throw e;
       } finally {
-        const totalElapsed = toFloatMs(process.hrtime(startTime));
+        const totalElapsed = performance.now() - startTime;
         this.loggers.clientQueryLogger?.({
           annotations,
           connID: "" + connID,

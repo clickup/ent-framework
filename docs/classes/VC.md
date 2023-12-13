@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / VC
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / VC
 
 # Class: VC
 
@@ -13,17 +13,82 @@ the user to load/insert/update/etc. or to traverse to related objects.
 
 ## Properties
 
+### principal
+
+• `Readonly` **principal**: `string`
+
+A principal (typically user ID) represented by this VC.
+
+#### Defined in
+
+[src/ent/VC.ts:536](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L536)
+
+___
+
 ### freshness
 
 • `Readonly` **freshness**: ``null`` \| typeof [`MASTER`](../modules.md#master) \| typeof [`STALE_REPLICA`](../modules.md#stale_replica)
 
+Allows to set VC to always use either a master or a replica DB. E.g. if
+freshness=MASTER, then all the timeline data is ignored, and all the
+requests are sent to master.
+
+#### Defined in
+
+[src/ent/VC.ts:540](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L540)
+
 ___
 
-### userID
+### heartbeater
 
-• `Readonly` **userID**: `string`
+• `Readonly` **heartbeater**: `Object`
+
+The heartbeat callback is called before each primitive operation. It
+plays the similar role as AbortController: when called, it may throw
+sometimes (signalled externally). Delay callback can also be passed since
+it's pretty common use case to wait for some time and be aborted on a
+heartbeat exception.
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `heartbeat` | () => `Promise`<`void`\> |
+| `delay` | (`ms`: `number`) => `Promise`<`void`\> |
+
+#### Defined in
+
+[src/ent/VC.ts:551](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L551)
 
 ## Methods
+
+### createGuestPleaseDoNotUseCreationPointsMustBeLimited
+
+▸ `Static` **createGuestPleaseDoNotUseCreationPointsMustBeLimited**(`«destructured»?`): [`VC`](VC.md)
+
+Please please don't call this method except one or two core places. The
+idea is that we create an "origin" VC once and then derive all other VCs
+from it (possibly upgrading or downgrading permissions, controlling
+master/replica read policy etc.). It's also good to trace the entire chain
+of calls and reasons, why some object was accessed.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `trace?` | `string` |
+| › `cachesExpirationMs?` | `number` |
+
+#### Returns
+
+[`VC`](VC.md)
+
+#### Defined in
+
+[src/ent/VC.ts:70](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L70)
+
+___
 
 ### [custom]
 
@@ -37,7 +102,7 @@ This is to show VCs in console.log() and inspect() nicely.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VC.ts:61](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L61)
+[src/ent/VC.ts:92](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L92)
 
 ___
 
@@ -66,7 +131,7 @@ this VC an admin VC?). Also, people may define their own VC-local caches.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VC.ts:92](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L92)
+[src/ent/VC.ts:100](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L100)
 
 ▸ **cache**<`TInstance`\>(`tag`, `creator`): `TInstance`
 
@@ -92,83 +157,7 @@ This is useful when e.g. cached values are async-created.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VC.ts:98](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L98)
-
-___
-
-### flavor
-
-▸ **flavor**<`TFlavor`\>(`flavor`): ``null`` \| `TFlavor`
-
-Returns VC's flavor of the particular type.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TFlavor` | extends [`VCFlavor`](VCFlavor.md)<`TFlavor`\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `flavor` | (...`args`: `any`[]) => `TFlavor` |
-
-#### Returns
-
-``null`` \| `TFlavor`
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:327](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L327)
-
-___
-
-### isGuest
-
-▸ **isGuest**(): `boolean`
-
-Checks if it's a guest VC.
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:313](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L313)
-
-___
-
-### isLoggedIn
-
-▸ **isLoggedIn**(): `boolean`
-
-Checks if it's a regular user (i.e. owning) VC.
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:320](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L320)
-
-___
-
-### isOmni
-
-▸ **isOmni**(): `boolean`
-
-Checks if it's an omni VC.
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:306](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L306)
+[src/ent/VC.ts:106](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L106)
 
 ___
 
@@ -190,7 +179,7 @@ HandlerClass. In case there is no such Loader yet, creates it.
 
 | Name | Type |
 | :------ | :------ |
-| `HandlerClass` | `Object` |
+| `HandlerClass` | (`vc`: [`VC`](VC.md)) => [`Handler`](../interfaces/Handler.md)<`TLoadArgs`, `TReturn`\> |
 | `HandlerClass.$loader?` | `symbol` |
 
 #### Returns
@@ -199,25 +188,7 @@ HandlerClass. In case there is no such Loader yet, creates it.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VC.ts:121](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L121)
-
-___
-
-### serializeTimelines
-
-▸ **serializeTimelines**(): `undefined` \| `string`
-
-Serializes shard timelines (master WAL positions) to a string format. The
-method always returns a value which is compatible to
-withDeserializedTimelines() input.
-
-#### Returns
-
-`undefined` \| `string`
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:153](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L153)
+[src/ent/VC.ts:131](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L131)
 
 ___
 
@@ -225,7 +196,7 @@ ___
 
 ▸ **timeline**(`shard`, `schemaName`): [`Timeline`](Timeline.md)
 
-Returns shard+schemaName timeline which tracks replica staleness for the
+Returns Shard+schemaName timeline which tracks replica staleness for the
 particular schema name (most likely, table).
 
 #### Parameters
@@ -241,40 +212,49 @@ particular schema name (most likely, table).
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VC.ts:137](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L137)
+[src/ent/VC.ts:147](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L147)
 
 ___
 
-### toAnnotation
+### serializeTimelines
 
-▸ **toAnnotation**(): [`QueryAnnotation`](../interfaces/QueryAnnotation.md)
+▸ **serializeTimelines**(): `undefined` \| `string`
 
-Returns a debug annotation of this VC.
+Serializes Shard timelines (master WAL positions) to a string format. The
+method always returns a value which is compatible to
+withDeserializedTimelines() input.
 
 #### Returns
 
-[`QueryAnnotation`](../interfaces/QueryAnnotation.md)
+`undefined` \| `string`
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VC.ts:354](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L354)
+[src/ent/VC.ts:163](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L163)
 
 ___
 
-### toLowerInternal
+### withDeserializedTimelines
 
-▸ **toLowerInternal**(`userID`): [`VC`](VC.md)
+▸ **withDeserializedTimelines**(`...dataStrs`): [`VC`](VC.md)
 
-Used internally by Ent framework to lower permissions of an injected VC.
-For guest, userID === null.
-- freshness is always reset to default one it VC is demoted
-- isRoot is changed to false once a root VC is switched to a per-user VC
+Returns the new VC derived from the current one with empty caches and with
+all replication timelines restored based on the serialized info provided.
+
+This method also has a side effect, because it reflects the changes in the
+global DB state as seen by the current VC's user. It restores previously
+serialized timelines to the existing VC and all its parent VCs which share
+the same principal. (The latter happens, because `this.timelines` map is
+passed by reference to all derived VCs starting from the one which sets
+principal; see `new VC(...)` clauses all around and toLowerInternal()
+logic.) The timelines are merged according to wal position (greater wal
+position wins).
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `userID` | ``null`` \| `string` |
+| `...dataStrs` | readonly (`undefined` \| `string`)[] |
 
 #### Returns
 
@@ -282,7 +262,168 @@ For guest, userID === null.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VC.ts:384](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L384)
+[src/ent/VC.ts:193](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L193)
+
+___
+
+### withEmptyCache
+
+▸ **withEmptyCache**(): [`VC`](VC.md)
+
+Returns a new VC derived from the current one, but with empty cache.
+
+#### Returns
+
+[`VC`](VC.md)
+
+#### Defined in
+
+[src/ent/VC.ts:217](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L217)
+
+___
+
+### withTransitiveMasterFreshness
+
+▸ **withTransitiveMasterFreshness**(): [`VC`](VC.md)
+
+Returns a new VC derived from the current one, but with master freshness.
+Master freshness is inherited by ent.vc after an Ent is loaded.
+
+#### Returns
+
+[`VC`](VC.md)
+
+#### Defined in
+
+[src/ent/VC.ts:234](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L234)
+
+___
+
+### withOneTimeStaleReplica
+
+▸ **withOneTimeStaleReplica**(): [`VC`](VC.md)
+
+Returns a new VC derived from the current one, but which forces an Ent to
+be loaded always from replica. Freshness is NOT inherited by Ents (not
+transitive): e.g. if an Ent is loaded with STALE_REPLICA freshness, its
+ent.vc will have the DEFAULT freshness.
+
+Also, if an Ent is inserted with a VC of STALE_REPLICA freshness, its VC
+won't remember it, so next immediate reads will go to a replica and not to
+the master.
+
+#### Returns
+
+[`VC`](VC.md)
+
+#### Defined in
+
+[src/ent/VC.ts:261](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L261)
+
+___
+
+### withDefaultFreshness
+
+▸ **withDefaultFreshness**(): [`VC`](VC.md)
+
+Creates a new VC with default freshness (i.e. not sticky to master or
+replica, auto-detected on request). Generally, it's not a good idea to use
+this derivation since we lose some bit of internal knowledge from the past
+history of the VC, but for e.g. tests or benchmarks, it's fine.
+
+#### Returns
+
+[`VC`](VC.md)
+
+#### Defined in
+
+[src/ent/VC.ts:284](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L284)
+
+___
+
+### withFlavor
+
+▸ **withFlavor**(`prepend`, `...flavors`): [`VC`](VC.md)
+
+Returns a new VC derived from the current one adding some more flavors to
+it. If no flavors were added, returns the same VC (`this`).
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `prepend` | ``"prepend"`` |
+| `...flavors` | (`undefined` \| [`VCFlavor`](VCFlavor.md))[] |
+
+#### Returns
+
+[`VC`](VC.md)
+
+#### Defined in
+
+[src/ent/VC.ts:305](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L305)
+
+▸ **withFlavor**(`...flavors`): [`VC`](VC.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `...flavors` | (`undefined` \| [`VCFlavor`](VCFlavor.md))[] |
+
+#### Returns
+
+[`VC`](VC.md)
+
+#### Defined in
+
+[src/ent/VC.ts:306](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L306)
+
+___
+
+### withNewTrace
+
+▸ **withNewTrace**(`trace`): [`VC`](VC.md)
+
+Derives the VC with new trace ID.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `trace` | `undefined` \| `string` |
+
+#### Returns
+
+[`VC`](VC.md)
+
+#### Defined in
+
+[src/ent/VC.ts:343](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L343)
+
+___
+
+### withHeartbeater
+
+▸ **withHeartbeater**(`heartbeater`): [`VC`](VC.md)
+
+Derives the VC with the provided heartbeater injected.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `heartbeater` | `Object` |
+| `heartbeater.heartbeat` | () => `Promise`<`void`\> |
+| `heartbeater.delay` | (`ms`: `number`) => `Promise`<`void`\> |
+
+#### Returns
+
+[`VC`](VC.md)
+
+#### Defined in
+
+[src/ent/VC.ts:359](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L359)
 
 ___
 
@@ -301,15 +442,113 @@ to a guest VC (see Ent.ts).
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VC.ts:292](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L292)
+[src/ent/VC.ts:379](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L379)
+
+___
+
+### toGuest
+
+▸ **toGuest**(): [`VC`](VC.md)
+
+Creates a new VC downgraded to guest permissions.
+
+#### Returns
+
+[`VC`](VC.md)
+
+#### Defined in
+
+[src/ent/VC.ts:396](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L396)
+
+___
+
+### isOmni
+
+▸ **isOmni**(): `boolean`
+
+Checks if it's an omni VC.
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/ent/VC.ts:411](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L411)
+
+___
+
+### isGuest
+
+▸ **isGuest**(): `boolean`
+
+Checks if it's a guest VC.
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/ent/VC.ts:418](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L418)
+
+___
+
+### isLoggedIn
+
+▸ **isLoggedIn**(): `boolean`
+
+Checks if it's a regular user (i.e. owning) VC.
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/ent/VC.ts:425](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L425)
+
+___
+
+### flavor
+
+▸ **flavor**<`TFlavor`\>(`flavor`): ``null`` \| `TFlavor`
+
+Returns VC's flavor of the particular type.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TFlavor` | extends [`VCFlavor`](VCFlavor.md) |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `flavor` | (...`args`: `any`[]) => `TFlavor` |
+
+#### Returns
+
+``null`` \| `TFlavor`
+
+#### Defined in
+
+[src/ent/VC.ts:432](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L432)
 
 ___
 
 ### toString
 
-▸ **toString**(): `string`
+▸ **toString**(`withInstanceNumber?`): `string`
 
 Used for debugging purposes.
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `withInstanceNumber` | `boolean` | `false` |
 
 #### Returns
 
@@ -317,31 +556,40 @@ Used for debugging purposes.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VC.ts:336](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L336)
+[src/ent/VC.ts:441](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L441)
 
 ___
 
-### withDeserializedTimelines
+### toAnnotation
 
-▸ **withDeserializedTimelines**(...`dataStrs`): [`VC`](VC.md)
+▸ **toAnnotation**(): [`QueryAnnotation`](../interfaces/QueryAnnotation.md)
 
-Returns the new VC derived from the current one with empty caches and with
-all replication timelines restored based on the serialized info provided.
+Returns a debug annotation of this VC.
 
-This method also has a side effect, because it reflects the changes in the
-global DB state as seen by the current VC's user. It restores previously
-serialized timelines to the existing VC and all its parent VCs which share
-the same userID. (The latter happens, because `this.timelines` map is
-passed by reference to all derived VCs starting from the one which sets
-userID; see `new VC(...)` clauses all around and toLowerInternal() logic.)
-The timelines are merged according to wal position (greater wal position
-wins).
+#### Returns
+
+[`QueryAnnotation`](../interfaces/QueryAnnotation.md)
+
+#### Defined in
+
+[src/ent/VC.ts:460](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L460)
+
+___
+
+### toLowerInternal
+
+▸ **toLowerInternal**(`principal`): [`VC`](VC.md)
+
+Used internally by Ent framework to lower permissions of an injected VC.
+For guest, principal === null.
+- freshness is always reset to default one it VC is demoted
+- isRoot is changed to false once a root VC is switched to a per-user VC
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `...dataStrs` | readonly (`undefined` \| `string`)[] |
+| `principal` | ``null`` \| `string` |
 
 #### Returns
 
@@ -349,121 +597,4 @@ wins).
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VC.ts:183](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L183)
-
-___
-
-### withEmptyCache
-
-▸ **withEmptyCache**(): [`VC`](VC.md)
-
-Returns a new VC derived from the current one, but with empty cache.
-
-#### Returns
-
-[`VC`](VC.md)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:203](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L203)
-
-___
-
-### withFlavor
-
-▸ **withFlavor**(`flavor`): [`VC`](VC.md)
-
-Returns a new VC derived from the current one adding some more
-flavors to it.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `flavor` | `undefined` \| [`VCFlavor`](VCFlavor.md) |
-
-#### Returns
-
-[`VC`](VC.md)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:258](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L258)
-
-___
-
-### withNewTrace
-
-▸ **withNewTrace**(`prefix?`): [`VC`](VC.md)
-
-Derives the VC with new trace ID.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `prefix?` | `string` |
-
-#### Returns
-
-[`VC`](VC.md)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:274](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L274)
-
-___
-
-### withOneTimeStaleReplica
-
-▸ **withOneTimeStaleReplica**(): [`VC`](VC.md)
-
-Returns a new VC derived from the current one, but which forces an Ent to
-be loaded always from replica. Freshness is NOT inherited by Ents
-(not transitive): e.g. if an Ent is loaded with STALE_REPLICA freshness,
-its ent.vc will have the DEFAULT freshness.
-
-#### Returns
-
-[`VC`](VC.md)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:239](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L239)
-
-___
-
-### withTransitiveMasterFreshness
-
-▸ **withTransitiveMasterFreshness**(): [`VC`](VC.md)
-
-Returns a new VC derived from the current one, but with master freshness.
-Master freshness is inherited by ent.vc after an Ent is loaded.
-
-#### Returns
-
-[`VC`](VC.md)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:218](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L218)
-
-___
-
-### createGuestPleaseDoNotUseCreationPointsMustBeLimited
-
-▸ `Static` **createGuestPleaseDoNotUseCreationPointsMustBeLimited**(): [`VC`](VC.md)
-
-Please please don't call this method except one or two core places. The
-idea is that we create an "origin" VC once and then derive all other VCs
-from it (possibly upgrading or downgrading permissions, controlling
-master/replica read policy etc.). It's also good to trace the entire chain
-of calls and reasons, why some object was accessed.
-
-#### Returns
-
-[`VC`](VC.md)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/VC.ts:426](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VC.ts#L426)
+[src/ent/VC.ts:491](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L491)

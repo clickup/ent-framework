@@ -1,11 +1,12 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Inverse
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Inverse
 
 # Class: Inverse<TClient, TTable\>
 
-Represents an inverse assoc manager which knows how to modify/query/fix
-inverses. Parameter `name` is the inverse's schema name (in SQL like
-databases, most likely a table name), and `type` defines which schema refers
-another schema (e.g. "org2user").
+Represents an Inverse assoc manager which knows how to modify/query Inverses.
+Parameter `name` is the Inverse's schema name (in SQL like databases, most
+likely a table name), and `type` holds both the name of the "parent" entity
+and the field name of the child (e.g. "org2users" when a field "org_id" in
+EntUser refers an EntOrg row).
 
 ## Type parameters
 
@@ -18,52 +19,40 @@ another schema (e.g. "org2user").
 
 ### constructor
 
-• **new Inverse**<`TClient`, `TTable`\>(`cluster`, `id2Schema`, `id2Field`, `name`, `type`)
+• **new Inverse**<`TClient`, `TTable`\>(`«destructured»`)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TClient` | extends [`Client`](Client.md)<`TClient`\> |
+| `TClient` | extends [`Client`](Client.md) |
 | `TTable` | extends [`Table`](../modules.md#table) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `cluster` | [`Cluster`](Cluster.md)<`TClient`\> |
-| `id2Schema` | [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\> |
-| `id2Field` | [`IDFieldsRequired`](../modules.md#idfieldsrequired)<`TTable`\> |
-| `name` | `string` |
-| `type` | `string` |
+| `«destructured»` | `Object` |
+| › `cluster` | [`Cluster`](Cluster.md)<`TClient`, `any`\> |
+| › `shardAffinity` | [`ShardAffinity`](../modules.md#shardaffinity)<`string`\> |
+| › `id2Schema` | [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\> |
+| › `id2Field` | [`FieldOfIDTypeRequired`](../modules.md#fieldofidtyperequired)<`TTable`\> |
+| › `name` | `string` |
+| › `type` | `string` |
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Inverse.ts:27](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Inverse.ts#L27)
+[src/ent/Inverse.ts:36](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L36)
 
 ## Properties
 
-### cluster
-
-• `Readonly` **cluster**: [`Cluster`](Cluster.md)<`TClient`\>
-
-___
-
 ### id2Field
 
-• `Readonly` **id2Field**: [`IDFieldsRequired`](../modules.md#idfieldsrequired)<`TTable`\>
+• `Readonly` **id2Field**: [`FieldOfIDTypeRequired`](../modules.md#fieldofidtyperequired)<`TTable`\>
 
-___
+#### Defined in
 
-### id2Schema
-
-• `Readonly` **id2Schema**: [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\>
-
-___
-
-### name
-
-• `Readonly` **name**: `string`
+[src/ent/Inverse.ts:33](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L33)
 
 ___
 
@@ -71,37 +60,18 @@ ___
 
 • `Readonly` **type**: `string`
 
+#### Defined in
+
+[src/ent/Inverse.ts:34](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L34)
+
 ## Methods
 
-### afterDelete
+### beforeInsert
 
-▸ **afterDelete**(`vc`, `id1`, `id2`): `Promise`<`void`\>
+▸ **beforeInsert**(`vc`, `id1`, `id2`): `Promise`<`boolean`\>
 
-Runs after a row was deleted in the main schema.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](VC.md) |
-| `id1` | ``null`` \| `string` |
-| `id2` | `string` |
-
-#### Returns
-
-`Promise`<`void`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/Inverse.ts:68](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Inverse.ts#L68)
-
-___
-
-### afterInsert
-
-▸ **afterInsert**(`vc`, `id1`, `id2`): `Promise`<`void`\>
-
-Runs after a row was inserted to the main schema.
+Runs before a row with a pre-generated id2 was inserted to the main schema.
+Returns true if the Inverse row was actually inserted in the DB.
 
 #### Parameters
 
@@ -113,11 +83,11 @@ Runs after a row was inserted to the main schema.
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`<`boolean`\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Inverse.ts:38](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Inverse.ts#L38)
+[src/ent/Inverse.ts:63](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L63)
 
 ___
 
@@ -142,7 +112,31 @@ Runs after a row was updated in the main schema.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Inverse.ts:49](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Inverse.ts#L49)
+[src/ent/Inverse.ts:87](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L87)
+
+___
+
+### afterDelete
+
+▸ **afterDelete**(`vc`, `id1`, `id2`): `Promise`<`void`\>
+
+Runs after a row was deleted in the main schema.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `vc` | [`VC`](VC.md) |
+| `id1` | ``null`` \| `string` |
+| `id2` | `string` |
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Defined in
+
+[src/ent/Inverse.ts:106](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L106)
 
 ___
 
@@ -166,4 +160,4 @@ rows is limited to not overload the database.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/Inverse.ts:83](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/Inverse.ts#L83)
+[src/ent/Inverse.ts:129](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L129)

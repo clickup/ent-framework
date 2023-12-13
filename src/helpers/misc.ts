@@ -135,20 +135,6 @@ export async function mapJoin<TElem, TRet>(
 }
 
 /**
- * A wrapper around process.hrtime() to quickly calculate time deltas.
- */
-export function toFloatMs(elapsed: [number, number]): number {
-  return elapsed[0] * 1e3 + elapsed[1] / 1e6;
-}
-
-/**
- * Same as toFloatMs(), but returns seconds.
- */
-export function toFloatSec(elapsed: [number, number]): number {
-  return elapsed[0] + elapsed[1] / 1e9;
-}
-
-/**
  * Copies a stack-trace from fromErr error into toErr object. Useful for
  * lightweight exceptions wrapping.
  */

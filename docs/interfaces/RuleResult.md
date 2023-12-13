@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / RuleResult
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / RuleResult
 
 # Interface: RuleResult
 
@@ -7,23 +7,13 @@ decision, what was thrown etc.).
 
 ## Properties
 
-### cause
-
-• **cause**: ``null`` \| [`EntAccessError`](../classes/EntAccessError.md)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/rules/Rule.ts:24](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L24)
-
-___
-
 ### decision
 
 • **decision**: [`RuleDecision`](../enums/RuleDecision.md)
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:22](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L22)
+[src/ent/rules/Rule.ts:21](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L21)
 
 ___
 
@@ -33,4 +23,14 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:23](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L23)
+[src/ent/rules/Rule.ts:22](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L22)
+
+___
+
+### cause
+
+• **cause**: ``null`` \| [`EntAccessError`](../classes/EntAccessError.md)
+
+#### Defined in
+
+[src/ent/rules/Rule.ts:23](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L23)

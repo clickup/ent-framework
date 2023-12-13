@@ -1,8 +1,8 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / VCHasFlavor
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / VCHasFlavor
 
 # Class: VCHasFlavor
 
-Checks if the VC has some flavor.
+Checks that the VC has some flavor.
 
 ## Implements
 
@@ -22,7 +22,7 @@ Checks if the VC has some flavor.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/VCHasFlavor.ts:11](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/VCHasFlavor.ts#L11)
+[src/ent/predicates/VCHasFlavor.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/VCHasFlavor.ts#L11)
 
 ## Properties
 
@@ -36,20 +36,19 @@ Checks if the VC has some flavor.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/VCHasFlavor.ts:9](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/VCHasFlavor.ts#L9)
+[src/ent/predicates/VCHasFlavor.ts:9](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/VCHasFlavor.ts#L9)
 
 ## Methods
 
 ### check
 
-▸ **check**(`vc`, `_row`): `Promise`<`boolean`\>
+▸ **check**(`vc`): `Promise`<`boolean`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `_row` | `never` |
 
 #### Returns
 
@@ -61,4 +60,4 @@ Checks if the VC has some flavor.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/VCHasFlavor.ts:13](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/VCHasFlavor.ts#L13)
+[src/ent/predicates/VCHasFlavor.ts:13](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/VCHasFlavor.ts#L13)

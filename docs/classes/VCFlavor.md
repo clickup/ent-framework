@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / VCFlavor
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / VCFlavor
 
 # Class: VCFlavor
 
@@ -27,21 +27,21 @@ For each flavor type, only a single VCFlavor object may exist.
 
 ### \_tag
 
-• `Readonly` **\_tag**: ``"VCFlavorInstance"``
+▪ `Static` `Readonly` **\_tag**: ``"VCFlavorClass"``
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VCFlavor.ts:11](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VCFlavor.ts#L11)
+[src/ent/VCFlavor.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L10)
 
 ___
 
 ### \_tag
 
-▪ `Static` `Readonly` **\_tag**: ``"VCFlavorClass"``
+• `Readonly` **\_tag**: ``"VCFlavorInstance"``
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VCFlavor.ts:10](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VCFlavor.ts#L10)
+[src/ent/VCFlavor.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L11)
 
 ## Methods
 
@@ -57,4 +57,4 @@ Appended to the end of VC.toString() result.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VCFlavor.ts:16](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VCFlavor.ts#L16)
+[src/ent/VCFlavor.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L16)

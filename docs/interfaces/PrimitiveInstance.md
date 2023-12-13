@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / PrimitiveInstance
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / PrimitiveInstance
 
 # Interface: PrimitiveInstance<TTable\>
 
@@ -18,18 +18,6 @@
 
 ## Properties
 
-### id
-
-• `Readonly` **id**: `string`
-
-For simplicity, every Ent has an ID field name hardcoded to "id".
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:36](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L36)
-
-___
-
 ### vc
 
 • `Readonly` **vc**: [`VC`](../classes/VC.md)
@@ -38,9 +26,55 @@ VC of this Ent.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:31](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L31)
+[src/ent/mixins/PrimitiveMixin.ts:36](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L36)
+
+___
+
+### id
+
+• `Readonly` **id**: `string`
+
+For simplicity, every Ent has an ID field name hardcoded to "id".
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:41](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L41)
 
 ## Methods
+
+### updateOriginal
+
+▸ **updateOriginal**(`input`): `Promise`<`boolean`\>
+
+Updates the object in the DB, but doesn't update the Ent itself (since it's
+immutable).
+- This method can works with CAS; see $cas property of the passed object.
+- If a special value "skip-if-someone-else-changed-updating-ent-props" is
+  passed to $cas, then the list of props for CAS is brought from the input,
+  and the values of these props are brought from the Ent itself (i.e. from
+  `this`).
+- If a special value, a list of field names, is passed to $cas, then it
+  works like described above, but the list of prop names is brought from
+  that list of field names.
+- Returns false if there is no such object in the DB, or if CAS check
+  didn't succeed.
+- Returns true if the object was found and updated.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `input` | [`UpdateOriginalInput`](../modules.md#updateoriginalinput)<`TTable`\> |
+
+#### Returns
+
+`Promise`<`boolean`\>
+
+#### Defined in
+
+[src/ent/mixins/PrimitiveMixin.ts:58](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L58)
+
+___
 
 ### deleteOriginal
 
@@ -55,27 +89,4 @@ the current object untouched (since it's immutable).
 
 #### Defined in
 
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:48](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L48)
-
-___
-
-### updateOriginal
-
-▸ **updateOriginal**(`input`): `Promise`<`boolean`\>
-
-Updates the object in the DB, but doesn't update the Ent itself (since it's
-immutable). Returns true if the object was found.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `input` | [`UpdateInput`](../modules.md#updateinput)<`TTable`\> |
-
-#### Returns
-
-`Promise`<`boolean`\>
-
-#### Defined in
-
-[packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts:42](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/mixins/PrimitiveMixin.ts#L42)
+[src/ent/mixins/PrimitiveMixin.ts:64](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L64)

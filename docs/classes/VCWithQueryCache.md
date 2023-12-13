@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / VCWithQueryCache
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / VCWithQueryCache
 
 # Class: VCWithQueryCache
 
@@ -29,13 +29,13 @@ If set, Ent cache is enabled for operations in this VC.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VCFlavor.ts:31](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VCFlavor.ts#L31)
+[src/ent/VCFlavor.ts:31](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L31)
 
 ## Properties
 
 ### \_tag
 
-• `Readonly` **\_tag**: ``"VCFlavorInstance"``
+▪ `Static` `Readonly` **\_tag**: ``"VCFlavorClass"``
 
 #### Inherited from
 
@@ -43,7 +43,21 @@ If set, Ent cache is enabled for operations in this VC.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VCFlavor.ts:11](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VCFlavor.ts#L11)
+[src/ent/VCFlavor.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L10)
+
+___
+
+### \_tag
+
+• `Readonly` **\_tag**: ``"VCFlavorInstance"``
+
+#### Inherited from
+
+[VCFlavor](VCFlavor.md).[_tag](VCFlavor.md#_tag-1)
+
+#### Defined in
+
+[src/ent/VCFlavor.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L11)
 
 ___
 
@@ -57,19 +71,9 @@ ___
 | :------ | :------ |
 | `maxQueries` | `number` |
 
-___
-
-### \_tag
-
-▪ `Static` `Readonly` **\_tag**: ``"VCFlavorClass"``
-
-#### Inherited from
-
-[VCFlavor](VCFlavor.md).[_tag](VCFlavor.md#_tag)
-
 #### Defined in
 
-[packages/ent-framework/src/ent/VCFlavor.ts:10](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VCFlavor.ts#L10)
+[src/ent/VCFlavor.ts:31](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L31)
 
 ## Methods
 
@@ -89,4 +93,4 @@ Appended to the end of VC.toString() result.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VCFlavor.ts:16](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VCFlavor.ts#L16)
+[src/ent/VCFlavor.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L16)

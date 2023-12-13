@@ -1,9 +1,9 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / ShardLocator
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ShardLocator
 
 # Class: ShardLocator<TClient, TField\>
 
-Knows how to locate shard(s) based on various inputs. In some contexts, we
-expect exactly one shard returned, and in other contexts, multiple shards are
+Knows how to locate Shard(s) based on various inputs. In some contexts, we
+expect exactly one Shard returned, and in other contexts, multiple Shards are
 okay.
 
 ## Type parameters
@@ -17,43 +17,67 @@ okay.
 
 ### constructor
 
-• **new ShardLocator**<`TClient`, `TField`\>(`cluster`, `schemaName`, `shardAffinity`, `inverses`)
+• **new ShardLocator**<`TClient`, `TField`\>(`«destructured»`)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TClient` | extends [`Client`](Client.md)<`TClient`\> |
+| `TClient` | extends [`Client`](Client.md) |
 | `TField` | extends `string` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `cluster` | [`Cluster`](Cluster.md)<`TClient`\> |
-| `schemaName` | `string` |
-| `shardAffinity` | [`ShardAffinity`](../modules.md#shardaffinity)<`TField`\> |
-| `inverses` | [`Inverse`](Inverse.md)<`TClient`, `any`\>[] |
+| `«destructured»` | `Object` |
+| › `cluster` | [`Cluster`](Cluster.md)<`TClient`, `any`\> |
+| › `entName` | `string` |
+| › `shardAffinity` | [`ShardAffinity`](../modules.md#shardaffinity)<`TField`\> |
+| › `uniqueKey` | `undefined` \| readonly `string`[] |
+| › `inverses` | readonly [`Inverse`](Inverse.md)<`TClient`, `any`\>[] |
 
 #### Defined in
 
-[packages/ent-framework/src/ent/ShardLocator.ts:18](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/ShardLocator.ts#L18)
+[src/ent/ShardLocator.ts:30](https://github.com/clickup/rest-client/blob/master/src/ent/ShardLocator.ts#L30)
 
 ## Methods
 
-### allShards
+### singleShardForInsert
 
-▸ **allShards**(): [`Shard`](Shard.md)<`TClient`\>[]
+▸ **singleShardForInsert**(`input`, `op`, `fallbackToRandomShard`): `Promise`<[`Shard`](Shard.md)<`TClient`\>\>
 
-All shards for this particular Ent depending on its affinity.
+Called in a context when we must know exactly 1 Shard to work with (e.g.
+INSERT, UPSERT etc.). If fallbackToRandomShard is true, then returns a
+random Shard in case when it can't infer the Shard number from the input
+(used in e.g. INSERT operations); otherwise throws
+EntCannotDetectShardError (happens in e.g. UPSERT).
+
+The "randomness" of the "random Shard" is deterministic by the Ent's unique
+key (if it's defined), so Ents with the same unique key will map to the
+same "random" Shard (considering the total number of discovered Shards is
+unchanged). Notice that this logic applies at INSERT time: since we often
+times add Shards to the Cluster, we can't rely on it consistently at SELECT
+time (but relying at INSERT time is more or less fine: it protects against
+most of "unique key violation" problems, although still doesn't prevent all
+of them for a fraction of the second when the number of Shards has just
+been changed).
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `input` | `Record`<`string`, `any`\> |
+| `op` | `string` |
+| `fallbackToRandomShard` | `boolean` |
 
 #### Returns
 
-[`Shard`](Shard.md)<`TClient`\>[]
+`Promise`<[`Shard`](Shard.md)<`TClient`\>\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/ShardLocator.ts:137](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/ShardLocator.ts#L137)
+[src/ent/ShardLocator.ts:72](https://github.com/clickup/rest-client/blob/master/src/ent/ShardLocator.ts#L72)
 
 ___
 
@@ -61,10 +85,10 @@ ___
 
 ▸ **multiShardsFromInput**(`vc`, `input`, `op`): `Promise`<[`Shard`](Shard.md)<`TClient`\>[]\>
 
-Called in a context when multiple shards may be involved, e.g. when
-selecting Ents referred by some inverses. May also return the empty list of
-shards in case there are fields with inverses in input (i.e. the filtering
-is correct), but there are no inverses in the database.
+Called in a context when multiple Shards may be involved, e.g. when
+selecting Ents referred by some Inverses. May also return the empty list of
+Shards when, although there are fields with Inverses in input (i.e. the
+filtering is correct), there are no Inverse rows existing in the database.
 
 #### Parameters
 
@@ -80,16 +104,22 @@ is correct), but there are no inverses in the database.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/ShardLocator.ts:54](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/ShardLocator.ts#L54)
+[src/ent/ShardLocator.ts:106](https://github.com/clickup/rest-client/blob/master/src/ent/ShardLocator.ts#L106)
 
 ___
 
 ### singleShardFromID
 
-▸ **singleShardFromID**(`field`, `id`): [`Shard`](Shard.md)<`TClient`\>
+▸ **singleShardFromID**(`field`, `id`): `Promise`<``null`` \| [`Shard`](Shard.md)<`TClient`\>\>
 
-A wrapper for cluster.shard() which injects Ent name to the exception. This
-is just a convenience for debugging.
+A wrapper for Cluster#shard() which injects Ent name to the exception (in
+case of e.g. "Cannot locate Shard" exception). This is just a convenience
+for debugging.
+
+If this method returns null, that means the caller should give up trying to
+load the Ent with this ID, because it won't find it anyways (e.g. when we
+try to load a sharded Ent using an ID from the global Shard). This is
+identical to the case of an Ent not existing in the database.
 
 #### Parameters
 
@@ -100,33 +130,24 @@ is just a convenience for debugging.
 
 #### Returns
 
-[`Shard`](Shard.md)<`TClient`\>
+`Promise`<``null`` \| [`Shard`](Shard.md)<`TClient`\>\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/ShardLocator.ts:102](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/ShardLocator.ts#L102)
+[src/ent/ShardLocator.ts:169](https://github.com/clickup/rest-client/blob/master/src/ent/ShardLocator.ts#L169)
 
 ___
 
-### singleShardFromInput
+### allShards
 
-▸ **singleShardFromInput**(`input`, `op`, `allowRandomShard?`): [`Shard`](Shard.md)<`TClient`\>
+▸ **allShards**(): `Promise`<readonly [`Shard`](Shard.md)<`TClient`\>[]\>
 
-Called in a context when we must know exactly 1 shard to work with (e.g.
-INSERT, UPSERT etc.).
-
-#### Parameters
-
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `input` | `Record`<`string`, `any`\> | `undefined` |
-| `op` | `string` | `undefined` |
-| `allowRandomShard` | `boolean` | `false` |
+All shards for this particular Ent depending on its affinity.
 
 #### Returns
 
-[`Shard`](Shard.md)<`TClient`\>
+`Promise`<readonly [`Shard`](Shard.md)<`TClient`\>[]\>
 
 #### Defined in
 
-[packages/ent-framework/src/ent/ShardLocator.ts:29](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/ShardLocator.ts#L29)
+[src/ent/ShardLocator.ts:221](https://github.com/clickup/rest-client/blob/master/src/ent/ShardLocator.ts#L221)

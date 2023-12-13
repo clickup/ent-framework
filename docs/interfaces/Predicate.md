@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / Predicate
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Predicate
 
 # Interface: Predicate<TInput\>
 
@@ -27,6 +27,7 @@ immediately. This saves us lots of database operations.
 - [`FieldIs`](../classes/FieldIs.md)
 - [`FuncToPredicate`](../classes/FuncToPredicate.md)
 - [`IncomingEdgeFromVCExists`](../classes/IncomingEdgeFromVCExists.md)
+- [`Or`](../classes/Or.md)
 - [`OutgoingEdgePointsToVC`](../classes/OutgoingEdgePointsToVC.md)
 - [`True`](../classes/True.md)
 - [`VCHasFlavor`](../classes/VCHasFlavor.md)
@@ -39,7 +40,7 @@ immediately. This saves us lots of database operations.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/Predicate.ts:18](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/Predicate.ts#L18)
+[src/ent/predicates/Predicate.ts:18](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Predicate.ts#L18)
 
 ## Methods
 
@@ -60,4 +61,4 @@ immediately. This saves us lots of database operations.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/Predicate.ts:19](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/Predicate.ts#L19)
+[src/ent/predicates/Predicate.ts:19](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Predicate.ts#L19)

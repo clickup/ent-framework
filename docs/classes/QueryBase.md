@@ -1,9 +1,11 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / QueryBase
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / QueryBase
 
 # Class: QueryBase<TTable, TInput, TOutput, TClient\>
 
-A convenient base class for most (but not all) of the queries. If the query
-doesn't fit the QueryBase framework (like SQLQueryUpdate for instance), a
+A convenient base class for most (but not all) of the queries, where the
+Runner instance is the same for different query input shapes. If the query
+doesn't fit the QueryBase framework (like SQLQueryUpdate for instance where
+we have separate Runner instances for separate set of updated fields), a
 Query is used directly instead.
 
 ## Type parameters
@@ -24,6 +26,8 @@ Query is used directly instead.
   ↳ [`SQLQueryDelete`](SQLQueryDelete.md)
 
   ↳ [`SQLQueryDeleteWhere`](SQLQueryDeleteWhere.md)
+
+  ↳ [`SQLQueryExists`](SQLQueryExists.md)
 
   ↳ [`SQLQueryIDGen`](SQLQueryIDGen.md)
 
@@ -54,7 +58,7 @@ Query is used directly instead.
 | `TTable` | extends [`Table`](../modules.md#table) |
 | `TInput` | `TInput` |
 | `TOutput` | `TOutput` |
-| `TClient` | extends [`Client`](Client.md)<`TClient`\> |
+| `TClient` | extends [`Client`](Client.md) |
 
 #### Parameters
 
@@ -65,13 +69,28 @@ Query is used directly instead.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Query.ts:28](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Query.ts#L28)
+[src/abstract/QueryBase.ts:27](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L27)
 
 ## Properties
 
 ### RUNNER\_CLASS
 
 • `Protected` `Readonly` `Abstract` **RUNNER\_CLASS**: `Object`
+
+#### Call signature
+
+• **new RUNNER_CLASS**(`schema`, `client`): [`Runner`](Runner.md)<`TInput`, `TOutput`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `schema` | [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\> |
+| `client` | `TClient` |
+
+##### Returns
+
+[`Runner`](Runner.md)<`TInput`, `TOutput`\>
 
 #### Type declaration
 
@@ -81,7 +100,17 @@ Query is used directly instead.
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Query.ts:33](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Query.ts#L33)
+[src/abstract/QueryBase.ts:22](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L22)
+
+___
+
+### schema
+
+• `Readonly` **schema**: [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\>
+
+#### Defined in
+
+[src/abstract/QueryBase.ts:28](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L28)
 
 ___
 
@@ -89,11 +118,9 @@ ___
 
 • `Readonly` **input**: `TInput`
 
-___
+#### Defined in
 
-### schema
-
-• `Readonly` **schema**: [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\>
+[src/abstract/QueryBase.ts:29](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L29)
 
 ## Accessors
 
@@ -111,7 +138,7 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Query.ts:38](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Query.ts#L38)
+[src/abstract/QueryBase.ts:32](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L32)
 
 ## Methods
 
@@ -136,4 +163,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/abstract/Query.ts:42](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/abstract/Query.ts#L42)
+[src/abstract/QueryBase.ts:36](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L36)

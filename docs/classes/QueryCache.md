@@ -1,12 +1,19 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / QueryCache
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / QueryCache
 
 # Class: QueryCache
+
+Caches Ents loaded by a particular VC. I.e. the same query running for the
+same VC twice will quickly return the same Ents. This is typically enabled on
+web servers only, to deliver the fastest UI response.
 
 ## Constructors
 
 ### constructor
 
 • **new QueryCache**(`vc`)
+
+Creates the QueryCache object. It enable caching only if VCWithQueryCache
+was manually added to the VC by the user, otherwise caching is a no-op.
 
 #### Parameters
 
@@ -16,9 +23,46 @@
 
 #### Defined in
 
-[packages/ent-framework/src/ent/QueryCache.ts:18](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/QueryCache.ts#L18)
+[src/ent/QueryCache.ts:35](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L35)
+
+## Properties
+
+### whyOff
+
+• `Optional` `Readonly` **whyOff**: `string`
+
+#### Defined in
+
+[src/ent/QueryCache.ts:29](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L29)
 
 ## Methods
+
+### set
+
+▸ **set**(`EntClass`, `op`, `key`, `value`): [`QueryCache`](QueryCache.md)
+
+Saves a Promise to the cache slot for `op`. If this Promise rejects, the
+slot will automatically be cleared (we don't cache rejected Promises to not
+have a risk of caching a transient SQL error).
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EntClass` | [`AnyClass`](../modules.md#anyclass) |
+| `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` \| ``"exists"`` |
+| `key` | `string` |
+| `value` | `undefined` \| `Promise`<`unknown`\> |
+
+#### Returns
+
+[`QueryCache`](QueryCache.md)
+
+#### Defined in
+
+[src/ent/QueryCache.ts:56](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L56)
+
+___
 
 ### delete
 
@@ -31,7 +75,7 @@ Deletes cache slots or keys for an Ent.
 | Name | Type |
 | :------ | :------ |
 | `EntClass` | [`AnyClass`](../modules.md#anyclass) |
-| `ops` | (``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"``)[] |
+| `ops` | (``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` \| ``"exists"``)[] |
 | `key?` | `string` |
 
 #### Returns
@@ -40,7 +84,7 @@ Deletes cache slots or keys for an Ent.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/QueryCache.ts:73](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/QueryCache.ts#L73)
+[src/ent/QueryCache.ts:91](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L91)
 
 ___
 
@@ -63,7 +107,7 @@ case it's inflight already.
 | Name | Type |
 | :------ | :------ |
 | `EntClass` | [`AnyClass`](../modules.md#anyclass) |
-| `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` |
+| `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` \| ``"exists"`` |
 | `key` | `string` |
 
 #### Returns
@@ -72,34 +116,7 @@ case it's inflight already.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/QueryCache.ts:95](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/QueryCache.ts#L95)
-
-___
-
-### set
-
-▸ **set**(`EntClass`, `op`, `key`, `value`): [`QueryCache`](QueryCache.md)
-
-Saves a Promise to the cache slot for `op`. If this Promise rejects, the
-slot will automatically be cleared (we don't cache rejected Promises to not
-have a risk of caching a transient SQL error).
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `EntClass` | [`AnyClass`](../modules.md#anyclass) |
-| `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` |
-| `key` | `string` |
-| `value` | `undefined` \| `Promise`<`unknown`\> |
-
-#### Returns
-
-[`QueryCache`](QueryCache.md)
-
-#### Defined in
-
-[packages/ent-framework/src/ent/QueryCache.ts:34](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/QueryCache.ts#L34)
+[src/ent/QueryCache.ts:113](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L113)
 
 ___
 
@@ -120,7 +137,7 @@ Read-through caching pattern.
 | Name | Type |
 | :------ | :------ |
 | `EntClass` | [`AnyClass`](../modules.md#anyclass) |
-| `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` |
+| `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` \| ``"exists"`` |
 | `key` | `string` |
 | `creator` | () => `Promise`<`TValue`\> |
 
@@ -130,4 +147,4 @@ Read-through caching pattern.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/QueryCache.ts:111](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/QueryCache.ts#L111)
+[src/ent/QueryCache.ts:129](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L129)

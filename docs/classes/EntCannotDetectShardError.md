@@ -1,9 +1,12 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / EntCannotDetectShardError
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntCannotDetectShardError
 
 # Class: EntCannotDetectShardError
 
-Error: when the system cannot detect the target shard to work with
-(e.g. an Ent doesn't refer to any other Ent with shard affinity).
+Error: when the system cannot detect the target shard to work with (e.g. an
+Ent doesn't refer to any other Ent with Shard affinity).
+
+Throwing of this error signals about a bug in the code, so it is not
+user-facing (thus, not derived from EntAccessError).
 
 ## Hierarchy
 
@@ -15,13 +18,13 @@ Error: when the system cannot detect the target shard to work with
 
 ### constructor
 
-• **new EntCannotDetectShardError**(`schemaName`, `op`, `fields`, `input`, `shardAffinity`, `inverseFields?`)
+• **new EntCannotDetectShardError**(`entName`, `op`, `fields`, `input`, `shardAffinity`, `inverseFields?`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `schemaName` | `string` |
+| `entName` | `string` |
 | `op` | `string` |
 | `fields` | readonly `string`[] |
 | `input` | `any` |
@@ -34,53 +37,17 @@ Error.constructor
 
 #### Defined in
 
-[packages/ent-framework/src/ent/errors/EntCannotDetectShardError.ts:8](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/errors/EntCannotDetectShardError.ts#L8)
+[src/ent/errors/EntCannotDetectShardError.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntCannotDetectShardError.ts#L11)
 
 ## Properties
 
-### fields
+### entName
 
-• `Readonly` **fields**: readonly `string`[]
-
-___
-
-### input
-
-• `Readonly` **input**: `any`
-
-___
-
-### inverseFields
-
-• `Optional` `Readonly` **inverseFields**: `string`[]
-
-___
-
-### message
-
-• **message**: `string`
-
-#### Inherited from
-
-Error.message
+• `Readonly` **entName**: `string`
 
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:1023
-
-___
-
-### name
-
-• **name**: `string`
-
-#### Inherited from
-
-Error.name
-
-#### Defined in
-
-node_modules/typescript/lib/lib.es5.d.ts:1022
+[src/ent/errors/EntCannotDetectShardError.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntCannotDetectShardError.ts#L12)
 
 ___
 
@@ -88,11 +55,29 @@ ___
 
 • `Readonly` **op**: `string`
 
+#### Defined in
+
+[src/ent/errors/EntCannotDetectShardError.ts:13](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntCannotDetectShardError.ts#L13)
+
 ___
 
-### schemaName
+### fields
 
-• `Readonly` **schemaName**: `string`
+• `Readonly` **fields**: readonly `string`[]
+
+#### Defined in
+
+[src/ent/errors/EntCannotDetectShardError.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntCannotDetectShardError.ts#L14)
+
+___
+
+### input
+
+• `Readonly` **input**: `any`
+
+#### Defined in
+
+[src/ent/errors/EntCannotDetectShardError.ts:15](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntCannotDetectShardError.ts#L15)
 
 ___
 
@@ -100,90 +85,16 @@ ___
 
 • `Readonly` **shardAffinity**: `any`
 
-___
-
-### stack
-
-• `Optional` **stack**: `string`
-
-#### Inherited from
-
-Error.stack
-
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:1024
+[src/ent/errors/EntCannotDetectShardError.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntCannotDetectShardError.ts#L16)
 
 ___
 
-### prepareStackTrace
+### inverseFields
 
-▪ `Static` `Optional` **prepareStackTrace**: (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any`
-
-#### Type declaration
-
-▸ (`err`, `stackTraces`): `any`
-
-Optional override for formatting stack traces
-
-**`see`** https://v8.dev/docs/stack-trace-api#customizing-stack-traces
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `err` | `Error` |
-| `stackTraces` | `CallSite`[] |
-
-##### Returns
-
-`any`
-
-#### Inherited from
-
-Error.prepareStackTrace
+• `Optional` `Readonly` **inverseFields**: `string`[]
 
 #### Defined in
 
-node_modules/@types/node/globals.d.ts:11
-
-___
-
-### stackTraceLimit
-
-▪ `Static` **stackTraceLimit**: `number`
-
-#### Inherited from
-
-Error.stackTraceLimit
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:13
-
-## Methods
-
-### captureStackTrace
-
-▸ `Static` **captureStackTrace**(`targetObject`, `constructorOpt?`): `void`
-
-Create .stack property on a target object
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `targetObject` | `object` |
-| `constructorOpt?` | `Function` |
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-Error.captureStackTrace
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:4
+[src/ent/errors/EntCannotDetectShardError.ts:17](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntCannotDetectShardError.ts#L17)

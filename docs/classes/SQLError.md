@@ -1,10 +1,15 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / SQLError
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLError
 
 # Class: SQLError
 
+Encapsulates the error message passed from the DB server. Notice that in case
+of e.g. connection reset errors or network timeouts, this error is NOT thrown
+(because we actually don't know whether the server applied the query or not);
+instead, some other exception (lower level) is raised.
+
 ## Hierarchy
 
-- `Error`
+- [`ServerError`](ServerError.md)
 
   ↳ **`SQLError`**
 
@@ -24,45 +29,25 @@
 
 #### Overrides
 
-Error.constructor
+[ServerError](ServerError.md).[constructor](ServerError.md#constructor)
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLError.ts:4](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLError.ts#L4)
+[src/sql/SQLError.ts:4](https://github.com/clickup/rest-client/blob/master/src/sql/SQLError.ts#L4)
 
 ## Properties
-
-### message
-
-• **message**: `string`
-
-#### Inherited from
-
-Error.message
-
-#### Defined in
-
-node_modules/typescript/lib/lib.es5.d.ts:1023
-
-___
-
-### name
-
-• **name**: `string`
-
-#### Inherited from
-
-Error.name
-
-#### Defined in
-
-node_modules/typescript/lib/lib.es5.d.ts:1022
-
-___
 
 ### origError
 
 • `Readonly` **origError**: `any`
+
+#### Inherited from
+
+[ServerError](ServerError.md).[origError](ServerError.md#origerror)
+
+#### Defined in
+
+[src/abstract/ServerError.ts:10](https://github.com/clickup/rest-client/blob/master/src/abstract/ServerError.ts#L10)
 
 ___
 
@@ -70,66 +55,9 @@ ___
 
 • `Readonly` **sql**: `string`
 
-___
-
-### stack
-
-• `Optional` **stack**: `string`
-
-#### Inherited from
-
-Error.stack
-
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:1024
-
-___
-
-### prepareStackTrace
-
-▪ `Static` `Optional` **prepareStackTrace**: (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any`
-
-#### Type declaration
-
-▸ (`err`, `stackTraces`): `any`
-
-Optional override for formatting stack traces
-
-**`see`** https://v8.dev/docs/stack-trace-api#customizing-stack-traces
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `err` | `Error` |
-| `stackTraces` | `CallSite`[] |
-
-##### Returns
-
-`any`
-
-#### Inherited from
-
-Error.prepareStackTrace
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:11
-
-___
-
-### stackTraceLimit
-
-▪ `Static` **stackTraceLimit**: `number`
-
-#### Inherited from
-
-Error.stackTraceLimit
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:13
+[src/sql/SQLError.ts:4](https://github.com/clickup/rest-client/blob/master/src/sql/SQLError.ts#L4)
 
 ## Methods
 
@@ -149,31 +77,4 @@ node_modules/@types/node/globals.d.ts:13
 
 #### Defined in
 
-[packages/ent-framework/src/sql/SQLError.ts:27](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/sql/SQLError.ts#L27)
-
-___
-
-### captureStackTrace
-
-▸ `Static` **captureStackTrace**(`targetObject`, `constructorOpt?`): `void`
-
-Create .stack property on a target object
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `targetObject` | `object` |
-| `constructorOpt?` | `Function` |
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-Error.captureStackTrace
-
-#### Defined in
-
-node_modules/@types/node/globals.d.ts:4
+[src/sql/SQLError.ts:16](https://github.com/clickup/rest-client/blob/master/src/sql/SQLError.ts#L16)

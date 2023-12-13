@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / DenyIf
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / DenyIf
 
 # Class: DenyIf<TInput\>
 
@@ -45,21 +45,17 @@ Returns DENY if the predicate succeeds, otherwise SKIP.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:47](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L47)
+[src/ent/rules/Rule.ts:48](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L48)
 
 ## Properties
 
-### name
+### \_TAG
 
-• `Readonly` **name**: `string`
-
-#### Inherited from
-
-[Rule](Rule.md).[name](Rule.md#name)
+• `Readonly` **\_TAG**: ``"DenyIf"``
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:45](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L45)
+[src/ent/rules/DenyIf.ts:15](https://github.com/clickup/rest-client/blob/master/src/ent/rules/DenyIf.ts#L15)
 
 ___
 
@@ -73,7 +69,21 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/Rule.ts:44](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/Rule.ts#L44)
+[src/ent/rules/Rule.ts:43](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L43)
+
+___
+
+### name
+
+• `Readonly` **name**: `string`
+
+#### Inherited from
+
+[Rule](Rule.md).[name](Rule.md#name)
+
+#### Defined in
+
+[src/ent/rules/Rule.ts:44](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L44)
 
 ## Methods
 
@@ -98,4 +108,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/rules/DenyIf.ts:14](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/rules/DenyIf.ts#L14)
+[src/ent/rules/DenyIf.ts:17](https://github.com/clickup/rest-client/blob/master/src/ent/rules/DenyIf.ts#L17)

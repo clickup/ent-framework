@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / IDsCache
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / IDsCache
 
 # Class: IDsCache
 
@@ -20,6 +20,26 @@
 
 ## Methods
 
+### has
+
+▸ **has**(`id`): `boolean`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `id` | `string` |
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/ent/IDsCache.ts:6](https://github.com/clickup/rest-client/blob/master/src/ent/IDsCache.ts#L6)
+
+___
+
 ### add
 
 ▸ **add**(`id`, `value?`): `void`
@@ -37,7 +57,7 @@
 
 #### Defined in
 
-[packages/ent-framework/src/ent/IDsCache.ts:10](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/IDsCache.ts#L10)
+[src/ent/IDsCache.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/IDsCache.ts#L10)
 
 ___
 
@@ -57,24 +77,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/IDsCache.ts:14](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/IDsCache.ts#L14)
-
-___
-
-### has
-
-▸ **has**(`id`): `boolean`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `id` | `string` |
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/ent-framework/src/ent/IDsCache.ts:6](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/IDsCache.ts#L6)
+[src/ent/IDsCache.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/IDsCache.ts#L14)

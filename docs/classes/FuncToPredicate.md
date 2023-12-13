@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / FuncToPredicate
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / FuncToPredicate
 
 # Class: FuncToPredicate<TInput\>
 
@@ -38,7 +38,7 @@ predicate.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/Predicate.ts:32](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/Predicate.ts#L32)
+[src/ent/predicates/Predicate.ts:32](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Predicate.ts#L32)
 
 ## Properties
 
@@ -52,7 +52,7 @@ predicate.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/Predicate.ts:30](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/Predicate.ts#L30)
+[src/ent/predicates/Predicate.ts:30](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Predicate.ts#L30)
 
 ## Methods
 
@@ -77,4 +77,4 @@ predicate.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/Predicate.ts:34](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/Predicate.ts#L34)
+[src/ent/predicates/Predicate.ts:34](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Predicate.ts#L34)

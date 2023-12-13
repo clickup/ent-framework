@@ -1,10 +1,10 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / OutgoingEdgePointsToVC
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / OutgoingEdgePointsToVC
 
 # Class: OutgoingEdgePointsToVC<TField\>
 
-Checks that the field's value is the same as VC's userID:
+Checks that the field's value is the same as VC's principal:
 
-EntOur[user_id] ---> vc.userID
+EntOur[user_id] ---> vc.principal
 
 ## Type parameters
 
@@ -36,15 +36,9 @@ EntOur[user_id] ---> vc.userID
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/OutgoingEdgePointsToVC.ts:14](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/OutgoingEdgePointsToVC.ts#L14)
+[src/ent/predicates/OutgoingEdgePointsToVC.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L14)
 
 ## Properties
-
-### field
-
-• `Readonly` **field**: `TField`
-
-___
 
 ### name
 
@@ -56,7 +50,17 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/OutgoingEdgePointsToVC.ts:12](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/OutgoingEdgePointsToVC.ts#L12)
+[src/ent/predicates/OutgoingEdgePointsToVC.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L12)
+
+___
+
+### field
+
+• `Readonly` **field**: `TField`
+
+#### Defined in
+
+[src/ent/predicates/OutgoingEdgePointsToVC.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L14)
 
 ## Methods
 
@@ -81,4 +85,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/predicates/OutgoingEdgePointsToVC.ts:16](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/predicates/OutgoingEdgePointsToVC.ts#L16)
+[src/ent/predicates/OutgoingEdgePointsToVC.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L16)

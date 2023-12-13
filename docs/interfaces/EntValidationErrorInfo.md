@@ -1,4 +1,4 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / EntValidationErrorInfo
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntValidationErrorInfo
 
 # Interface: EntValidationErrorInfo
 
@@ -16,7 +16,7 @@ Auxillary information which every validation predicate should have.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/errors/EntValidationError.ts:27](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/errors/EntValidationError.ts#L27)
+[src/ent/errors/EntValidationError.ts:27](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntValidationError.ts#L27)
 
 ___
 
@@ -26,4 +26,4 @@ ___
 
 #### Defined in
 
-[packages/ent-framework/src/ent/errors/EntValidationError.ts:28](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/errors/EntValidationError.ts#L28)
+[src/ent/errors/EntValidationError.ts:28](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntValidationError.ts#L28)

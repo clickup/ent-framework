@@ -1,4 +1,4 @@
-interface Target {
+export interface WeakTickerTarget {
   onTick(tickNo: number, tickMs: number): "keep" | "unschedule";
 }
 
@@ -10,8 +10,8 @@ export class WeakTicker {
   private slots = new Map<
     number,
     {
-      refs: Set<WeakRef<Target>>;
-      nextTickNos: WeakMap<Target, number>;
+      refs: Set<WeakRef<WeakTickerTarget>>;
+      nextTickNos: WeakMap<WeakTickerTarget, number>;
       interval: NodeJS.Timeout;
     }
   >();
@@ -31,7 +31,7 @@ export class WeakTicker {
    *   as needed.
    * - If target.onTick() returns "unschedule", the target will be unscheduled.
    */
-  schedule(target: Target, tickMs: number): void {
+  schedule(target: WeakTickerTarget, tickMs: number): void {
     // We DO NOT use any closures here! Otherwise, target would be retained in
     // that closures, and it won't be garbage collected.
     let slot = this.slots.get(tickMs);

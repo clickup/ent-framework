@@ -1,25 +1,26 @@
-[@slapdash/ent-framework](../README.md) / [Exports](../modules.md) / VCTrace
+[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / VCTrace
 
 # Class: VCTrace
 
 A "trace" objects which allows to group database related stuff while logging
-it. Traces are inherited during VC derivation.
+it. Traces are inherited during VC derivation, similar to flavors, but
+they're a part of VC core interface to allow faster access.
 
 ## Constructors
 
 ### constructor
 
-• **new VCTrace**(`prefix?`)
+• **new VCTrace**(`trace?`)
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `prefix` | `string` | `""` |
+| Name | Type |
+| :------ | :------ |
+| `trace?` | `string` |
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VCTrace.ts:10](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VCTrace.ts#L10)
+[src/ent/VCTrace.ts:18](https://github.com/clickup/rest-client/blob/master/src/ent/VCTrace.ts#L18)
 
 ## Properties
 
@@ -29,4 +30,4 @@ it. Traces are inherited during VC derivation.
 
 #### Defined in
 
-[packages/ent-framework/src/ent/VCTrace.ts:8](https://github.com/time-loop/slapdash/blob/master/packages/ent-framework/src/ent/VCTrace.ts#L8)
+[src/ent/VCTrace.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/VCTrace.ts#L16)

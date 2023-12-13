@@ -2,7 +2,7 @@ import range from "lodash/range";
 import type { Connection, PoolClient, PoolConfig } from "pg";
 import { Pool } from "pg";
 import type { ClientQueryLoggerProps, Loggers } from "../abstract/Loggers";
-import { runInVoid, toFloatMs } from "../helpers/misc";
+import { runInVoid } from "../helpers/misc";
 import { SQLClient } from "./SQLClient";
 
 const DEFAULT_PREWARM_INTERVAL_MS = 10000;
@@ -32,7 +32,7 @@ export interface SQLClientDest {
 // Our extension to Pool connection which adds a couple props to the connection
 // in on("connect") handler (persistent for the same connection objects, i.e.
 // across queries in the same connection).
-type SQLClientPoolClient = PoolClient & {
+export type SQLClientPoolClient = PoolClient & {
   /** Implemented but not documented property, see:
    * https://github.com/brianc/node-postgres/issues/2665 */
   processID?: number | null;
@@ -157,7 +157,7 @@ export class SQLClientPool extends SQLClient {
         });
       const query =
         typeof prewarmQuery === "string" ? prewarmQuery : prewarmQuery();
-      const startTime = process.hrtime();
+      const startTime = performance.now();
       range(toPrewarm).forEach(() =>
         runInVoid(
           this.state.pool
@@ -166,7 +166,7 @@ export class SQLClientPool extends SQLClient {
               this.logSwallowedError(
                 "prewarm()",
                 error,
-                toFloatMs(process.hrtime(startTime))
+                performance.now() - startTime
               )
             )
         )
