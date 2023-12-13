@@ -1,4 +1,4 @@
-import parseCompositeRow from "../parseCompositeRow";
+import { parseCompositeRow } from "../parseCompositeRow";
 
 test("parseCompositeRow", async () => {
   expect(parseCompositeRow("()")).toEqual([null]);

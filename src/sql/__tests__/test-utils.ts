@@ -6,7 +6,7 @@ import { MASTER } from "../../abstract/Shard";
 import type { TimelineManager } from "../../abstract/TimelineManager";
 import { GLOBAL_SHARD, type ShardAffinity } from "../../ent/Configuration";
 import { join, mapJoin, nullthrows } from "../../helpers/misc";
-import buildShape from "../helpers/buildShape";
+import { buildShape } from "../helpers/buildShape";
 import type { SQLClient } from "../SQLClient";
 import { escapeLiteral, escapeIdent } from "../SQLClient";
 import { SQLClientPool } from "../SQLClientPool";

@@ -4,7 +4,7 @@
  * - https://github.com/DmitryKoterov/db_type/blob/master/lib/DB/Type/Pgsql/Row.php
  * - unit tests of this function
  */
-export default function parseCompositeRow(str: string): Array<string | null> {
+export function parseCompositeRow(str: string): Array<string | null> {
   let p = 0;
   let c = "";
 

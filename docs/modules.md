@@ -2346,6 +2346,9 @@ ___
 
 ▸ **buildShape**(`sql`): `string`
 
+Extracts a "shape" from some commonly built SQL queries. This function may be
+used from the outside for logging/debugging, so it's here, not in __tests__.
+
 #### Parameters
 
 | Name | Type |
@@ -2358,7 +2361,7 @@ ___
 
 #### Defined in
 
-[src/sql/helpers/buildShape.ts:48](https://github.com/clickup/rest-client/blob/master/src/sql/helpers/buildShape.ts#L48)
+[src/sql/helpers/buildShape.ts:52](https://github.com/clickup/rest-client/blob/master/src/sql/helpers/buildShape.ts#L52)
 
 ___
 
