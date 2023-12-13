@@ -8,7 +8,7 @@ import { ShardError } from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
 import { nullthrows, sanitizeIDForDebugPrinting } from "../helpers/misc";
 import type { Literal } from "../types";
-import parseCompositeRow from "./helpers/parseCompositeRow";
+import { parseCompositeRow } from "./helpers/parseCompositeRow";
 import { SQLError } from "./SQLError";
 
 const DEFAULT_MAX_REPLICATION_LAG_MS = 60000;

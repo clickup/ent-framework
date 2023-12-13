@@ -33,7 +33,7 @@
  * Deep compares a and b ignoring the order of keys in objects and keys with
  * undefined values.
  */
-export default function deepEqual(a: unknown, b: unknown): boolean {
+export function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) {
     return true;
   }

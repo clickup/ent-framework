@@ -45,7 +45,11 @@ const RE_IDENTICAL_UNION_ALL = toRegExp`
   )+
 `;
 
-export default function buildShape(sql: string): string {
+/**
+ * Extracts a "shape" from some commonly built SQL queries. This function may be
+ * used from the outside for logging/debugging, so it's here, not in __tests__.
+ */
+export function buildShape(sql: string): string {
   return sql
     .trim()
     .replace(RE_COMMENT, "")

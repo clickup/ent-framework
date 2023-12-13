@@ -16,7 +16,7 @@ import type {
   Where,
 } from "../types";
 import { ID } from "../types";
-import parseCompositeRow from "./helpers/parseCompositeRow";
+import { parseCompositeRow } from "./helpers/parseCompositeRow";
 import * as sqlClientMod from "./SQLClient";
 import { SQLError } from "./SQLError";
 

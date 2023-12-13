@@ -1,4 +1,4 @@
-import deepEqual from "../helpers/deepEqual";
+import { deepEqual } from "../helpers/deepEqual";
 import type { Flatten, Writeable } from "../helpers/misc";
 import { join } from "../helpers/misc";
 import type {
