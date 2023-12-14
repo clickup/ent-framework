@@ -2,7 +2,8 @@ import delay from "delay";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import { DefaultMap } from "../helpers/DefaultMap";
-import { runInVoid } from "../helpers/misc";
+import type { MaybeCallable } from "../helpers/misc";
+import { maybeCall, runInVoid } from "../helpers/misc";
 import type { QueryAnnotation } from "./QueryAnnotation";
 
 export const DEFAULT_MAX_BATCH_SIZE = 100;
@@ -120,8 +121,6 @@ export class Batcher<TInput, TOutput> {
   // Dedupped annotations; each annotation identifies a caller of the query.
   private queuedAnnotations = new Map<string, QueryAnnotation>();
 
-  private batchDelayMs: () => number;
-
   protected flushQueue = async (): Promise<void> => {
     if (!this.queuedInputs.size) {
       return;
@@ -183,19 +182,16 @@ export class Batcher<TInput, TOutput> {
   constructor(
     private runner: Runner<TInput, TOutput>,
     private maxBatchSize: number = 0,
-    batchDelayMs: number | (() => number) = 0
+    private batchDelayMs: MaybeCallable<number> = 0
   ) {
     if (!this.maxBatchSize) {
       this.maxBatchSize = runner.maxBatchSize;
     }
-
-    this.batchDelayMs =
-      typeof batchDelayMs === "number" ? () => batchDelayMs : batchDelayMs;
   }
 
   async run(input: TInput, annotation: QueryAnnotation): Promise<TOutput> {
     const key = this.runner.key(input);
-    const delay = this.batchDelayMs();
+    const delay = maybeCall(this.batchDelayMs);
 
     // Queue return promise of this method.
     const defer = pDefer<TOutput>();

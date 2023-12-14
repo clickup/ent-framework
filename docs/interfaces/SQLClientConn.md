@@ -2,7 +2,8 @@
 
 # Interface: SQLClientConn
 
-An opened PostgreSQL connection. Only multi-queries are supported.
+An opened PostgreSQL connection. Only multi-queries are supported, so we
+can't use $N parameter substitutions.
 
 ## Properties
 
@@ -12,7 +13,7 @@ An opened PostgreSQL connection. Only multi-queries are supported.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:24](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L24)
+[src/sql/SQLClient.ts:55](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L55)
 
 ## Methods
 
@@ -38,7 +39,7 @@ An opened PostgreSQL connection. Only multi-queries are supported.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:25](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L25)
+[src/sql/SQLClient.ts:56](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L56)
 
 ___
 
@@ -58,4 +59,4 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClient.ts:28](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L28)
+[src/sql/SQLClient.ts:59](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L59)

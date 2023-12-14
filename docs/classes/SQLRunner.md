@@ -90,7 +90,7 @@ If true, it's a write operation.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:20](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L20)
+[src/abstract/Batcher.ts:21](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L21)
 
 ___
 
@@ -106,7 +106,7 @@ Maximum batch size for this type of operations.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:27](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L27)
+[src/abstract/Batcher.ts:28](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L28)
 
 ___
 
@@ -123,7 +123,7 @@ instead.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:33](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L33)
+[src/abstract/Batcher.ts:34](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L34)
 
 ___
 
@@ -137,7 +137,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Batcher.ts:83](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L83)
+[src/abstract/Batcher.ts:84](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L84)
 
 ___
 
@@ -215,7 +215,7 @@ one input to process, not many.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:44](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L44)
+[src/abstract/Batcher.ts:45](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L45)
 
 ___
 
@@ -242,7 +242,7 @@ Typically issues complex queries with magic.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:52](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L52)
+[src/abstract/Batcher.ts:53](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L53)
 
 ___
 
@@ -270,7 +270,7 @@ into one input; e.g. this is needed for inserts).
 
 #### Defined in
 
-[src/abstract/Batcher.ts:90](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L90)
+[src/abstract/Batcher.ts:91](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L91)
 
 ___
 

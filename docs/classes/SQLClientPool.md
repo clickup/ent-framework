@@ -16,13 +16,13 @@ implement.
 
 ### constructor
 
-• **new SQLClientPool**(`dest`)
+• **new SQLClientPool**(`options`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `dest` | [`SQLClientDest`](../interfaces/SQLClientDest.md) |
+| `options` | [`SQLClientPoolOptions`](../interfaces/SQLClientPoolOptions.md) |
 
 #### Overrides
 
@@ -30,59 +30,15 @@ implement.
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:73](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L73)
+[src/sql/SQLClientPool.ts:68](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L68)
 
 ## Properties
-
-### name
-
-• `Readonly` **name**: `string`
-
-#### Inherited from
-
-[SQLClient](SQLClient.md).[name](SQLClient.md#name)
-
-#### Defined in
-
-[src/abstract/Client.ts:52](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L52)
-
-___
-
-### isMaster
-
-• `Readonly` **isMaster**: `boolean`
-
-#### Inherited from
-
-[SQLClient](SQLClient.md).[isMaster](SQLClient.md#ismaster)
-
-#### Defined in
-
-[src/abstract/Client.ts:53](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L53)
-
-___
-
-### loggers
-
-• `Readonly` **loggers**: [`Loggers`](../interfaces/Loggers.md)
-
-#### Inherited from
-
-[SQLClient](SQLClient.md).[loggers](SQLClient.md#loggers)
-
-#### Defined in
-
-[src/abstract/Client.ts:54](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L54)
-
-___
 
 ### shardName
 
 • `Readonly` **shardName**: `string` = `"public"`
 
-Each Client may be bound to some Shard, so the queries executed via it will
-be namespaced to this Shard. E.g. in PostgreSQL, Shard name is schema name
-(or "public" if the Client wasn't created by withShard() method).
+Name of the shard associated to this Client.
 
 #### Inherited from
 
@@ -90,7 +46,7 @@ be namespaced to this Shard. E.g. in PostgreSQL, Shard name is schema name
 
 #### Defined in
 
-[src/sql/SQLClient.ts:39](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L39)
+[src/sql/SQLClient.ts:80](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L80)
 
 ___
 
@@ -98,8 +54,7 @@ ___
 
 • `Readonly` **timelineManager**: [`TimelineManager`](TimelineManager.md)
 
-Tracks the master/replica replication timeline position. Shared across all
-the Clients within the same Island.
+An active TimelineManager for this particular Client.
 
 #### Inherited from
 
@@ -107,17 +62,37 @@ the Clients within the same Island.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:41](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L41)
+[src/sql/SQLClient.ts:83](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L83)
 
 ___
 
-### dest
+### cnt
 
-• `Readonly` **dest**: [`SQLClientDest`](../interfaces/SQLClientDest.md)
+• `Readonly` **cnt**: `number`
+
+#### Inherited from
+
+[SQLClient](SQLClient.md).[cnt](SQLClient.md#cnt)
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:73](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L73)
+[src/sql/SQLClient.ts:96](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L96)
+
+___
+
+### options
+
+• `Readonly` **options**: `Required`<[`SQLClientPoolOptions`](../interfaces/SQLClientPoolOptions.md)\>
+
+SQLClient configuration options.
+
+#### Overrides
+
+[SQLClient](SQLClient.md).[options](SQLClient.md#options)
+
+#### Defined in
+
+[src/sql/SQLClientPool.ts:49](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L49)
 
 ## Methods
 
@@ -169,13 +144,16 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 #### Defined in
 
-[src/abstract/Client.ts:81](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L81)
+[src/abstract/Client.ts:105](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L105)
 
 ___
 
 ### query
 
 ▸ **query**<`TRow`\>(`«destructured»`): `Promise`<`TRow`[]\>
+
+Sends a query (internally, a multi-query). After the query finishes, we
+should expect that isMaster() returns the actual master/replica role.
 
 #### Type parameters
 
@@ -206,7 +184,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClient.ts:85](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L85)
+[src/sql/SQLClient.ts:128](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L128)
 
 ___
 
@@ -227,7 +205,7 @@ database.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:269](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L269)
+[src/sql/SQLClient.ts:318](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L318)
 
 ___
 
@@ -253,7 +231,7 @@ Extracts Shard number from an ID.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:293](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L293)
+[src/sql/SQLClient.ts:342](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L342)
 
 ___
 
@@ -280,7 +258,29 @@ new Client will share the same connection pool with the parent's Client.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:350](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L350)
+[src/sql/SQLClient.ts:399](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L399)
+
+___
+
+### isMaster
+
+▸ **isMaster**(): `boolean`
+
+Returns true if, after the last query, the Client reported being a master
+node. Master and replica roles may switch online unpredictably, without
+reconnecting, so we only know the role after a query.
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[SQLClient](SQLClient.md).[isMaster](SQLClient.md#ismaster)
+
+#### Defined in
+
+[src/sql/SQLClient.ts:408](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L408)
 
 ___
 
@@ -298,7 +298,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:56](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L56)
+[src/sql/SQLClientPool.ts:51](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L51)
 
 ___
 
@@ -322,7 +322,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:60](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L60)
+[src/sql/SQLClientPool.ts:55](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L55)
 
 ___
 
@@ -346,7 +346,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:65](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L65)
+[src/sql/SQLClientPool.ts:60](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L60)
 
 ___
 

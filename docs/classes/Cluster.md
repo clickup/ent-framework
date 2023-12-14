@@ -38,7 +38,7 @@ Shard 0 is a special "global" Shard.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:89](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L89)
+[src/abstract/Cluster.ts:95](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L95)
 
 ## Properties
 
@@ -48,7 +48,7 @@ Shard 0 is a special "global" Shard.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:86](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L86)
+[src/abstract/Cluster.ts:92](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L92)
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Cluster.ts:87](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L87)
+[src/abstract/Cluster.ts:93](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L93)
 
 ## Methods
 
@@ -75,7 +75,7 @@ particular Client's implementation, what does a "pre-warmed Client" mean.)
 
 #### Defined in
 
-[src/abstract/Cluster.ts:132](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L132)
+[src/abstract/Cluster.ts:133](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L133)
 
 ___
 
@@ -93,7 +93,7 @@ actual query.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:146](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L146)
+[src/abstract/Cluster.ts:147](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L147)
 
 ___
 
@@ -127,7 +127,7 @@ the query), no matter whether it was an immediate call or a deferred one.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:165](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L165)
+[src/abstract/Cluster.ts:166](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L166)
 
 ___
 
@@ -150,7 +150,7 @@ Returns a random Shard among the ones which are currently known
 
 #### Defined in
 
-[src/abstract/Cluster.ts:174](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L174)
+[src/abstract/Cluster.ts:175](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L175)
 
 ___
 
@@ -166,7 +166,7 @@ Returns all currently known (discovered) non-global Shards in the Cluster.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:193](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L193)
+[src/abstract/Cluster.ts:194](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L194)
 
 ___
 
@@ -182,7 +182,7 @@ Returns all Island numbers in the Cluster.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:201](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L201)
+[src/abstract/Cluster.ts:202](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L202)
 
 ___
 
@@ -204,7 +204,7 @@ Returns all currently known (discovered) Shards of a particular Island.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:208](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L208)
+[src/abstract/Cluster.ts:209](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L209)
 
 ___
 
@@ -227,4 +227,4 @@ Returns a Client of a particular Island.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:220](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L220)
+[src/abstract/Cluster.ts:221](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L221)

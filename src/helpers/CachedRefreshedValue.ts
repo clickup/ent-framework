@@ -1,13 +1,14 @@
 import { Memoize } from "fast-typescript-memoize";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
-import { runInVoid } from "./misc";
+import type { MaybeCallable } from "./misc";
+import { maybeCall, runInVoid } from "./misc";
 
 export interface CachedRefreshedValueOptions<TValue> {
   /** Delay between calling resolver. */
-  delayMs: number;
+  delayMs: MaybeCallable<number>;
   /** Log a timeout Error if a resolver takes more than X ms to complete. */
-  warningTimeoutMs: number;
+  warningTimeoutMs: MaybeCallable<number>;
   /** A resolver function that returns the value. It's assumed that this
    * function would eventually either resolve or throw. */
   resolverFn: () => Promise<TValue>;
@@ -79,7 +80,7 @@ export class CachedRefreshedValue<TValue> {
    * result in an error.
    */
   destroy(): void {
-    this.destroyedError = new Error(
+    this.destroyedError = Error(
       `${this.constructor.name}: This instance is destroyed`
     );
   }
@@ -87,18 +88,20 @@ export class CachedRefreshedValue<TValue> {
   @Memoize()
   private async refreshLoop(): Promise<void> {
     while (!this.destroyedError) {
+      const warningTimeoutMs = maybeCall(this.options.warningTimeoutMs);
       const startTime = performance.now();
       const timeout = setTimeout(() => {
         try {
           this.options.onError(
             Error(
-              `${this.constructor.name}.${this.refreshLoop.name}: Warning: resolverFn did not complete in ${this.options.warningTimeoutMs}ms!`
+              `${this.constructor.name}.${this.refreshLoop.name}: Warning: ` +
+                `resolverFn did not complete in ${warningTimeoutMs} ms!`
             )
           );
         } catch (e: unknown) {
           // noop
         }
-      }, this.options.warningTimeoutMs);
+      }, warningTimeoutMs);
       try {
         const val = await this.options.resolverFn();
         if (this.latestAt < startTime) {
@@ -125,7 +128,7 @@ export class CachedRefreshedValue<TValue> {
       this.skipDelay = () => delayDeferred.resolve();
       runInVoid(
         this.options
-          .delay(this.options.delayMs)
+          .delay(maybeCall(this.options.delayMs))
           .finally(() => delayDeferred.resolve())
       );
       await delayDeferred.promise;

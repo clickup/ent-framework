@@ -16,34 +16,45 @@ tracks the master/replica timeline. The concrete query sending implementation
 
 ### constructor
 
-• **new Client**(`name`, `isMaster`, `loggers`, `batchDelayMs?`)
+• **new Client**(`options`)
+
+Initializes an instance of Client.
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `name` | `string` |
-| `isMaster` | `boolean` |
-| `loggers` | [`Loggers`](../interfaces/Loggers.md) |
-| `batchDelayMs?` | `number` \| () => `number` |
+| `options` | [`ClientOptions`](../interfaces/ClientOptions.md) |
 
 #### Defined in
 
-[src/abstract/Client.ts:51](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L51)
+[src/abstract/Client.ts:76](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L76)
 
 ## Properties
+
+### options
+
+• `Readonly` **options**: `Required`<[`ClientOptions`](../interfaces/ClientOptions.md)\>
+
+Client configuration options.
+
+#### Defined in
+
+[src/abstract/Client.ts:31](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L31)
+
+___
 
 ### shardName
 
 • `Readonly` `Abstract` **shardName**: `string`
 
-Each Client may be bound to some Shard, so the queries executed via it will
-be namespaced to this Shard. E.g. in PostgreSQL, Shard name is schema name
-(or "public" if the Client wasn't created by withShard() method).
+Each Client may be bound to some Shard, so the queries executed via it
+will be namespaced to this Shard. E.g. in PostgreSQL, Shard name is schema
+name (or "public" if the Client wasn't created by withShard() method).
 
 #### Defined in
 
-[src/abstract/Client.ts:19](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L19)
+[src/abstract/Client.ts:36](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L36)
 
 ___
 
@@ -56,37 +67,7 @@ the Clients within the same Island.
 
 #### Defined in
 
-[src/abstract/Client.ts:25](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L25)
-
-___
-
-### name
-
-• `Readonly` **name**: `string`
-
-#### Defined in
-
-[src/abstract/Client.ts:52](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L52)
-
-___
-
-### isMaster
-
-• `Readonly` **isMaster**: `boolean`
-
-#### Defined in
-
-[src/abstract/Client.ts:53](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L53)
-
-___
-
-### loggers
-
-• `Readonly` **loggers**: [`Loggers`](../interfaces/Loggers.md)
-
-#### Defined in
-
-[src/abstract/Client.ts:54](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L54)
+[src/abstract/Client.ts:40](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L40)
 
 ## Methods
 
@@ -110,7 +91,7 @@ forceDisconnect, all of the connections will be closed immediately.
 
 #### Defined in
 
-[src/abstract/Client.ts:32](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L32)
+[src/abstract/Client.ts:47](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L47)
 
 ___
 
@@ -127,7 +108,7 @@ database.
 
 #### Defined in
 
-[src/abstract/Client.ts:38](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L38)
+[src/abstract/Client.ts:53](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L53)
 
 ___
 
@@ -149,7 +130,7 @@ Extracts Shard number from an ID.
 
 #### Defined in
 
-[src/abstract/Client.ts:43](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L43)
+[src/abstract/Client.ts:58](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L58)
 
 ___
 
@@ -172,7 +153,25 @@ new Client will share the same connection pool with the parent's Client.
 
 #### Defined in
 
-[src/abstract/Client.ts:49](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L49)
+[src/abstract/Client.ts:64](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L64)
+
+___
+
+### isMaster
+
+▸ `Abstract` **isMaster**(): `boolean`
+
+Returns true if, after the last query, the Client reported being a master
+node. Master and replica roles may switch online unpredictably, without
+reconnecting, so we only know the role after a query.
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/abstract/Client.ts:71](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L71)
 
 ___
 
@@ -220,7 +219,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 #### Defined in
 
-[src/abstract/Client.ts:81](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L81)
+[src/abstract/Client.ts:105](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L105)
 
 ___
 
@@ -244,7 +243,7 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 #### Defined in
 
-[src/abstract/Client.ts:102](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L102)
+[src/abstract/Client.ts:126](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L126)
 
 ___
 
@@ -263,4 +262,4 @@ full-text dictionaries).
 
 #### Defined in
 
-[src/abstract/Client.ts:120](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L120)
+[src/abstract/Client.ts:144](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L144)

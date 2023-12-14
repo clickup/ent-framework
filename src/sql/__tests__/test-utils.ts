@@ -19,7 +19,7 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
   readonly queries: string[] = [];
 
   constructor(public readonly client: SQLClient) {
-    super("test", client.isMaster, client.loggers);
+    super({ ...client.options, name: "test" });
   }
 
   get shardName(): string {
@@ -34,13 +34,6 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
     return this.client.end(forceDisconnect);
   }
 
-  async query<TRes>(
-    params: Parameters<SQLClient["query"]>[0]
-  ): Promise<TRes[]> {
-    this.queries.push(escapeLiteral(params.query));
-    return this.client.query<TRes>(params);
-  }
-
   async shardNos(): Promise<readonly number[]> {
     return this.client.shardNos();
   }
@@ -51,6 +44,17 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
 
   withShard(no: number): this {
     return new TestSQLClient(this.client.withShard(no)) as this;
+  }
+
+  isMaster(): boolean {
+    return this.client.isMaster();
+  }
+
+  async query<TRes>(
+    params: Parameters<SQLClient["query"]>[0]
+  ): Promise<TRes[]> {
+    this.queries.push(escapeLiteral(params.query));
+    return this.client.query<TRes>(params);
   }
 
   toMatchSnapshot(): void {
@@ -145,9 +149,9 @@ export class ByteaBuffer {
 }
 
 /**
- * A SQL Client config we use in tests.
+ * A node-postgres config we use in tests.
  */
-export const testConfig = {
+export const TEST_CONFIG = {
   host: process.env.PGHOST || process.env.DB_HOST_DEFAULT,
   port: parseInt(process.env.PGPORT || process.env.DB_PORT || "5432"),
   database: process.env.PGDATABASE || process.env.DB_DATABASE,
@@ -160,19 +164,19 @@ export const testConfig = {
  */
 export const testCluster = new Cluster({
   shardsDiscoverIntervalMs: 500,
-  islands: [{ no: 0, nodes: [testConfig, testConfig] }],
-  createClient: (isMaster, config) =>
+  islands: [{ no: 0, nodes: [TEST_CONFIG, TEST_CONFIG] }],
+  createClient: (config, nodeNo) =>
     new TestSQLClient(
       new SQLClientPool({
-        name: "test-pool",
+        name: `test-pool(replica=${nodeNo > 0})`,
+        loggers: { swallowedErrorLogger: () => {} },
+        isAlwaysLaggingReplica: nodeNo > 0,
         shards: {
           nameFormat: "sh%04d",
           discoverQuery:
             "SELECT nspname FROM pg_namespace WHERE nspname ~ 'sh[0-9]+'",
         },
-        isMaster,
         config,
-        loggers: { swallowedErrorLogger: () => {} },
       })
     ),
 });

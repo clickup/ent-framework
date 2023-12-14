@@ -1,9 +1,10 @@
 import { inspect } from "util";
+import defaults from "lodash/defaults";
 import type { QueryResult, QueryResultRow } from "pg";
+import type { ClientOptions } from "../abstract/Client";
 import { Client } from "../abstract/Client";
-import type { ClientQueryLoggerProps, Loggers } from "../abstract/Loggers";
+import type { ClientQueryLoggerProps } from "../abstract/Loggers";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
-
 import { ShardError } from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
 import { nullthrows, sanitizeIDForDebugPrinting } from "../helpers/misc";
@@ -18,7 +19,34 @@ const MAX_BIGINT_RE = new RegExp("^\\d{1," + MAX_BIGINT.length + "}$");
 const PG_CODE_UNDEFINED_TABLE = "42P01";
 
 /**
- * An opened PostgreSQL connection. Only multi-queries are supported.
+ * Options for SQLClient constructor.
+ */
+export interface SQLClientOptions extends ClientOptions {
+  /** Info on how to discover the shards. */
+  shards?: {
+    /** Name of a PG shard schema (e.g. "sh%04d"). */
+    nameFormat: string;
+    /** A SQL query which should return the names of shard schemas served by
+     * this Client. */
+    discoverQuery: string;
+  } | null;
+  /** PG "SET key=value" hints to run before each query. */
+  hints?: Record<string, string> | null;
+  /** After how many milliseconds we give up waiting for the replica to catch up
+   * with the master. */
+  maxReplicationLagMs?: number;
+  /** If true, this Client pretends to be an "always lagging" replica. It is
+   * helpful while testing replication lag code (typically done by just manually
+   * creating a copy of the database and declaring it as a replica, and then
+   * setting isAlwaysLaggingReplica=true for it). For such cases, we treat such
+   * "replica" as always lagging, i.e. having pos=0 which is less than any known
+   * master's pos. */
+  isAlwaysLaggingReplica?: boolean;
+}
+
+/**
+ * An opened PostgreSQL connection. Only multi-queries are supported, so we
+ * can't use $N parameter substitutions.
  */
 export interface SQLClientConn {
   id?: number;
@@ -36,11 +64,22 @@ export interface SQLClientConn {
 export abstract class SQLClient extends Client {
   private shardNoPadLen: number;
 
+  /** The derived class must set this flag after each request to reflect the
+   * actual role of the client. The idea is that master/replica role may change
+   * online, without reconnecting the Client, so we need to refresh it after
+   * each request and be ready for a fallback. */
+  private reportedMasterAfterLastQuery: boolean = false;
+
+  /** SQLClient configuration options. */
+  override readonly options: Required<SQLClientOptions>;
+
+  /** Name of the shard associated to this Client. */
   readonly shardName: string = "public";
 
+  /** An active TimelineManager for this particular Client. */
   readonly timelineManager = new TimelineManager(
-    this.maxReplicationLagMs ?? DEFAULT_MAX_REPLICATION_LAG_MS,
-    this.isMaster ? null : DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS,
+    this.options.maxReplicationLagMs,
+    DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS,
     async () =>
       this.query({
         query: ["SELECT 'TIMELINE_POS_REFRESH'"],
@@ -57,20 +96,15 @@ export abstract class SQLClient extends Client {
 
   protected abstract poolStats(): ClientQueryLoggerProps["poolStats"];
 
-  constructor(
-    name: string,
-    isMaster: boolean,
-    loggers: Loggers,
-    private hints?: Record<string, string>,
-    private shards?: {
-      nameFormat: string;
-      discoverQuery: string;
-    },
-    private maxReplicationLagMs?: number,
-    batchDelayMs?: number | (() => number)
-  ) {
-    super(name, isMaster, loggers, batchDelayMs);
-    if (this.shards) {
+  constructor(options: SQLClientOptions) {
+    super(options);
+    this.options = defaults({}, (this as Client).options, {
+      shards: null,
+      hints: null,
+      maxReplicationLagMs: DEFAULT_MAX_REPLICATION_LAG_MS,
+      isAlwaysLaggingReplica: false,
+    });
+    if (this.options.shards) {
       this.shardNoPadLen = this.buildShardName(0).match(/(\d+)/)
         ? RegExp.$1.length
         : 0;
@@ -82,6 +116,10 @@ export abstract class SQLClient extends Client {
     }
   }
 
+  /**
+   * Sends a query (internally, a multi-query). After the query finishes, we
+   * should expect that isMaster() returns the actual master/replica role.
+   */
   async query<TRow>({
     query: queryLiteral,
     hints,
@@ -100,7 +138,6 @@ export abstract class SQLClient extends Client {
     batchFactor?: number;
   }): Promise<TRow[]> {
     annotations ??= [];
-
     const query = escapeLiteral(queryLiteral).trimEnd();
 
     const queriesPrologue: string[] = [];
@@ -120,9 +157,11 @@ export abstract class SQLClient extends Client {
       `/*${this.shardName}*/` + [...queriesPrologue, query].join("; ");
 
     // Prepend internal per-Client hints to the prologue.
-    if (this.hints) {
+    if (this.options.hints) {
       queriesPrologue.unshift(
-        ...Object.entries(this.hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`)
+        ...Object.entries(this.options.hints).map(
+          ([k, v]) => `SET LOCAL ${k} TO ${v}`
+        )
       );
     }
 
@@ -146,13 +185,12 @@ export abstract class SQLClient extends Client {
       queriesEpilogue.push("COMMIT");
     }
 
-    if (this.isMaster) {
-      // For master, we read its WAL LSN after each query.
-      queriesEpilogue.push("SELECT pg_current_wal_insert_lsn()");
-    } else {
-      // For replica, we read its WAL LSN as a piggy pack to each query.
-      queriesEpilogue.push("SELECT pg_last_wal_replay_lsn()");
-    }
+    // For master, we read its WAL LSN (pg_current_wal_insert_lsn) after each
+    // query. For replica, we read its WAL LSN (pg_last_wal_replay_lsn) as a
+    // piggy pack to each query.
+    queriesEpilogue.push(
+      "SELECT pg_is_in_recovery(), pg_current_wal_insert_lsn(), pg_last_wal_replay_lsn()"
+    );
 
     const queries = [...queriesPrologue, query, ...queriesEpilogue];
 
@@ -202,23 +240,25 @@ export abstract class SQLClient extends Client {
 
           res = resMulti[queriesPrologue.length].rows;
 
-          const lsn = resMulti[resMulti.length - 1].rows[0] as {
-            pg_current_wal_insert_lsn?: string | null;
-            pg_last_wal_replay_lsn?: string | null;
+          const meta = resMulti[resMulti.length - 1].rows[0] as {
+            pg_is_in_recovery: boolean;
+            pg_current_wal_insert_lsn: string | null;
+            pg_last_wal_replay_lsn: string | null;
           };
+
+          this.reportedMasterAfterLastQuery = this.options
+            .isAlwaysLaggingReplica
+            ? false
+            : !meta.pg_is_in_recovery;
           this.timelineManager.setCurrentPos(
-            this.isMaster
-              ? // Master always has pg_current_wal_insert_lsn defined.
-                nullthrows(parseLsn(lsn.pg_current_wal_insert_lsn))
-              : // When pg_last_wal_replay_lsn is returned as null, it means that
-                // the Client's database is not a replica, i.e. it doesn't
-                // replay from a master. This happens e.g. on dev environment
-                // when testing replication lag code (typically done by just
-                // manually creating a copy of the database and declaring it as
-                // a replica). For such cases, we treat such "replica" as always
-                // lagging, i.e. having pos=0 which is less than any known
-                // master's pos.
-                parseLsn(lsn.pg_last_wal_replay_lsn) ?? BigInt(0)
+            this.options.isAlwaysLaggingReplica
+              ? // For debugging, we pretend that the replica is always lagging.
+                BigInt(0)
+              : meta.pg_is_in_recovery
+              ? // This is a replica, so pg_last_wal_replay_lsn must be non-null.
+                nullthrows(parseLsn(meta.pg_last_wal_replay_lsn))
+              : // Master always has pg_current_wal_insert_lsn defined.
+                nullthrows(parseLsn(meta.pg_current_wal_insert_lsn))
           );
         } finally {
           this.releaseConn(conn);
@@ -228,10 +268,10 @@ export abstract class SQLClient extends Client {
         throw e;
       } finally {
         const totalElapsed = performance.now() - startTime;
-        this.loggers.clientQueryLogger?.({
+        this.options.loggers.clientQueryLogger?.({
           annotations,
           connID: "" + connID,
-          backend: this.name,
+          backend: this.options.name,
           op,
           shard: this.shardName,
           table,
@@ -244,7 +284,7 @@ export abstract class SQLClient extends Client {
           },
           poolStats: this.poolStats(),
           error,
-          isMaster: this.isMaster,
+          isMaster: this.isMaster(),
         });
       }
 
@@ -254,11 +294,15 @@ export abstract class SQLClient extends Client {
         origError instanceof Error &&
         (origError as any).code === PG_CODE_UNDEFINED_TABLE
       ) {
-        throw new ShardError(origError, this.name, "rediscover");
+        throw new ShardError(origError, this.options.name, "rediscover");
       } else if (origError instanceof Error && (origError as any).severity) {
         // Only wrap the errors which PG sent to us explicitly. Those errors
         // mean that there was some aborted transaction.
-        throw new SQLError(origError, this.name, debugQueryWithHints.trim());
+        throw new SQLError(
+          origError,
+          this.options.name,
+          debugQueryWithHints.trim()
+        );
       } else {
         // Some other error (hard to reproduce; possibly a connection error?).
         throw origError;
@@ -268,13 +312,13 @@ export abstract class SQLClient extends Client {
 
   async shardNos(): Promise<readonly number[]> {
     // An installation without sharding enabled.
-    if (!this.shards) {
+    if (!this.options.shards) {
       return [0];
     }
 
     // e.g. sh0000, sh0123 and not e.g. sh1 or sh12345678
     const rows = await this.query<Partial<Record<string, string>>>({
-      query: [this.shards.discoverQuery],
+      query: [this.options.shards.discoverQuery],
       isWrite: false,
       annotations: [],
       op: "SHARDS",
@@ -292,7 +336,7 @@ export abstract class SQLClient extends Client {
 
   shardNoByID(id: string): number {
     // An installation without sharding enabled.
-    if (!this.shards) {
+    if (!this.options.shards) {
       return 0;
     }
 
@@ -339,7 +383,7 @@ export abstract class SQLClient extends Client {
       const idSafe = sanitizeIDForDebugPrinting(id);
       throw new ShardError(
         `Cannot parse ID ${idSafe} to detect shard number`,
-        this.name,
+        this.options.name,
         "fail"
       );
     }
@@ -356,10 +400,14 @@ export abstract class SQLClient extends Client {
     });
   }
 
+  isMaster(): boolean {
+    return this.reportedMasterAfterLastQuery;
+  }
+
   private buildShardName(no: number | string): string {
     // e.g. "sh%04d" -> "sh0042"
-    return this.shards
-      ? this.shards.nameFormat.replace(
+    return this.options.shards
+      ? this.options.shards.nameFormat.replace(
           /%(0?)(\d+)[sd]/,
           (_, zero: string, d: string) =>
             no.toString().padStart(zero ? parseInt(d) : 0, "0")

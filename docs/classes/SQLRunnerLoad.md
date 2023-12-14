@@ -60,7 +60,7 @@ specs.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:83](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L83)
+[src/abstract/Batcher.ts:84](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L84)
 
 ___
 

@@ -46,6 +46,11 @@ export type PickPartial<T> = {
 };
 
 /**
+ * Denotes an option which can be dynamically configured at runtime.
+ */
+export type MaybeCallable<T> = T | (() => T);
+
+/**
  * Turns a list of Promises to a list of Promise resolution results.
  */
 export async function join<TList extends readonly unknown[]>(
@@ -246,7 +251,7 @@ export function nullthrows<T>(x?: T | null, message?: string | Error): T {
   const error =
     message instanceof Error
       ? message
-      : new Error(message ?? `Got unexpected ${x} in nullthrows()`);
+      : Error(message ?? `Got unexpected ${x} in nullthrows()`);
   Error.captureStackTrace(error, nullthrows);
   throw error;
 }
@@ -298,4 +303,11 @@ export function entries<K extends string, V>(
   obj: Partial<Record<K, V>>
 ): Array<[K, V]> {
   return Object.entries(obj) as Array<[K, V]>;
+}
+
+/**
+ * If the passed value is a function, calls it; otherwise, returns it intact.
+ */
+export function maybeCall<T>(valueOrFn: MaybeCallable<T>): T {
+  return valueOrFn instanceof Function ? valueOrFn() : valueOrFn;
 }

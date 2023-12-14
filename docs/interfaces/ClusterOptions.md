@@ -22,17 +22,17 @@ passing it as a getter.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:24](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L24)
+[src/abstract/Cluster.ts:30](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L30)
 
 ___
 
 ### createClient
 
-• **createClient**: (`isMaster`: `boolean`, `node`: `TNode`) => `TClient`
+• **createClient**: (`node`: `TNode`, `nodeNo`: `number`) => `TClient`
 
 #### Type declaration
 
-▸ (`isMaster`, `node`): `TClient`
+▸ (`node`, `nodeNo`): `TClient`
 
 Given a node of some Island, instantiates a Client for this node. Called
 when a new node appears in the Cluster statically or dynamically.
@@ -41,8 +41,8 @@ when a new node appears in the Cluster statically or dynamically.
 
 | Name | Type |
 | :------ | :------ |
-| `isMaster` | `boolean` |
 | `node` | `TNode` |
+| `nodeNo` | `number` |
 
 ##### Returns
 
@@ -50,19 +50,19 @@ when a new node appears in the Cluster statically or dynamically.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:27](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L27)
+[src/abstract/Cluster.ts:33](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L33)
 
 ___
 
 ### shardsDiscoverIntervalMs
 
-• `Optional` **shardsDiscoverIntervalMs**: `number`
+• `Optional` **shardsDiscoverIntervalMs**: `number` \| () => `number`
 
 How often to run Shards rediscovery in normal circumstances.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:29](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L29)
+[src/abstract/Cluster.ts:35](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L35)
 
 ___
 
@@ -77,7 +77,7 @@ rediscovery happens in background.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:34](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L34)
+[src/abstract/Cluster.ts:40](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L40)
 
 ___
 
@@ -90,7 +90,7 @@ we wait between attempts.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:37](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L37)
+[src/abstract/Cluster.ts:43](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L43)
 
 ___
 
@@ -106,7 +106,7 @@ waiting for the resolution.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:43](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L43)
+[src/abstract/Cluster.ts:49](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L49)
 
 ___
 
@@ -120,4 +120,4 @@ another (typically quick).
 
 #### Defined in
 
-[src/abstract/Cluster.ts:47](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L47)
+[src/abstract/Cluster.ts:53](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L53)

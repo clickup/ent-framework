@@ -7,7 +7,7 @@ import { copyStack } from "../helpers/misc";
  * instead, some other exception (lower level) is raised.
  */
 export class ServerError extends Error {
-  constructor(public readonly origError: any, destName: string) {
+  constructor(public readonly origError: any, where: string) {
     super(typeof origError === "string" ? origError : origError.message);
 
     Object.defineProperty(this, "name", {
@@ -22,7 +22,7 @@ export class ServerError extends Error {
       copyStack(this, origError);
     }
 
-    this.stack += `\n    on ${destName}`;
+    this.stack += `\n    on ${where}`;
     delete origError.stack;
   }
 }
