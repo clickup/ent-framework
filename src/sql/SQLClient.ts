@@ -186,10 +186,11 @@ export abstract class SQLClient extends Client {
     }
 
     // For master, we read its WAL LSN (pg_current_wal_insert_lsn) after each
-    // query. For replica, we read its WAL LSN (pg_last_wal_replay_lsn) as a
-    // piggy pack to each query.
+    // query (notice that, when run on a replica, pg_current_wal_insert_lsn()
+    // throws, so we call it only if pg_is_in_recovery() returns false). For
+    // replica, we read its WAL LSN (pg_last_wal_replay_lsn).
     queriesEpilogue.push(
-      "SELECT pg_is_in_recovery(), pg_current_wal_insert_lsn(), pg_last_wal_replay_lsn()"
+      "SELECT CASE WHEN pg_is_in_recovery() THEN NULL ELSE pg_current_wal_insert_lsn() END AS pg_current_wal_insert_lsn, pg_last_wal_replay_lsn()"
     );
 
     const queries = [...queriesPrologue, query, ...queriesEpilogue];
@@ -240,8 +241,7 @@ export abstract class SQLClient extends Client {
 
           res = resMulti[queriesPrologue.length].rows;
 
-          const meta = resMulti[resMulti.length - 1].rows[0] as {
-            pg_is_in_recovery: boolean;
+          const lsns = resMulti[resMulti.length - 1].rows[0] as {
             pg_current_wal_insert_lsn: string | null;
             pg_last_wal_replay_lsn: string | null;
           };
@@ -249,16 +249,16 @@ export abstract class SQLClient extends Client {
           this.reportedMasterAfterLastQuery = this.options
             .isAlwaysLaggingReplica
             ? false
-            : !meta.pg_is_in_recovery;
+            : lsns.pg_current_wal_insert_lsn !== null;
           this.timelineManager.setCurrentPos(
             this.options.isAlwaysLaggingReplica
               ? // For debugging, we pretend that the replica is always lagging.
                 BigInt(0)
-              : meta.pg_is_in_recovery
-              ? // This is a replica, so pg_last_wal_replay_lsn must be non-null.
-                nullthrows(parseLsn(meta.pg_last_wal_replay_lsn))
-              : // Master always has pg_current_wal_insert_lsn defined.
-                nullthrows(parseLsn(meta.pg_current_wal_insert_lsn))
+              : lsns.pg_current_wal_insert_lsn
+              ? // Master always has pg_current_wal_insert_lsn defined.
+                nullthrows(parseLsn(lsns.pg_current_wal_insert_lsn))
+              : // This is a replica, so pg_last_wal_replay_lsn must be non-null.
+                nullthrows(parseLsn(lsns.pg_last_wal_replay_lsn))
           );
         } finally {
           this.releaseConn(conn);
