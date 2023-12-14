@@ -43,7 +43,7 @@ The implementation is as follows:
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:51](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L51)
+[src/helpers/CachedRefreshedValue.ts:52](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L52)
 
 ## Properties
 
@@ -53,7 +53,7 @@ The implementation is as follows:
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:51](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L51)
+[src/helpers/CachedRefreshedValue.ts:52](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L52)
 
 ## Methods
 
@@ -69,7 +69,7 @@ Returns latest cached value.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:56](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L56)
+[src/helpers/CachedRefreshedValue.ts:57](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L57)
 
 ___
 
@@ -85,7 +85,7 @@ Waits for the next successful cache refresh.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:64](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L64)
+[src/helpers/CachedRefreshedValue.ts:65](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L65)
 
 ___
 
@@ -102,4 +102,4 @@ result in an error.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:81](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L81)
+[src/helpers/CachedRefreshedValue.ts:82](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L82)

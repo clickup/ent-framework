@@ -20,8 +20,8 @@ export class Island<TClient extends Client> {
       try {
         return await client.shardNos();
       } catch (error: unknown) {
-        client.loggers.swallowedErrorLogger({
-          where: `${client.constructor.name}(${client.name}): ${this.shardNos.name}()`,
+        client.options.loggers.swallowedErrorLogger({
+          where: `${client.constructor.name}(${client.options.name}): ${this.shardNos.name}()`,
           error,
           elapsed: performance.now() - startTime,
         });

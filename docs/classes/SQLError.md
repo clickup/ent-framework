@@ -17,14 +17,14 @@ instead, some other exception (lower level) is raised.
 
 ### constructor
 
-• **new SQLError**(`origError`, `destName`, `sql`)
+• **new SQLError**(`origError`, `where`, `sql`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `origError` | `any` |
-| `destName` | `string` |
+| `where` | `string` |
 | `sql` | `string` |
 
 #### Overrides

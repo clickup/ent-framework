@@ -62,7 +62,7 @@ Maximum batch size for this type of operations.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:27](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L27)
+[src/abstract/Batcher.ts:28](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L28)
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Batcher.ts:83](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L83)
+[src/abstract/Batcher.ts:84](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L84)
 
 ___
 

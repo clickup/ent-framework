@@ -93,6 +93,7 @@
 
 ## Interfaces
 
+- [ClientOptions](interfaces/ClientOptions.md)
 - [ClusterOptions](interfaces/ClusterOptions.md)
 - [Handler](interfaces/Handler.md)
 - [Loggers](interfaces/Loggers.md)
@@ -114,8 +115,9 @@
 - [Ent](interfaces/Ent.md)
 - [CachedRefreshedValueOptions](interfaces/CachedRefreshedValueOptions.md)
 - [WeakTickerTarget](interfaces/WeakTickerTarget.md)
+- [SQLClientOptions](interfaces/SQLClientOptions.md)
 - [SQLClientConn](interfaces/SQLClientConn.md)
-- [SQLClientDest](interfaces/SQLClientDest.md)
+- [SQLClientPoolOptions](interfaces/SQLClientPoolOptions.md)
 
 ## Type Aliases
 
@@ -756,13 +758,31 @@ Picks only partial (optional) keys of an object.
 
 ___
 
+### MaybeCallable
+
+Ƭ **MaybeCallable**<`T`\>: `T` \| () => `T`
+
+Denotes an option which can be dynamically configured at runtime.
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `T` |
+
+#### Defined in
+
+[src/helpers/misc.ts:51](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L51)
+
+___
+
 ### SQLClientPoolClient
 
 Ƭ **SQLClientPoolClient**: `PoolClient` & { `processID?`: `number` \| ``null`` ; `id?`: `number` ; `closeAt?`: `number`  }
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:35](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L35)
+[src/sql/SQLClientPool.ts:27](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L27)
 
 ___
 
@@ -1292,7 +1312,7 @@ Table -> { id: ["1", "2", "3"], ... }
 
 #### Defined in
 
-[src/abstract/Batcher.ts:8](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L8)
+[src/abstract/Batcher.ts:9](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L9)
 
 ___
 
@@ -1692,7 +1712,7 @@ Turns a list of Promises to a list of Promise resolution results.
 
 #### Defined in
 
-[src/helpers/misc.ts:51](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L51)
+[src/helpers/misc.ts:56](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L56)
 
 ▸ **join**<`TRec`\>(`promises`): `Promise`<{ -readonly [K in keyof TRec]: Awaited<TRec[K]\> }\>
 
@@ -1717,7 +1737,7 @@ Promise resolution results.
 
 #### Defined in
 
-[src/helpers/misc.ts:59](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L59)
+[src/helpers/misc.ts:64](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L64)
 
 ___
 
@@ -1747,7 +1767,7 @@ A shortcut for `await join(arr.map(async ...))`.
 
 #### Defined in
 
-[src/helpers/misc.ts:130](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L130)
+[src/helpers/misc.ts:135](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L135)
 
 ___
 
@@ -1777,7 +1797,7 @@ lightweight exceptions wrapping.
 
 #### Defined in
 
-[src/helpers/misc.ts:141](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L141)
+[src/helpers/misc.ts:146](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L146)
 
 ___
 
@@ -1801,7 +1821,7 @@ test with snapshot for examples.
 
 #### Defined in
 
-[src/helpers/misc.ts:171](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L171)
+[src/helpers/misc.ts:176](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L176)
 
 ___
 
@@ -1820,7 +1840,7 @@ processes.
 
 #### Defined in
 
-[src/helpers/misc.ts:192](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L192)
+[src/helpers/misc.ts:197](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L197)
 
 ___
 
@@ -1843,7 +1863,7 @@ https://medium.com/@chris_72272/what-is-the-fastest-node-js-hashing-algorithm-c1
 
 #### Defined in
 
-[src/helpers/misc.ts:202](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L202)
+[src/helpers/misc.ts:207](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L207)
 
 ___
 
@@ -1865,7 +1885,7 @@ Used to calculate stable hashes of e.g. unique keys.
 
 #### Defined in
 
-[src/helpers/misc.ts:209](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L209)
+[src/helpers/misc.ts:214](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L214)
 
 ___
 
@@ -1887,7 +1907,7 @@ Indents each line of the text with 2 spaces.
 
 #### Defined in
 
-[src/helpers/misc.ts:219](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L219)
+[src/helpers/misc.ts:224](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L224)
 
 ___
 
@@ -1911,7 +1931,7 @@ representations.
 
 #### Defined in
 
-[src/helpers/misc.ts:228](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L228)
+[src/helpers/misc.ts:233](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L233)
 
 ___
 
@@ -1938,7 +1958,7 @@ ___
 
 #### Defined in
 
-[src/helpers/misc.ts:241](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L241)
+[src/helpers/misc.ts:246](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L246)
 
 ___
 
@@ -1970,7 +1990,7 @@ It's like an analog of "async on intent" comment in the code.
 
 #### Defined in
 
-[src/helpers/misc.ts:267](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L267)
+[src/helpers/misc.ts:272](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L272)
 
 ___
 
@@ -2000,7 +2020,7 @@ o is { [\_ in string \| symbol]: any }
 
 #### Defined in
 
-[src/helpers/misc.ts:282](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L282)
+[src/helpers/misc.ts:287](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L287)
 
 ___
 
@@ -2029,7 +2049,35 @@ Same as Object.entries(), but returns strongly-typed entries.
 
 #### Defined in
 
-[src/helpers/misc.ts:297](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L297)
+[src/helpers/misc.ts:302](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L302)
+
+___
+
+### maybeCall
+
+▸ **maybeCall**<`T`\>(`valueOrFn`): `T`
+
+If the passed value is a function, calls it; otherwise, returns it intact.
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `T` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `valueOrFn` | [`MaybeCallable`](modules.md#maybecallable)<`T`\> |
+
+#### Returns
+
+`T`
+
+#### Defined in
+
+[src/helpers/misc.ts:311](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L311)
 
 ___
 
@@ -2052,7 +2100,7 @@ THis function checks that a string can be passed to PG as a bigint.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:375](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L375)
+[src/sql/SQLClient.ts:428](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L428)
 
 ___
 
@@ -2074,7 +2122,7 @@ Optionally encloses a PG identifier (like table name) in "".
 
 #### Defined in
 
-[src/sql/SQLClient.ts:385](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L385)
+[src/sql/SQLClient.ts:438](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L438)
 
 ___
 
@@ -2100,7 +2148,7 @@ overflow SQL error.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:398](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L398)
+[src/sql/SQLClient.ts:451](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L451)
 
 ___
 
@@ -2123,7 +2171,7 @@ be a preferred way of escaping when we know that the value is a bigint.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:416](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L416)
+[src/sql/SQLClient.ts:469](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L469)
 
 ___
 
@@ -2145,7 +2193,7 @@ Escapes a string as PG string literal.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:432](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L432)
+[src/sql/SQLClient.ts:485](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L485)
 
 ___
 
@@ -2167,7 +2215,7 @@ Escapes an array of strings.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:443](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L443)
+[src/sql/SQLClient.ts:496](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L496)
 
 ___
 
@@ -2190,7 +2238,7 @@ Escapes a date as PG string literal.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:464](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L464)
+[src/sql/SQLClient.ts:517](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L517)
 
 ___
 
@@ -2212,7 +2260,7 @@ Escapes a boolean as PG string literal.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:475](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L475)
+[src/sql/SQLClient.ts:528](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L528)
 
 ___
 
@@ -2245,7 +2293,7 @@ treat them as the element itself. I.e. instead of emitting "(123)" or
 
 #### Defined in
 
-[src/sql/SQLClient.ts:493](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L493)
+[src/sql/SQLClient.ts:546](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L546)
 
 ___
 
@@ -2272,7 +2320,7 @@ of unique key fields), not with values.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:511](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L511)
+[src/sql/SQLClient.ts:564](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L564)
 
 ___
 
@@ -2296,7 +2344,7 @@ escaping the value as string.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:525](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L525)
+[src/sql/SQLClient.ts:578](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L578)
 
 ___
 
@@ -2324,7 +2372,7 @@ placeholder for the replacing value.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:538](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L538)
+[src/sql/SQLClient.ts:591](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L591)
 
 ___
 

@@ -6,8 +6,14 @@ import random from "lodash/random";
 import pTimeout from "p-timeout";
 import { CachedRefreshedValue } from "../helpers/CachedRefreshedValue";
 import { DefaultMap } from "../helpers/DefaultMap";
-import type { PickPartial } from "../helpers/misc";
-import { nullthrows, mapJoin, runInVoid, objectHash } from "../helpers/misc";
+import type { MaybeCallable, PickPartial } from "../helpers/misc";
+import {
+  nullthrows,
+  mapJoin,
+  runInVoid,
+  objectHash,
+  maybeCall,
+} from "../helpers/misc";
 import type { Client } from "./Client";
 import { Island } from "./Island";
 import type { Loggers } from "./Loggers";
@@ -19,14 +25,15 @@ import { ShardError } from "./ShardError";
  * Options for Cluster constructor.
  */
 export interface ClusterOptions<TClient extends Client, TNode> {
-  /** Islands configuration of the Cluster. May be changed dynamically by
-   * passing it as a getter. */
-  islands: ReadonlyArray<{ no: number; nodes: readonly TNode[] }>;
+  /** Islands configuration of the Cluster. */
+  islands: MaybeCallable<
+    ReadonlyArray<{ no: number; nodes: readonly TNode[] }>
+  >;
   /** Given a node of some Island, instantiates a Client for this node. Called
    * when a new node appears in the Cluster statically or dynamically. */
-  createClient: (isMaster: boolean, node: TNode) => TClient;
+  createClient: (node: TNode, nodeNo: number) => TClient;
   /** How often to run Shards rediscovery in normal circumstances. */
-  shardsDiscoverIntervalMs?: number;
+  shardsDiscoverIntervalMs?: number | (() => number);
   /** If there were DB errors during Shards discovery (e.g. transport errors,
    * which is rare), the discovery is retried that many times before giving up
    * and throwing the error through. The number here can be high, because
@@ -88,11 +95,11 @@ export class Cluster<TClient extends Client, TNode = any> {
 
   constructor(options: ClusterOptions<TClient, TNode>) {
     this.islandsMap = new Map(
-      options.islands.map(({ no, nodes }) => [
+      maybeCall(options.islands).map(({ no, nodes }) => [
         no,
         new Island<TClient>(
-          options.createClient(true, nodes[0]),
-          nodes.slice(1).map((node) => options.createClient(false, node))
+          options.createClient(nodes[0], 0),
+          nodes.slice(1).map((node, i) => options.createClient(node, i + 1))
         ),
       ])
     );
@@ -101,18 +108,13 @@ export class Cluster<TClient extends Client, TNode = any> {
       throw Error("The cluster has no islands");
     }
 
-    this.options = defaults({ ...options }, DEFAULT_CLUSTER_OPTIONS);
+    this.options = defaults({}, options, DEFAULT_CLUSTER_OPTIONS);
     this.firstIsland = firstIsland;
-    this.loggers = this.firstIsland.master.loggers;
+    this.loggers = this.firstIsland.master.options.loggers;
     const thisOptions = this.options;
     this.discoverShardsCache = new CachedRefreshedValue({
-      get warningTimeoutMs() {
-        // We assume to not spend >50% of the time on discovering Shards.
-        return thisOptions.shardsDiscoverIntervalMs;
-      },
-      get delayMs() {
-        return thisOptions.shardsDiscoverIntervalMs;
-      },
+      warningTimeoutMs: thisOptions.shardsDiscoverIntervalMs, // assume to not spend >50% of the time on discovering Shards
+      delayMs: thisOptions.shardsDiscoverIntervalMs,
       resolverFn: async () => this.discoverShardsExpensive(),
       delay: async (ms) => delay(ms),
       onError: (error) => {
@@ -242,7 +244,7 @@ export class Cluster<TClient extends Client, TNode = any> {
         const islandNo = shardNoToIslandNo.get(shardNo);
         if (islandNo === undefined) {
           const masterNames = [...this.islandsMap.entries()]
-            .map(([no, { master }]) => `${no}:${master.name}`)
+            .map(([no, { master }]) => `${no}:${master.options.name}`)
             .join(", ");
           throw new ShardError(
             `Shard ${shardNo} is not discoverable (some islands are down? connections limit? no such Shard in the cluster?)`,
@@ -267,7 +269,7 @@ export class Cluster<TClient extends Client, TNode = any> {
             this.discoverShardsCache.waitRefresh(),
             // Timeout = delay between fetches + warning timeout
             // for a fetch.
-            this.options.shardsDiscoverIntervalMs * 2,
+            maybeCall(this.options.shardsDiscoverIntervalMs) * 2,
             "Timed out while waiting for shards discovery."
           ).catch((error) =>
             this.loggers.swallowedErrorLogger({
@@ -306,9 +308,9 @@ export class Cluster<TClient extends Client, TNode = any> {
             if (otherIslandNo) {
               throw Error(
                 `Shard #${shardNo} exists in more than one island (` +
-                  island.master.name +
+                  island.master.options.name +
                   " and " +
-                  this.islandsMap.get(otherIslandNo)?.master.name +
+                  this.islandsMap.get(otherIslandNo)?.master.options.name +
                   ")"
               );
             }

@@ -6,9 +6,9 @@ import { ServerError } from "./ServerError";
 export class ShardError extends ServerError {
   constructor(
     origError: any,
-    destName: string,
+    where: string,
     public readonly postAction: "rediscover" | "fail"
   ) {
-    super(origError, destName);
+    super(origError, where);
   }
 }

@@ -128,7 +128,7 @@ export class Shard<TClient extends Client> {
 
     const replica = await this.shardClient(STALE_REPLICA);
 
-    if (replica.isMaster) {
+    if (replica.isMaster()) {
       return [replica, "master-bc-no-replicas"];
     }
 

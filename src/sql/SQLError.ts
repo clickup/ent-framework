@@ -1,8 +1,8 @@
 import { ServerError } from "../abstract/ServerError";
 
 export class SQLError extends ServerError {
-  constructor(origError: any, destName: string, public readonly sql: string) {
-    super(origError, destName);
+  constructor(origError: any, where: string, public readonly sql: string) {
+    super(origError, where);
 
     Object.defineProperty(this, "sql", {
       value: sql,

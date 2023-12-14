@@ -21,14 +21,14 @@ instead, some other exception (lower level) is raised.
 
 ### constructor
 
-• **new ServerError**(`origError`, `destName`)
+• **new ServerError**(`origError`, `where`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `origError` | `any` |
-| `destName` | `string` |
+| `where` | `string` |
 
 #### Overrides
 

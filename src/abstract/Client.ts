@@ -1,4 +1,6 @@
 import { Memoize } from "fast-typescript-memoize";
+import defaults from "lodash/defaults";
+import type { MaybeCallable } from "../helpers/misc";
 import type { Runner } from "./Batcher";
 import { Batcher } from "./Batcher";
 import type { Loggers } from "./Loggers";
@@ -6,22 +8,35 @@ import type { Schema } from "./Schema";
 import type { TimelineManager } from "./TimelineManager";
 
 /**
+ * Options for Client constructor.
+ */
+export interface ClientOptions {
+  /** Name of the Client; used for logging. */
+  name: string;
+  /** Loggers to be called at different stages. */
+  loggers: Loggers;
+  /** If passed, there will be an artificial queries accumulation delay while
+   * batching the requests. Default is 0 (turned off). Passed to
+   * Batcher#batchDelayMs. */
+  batchDelayMs?: MaybeCallable<number>;
+}
+
+/**
  * Client is a Shard name aware abstraction which sends an actual query and
  * tracks the master/replica timeline. The concrete query sending implementation
  * (including required arguments) is up to the derived classes.
  */
 export abstract class Client {
-  /**
-   * Each Client may be bound to some Shard, so the queries executed via it will
-   * be namespaced to this Shard. E.g. in PostgreSQL, Shard name is schema name
-   * (or "public" if the Client wasn't created by withShard() method).
-   */
+  /** Client configuration options. */
+  readonly options: Required<ClientOptions>;
+
+  /** Each Client may be bound to some Shard, so the queries executed via it
+   * will be namespaced to this Shard. E.g. in PostgreSQL, Shard name is schema
+   * name (or "public" if the Client wasn't created by withShard() method). */
   abstract readonly shardName: string;
 
-  /**
-   * Tracks the master/replica replication timeline position. Shared across all
-   * the Clients within the same Island.
-   */
+  /** Tracks the master/replica replication timeline position. Shared across all
+   * the Clients within the same Island. */
   abstract readonly timelineManager: TimelineManager;
 
   /**
@@ -48,12 +63,21 @@ export abstract class Client {
    */
   abstract withShard(no: number): this;
 
-  constructor(
-    public readonly name: string,
-    public readonly isMaster: boolean,
-    public readonly loggers: Loggers,
-    private readonly batchDelayMs?: number | (() => number)
-  ) {}
+  /**
+   * Returns true if, after the last query, the Client reported being a master
+   * node. Master and replica roles may switch online unpredictably, without
+   * reconnecting, so we only know the role after a query.
+   */
+  abstract isMaster(): boolean;
+
+  /**
+   * Initializes an instance of Client.
+   */
+  constructor(options: ClientOptions) {
+    this.options = defaults({}, options, {
+      batchDelayMs: 0,
+    });
+  }
 
   /**
    * Batcher is per-Client per-query-type per-table-name-and-shape:
@@ -92,20 +116,20 @@ export abstract class Client {
     return new Batcher<TInput, TOutput>(
       runner,
       runner.maxBatchSize,
-      this.batchDelayMs
+      this.options.batchDelayMs
     );
   }
 
   /**
    * Calls swallowedErrorLogger() doing some preliminary amendment.
    */
-  public logSwallowedError(
+  logSwallowedError(
     where: string,
     error: unknown,
     elapsed: number | null
   ): void {
-    this.loggers.swallowedErrorLogger({
-      where: `${this.constructor.name}(${this.name}): ${where}`,
+    this.options.loggers.swallowedErrorLogger({
+      where: `${this.constructor.name}(${this.options.name}): ${where}`,
       error,
       elapsed,
     });

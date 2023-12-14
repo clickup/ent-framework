@@ -1,8 +1,11 @@
+import defaults from "lodash/defaults";
 import range from "lodash/range";
 import type { Connection, PoolClient, PoolConfig } from "pg";
 import { Pool } from "pg";
-import type { ClientQueryLoggerProps, Loggers } from "../abstract/Loggers";
-import { runInVoid } from "../helpers/misc";
+import type { ClientQueryLoggerProps } from "../abstract/Loggers";
+import type { MaybeCallable } from "../helpers/misc";
+import { maybeCall, runInVoid } from "../helpers/misc";
+import type { SQLClientOptions } from "./SQLClient";
 import { SQLClient } from "./SQLClient";
 
 const DEFAULT_PREWARM_INTERVAL_MS = 10000;
@@ -10,23 +13,12 @@ const DEFAULT_MAX_CONN_LIFETIME_JITTER = 0.2;
 
 let connNo = 1;
 
-export interface SQLClientDest {
-  name: string;
-  shards: {
-    nameFormat: string;
-    discoverQuery: string;
-  };
-  isMaster: boolean;
-  hints?: Record<string, string>;
-  batchDelayMs?: number | (() => number);
-  config: PoolConfig & {
-    maxConnLifetimeMs?: number;
-    maxConnLifetimeJitter?: number;
-    maxReplicationLagMs?: number;
-    prewarmIntervalMs?: number;
-    prewarmQuery?: string | (() => string);
-  };
-  loggers: Loggers;
+export interface SQLClientPoolOptions extends SQLClientOptions {
+  config: PoolConfig;
+  maxConnLifetimeMs?: number;
+  maxConnLifetimeJitter?: number;
+  prewarmIntervalMs?: number;
+  prewarmQuery?: MaybeCallable<string>;
 }
 
 // Our extension to Pool connection which adds a couple props to the connection
@@ -53,6 +45,9 @@ export class SQLClientPool extends SQLClient {
     ended: boolean;
   };
 
+  /** SQLClient configuration options. */
+  override readonly options: Required<SQLClientPoolOptions>;
+
   protected async acquireConn(): Promise<PoolClient> {
     return this.state.pool.connect();
   }
@@ -70,30 +65,35 @@ export class SQLClientPool extends SQLClient {
     };
   }
 
-  constructor(public readonly dest: SQLClientDest) {
-    super(
-      dest.name,
-      dest.isMaster,
-      dest.loggers,
-      dest.hints,
-      dest.shards,
-      dest.config.maxReplicationLagMs,
-      dest.batchDelayMs
-    );
+  constructor(options: SQLClientPoolOptions) {
+    super(options);
+    this.options = defaults({}, (this as SQLClient).options, {
+      config: options.config,
+      maxConnLifetimeMs: 0,
+      maxConnLifetimeJitter: DEFAULT_MAX_CONN_LIFETIME_JITTER,
+      prewarmIntervalMs: DEFAULT_PREWARM_INTERVAL_MS,
+      prewarmQuery: () => {
+        // This may be slow: full-text dictionaries initialization is slow, and
+        // also the 1st query in a pg-pool connection is slow.
+        const tokens = `word ${Math.floor(Date.now() / 1000)}`;
+        return `SELECT 'word' @@ plainto_tsquery('english', '${tokens}')`;
+      },
+    });
 
     this.state = {
-      pool: new Pool(dest.config)
+      pool: new Pool(this.options.config)
         .on("connect", (client: SQLClientPoolClient) => {
           this.state.clients.add(client);
           client.id = connNo++;
-          client.closeAt = dest.config.maxConnLifetimeMs
-            ? Date.now() +
-              dest.config.maxConnLifetimeMs *
-                (1 +
-                  (dest.config.maxConnLifetimeJitter ??
-                    DEFAULT_MAX_CONN_LIFETIME_JITTER) *
-                    Math.random())
-            : undefined;
+          client.closeAt =
+            this.options.maxConnLifetimeMs > 0
+              ? Date.now() +
+                this.options.maxConnLifetimeMs *
+                  (1 +
+                    (this.options.maxConnLifetimeJitter ??
+                      DEFAULT_MAX_CONN_LIFETIME_JITTER) *
+                      Math.random())
+              : undefined;
           // Sets a "default error" handler to not let forceDisconnect errors
           // leak to e.g. Jest and the outside world as "unhandled error".
           // Appending an additional error handler to EventEmitter doesn't
@@ -141,27 +141,17 @@ export class SQLClientPool extends SQLClient {
   }
 
   override prewarm(): void {
-    if (!this.dest.config.min) {
+    if (!this.options.config.min) {
       return;
     }
 
-    const toPrewarm = this.dest.config.min - this.state.pool.waitingCount;
+    const toPrewarm = this.options.config.min - this.state.pool.waitingCount;
     if (toPrewarm > 0) {
-      const prewarmQuery =
-        this.dest.config.prewarmQuery ??
-        (() => {
-          // This may be slow: full-text dictionaries initialization is slow,
-          // and also the 1st query in a pg-pool connection is slow.
-          const tokens = `word ${Math.floor(Date.now() / 1000)}`;
-          return `SELECT 'word' @@ plainto_tsquery('english', '${tokens}')`;
-        });
-      const query =
-        typeof prewarmQuery === "string" ? prewarmQuery : prewarmQuery();
       const startTime = performance.now();
       range(toPrewarm).forEach(() =>
         runInVoid(
           this.state.pool
-            .query(query)
+            .query(maybeCall(this.options.prewarmQuery))
             .catch((error) =>
               this.logSwallowedError(
                 "prewarm()",
@@ -176,7 +166,7 @@ export class SQLClientPool extends SQLClient {
     this.state.prewarmTimeout && clearTimeout(this.state.prewarmTimeout);
     this.state.prewarmTimeout = setTimeout(
       () => this.prewarm(),
-      this.dest.config.prewarmIntervalMs ?? DEFAULT_PREWARM_INTERVAL_MS
+      this.options.prewarmIntervalMs
     );
   }
 }

@@ -14,14 +14,14 @@ Thrown by the engine when an error is related to sharding.
 
 ### constructor
 
-• **new ShardError**(`origError`, `destName`, `postAction`)
+• **new ShardError**(`origError`, `where`, `postAction`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `origError` | `any` |
-| `destName` | `string` |
+| `where` | `string` |
 | `postAction` | ``"rediscover"`` \| ``"fail"`` |
 
 #### Overrides

@@ -12,25 +12,25 @@
 
 ### delayMs
 
-• **delayMs**: `number`
+• **delayMs**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
 
 Delay between calling resolver.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:8](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L8)
+[src/helpers/CachedRefreshedValue.ts:9](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L9)
 
 ___
 
 ### warningTimeoutMs
 
-• **warningTimeoutMs**: `number`
+• **warningTimeoutMs**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
 
 Log a timeout Error if a resolver takes more than X ms to complete.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:10](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L10)
+[src/helpers/CachedRefreshedValue.ts:11](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L11)
 
 ___
 
@@ -51,7 +51,7 @@ function would eventually either resolve or throw.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:13](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L13)
+[src/helpers/CachedRefreshedValue.ts:14](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L14)
 
 ___
 
@@ -77,7 +77,7 @@ An error handler.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:15](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L15)
+[src/helpers/CachedRefreshedValue.ts:16](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L16)
 
 ___
 
@@ -103,4 +103,4 @@ A custom delay implementation.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:17](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L17)
+[src/helpers/CachedRefreshedValue.ts:18](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L18)
