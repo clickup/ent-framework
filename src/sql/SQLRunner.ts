@@ -3,8 +3,8 @@ import difference from "lodash/difference";
 import last from "lodash/last";
 import random from "lodash/random";
 import uniq from "lodash/uniq";
-import { Runner } from "../abstract/Batcher";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
+import { Runner } from "../abstract/Runner";
 import type { Schema } from "../abstract/Schema";
 import { hasKey } from "../helpers/misc";
 import type {
@@ -45,11 +45,7 @@ export abstract class SQLRunner<
   private dbValueToJs: Array<[string, (v: unknown) => any]> = [];
   private stringify: Partial<Record<string, (v: unknown) => string>> = {};
 
-  readonly shardName = this.client.shardName;
-
   override ["constructor"]!: typeof SQLRunner;
-
-  abstract readonly op: string;
 
   protected async clientQuery<TOutput extends object>(
     sql: string,

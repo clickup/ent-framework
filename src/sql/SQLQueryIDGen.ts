@@ -26,7 +26,9 @@ export class SQLRunnerIDGen<TTable extends Table> extends SQLRunner<
     this.schema.table[ID].autoInsert,
     `Schema for ${this.name}.${ID} must have autoInsert attribute defined`
   );
+
   readonly op = "ID_GEN";
+  readonly maxBatchSize = 100;
   readonly default = "never_happens"; // abstract property implementation
 
   async runSingle(

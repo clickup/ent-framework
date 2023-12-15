@@ -1,9 +1,9 @@
 import { Memoize } from "fast-typescript-memoize";
 import defaults from "lodash/defaults";
-import type { MaybeCallable } from "../helpers/misc";
-import type { Runner } from "./Batcher";
+import type { MaybeCallable, PickPartial } from "../helpers/misc";
 import { Batcher } from "./Batcher";
 import type { Loggers } from "./Loggers";
+import type { Runner } from "./Runner";
 import type { Schema } from "./Schema";
 import type { TimelineManager } from "./TimelineManager";
 
@@ -27,6 +27,11 @@ export interface ClientOptions {
  * (including required arguments) is up to the derived classes.
  */
 export abstract class Client {
+  /** Default values for the constructor options. */
+  static readonly DEFAULT_OPTIONS: Required<PickPartial<ClientOptions>> = {
+    batchDelayMs: 0,
+  };
+
   /** Client configuration options. */
   readonly options: Required<ClientOptions>;
 
@@ -74,9 +79,7 @@ export abstract class Client {
    * Initializes an instance of Client.
    */
   constructor(options: ClientOptions) {
-    this.options = defaults({}, options, {
-      batchDelayMs: 0,
-    });
+    this.options = defaults({}, options, Client.DEFAULT_OPTIONS);
   }
 
   /**
@@ -113,11 +116,7 @@ export abstract class Client {
     // Clients) to save memory (and inject the Client via Runner.run*()
     // methods). But we don't do all that right now.
     const runner = runnerCreator();
-    return new Batcher<TInput, TOutput>(
-      runner,
-      runner.maxBatchSize,
-      this.options.batchDelayMs
-    );
+    return new Batcher<TInput, TOutput>(runner, this.options.batchDelayMs);
   }
 
   /**

@@ -23,8 +23,12 @@ export class SQLRunnerDeleteWhere<TTable extends Table> extends SQLRunner<
 > {
   static override readonly IS_WRITE = true;
   private builder;
+
   readonly op = "DELETE_WHERE";
+  readonly maxBatchSize = 100;
   readonly default = [];
+
+  // This runner doesn't support batching.
   runBatch = undefined;
 
   constructor(schema: Schema<TTable>, client: SQLClient) {

@@ -21,7 +21,9 @@ export class SQLRunnerCount<TTable extends Table> extends SQLRunner<
 > {
   static override readonly IS_WRITE = false;
   private builder;
+
   readonly op = "COUNT";
+  readonly maxBatchSize = 100;
   readonly default = 0; // We just need something here.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {

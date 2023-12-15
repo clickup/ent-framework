@@ -1,3 +1,5 @@
+import { maybeCall, type MaybeCallable } from "../helpers/misc";
+
 /**
  * A side effect based container which holds the current master or replica
  * timeline position. For master, the expectation is that the pos will be
@@ -14,9 +16,9 @@ export class TimelineManager {
     /** Time interval after which a replica is declared as "caught up" even if
      * it's not caught up. This is to not read from master forever when
      * something has happened with the replica. */
-    public readonly maxLagMs: number,
+    public readonly maxLagMs: MaybeCallable<number>,
     /** Up to how often we call triggerRefresh(). */
-    private refreshMs: number | null,
+    private refreshMs: MaybeCallable<number | null>,
     /** For replica Island Client, this method is called time to time to refresh
      * the data which is later returned by currentPos(). Makes sense for
      * connections which execute queries rarely: for them, the framework
@@ -29,10 +31,11 @@ export class TimelineManager {
    * position).
    */
   async currentPos(): Promise<bigint> {
+    const refreshMs = maybeCall(this.refreshMs);
     if (
-      this.refreshMs !== null &&
+      refreshMs !== null &&
       process.hrtime.bigint() >
-        this.hrtimeOfChange + BigInt(this.refreshMs) * BigInt(1e6)
+        this.hrtimeOfChange + BigInt(refreshMs) * BigInt(1e6)
     ) {
       // Outdated pos; refresh it, also coalesce concurrent requests if any.
       try {
