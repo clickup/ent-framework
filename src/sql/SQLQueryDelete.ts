@@ -22,7 +22,9 @@ export class SQLRunnerDelete<TTable extends Table> extends SQLRunner<
 > {
   static override readonly IS_WRITE = true;
   private builder;
+
   readonly op = "DELETE";
+  readonly maxBatchSize = 100;
   readonly default = false; // If no delete happened, returns false.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {

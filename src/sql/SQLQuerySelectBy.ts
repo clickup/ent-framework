@@ -66,6 +66,7 @@ export class SQLRunnerSelectBy<
 > {
   static override readonly IS_WRITE = false;
   private builders;
+
   readonly op = "SELECT_UNIQ_PFX";
   override readonly maxBatchSize = 1000; // Select by unique key is cheap, so we can have much bigger load batches to accumulate more data from e.g. Shard 0 for the next multi-Shard requests.
   readonly default = []; // If no rows are found, returns [].

@@ -23,7 +23,9 @@ export class SQLRunnerInsert<TTable extends Table> extends SQLRunner<
   static override readonly IS_WRITE = true;
   private singleBuilder;
   private batchBuilder;
+
   readonly op = "INSERT";
+  readonly maxBatchSize = 100;
   readonly default = null; // In case of duplicate key error, returns null.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {

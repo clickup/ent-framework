@@ -10,9 +10,11 @@ export type TimelineCaughtUpReason =
   | "replica-bc-caught-up"
   | "replica-bc-pos-expired";
 
-// Even when pos is expired, we still continue to serialize it for some time for
-// better debugging. Having this gap allows the system trigger
-// "replica-bc-pos-expired" reason of a replica choice longer.
+/**
+ * Even when pos is expired, we still continue to serialize it for some time for
+ * better debugging. Having this gap allows the system trigger
+ * "replica-bc-pos-expired" reason of a replica choice longer.
+ */
 const SERIALIZE_EXPIRATION_GAP_MS = 600 * 1000;
 
 /**

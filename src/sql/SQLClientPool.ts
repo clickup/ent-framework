@@ -3,16 +3,14 @@ import range from "lodash/range";
 import type { Connection, PoolClient, PoolConfig } from "pg";
 import { Pool } from "pg";
 import type { ClientQueryLoggerProps } from "../abstract/Loggers";
-import type { MaybeCallable } from "../helpers/misc";
+import type { MaybeCallable, PickPartial } from "../helpers/misc";
 import { maybeCall, runInVoid } from "../helpers/misc";
 import type { SQLClientOptions } from "./SQLClient";
 import { SQLClient } from "./SQLClient";
 
-const DEFAULT_PREWARM_INTERVAL_MS = 10000;
-const DEFAULT_MAX_CONN_LIFETIME_JITTER = 0.2;
-
-let connNo = 1;
-
+/**
+ * Options for SQLClientPool constructor.
+ */
 export interface SQLClientPoolOptions extends SQLClientOptions {
   config: PoolConfig;
   maxConnLifetimeMs?: number;
@@ -21,9 +19,11 @@ export interface SQLClientPoolOptions extends SQLClientOptions {
   prewarmQuery?: MaybeCallable<string>;
 }
 
-// Our extension to Pool connection which adds a couple props to the connection
-// in on("connect") handler (persistent for the same connection objects, i.e.
-// across queries in the same connection).
+/**
+ * Our extension to Pool connection which adds a couple props to the connection
+ * in on("connect") handler (persistent for the same connection objects, i.e.
+ * across queries in the same connection).
+ */
 export type SQLClientPoolClient = PoolClient & {
   /** Implemented but not documented property, see:
    * https://github.com/brianc/node-postgres/issues/2665 */
@@ -35,9 +35,21 @@ export type SQLClientPoolClient = PoolClient & {
 };
 
 export class SQLClientPool extends SQLClient {
-  // Client.withShard() clones `this`, so we must put all of the primitive typed
-  // props to a separate object to make them shareable across all of the clones.
-  // (Another option would be to introduce a proxy, but it's an overkill.)
+  /** Default values for the constructor options. */
+  static override readonly DEFAULT_OPTIONS: Required<
+    PickPartial<SQLClientPoolOptions>
+  > = {
+    ...super.DEFAULT_OPTIONS,
+    maxConnLifetimeMs: 0,
+    maxConnLifetimeJitter: 0.2,
+    prewarmIntervalMs: 10000,
+    prewarmQuery: 'SELECT 1 AS "prewarmQuery"',
+  };
+
+  /** Client.withShard() clones `this`, so we must put all of the primitive
+   * typed props to a separate object to make them shareable across all of the
+   * clones. (Another option would be to introduce a proxy, but it's an
+   * overkill.) */
   private state: {
     pool: Pool;
     clients: Set<PoolClient>;
@@ -67,18 +79,12 @@ export class SQLClientPool extends SQLClient {
 
   constructor(options: SQLClientPoolOptions) {
     super(options);
-    this.options = defaults({}, (this as SQLClient).options, {
-      config: options.config,
-      maxConnLifetimeMs: 0,
-      maxConnLifetimeJitter: DEFAULT_MAX_CONN_LIFETIME_JITTER,
-      prewarmIntervalMs: DEFAULT_PREWARM_INTERVAL_MS,
-      prewarmQuery: () => {
-        // This may be slow: full-text dictionaries initialization is slow, and
-        // also the 1st query in a pg-pool connection is slow.
-        const tokens = `word ${Math.floor(Date.now() / 1000)}`;
-        return `SELECT 'word' @@ plainto_tsquery('english', '${tokens}')`;
-      },
-    });
+    this.options = defaults(
+      {},
+      options,
+      (this as SQLClient).options,
+      SQLClientPool.DEFAULT_OPTIONS
+    );
 
     this.state = {
       pool: new Pool(this.options.config)
@@ -89,10 +95,7 @@ export class SQLClientPool extends SQLClient {
             this.options.maxConnLifetimeMs > 0
               ? Date.now() +
                 this.options.maxConnLifetimeMs *
-                  (1 +
-                    (this.options.maxConnLifetimeJitter ??
-                      DEFAULT_MAX_CONN_LIFETIME_JITTER) *
-                      Math.random())
+                  (1 + this.options.maxConnLifetimeJitter * Math.random())
               : undefined;
           // Sets a "default error" handler to not let forceDisconnect errors
           // leak to e.g. Jest and the outside world as "unhandled error".
@@ -170,3 +173,5 @@ export class SQLClientPool extends SQLClient {
     );
   }
 }
+
+let connNo = 1;

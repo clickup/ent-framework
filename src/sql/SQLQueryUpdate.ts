@@ -78,7 +78,9 @@ export class SQLRunnerUpdate<TTable extends Table> extends SQLRunner<
   static override readonly IS_WRITE = true;
   private singleBuilder;
   private batchBuilder;
+
   readonly op = "UPDATE";
+  readonly maxBatchSize = 100;
   readonly default = false; // If nothing is updated, we return false.
 
   runBatch = this.disableBatching

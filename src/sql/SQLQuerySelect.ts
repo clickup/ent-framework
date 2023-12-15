@@ -49,8 +49,9 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
   private prefixUnion = this.fmt("SELECT ");
   private midfixUnion = this.fmt(" AS _key, %SELECT_FIELDS FROM %T ");
   private builder;
+
   readonly op = "SELECT";
-  override readonly maxBatchSize = 10; // PG crashes on large queries with lots of UNION ALL, so we keep this value low.
+  readonly maxBatchSize = 10; // PG crashes on large queries with lots of UNION ALL, so we keep this value low.
   readonly default = []; // We just need something here.
 
   constructor(schema: Schema<TTable>, client: SQLClient) {

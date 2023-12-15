@@ -1,3 +1,4 @@
+import { maybeCall } from "../helpers/misc";
 import type { Client } from "./Client";
 import type { Query } from "./Query";
 import type { QueryAnnotation, WhyClient } from "./QueryAnnotation";
@@ -92,7 +93,7 @@ export class Shard<TClient extends Client> {
       if (query.IS_WRITE && freshness !== STALE_REPLICA) {
         timeline.setPos(
           await client.timelineManager.currentPos(),
-          client.timelineManager.maxLagMs
+          maybeCall(client.timelineManager.maxLagMs)
         );
       }
 

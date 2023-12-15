@@ -1,8 +1,8 @@
 import type { Table } from "../types";
-import type { Runner } from "./Batcher";
 import type { Client } from "./Client";
 import type { Query } from "./Query";
 import type { QueryAnnotation } from "./QueryAnnotation";
+import type { Runner } from "./Runner";
 import type { Schema } from "./Schema";
 
 /**

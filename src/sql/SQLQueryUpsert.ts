@@ -15,10 +15,11 @@ export class SQLQueryUpsert<TTable extends Table> extends QueryBase<
   SQLClient
 > {
   // TODO: we need to do the same as we did with SQLQueryUpdate() here. Because
-  // currently upsert ignores autoInsert fields in ON CONFLICT UPDATE ... clause,
-  // so if some field is auto-insertable (i.e. has default value on insert), it
-  // will be ignored by upsert even if it's provided in the input row.
-  // It may be not simple though; not clear, is it expressible in SQL at all or not.
+  // currently upsert ignores autoInsert fields in ON CONFLICT UPDATE ...
+  // clause, so if some field is auto-insertable (i.e. has default value on
+  // insert), it will be ignored by upsert even if it's provided in the input
+  // row. It may be not simple though; not clear, is it expressible in SQL at
+  // all or not.
   protected readonly RUNNER_CLASS = SQLRunnerUpsert;
 }
 
@@ -29,7 +30,9 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
 > {
   static override readonly IS_WRITE = true;
   private builder;
+
   readonly op = "UPSERT";
+  readonly maxBatchSize = 100;
 
   constructor(schema: Schema<TTable>, client: SQLClient) {
     super(schema, client);

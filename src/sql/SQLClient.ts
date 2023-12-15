@@ -7,13 +7,16 @@ import type { ClientQueryLoggerProps } from "../abstract/Loggers";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { ShardError } from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
-import { nullthrows, sanitizeIDForDebugPrinting } from "../helpers/misc";
+import type { MaybeCallable, PickPartial } from "../helpers/misc";
+import {
+  maybeCall,
+  nullthrows,
+  sanitizeIDForDebugPrinting,
+} from "../helpers/misc";
 import type { Literal } from "../types";
 import { parseCompositeRow } from "./helpers/parseCompositeRow";
 import { SQLError } from "./SQLError";
 
-const DEFAULT_MAX_REPLICATION_LAG_MS = 60000;
-const DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS = 1000;
 const MAX_BIGINT = "9223372036854775807";
 const MAX_BIGINT_RE = new RegExp("^\\d{1," + MAX_BIGINT.length + "}$");
 const PG_CODE_UNDEFINED_TABLE = "42P01";
@@ -28,13 +31,19 @@ export interface SQLClientOptions extends ClientOptions {
     nameFormat: string;
     /** A SQL query which should return the names of shard schemas served by
      * this Client. */
-    discoverQuery: string;
+    discoverQuery: MaybeCallable<string>;
   } | null;
-  /** PG "SET key=value" hints to run before each query. */
-  hints?: Record<string, string> | null;
+  /** PG "SET key=value" hints to run before each query. Often times we use it
+   * to pass statement_timeout option since e.g. PGBouncer doesn't support
+   * per-connection statement timeout in transaction pooling mode: it throws
+   * "unsupported startup parameter" error. I.e. we may want to emit "SET
+   * statement_timeout TO ..." before each query in multi-query mode. */
+  hints?: MaybeCallable<Record<string, string>> | null;
   /** After how many milliseconds we give up waiting for the replica to catch up
    * with the master. */
-  maxReplicationLagMs?: number;
+  maxReplicationLagMs?: MaybeCallable<number>;
+  /** Up to how often we call TimelineManager#triggerRefresh(). */
+  replicaTimelinePosRefreshMs?: MaybeCallable<number>;
   /** If true, this Client pretends to be an "always lagging" replica. It is
    * helpful while testing replication lag code (typically done by just manually
    * creating a copy of the database and declaring it as a replica, and then
@@ -62,6 +71,21 @@ export interface SQLClientConn {
  * implement.
  */
 export abstract class SQLClient extends Client {
+  /** Default values for the constructor options. */
+  static override readonly DEFAULT_OPTIONS: Required<
+    PickPartial<SQLClientOptions>
+  > = {
+    ...super.DEFAULT_OPTIONS,
+    shards: null,
+    hints: null,
+    maxReplicationLagMs: 60000,
+    replicaTimelinePosRefreshMs: 1000,
+    isAlwaysLaggingReplica: false,
+  };
+
+  /** Number of decimal digits in an ID allocated for shard number. Calculated
+   * dynamically based on shards.nameFormat (e.g. for "sh%04d", it will be 4
+   * since it expands to "sh0012"). */
   private shardNoPadLen: number;
 
   /** The derived class must set this flag after each request to reflect the
@@ -77,18 +101,7 @@ export abstract class SQLClient extends Client {
   readonly shardName: string = "public";
 
   /** An active TimelineManager for this particular Client. */
-  readonly timelineManager = new TimelineManager(
-    this.options.maxReplicationLagMs,
-    DEFAULT_REPLICA_TIMELINE_POS_REFRESH_MS,
-    async () =>
-      this.query({
-        query: ["SELECT 'TIMELINE_POS_REFRESH'"],
-        isWrite: false,
-        annotations: [],
-        op: "TIMELINE_POS_REFRESH",
-        table: "pg_catalog",
-      })
-  );
+  readonly timelineManager: TimelineManager;
 
   protected abstract acquireConn(): Promise<SQLClientConn>;
 
@@ -98,12 +111,24 @@ export abstract class SQLClient extends Client {
 
   constructor(options: SQLClientOptions) {
     super(options);
-    this.options = defaults({}, (this as Client).options, {
-      shards: null,
-      hints: null,
-      maxReplicationLagMs: DEFAULT_MAX_REPLICATION_LAG_MS,
-      isAlwaysLaggingReplica: false,
-    });
+    this.options = defaults(
+      {},
+      options,
+      (this as Client).options,
+      SQLClient.DEFAULT_OPTIONS
+    );
+    this.timelineManager = new TimelineManager(
+      this.options.maxReplicationLagMs,
+      this.options.replicaTimelinePosRefreshMs,
+      async () =>
+        this.query({
+          query: ["SELECT 'TIMELINE_POS_REFRESH'"],
+          isWrite: false,
+          annotations: [],
+          op: "TIMELINE_POS_REFRESH",
+          table: "pg_catalog",
+        })
+    );
     if (this.options.shards) {
       this.shardNoPadLen = this.buildShardName(0).match(/(\d+)/)
         ? RegExp.$1.length
@@ -159,7 +184,7 @@ export abstract class SQLClient extends Client {
     // Prepend internal per-Client hints to the prologue.
     if (this.options.hints) {
       queriesPrologue.unshift(
-        ...Object.entries(this.options.hints).map(
+        ...Object.entries(maybeCall(this.options.hints)).map(
           ([k, v]) => `SET LOCAL ${k} TO ${v}`
         )
       );
@@ -318,7 +343,7 @@ export abstract class SQLClient extends Client {
 
     // e.g. sh0000, sh0123 and not e.g. sh1 or sh12345678
     const rows = await this.query<Partial<Record<string, string>>>({
-      query: [this.options.shards.discoverQuery],
+      query: [maybeCall(this.options.shards.discoverQuery)],
       isWrite: false,
       annotations: [],
       op: "SHARDS",

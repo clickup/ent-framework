@@ -4,6 +4,7 @@ import type { Shard, STALE_REPLICA } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
 import { ShardError } from "../../abstract/ShardError";
 import { Timeline } from "../../abstract/Timeline";
+import { maybeCall } from "../../helpers/misc";
 import { escapeIdent } from "../SQLClient";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./test-utils";
@@ -79,8 +80,8 @@ test("shard relocation error when accessing a table should be retried", async ()
   // Pause until we have at least 2 retries happened.
   await waitForExpect(
     () => expect(spyQueryRun).toBeCalledTimes(2),
-    testCluster.options.locateIslandErrorRetryDelayMs * 4, // timeout
-    testCluster.options.locateIslandErrorRetryDelayMs // retry interval
+    maybeCall(testCluster.options.locateIslandErrorRetryDelayMs) * 4, // timeout
+    maybeCall(testCluster.options.locateIslandErrorRetryDelayMs) // retry interval
   );
   await expect(spyQueryRun.mock.results[0].value).rejects.toThrow(ShardError);
 

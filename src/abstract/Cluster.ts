@@ -33,38 +33,26 @@ export interface ClusterOptions<TClient extends Client, TNode> {
    * when a new node appears in the Cluster statically or dynamically. */
   createClient: (node: TNode, nodeNo: number) => TClient;
   /** How often to run Shards rediscovery in normal circumstances. */
-  shardsDiscoverIntervalMs?: number | (() => number);
+  shardsDiscoverIntervalMs?: MaybeCallable<number>;
   /** If there were DB errors during Shards discovery (e.g. transport errors,
    * which is rare), the discovery is retried that many times before giving up
    * and throwing the error through. The number here can be high, because
    * rediscovery happens in background. */
-  shardsDiscoverErrorRetryCount?: number;
+  shardsDiscoverErrorRetryCount?: MaybeCallable<number>;
   /** If there were DB errors during Shards discovery (rare), this is how much
    * we wait between attempts. */
-  shardsDiscoverErrorRetryDelayMs?: number;
+  shardsDiscoverErrorRetryDelayMs?: MaybeCallable<number>;
   /** If we think that we know Island of a particular Shard, but an attempt to
    * access it fails, this means that maybe the Shard is migrating to another
    * Island. In this case, we wait a bit and retry that many times. We should
    * not do it too many times though, because all DB requests will be blocked
    * waiting for the resolution. */
-  locateIslandErrorRetryCount?: number;
+  locateIslandErrorRetryCount?: MaybeCallable<number>;
   /** How much time to wait between the retries mentioned above. The time here
    * should be just enough to wait for switching the Shard from one Island to
    * another (typically quick). */
-  locateIslandErrorRetryDelayMs?: number;
+  locateIslandErrorRetryDelayMs?: MaybeCallable<number>;
 }
-
-/**
- * Default values for ClusterOptions if not passed.
- */
-const DEFAULT_CLUSTER_OPTIONS: Required<PickPartial<ClusterOptions<any, any>>> =
-  {
-    shardsDiscoverIntervalMs: 10000,
-    shardsDiscoverErrorRetryCount: 3,
-    shardsDiscoverErrorRetryDelayMs: 3000,
-    locateIslandErrorRetryCount: 2,
-    locateIslandErrorRetryDelayMs: 1000,
-  };
 
 /**
  * Holds the complete auto-discovered map of Shards to figure out, which Island
@@ -86,6 +74,17 @@ interface DiscoveredShards {
  * Shard 0 is a special "global" Shard.
  */
 export class Cluster<TClient extends Client, TNode = any> {
+  /** Default values for the constructor options. */
+  static readonly DEFAULT_OPTIONS: Required<
+    PickPartial<ClusterOptions<any, any>>
+  > = {
+    shardsDiscoverIntervalMs: 10000,
+    shardsDiscoverErrorRetryCount: 3,
+    shardsDiscoverErrorRetryDelayMs: 3000,
+    locateIslandErrorRetryCount: 2,
+    locateIslandErrorRetryDelayMs: 1000,
+  };
+
   private discoverShardsCache: CachedRefreshedValue<DiscoveredShards>;
   private islandsMap: Map<number, Island<TClient>>;
   private firstIsland;
@@ -108,7 +107,7 @@ export class Cluster<TClient extends Client, TNode = any> {
       throw Error("The cluster has no islands");
     }
 
-    this.options = defaults({}, options, DEFAULT_CLUSTER_OPTIONS);
+    this.options = defaults({}, options, Cluster.DEFAULT_OPTIONS);
     this.firstIsland = firstIsland;
     this.loggers = this.firstIsland.master.options.loggers;
     const thisOptions = this.options;
@@ -259,9 +258,9 @@ export class Cluster<TClient extends Client, TNode = any> {
         if (
           error instanceof ShardError &&
           error.postAction === "rediscover" &&
-          attempt < this.options.locateIslandErrorRetryCount
+          attempt < maybeCall(this.options.locateIslandErrorRetryCount)
         ) {
-          await delay(this.options.locateIslandErrorRetryDelayMs);
+          await delay(maybeCall(this.options.locateIslandErrorRetryDelayMs));
           // We must timeout here, otherwise we may wait forever if some Island
           // is totally down.
           const startTime = performance.now();
@@ -293,7 +292,7 @@ export class Cluster<TClient extends Client, TNode = any> {
    * the caller code.
    */
   private async discoverShardsExpensive(
-    retriesLeft = this.options.shardsDiscoverErrorRetryCount
+    retriesLeft = maybeCall(this.options.shardsDiscoverErrorRetryCount)
   ): Promise<DiscoveredShards> {
     try {
       const shardNoToIslandNo = new Map<number, number>();
@@ -332,7 +331,7 @@ export class Cluster<TClient extends Client, TNode = any> {
       };
     } catch (e: unknown) {
       if (retriesLeft > 0) {
-        await delay(this.options.shardsDiscoverErrorRetryDelayMs);
+        await delay(maybeCall(this.options.shardsDiscoverErrorRetryDelayMs));
         return this.discoverShardsExpensive(retriesLeft - 1);
       } else {
         throw e;
