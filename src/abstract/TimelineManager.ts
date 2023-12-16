@@ -9,7 +9,7 @@ import { maybeCall, type MaybeCallable } from "../helpers/misc";
  */
 export class TimelineManager {
   private pos = BigInt(0);
-  private hrtimeOfChange = BigInt(0);
+  private changeTime = 0;
   private triggerRefreshPromise: Promise<unknown> | null = null;
 
   constructor(
@@ -18,11 +18,11 @@ export class TimelineManager {
      * something has happened with the replica. */
     public readonly maxLagMs: MaybeCallable<number>,
     /** Up to how often we call triggerRefresh(). */
-    private refreshMs: MaybeCallable<number | null>,
-    /** For replica Island Client, this method is called time to time to refresh
-     * the data which is later returned by currentPos(). Makes sense for
-     * connections which execute queries rarely: for them, the framework
-     * triggers the update when the fresh data is needed. */
+    private refreshMs: MaybeCallable<number>,
+    /** This method is called time to time to refresh the data which is later
+     * returned by currentPos(). Makes sense for replica connections which
+     * execute queries rarely: for them, the framework triggers the update when
+     * the fresh data is needed. */
     private triggerRefresh: () => Promise<unknown>
   ) {}
 
@@ -32,12 +32,12 @@ export class TimelineManager {
    */
   async currentPos(): Promise<bigint> {
     const refreshMs = maybeCall(this.refreshMs);
-    if (
-      refreshMs !== null &&
-      process.hrtime.bigint() >
-        this.hrtimeOfChange + BigInt(refreshMs) * BigInt(1e6)
-    ) {
+    if (performance.now() > this.changeTime + refreshMs) {
       // Outdated pos; refresh it, also coalesce concurrent requests if any.
+      // Notice that we run this logic not only for replicas, but for masters
+      // too, because we can't distinguish the server role at this place. It's
+      // not a big deal and results into just one extra query within refreshMs
+      // time interval (which is typically ~1 second).
       try {
         this.triggerRefreshPromise ??= this.triggerRefresh();
         await this.triggerRefreshPromise;
@@ -55,6 +55,6 @@ export class TimelineManager {
    */
   setCurrentPos(pos: bigint): void {
     this.pos = pos > this.pos ? pos : this.pos;
-    this.hrtimeOfChange = process.hrtime.bigint();
+    this.changeTime = performance.now();
   }
 }
