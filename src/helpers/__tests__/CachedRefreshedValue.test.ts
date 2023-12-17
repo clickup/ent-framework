@@ -65,7 +65,7 @@ test("error handler", async () => {
     resolverFn: jest.fn().mockRejectedValueOnce(err).mockReturnValue("first"),
   });
   await cache.cached();
-  expect(onError).toBeCalledWith(err);
+  expect(onError).toBeCalledWith(err, expect.any(Number));
 });
 
 test("eventual consistency", async () => {
@@ -100,11 +100,9 @@ test("timeout warning", async () => {
   await delay(200);
   deferred.resolve("first");
   await promise;
-  expect(onError.mock.lastCall).toMatchInlineSnapshot(`
-    [
-      [Error: CachedRefreshedValue.: Warning: resolverFn did not complete in 100 ms!],
-    ]
-  `);
+  expect(onError.mock.lastCall[0]).toMatchInlineSnapshot(
+    "[Error: CachedRefreshedValue.refreshLoop: Warning: resolverFn did not complete in 100 ms!]"
+  );
 });
 
 test("custom delay handler", async () => {
@@ -134,11 +132,9 @@ test("throwing in onError during timeout", async () => {
   await delay(200);
   deferred.resolve("first");
   await promise;
-  expect(onError.mock.lastCall).toMatchInlineSnapshot(`
-    [
-      [Error: CachedRefreshedValue.: Warning: resolverFn did not complete in 100 ms!],
-    ]
-  `);
+  expect(onError.mock.lastCall[0]).toMatchInlineSnapshot(
+    "[Error: CachedRefreshedValue.refreshLoop: Warning: resolverFn did not complete in 100 ms!]"
+  );
 });
 
 test("throwing in onError during error", async () => {
@@ -154,11 +150,9 @@ test("throwing in onError during error", async () => {
       .mockResolvedValueOnce("value"),
   });
   await cache.cached();
-  expect(onError.mock.lastCall).toMatchInlineSnapshot(`
-    [
-      [Error: Errored in resolverFn],
-    ]
-  `);
+  expect(onError.mock.lastCall[0]).toMatchInlineSnapshot(
+    "[Error: Errored in resolverFn]"
+  );
 });
 
 test("waitRefresh()", async () => {

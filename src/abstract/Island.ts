@@ -4,6 +4,9 @@ import type { Client } from "./Client";
 /**
  * Island is a collection of DB connections (represented as Clients) that
  * contains a single master server and any number of replicas.
+ *
+ * Notice that Island is internal: it should never be returned to the caller
+ * code. The caller code should use only Client and Shard abstractions.
  */
 export class Island<TClient extends Client> {
   constructor(
@@ -34,5 +37,13 @@ export class Island<TClient extends Client> {
     // we have Shards rediscovery every N seconds, so a missing Island will
     // self-heal eventually.
     return [];
+  }
+
+  /**
+   * Makes sure the prewarm loop is running on all Clients.
+   */
+  prewarm(): void {
+    this.master.prewarm();
+    this.replicas.forEach((client) => client.prewarm());
   }
 }

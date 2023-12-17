@@ -316,5 +316,7 @@ export function entries<K extends string, V>(
  * If the passed value is a function, calls it; otherwise, returns it intact.
  */
 export function maybeCall<T>(valueOrFn: MaybeCallable<T>): T {
-  return valueOrFn instanceof Function ? valueOrFn() : valueOrFn;
+  return typeof valueOrFn === "function" || valueOrFn instanceof Function
+    ? (valueOrFn as Function)()
+    : valueOrFn;
 }
