@@ -13,7 +13,7 @@ export interface CachedRefreshedValueOptions<TValue> {
    * function would eventually either resolve or throw. */
   resolverFn: () => Promise<TValue>;
   /** An error handler. */
-  onError: (error: unknown) => void;
+  onError: (error: unknown, elapsed: number) => void;
   /** A custom delay implementation. */
   delay: (ms: number) => Promise<void>;
 }
@@ -94,9 +94,10 @@ export class CachedRefreshedValue<TValue> {
         try {
           this.options.onError(
             Error(
-              `${this.constructor.name}.${this.refreshLoop.name}: Warning: ` +
+              `${this.constructor.name}.refreshLoop: Warning: ` +
                 `resolverFn did not complete in ${warningTimeoutMs} ms!`
-            )
+            ),
+            performance.now() - startTime
           );
         } catch (e: unknown) {
           // noop
@@ -113,9 +114,9 @@ export class CachedRefreshedValue<TValue> {
           this.nextValue = pDefer<TValue>();
           oldNextValue.resolve(val);
         }
-      } catch (err: unknown) {
+      } catch (e: unknown) {
         try {
-          this.options.onError(err);
+          this.options.onError(e, performance.now() - startTime);
         } catch (e: unknown) {
           // noop
         }

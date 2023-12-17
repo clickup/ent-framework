@@ -1,7 +1,6 @@
 import delay from "delay";
 import { Memoize } from "fast-typescript-memoize";
 import defaults from "lodash/defaults";
-import first from "lodash/first";
 import random from "lodash/random";
 import pTimeout from "p-timeout";
 import { CachedRefreshedValue } from "../helpers/CachedRefreshedValue";
@@ -13,7 +12,9 @@ import {
   runInVoid,
   objectHash,
   maybeCall,
+  stringHash,
 } from "../helpers/misc";
+import { Registry } from "../helpers/Registry";
 import type { Client } from "./Client";
 import { Island } from "./Island";
 import type { Loggers } from "./Loggers";
@@ -55,10 +56,11 @@ export interface ClusterOptions<TClient extends Client, TNode> {
 }
 
 /**
- * Holds the complete auto-discovered map of Shards to figure out, which Island
- * holds which Shard.
+ * Holds the complete auto-discovered list of Islands and a map of Shards to
+ * figure out, which Island holds which Shard.
  */
-interface DiscoveredShards {
+interface DiscoveredShards<TClient extends Client> {
+  islandsMap: Map<number, Island<TClient>>;
   shardNoToIslandNo: ReadonlyMap<number, number>;
   islandNoToShardNos: ReadonlyMap<number, readonly number[]>;
   nonGlobalShardNos: readonly number[];
@@ -85,43 +87,77 @@ export class Cluster<TClient extends Client, TNode = any> {
     locateIslandErrorRetryDelayMs: 1000,
   };
 
-  private discoverShardsCache: CachedRefreshedValue<DiscoveredShards>;
-  private islandsMap: Map<number, Island<TClient>>;
-  private firstIsland;
+  /** The complete registry of all initialized Clients. Cluster nodes may change
+   * at runtime, so once a new node appears, its Client is added to the
+   * registry. Also, the Clients of disappeared nodes are eventually removed
+   * from the registry on the next Shards discovery. */
+  private clientRegistry: Registry<TNode, Client>;
+  /** The complete registry of all Islands ever created. If some Island changes
+   * configuration, its old version is eventually removed from the registry
+   * during the next Shards discovery. */
+  private islandRegistry: Registry<
+    { nodes: readonly TNode[]; clients: readonly Client[] },
+    Island<Client>
+  >;
+  /** Represents the result of the recent successful Shards discovery. */
+  private discoverShardsCache: CachedRefreshedValue<DiscoveredShards<TClient>>;
+  /** A handler which extracts Shard number from an ID (derived from some node's
+   * Client assuming they all have the same logic). */
+  private shardNoByID: (id: string) => number;
+  /** Once set to true, Clients for newly appearing nodes will be pre-warmed. */
+  private prewarmEnabled = false;
 
+  /** Cluster configuration options. */
   readonly options: Required<ClusterOptions<TClient, TNode>>;
+  /** Cluster logging handlers (derived from some node's Client). */
   readonly loggers: Loggers;
 
   constructor(options: ClusterOptions<TClient, TNode>) {
     this.options = defaults({}, options, Cluster.DEFAULT_OPTIONS);
 
-    this.islandsMap = new Map(
-      maybeCall(options.islands).map(({ no, nodes }) => [
-        no,
-        new Island<TClient>(
-          options.createClient(nodes[0]),
-          nodes.slice(1).map((node) => options.createClient(node))
-        ),
-      ])
-    );
-    const firstIsland = first([...this.islandsMap.values()]);
-    if (!firstIsland) {
-      throw Error("The cluster has no islands");
-    }
+    this.clientRegistry = new Registry<TNode, Client>({
+      key: (node) => stringHash(JSON.stringify(node)),
+      create: (node) => this.options.createClient(node),
+      end: async (client) => {
+        const startTime = performance.now();
+        await client.end().catch((error) =>
+          this.loggers.swallowedErrorLogger({
+            where: `${this.constructor.name}.clientRegistry`,
+            error,
+            elapsed: performance.now() - startTime,
+          })
+        );
+      },
+    });
 
-    this.firstIsland = firstIsland;
-    this.loggers = this.firstIsland.master.options.loggers;
+    this.islandRegistry = new Registry({
+      key: ({ nodes }) => stringHash(JSON.stringify(nodes)),
+      create: ({ clients }) =>
+        new Island(
+          nullthrows(clients[0], "Island does not have nodes"),
+          clients.slice(1)
+        ),
+    });
+
+    const [client] = this.clientRegistry.getOrCreate(
+      nullthrows(
+        maybeCall(options.islands).find(({ nodes }) => nodes.length > 0),
+        "The Cluster must have Islands with nodes"
+      ).nodes[0]
+    );
+    this.shardNoByID = client.shardNoByID.bind(client);
+    this.loggers = client.options.loggers;
 
     this.discoverShardsCache = new CachedRefreshedValue({
       warningTimeoutMs: this.options.shardsDiscoverIntervalMs, // assume to not spend >50% of the time on discovering Shards
       delayMs: this.options.shardsDiscoverIntervalMs,
       resolverFn: async () => this.discoverShardsExpensive(),
       delay: async (ms) => delay(ms),
-      onError: (error) => {
+      onError: (error, elapsed) => {
         this.loggers.swallowedErrorLogger({
-          where: `${this.constructor.name}.${this.discoverShardsExpensive.name}`,
+          where: `${this.constructor.name}.discoverShardsCache`,
           error,
-          elapsed: null,
+          elapsed,
         });
       },
     });
@@ -133,12 +169,13 @@ export class Cluster<TClient extends Client, TNode = any> {
    * mean; typically, it's keeping some minimal number of pooled connections.)
    */
   prewarm(): void {
-    for (const island of this.islandsMap.values()) {
-      island.master.prewarm();
-      island.replicas.forEach((client) => client.prewarm());
-    }
-
-    runInVoid(this.discoverShardsCache.cached());
+    this.prewarmEnabled = true;
+    runInVoid(async () => {
+      const { islandsMap } = await this.discoverShardsCache.cached();
+      for (const island of islandsMap.values()) {
+        island.prewarm();
+      }
+    });
   }
 
   /**
@@ -166,8 +203,7 @@ export class Cluster<TClient extends Client, TNode = any> {
    * the query), no matter whether it was an immediate call or a deferred one.
    */
   shard(id: string): Shard<TClient> {
-    const shardNo = this.firstIsland.master.shardNoByID(id);
-    return this.shardByNo(shardNo);
+    return this.shardByNo(this.shardNoByID(id));
   }
 
   /**
@@ -202,7 +238,8 @@ export class Cluster<TClient extends Client, TNode = any> {
    * Returns all Island numbers in the Cluster.
    */
   async islands(): Promise<number[]> {
-    return [...this.islandsMap.keys()];
+    const { islandsMap } = await this.discoverShardsCache.cached();
+    return [...islandsMap.keys()];
   }
 
   /**
@@ -224,7 +261,11 @@ export class Cluster<TClient extends Client, TNode = any> {
     islandNo: number,
     freshness: typeof MASTER | typeof STALE_REPLICA
   ): Promise<TClient> {
-    const island = nullthrows(this.islandsMap.get(islandNo), "Unknown island");
+    const { islandsMap } = await this.discoverShardsCache.cached();
+    const island = nullthrows(
+      islandsMap.get(islandNo),
+      () => `Unknown island ${islandNo}`
+    );
     return freshness === MASTER || island.replicas.length === 0
       ? island.master
       : island.replicas[Math.trunc(Math.random() * island.replicas.length)];
@@ -241,10 +282,11 @@ export class Cluster<TClient extends Client, TNode = any> {
   private shardByNo(shardNo: number): Shard<TClient> {
     return new Shard(shardNo, {
       locateClient: async (freshness: typeof MASTER | typeof STALE_REPLICA) => {
-        const { shardNoToIslandNo } = await this.discoverShardsCache.cached();
+        const { shardNoToIslandNo, islandsMap } =
+          await this.discoverShardsCache.cached();
         const islandNo = shardNoToIslandNo.get(shardNo);
         if (islandNo === undefined) {
-          const masterNames = [...this.islandsMap.entries()]
+          const masterNames = [...islandsMap.entries()]
             .map(([no, { master }]) => `${no}:${master.options.name}`)
             .join(", ");
           throw new ShardError(
@@ -274,7 +316,7 @@ export class Cluster<TClient extends Client, TNode = any> {
             "Timed out while waiting for shards discovery."
           ).catch((error) =>
             this.loggers.swallowedErrorLogger({
-              where: `${this.constructor.name}.${this.shardByNo.name}: waitRefresh`,
+              where: `${this.constructor.name}.shardByNo: waitRefresh`,
               error,
               elapsed: performance.now() - startTime,
             })
@@ -289,44 +331,72 @@ export class Cluster<TClient extends Client, TNode = any> {
 
   /**
    * Runs the actual Shards discovery queries over all Islands and updates the
-   * mapping from Shard number to an Island where it lives. These queries may be
-   * expensive, so it's expected that the return Promise is heavily cached by
-   * the caller code.
+   * mapping from each Shard number to an Island where it lives. These queries
+   * may be expensive, so it's expected that the return Promise is heavily
+   * cached by the caller code.
    */
   private async discoverShardsExpensive(
     retriesLeft = maybeCall(this.options.shardsDiscoverErrorRetryCount)
-  ): Promise<DiscoveredShards> {
+  ): Promise<DiscoveredShards<TClient>> {
+    const seenKeys = new Set<string>();
+    const islandsMap = new Map<number, Island<TClient>>(
+      maybeCall(this.options.islands).map(({ no, nodes }) => {
+        const clients = nodes.map((node) => {
+          const [client, key] = this.clientRegistry.getOrCreate(node);
+          seenKeys.add(key);
+          this.prewarmEnabled && client.prewarm();
+          return client;
+        });
+        const [island, key] = this.islandRegistry.getOrCreate({
+          nodes,
+          clients,
+        });
+        seenKeys.add(key);
+        return [no, island as Island<TClient>];
+      })
+    );
+
     try {
       const shardNoToIslandNo = new Map<number, number>();
       const islandNoToShardNos = new DefaultMap<number, number[]>();
       const nonGlobalShardNos: number[] = [];
-      await mapJoin(
-        [...this.islandsMap.entries()],
-        async ([islandNo, island]) => {
-          const shardNos = await island.shardNos();
-          for (const shardNo of shardNos) {
-            const otherIslandNo = shardNoToIslandNo.get(shardNo);
-            if (otherIslandNo) {
-              throw Error(
-                `Shard #${shardNo} exists in more than one island (` +
-                  island.master.options.name +
-                  " and " +
-                  this.islandsMap.get(otherIslandNo)?.master.options.name +
-                  ")"
-              );
-            }
 
-            shardNoToIslandNo.set(shardNo, islandNo);
-            islandNoToShardNos.getOrAdd(islandNo, Array).push(shardNo);
-            if (shardNo !== 0) {
-              nonGlobalShardNos.push(shardNo);
-            }
+      await mapJoin([...islandsMap.entries()], async ([islandNo, island]) => {
+        const shardNos = await island.shardNos();
+        for (const shardNo of shardNos) {
+          const otherIslandNo = shardNoToIslandNo.get(shardNo);
+          if (otherIslandNo !== undefined) {
+            throw Error(
+              `Shard #${shardNo} exists in more than one island: ` +
+                islandsMap.get(otherIslandNo)?.master.options.name +
+                `(${otherIslandNo})` +
+                " and " +
+                island.master.options.name +
+                `(${islandNo})`
+            );
           }
 
-          islandNoToShardNos.get(islandNo)?.sort((a, b) => a - b);
+          shardNoToIslandNo.set(shardNo, islandNo);
+          islandNoToShardNos.getOrAdd(islandNo, Array).push(shardNo);
+          if (shardNo !== 0) {
+            nonGlobalShardNos.push(shardNo);
+          }
         }
-      );
+
+        islandNoToShardNos.get(islandNo)?.sort((a, b) => a - b);
+      });
+
+      // Gracefully delete and disconnect the Clients which didn't correspond to
+      // the list of nodes mentioned in this.options.islands, and also, delete
+      // leftover Islands which are not used anymore. In case we don't reach
+      // this point and threw earlier, it will eventually be reached on the next
+      // Shards discovery iterations.
+      for (const registry of [this.clientRegistry, this.islandRegistry]) {
+        runInVoid(registry.deleteExcept(seenKeys));
+      }
+
       return {
+        islandsMap,
         shardNoToIslandNo,
         islandNoToShardNos,
         nonGlobalShardNos: nonGlobalShardNos.sort((a, b) => a - b),

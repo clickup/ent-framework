@@ -164,7 +164,7 @@ export class SQLClientPool extends SQLClient {
             .query(maybeCall(this.options.prewarmQuery))
             .catch((error) =>
               this.logSwallowedError(
-                `${this.constructor.name}.${this.prewarm.name}`,
+                `${this.constructor.name}.prewarm`,
                 error,
                 performance.now() - startTime
               )
