@@ -57,7 +57,7 @@ export class SQLClientPool extends SQLClient {
     ended: boolean;
   };
 
-  /** SQLClient configuration options. */
+  /** SQLClientPool configuration options. */
   override readonly options: Required<SQLClientPoolOptions>;
 
   protected async acquireConn(): Promise<PoolClient> {
@@ -133,6 +133,8 @@ export class SQLClientPool extends SQLClient {
 
     this.state.ended = true;
     this.state.prewarmTimeout && clearTimeout(this.state.prewarmTimeout);
+    this.state.prewarmTimeout = null;
+
     if (forceDisconnect) {
       for (const client of this.state.clients) {
         const connection: Connection = (client as any).connection;
@@ -144,6 +146,11 @@ export class SQLClientPool extends SQLClient {
   }
 
   override prewarm(): void {
+    if (this.state.prewarmTimeout) {
+      // Already scheduled a prewarm, so skipping.
+      return;
+    }
+
     if (!this.options.config.min) {
       return;
     }
@@ -157,7 +164,7 @@ export class SQLClientPool extends SQLClient {
             .query(maybeCall(this.options.prewarmQuery))
             .catch((error) =>
               this.logSwallowedError(
-                "prewarm()",
+                `${this.constructor.name}.${this.prewarm.name}`,
                 error,
                 performance.now() - startTime
               )
@@ -167,10 +174,10 @@ export class SQLClientPool extends SQLClient {
     }
 
     this.state.prewarmTimeout && clearTimeout(this.state.prewarmTimeout);
-    this.state.prewarmTimeout = setTimeout(
-      () => this.prewarm(),
-      this.options.prewarmIntervalMs
-    );
+    this.state.prewarmTimeout = setTimeout(() => {
+      this.state.prewarmTimeout = null;
+      this.prewarm();
+    }, this.options.prewarmIntervalMs);
   }
 }
 

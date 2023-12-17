@@ -243,9 +243,16 @@ export function sanitizeIDForDebugPrinting(idIn: any): string {
   return value === "" ? '""' : value;
 }
 
-export function nullthrows<T>(x?: T | null, message?: string | Error): T {
+export function nullthrows<T>(
+  x?: T | null,
+  message?: (() => string | Error) | string | Error
+): T {
   if (x !== null && x !== undefined) {
     return x;
+  }
+
+  if (typeof message === "function") {
+    message = message();
   }
 
   const error =

@@ -31,7 +31,7 @@ export interface ClusterOptions<TClient extends Client, TNode> {
   >;
   /** Given a node of some Island, instantiates a Client for this node. Called
    * when a new node appears in the Cluster statically or dynamically. */
-  createClient: (node: TNode, nodeNo: number) => TClient;
+  createClient: (node: TNode) => TClient;
   /** How often to run Shards rediscovery in normal circumstances. */
   shardsDiscoverIntervalMs?: MaybeCallable<number>;
   /** If there were DB errors during Shards discovery (e.g. transport errors,
@@ -93,12 +93,14 @@ export class Cluster<TClient extends Client, TNode = any> {
   readonly loggers: Loggers;
 
   constructor(options: ClusterOptions<TClient, TNode>) {
+    this.options = defaults({}, options, Cluster.DEFAULT_OPTIONS);
+
     this.islandsMap = new Map(
       maybeCall(options.islands).map(({ no, nodes }) => [
         no,
         new Island<TClient>(
-          options.createClient(nodes[0], 0),
-          nodes.slice(1).map((node, i) => options.createClient(node, i + 1))
+          options.createClient(nodes[0]),
+          nodes.slice(1).map((node) => options.createClient(node))
         ),
       ])
     );
@@ -107,18 +109,17 @@ export class Cluster<TClient extends Client, TNode = any> {
       throw Error("The cluster has no islands");
     }
 
-    this.options = defaults({}, options, Cluster.DEFAULT_OPTIONS);
     this.firstIsland = firstIsland;
     this.loggers = this.firstIsland.master.options.loggers;
-    const thisOptions = this.options;
+
     this.discoverShardsCache = new CachedRefreshedValue({
-      warningTimeoutMs: thisOptions.shardsDiscoverIntervalMs, // assume to not spend >50% of the time on discovering Shards
-      delayMs: thisOptions.shardsDiscoverIntervalMs,
+      warningTimeoutMs: this.options.shardsDiscoverIntervalMs, // assume to not spend >50% of the time on discovering Shards
+      delayMs: this.options.shardsDiscoverIntervalMs,
       resolverFn: async () => this.discoverShardsExpensive(),
       delay: async (ms) => delay(ms),
       onError: (error) => {
         this.loggers.swallowedErrorLogger({
-          where: `${this.constructor.name}: ${this.discoverShardsExpensive.name}`,
+          where: `${this.constructor.name}.${this.discoverShardsExpensive.name}`,
           error,
           elapsed: null,
         });
@@ -127,8 +128,9 @@ export class Cluster<TClient extends Client, TNode = any> {
   }
 
   /**
-   * If called once, keeps the Clients pre-warmed, e.g. open. (It's up to the
-   * particular Client's implementation, what does a "pre-warmed Client" mean.)
+   * Signals the Cluster to keep the Clients pre-warmed, e.g. open. (It's up to
+   * the particular Client's implementation, what does a "pre-warmed Client"
+   * mean; typically, it's keeping some minimal number of pooled connections.)
    */
   prewarm(): void {
     for (const island of this.islandsMap.values()) {
@@ -199,7 +201,7 @@ export class Cluster<TClient extends Client, TNode = any> {
   /**
    * Returns all Island numbers in the Cluster.
    */
-  islands(): number[] {
+  async islands(): Promise<number[]> {
     return [...this.islandsMap.keys()];
   }
 

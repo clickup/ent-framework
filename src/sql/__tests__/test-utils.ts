@@ -157,6 +157,7 @@ export const TEST_CONFIG = {
   database: process.env.PGDATABASE || process.env.DB_DATABASE,
   user: process.env.PGUSER || process.env.DB_USER,
   password: process.env.PGPASSWORD || process.env.DB_PASS,
+  nodeNo: 0,
 };
 
 /**
@@ -164,8 +165,16 @@ export const TEST_CONFIG = {
  */
 export const testCluster = new Cluster({
   shardsDiscoverIntervalMs: 500,
-  islands: [{ no: 0, nodes: [TEST_CONFIG, TEST_CONFIG] }],
-  createClient: (config, nodeNo) =>
+  islands: [
+    {
+      no: 0,
+      nodes: [
+        { ...TEST_CONFIG, nodeNo: 0 },
+        { ...TEST_CONFIG, nodeNo: 1 },
+      ],
+    },
+  ],
+  createClient: ({ nodeNo, ...config }) =>
     new TestSQLClient(
       new SQLClientPool({
         name: `test-pool(replica=${nodeNo > 0})`,

@@ -103,12 +103,24 @@ export abstract class SQLClient extends Client {
   /** An active TimelineManager for this particular Client. */
   readonly timelineManager: TimelineManager;
 
+  /**
+   * Called when the Client needs a connection to run a query against.
+   */
   protected abstract acquireConn(): Promise<SQLClientConn>;
 
+  /**
+   * Called when the Client is done with the connection.
+   */
   protected abstract releaseConn(conn: SQLClientConn): void;
 
+  /**
+   * Returns statistics about the connection pool.
+   */
   protected abstract poolStats(): ClientQueryLoggerProps["poolStats"];
 
+  /**
+   * Initializes an instance of SQLClient.
+   */
   constructor(options: SQLClientOptions) {
     super(options);
     this.options = defaults(
@@ -117,6 +129,7 @@ export abstract class SQLClient extends Client {
       (this as Client).options,
       SQLClient.DEFAULT_OPTIONS
     );
+
     this.timelineManager = new TimelineManager(
       this.options.maxReplicationLagMs,
       this.options.replicaTimelinePosRefreshMs,
@@ -129,6 +142,7 @@ export abstract class SQLClient extends Client {
           table: "pg_catalog",
         })
     );
+
     if (this.options.shards) {
       this.shardNoPadLen = this.buildShardName(0).match(/(\d+)/)
         ? RegExp.$1.length
