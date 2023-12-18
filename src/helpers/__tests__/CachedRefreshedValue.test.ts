@@ -1,9 +1,14 @@
 import delay from "delay";
 import pDefer from "p-defer";
+import waitForExpect from "wait-for-expect";
 import { CachedRefreshedValue } from "../CachedRefreshedValue";
 
 const OPTIONS = {
   delayMs: 10,
+  deps: {
+    delayMs: 100,
+    handler: () => "",
+  },
   warningTimeoutMs: 1000,
   onError: () => {},
   delay: async (ms: number) => delay(ms),
@@ -299,3 +304,26 @@ test("waitRefresh() skips delay", async () => {
   await cache.waitRefresh();
   expect(await cache.cached()).toBe("three");
 }, 10_000 /* timeout */);
+
+test("changes in deps are respected", async () => {
+  let depsValue = "some";
+  cache = new CachedRefreshedValue({
+    ...OPTIONS,
+    deps: {
+      delayMs: 10,
+      handler: () => depsValue,
+    },
+    resolverFn: jest
+      .fn()
+      .mockResolvedValueOnce("one")
+      .mockResolvedValueOnce("two"),
+    delay: async () =>
+      // Never resolves!
+      delay(1_000_000),
+  });
+
+  expect(await cache.cached()).toEqual("one");
+
+  depsValue = "other";
+  await waitForExpect(async () => expect(await cache.cached()).toEqual("two"));
+});

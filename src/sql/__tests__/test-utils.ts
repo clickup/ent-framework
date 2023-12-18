@@ -1,3 +1,4 @@
+import delay from "delay";
 import compact from "lodash/compact";
 import { types } from "pg";
 import { Client } from "../../abstract/Client";
@@ -32,6 +33,10 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
 
   async end(forceDisconnect?: boolean): Promise<void> {
     return this.client.end(forceDisconnect);
+  }
+
+  isEnded(): boolean {
+    return this.client.isEnded();
   }
 
   async shardNos(): Promise<readonly number[]> {
@@ -240,6 +245,26 @@ export async function recreateTestTables(
       ]);
     }
   );
+}
+
+/**
+ * Waits till the Cluster reaches to the provided number of Islands after a
+ * reconfiguration.
+ */
+export async function waitTillIslandCount(count: number): Promise<void> {
+  const errorSpy = jest.spyOn(testCluster.loggers, "swallowedErrorLogger");
+
+  const startTime = performance.now();
+  while (
+    performance.now() - startTime < 10000 &&
+    (await testCluster.islands()).length !== count
+  ) {
+    await delay(100);
+    expect(errorSpy).not.toHaveBeenCalled();
+  }
+
+  expect(await testCluster.islands()).toHaveLength(count);
+  errorSpy.mockReset();
 }
 
 function indentQuery(query: string): string {

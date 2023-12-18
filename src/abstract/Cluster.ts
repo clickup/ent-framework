@@ -12,7 +12,7 @@ import {
   runInVoid,
   objectHash,
   maybeCall,
-  stringHash,
+  jsonHash,
 } from "../helpers/misc";
 import { Registry } from "../helpers/Registry";
 import type { Client } from "./Client";
@@ -35,6 +35,10 @@ export interface ClusterOptions<TClient extends Client, TNode> {
   createClient: (node: TNode) => TClient;
   /** How often to run Shards rediscovery in normal circumstances. */
   shardsDiscoverIntervalMs?: MaybeCallable<number>;
+  /** How often to recheck for changes in options.islands (typically, often,
+   * since it's assumed that options.islands calculation is cheap). If the
+   * Cluster configuration is changed, then trigger rediscovery ASAP. */
+  shardsDiscoverRecheckIslandsIntervalMs?: MaybeCallable<number>;
   /** If there were DB errors during Shards discovery (e.g. transport errors,
    * which is rare), the discovery is retried that many times before giving up
    * and throwing the error through. The number here can be high, because
@@ -81,6 +85,7 @@ export class Cluster<TClient extends Client, TNode = any> {
     PickPartial<ClusterOptions<any, any>>
   > = {
     shardsDiscoverIntervalMs: 10000,
+    shardsDiscoverRecheckIslandsIntervalMs: 500,
     shardsDiscoverErrorRetryCount: 3,
     shardsDiscoverErrorRetryDelayMs: 3000,
     locateIslandErrorRetryCount: 2,
@@ -116,7 +121,7 @@ export class Cluster<TClient extends Client, TNode = any> {
     this.options = defaults({}, options, Cluster.DEFAULT_OPTIONS);
 
     this.clientRegistry = new Registry<TNode, Client>({
-      key: (node) => stringHash(JSON.stringify(node)),
+      key: (node) => jsonHash(node),
       create: (node) => this.options.createClient(node),
       end: async (client) => {
         const startTime = performance.now();
@@ -131,7 +136,7 @@ export class Cluster<TClient extends Client, TNode = any> {
     });
 
     this.islandRegistry = new Registry({
-      key: ({ nodes }) => stringHash(JSON.stringify(nodes)),
+      key: ({ nodes }) => jsonHash(nodes),
       create: ({ clients }) =>
         new Island(
           nullthrows(clients[0], "Island does not have nodes"),
@@ -149,17 +154,21 @@ export class Cluster<TClient extends Client, TNode = any> {
     this.loggers = client.options.loggers;
 
     this.discoverShardsCache = new CachedRefreshedValue({
-      warningTimeoutMs: this.options.shardsDiscoverIntervalMs, // assume to not spend >50% of the time on discovering Shards
-      delayMs: this.options.shardsDiscoverIntervalMs,
+      delayMs: () => maybeCall(this.options.shardsDiscoverIntervalMs),
+      warningTimeoutMs: () => maybeCall(this.options.shardsDiscoverIntervalMs), // assume to not spend >50% of the time on discovering Shards
+      deps: {
+        delayMs: () =>
+          maybeCall(this.options.shardsDiscoverRecheckIslandsIntervalMs),
+        handler: () => jsonHash(maybeCall(this.options.islands)),
+      },
       resolverFn: async () => this.discoverShardsExpensive(),
       delay: async (ms) => delay(ms),
-      onError: (error, elapsed) => {
+      onError: (error, elapsed) =>
         this.loggers.swallowedErrorLogger({
           where: `${this.constructor.name}.discoverShardsCache`,
           error,
           elapsed,
-        });
-      },
+        }),
     });
   }
 

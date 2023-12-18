@@ -219,6 +219,19 @@ export function objectHash(obj: object): Buffer {
 }
 
 /**
+ * Similar to objectHash(), but uses JSON.stringify() under the hood, assuming
+ * that it's faster than objectHash(). Also, doesn't throw when the object
+ * contains bigint values (as opposed to JSON.stringify()).
+ */
+export function jsonHash(obj: any): string {
+  return stringHash(
+    JSON.stringify(obj, (_, value) =>
+      typeof value === "bigint" ? value.toString() : value
+    )
+  );
+}
+
+/**
  * Indents each line of the text with 2 spaces.
  */
 export function indent(message: string): string {

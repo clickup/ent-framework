@@ -126,7 +126,7 @@ export class SQLClientPool extends SQLClient {
     }
   }
 
-  override async end(forceDisconnect?: boolean): Promise<void> {
+  async end(forceDisconnect?: boolean): Promise<void> {
     if (this.state.ended) {
       return;
     }
@@ -143,6 +143,10 @@ export class SQLClientPool extends SQLClient {
     } else {
       return this.state.pool.end();
     }
+  }
+
+  isEnded(): boolean {
+    return this.state.ended;
   }
 
   override prewarm(): void {
