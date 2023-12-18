@@ -9,6 +9,13 @@ export interface CachedRefreshedValueOptions<TValue> {
   delayMs: MaybeCallable<number>;
   /** Log a timeout Error if a resolver takes more than X ms to complete. */
   warningTimeoutMs: MaybeCallable<number>;
+  /** The handler deps.handler() is called every deps.delayMs; if it returns a
+   * different value than previously, then waiting for the next delayMs is
+   * interrupted prematurely, and the value gets refreshed. */
+  deps: {
+    delayMs: MaybeCallable<number>;
+    handler: () => string;
+  };
   /** A resolver function that returns the value. It's assumed that this
    * function would eventually either resolve or throw. */
   resolverFn: () => Promise<TValue>;
@@ -24,7 +31,7 @@ export interface CachedRefreshedValueOptions<TValue> {
  * - The value is stable and does not change frequently.
  * - The resolverFn can throw or take more time to resolve (e.g. outage). In
  *   that case, the cached value is still valid, unless a fresh value is
- *   requested.
+ *   requested with waitRefresh().
  *
  * The implementation is as follows:
  * - Once value is accessed, we schedule an endless loop of calling resolver to
@@ -48,8 +55,21 @@ export class CachedRefreshedValue<TValue> {
   private destroyedError: Error | null = null;
   /** A callback to skip the current delay() call. */
   private skipDelay: (() => void) | null = null;
+  /** A never throwing version of options.onError(). */
+  private onErrorNothrow: CachedRefreshedValueOptions<TValue>["onError"];
 
-  constructor(public readonly options: CachedRefreshedValueOptions<TValue>) {}
+  /**
+   * Initializes the instance.
+   */
+  constructor(public readonly options: CachedRefreshedValueOptions<TValue>) {
+    this.onErrorNothrow = (...args) => {
+      try {
+        options.onError(...args);
+      } catch {
+        // noop
+      }
+    };
+  }
 
   /**
    * Returns latest cached value.
@@ -60,7 +80,8 @@ export class CachedRefreshedValue<TValue> {
   }
 
   /**
-   * Waits for the next successful cache refresh.
+   * Triggers the call to resolverFn() ASAP (i.e. sooner than the next interval
+   * specified in delayMs) and waits for the next successful cache refresh.
    */
   async waitRefresh(): Promise<void> {
     runInVoid(this.refreshLoop());
@@ -88,21 +109,22 @@ export class CachedRefreshedValue<TValue> {
   @Memoize()
   private async refreshLoop(): Promise<void> {
     while (!this.destroyedError) {
-      const warningTimeoutMs = maybeCall(this.options.warningTimeoutMs);
+      const warningDelayMs = maybeCall(this.options.warningTimeoutMs);
+      const depsDelayMs = maybeCall(this.options.deps.delayMs);
+      const depsPrev = this.options.deps.handler();
       const startTime = performance.now();
-      const timeout = setTimeout(() => {
-        try {
-          this.options.onError(
+
+      const warningTimeout = setTimeout(
+        () =>
+          this.onErrorNothrow(
             Error(
               `${this.constructor.name}.refreshLoop: Warning: ` +
-                `resolverFn did not complete in ${warningTimeoutMs} ms!`
+                `resolverFn did not complete in ${warningDelayMs} ms!`
             ),
             performance.now() - startTime
-          );
-        } catch (e: unknown) {
-          // noop
-        }
-      }, warningTimeoutMs);
+          ),
+        warningDelayMs
+      );
       try {
         const val = await this.options.resolverFn();
         if (this.latestAt < startTime) {
@@ -115,24 +137,28 @@ export class CachedRefreshedValue<TValue> {
           oldNextValue.resolve(val);
         }
       } catch (e: unknown) {
-        try {
-          this.options.onError(e, performance.now() - startTime);
-        } catch (e: unknown) {
-          // noop
-        }
+        this.onErrorNothrow(e, performance.now() - startTime);
       } finally {
-        clearTimeout(timeout);
+        clearTimeout(warningTimeout);
       }
 
       // Wait for delayMs with ability to skip it.
-      const delayDeferred = pDefer<void>();
-      this.skipDelay = () => delayDeferred.resolve();
-      runInVoid(
+      const delayDefer = pDefer<void>();
+      this.skipDelay = () => delayDefer.resolve();
+      const depsInterval = setInterval(() => {
+        if (this.options.deps.handler() !== depsPrev) {
+          delayDefer.resolve();
+        }
+      }, depsDelayMs);
+      try {
         this.options
           .delay(maybeCall(this.options.delayMs))
-          .finally(() => delayDeferred.resolve())
-      );
-      await delayDeferred.promise;
+          .finally(() => delayDefer.resolve())
+          .catch(() => {});
+        await delayDefer.promise;
+      } finally {
+        clearInterval(depsInterval);
+      }
     }
 
     // Mark current instance as destroyed.

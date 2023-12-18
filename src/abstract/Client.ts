@@ -52,6 +52,11 @@ export abstract class Client {
   abstract end(forceDisconnect?: boolean): Promise<void>;
 
   /**
+   * Returns true if the Client is ended and can't be used anymore.
+   */
+  abstract isEnded(): boolean;
+
+  /**
    * Returns all Shard numbers discoverable via the connection to the Client's
    * database.
    */
