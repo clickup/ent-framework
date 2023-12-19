@@ -1,4 +1,6 @@
+import compact from "lodash/compact";
 import sortBy from "lodash/sortBy";
+import { mapJoin } from "../helpers/misc";
 import type { Client } from "./Client";
 
 /**
@@ -22,28 +24,50 @@ export class Island<TClient extends Client> {
   }
 
   /**
-   * Returns all Shards on the first available Client (master, then replicas).
+   * Returns all Shards on the best available Client (preferably master, then
+   * replicas). If some Clients are unavailable, tries its best to infer the
+   * data from other Clients.
+   *
+   * The method queries ALL clients in parallel, because the caller logic
+   * anyways needs to know, who's master and who's replica, as a side effect of
+   * the very 1st query after the Client creation. We infer that as a piggy back
+   * after calling Client#shardNos().
    */
   async shardNos(): Promise<readonly number[]> {
-    this.sortClients();
-    for (const client of this.clients) {
-      const startTime = performance.now();
-      try {
-        return await client.shardNos();
-      } catch (error: unknown) {
-        client.options.loggers.swallowedErrorLogger({
-          where: `${client.constructor.name}(${client.options.name}): shardNos`,
-          error,
-          elapsed: performance.now() - startTime,
-        });
-      }
+    const res = sortBy(
+      compact(
+        // Do NOT use Promise.race() here! We really want to wait until ALL
+        // clients either respond or reject, which is what mapJoin() is doing.
+        // If we don't, then timing out Clients might be requested by the caller
+        // logic concurrently over and over, so the number of pending requests
+        // to them would grow. We want to control that parallelism.
+        await mapJoin(this.clients, async (client) => {
+          const startTime = performance.now();
+          try {
+            const nos = await client.shardNos();
+            return { isMaster: client.isMaster(), nos };
+          } catch (error: unknown) {
+            client.options.loggers.swallowedErrorLogger({
+              where: `${client.constructor.name}(${client.options.name}): shardNos`,
+              error,
+              elapsed: performance.now() - startTime,
+            });
+            return null;
+          }
+        })
+      ),
+      ({ isMaster }) => (isMaster ? 0 : 1),
+      ({ nos }) => -1 * nos.length
+    );
+    if (res.length > 0) {
+      return res[0].nos;
     }
 
-    // Being unable to access a DB is not a critical error here, we'll just miss
-    // some Shards (and other Shards will work). DO NOT throw through here yet!
-    // This needs to be addressed holistically and with careful retries. Also,
-    // we have Shards rediscovery every N seconds, so a missing Island will
-    // self-heal eventually.
+    // Being unable to access all DB Clients is not a critical error here, we'll
+    // just miss some Shards (and other Shards will work). DO NOT throw through
+    // here yet! This needs to be addressed holistically and with careful
+    // retries. Also, we have Shards rediscovery every N seconds, so a missing
+    // Island will self-heal eventually.
     return [];
   }
 

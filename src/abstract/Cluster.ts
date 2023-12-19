@@ -313,8 +313,7 @@ export class Cluster<TClient extends Client, TNode = any> {
           const startTime = performance.now();
           await pTimeout(
             this.discoverShardsCache.waitRefresh(),
-            // Timeout = delay between fetches + warning timeout
-            // for a fetch.
+            // Timeout = delay between fetches + warning timeout for a fetch.
             maybeCall(this.options.shardsDiscoverIntervalMs) * 2,
             "Timed out while waiting for shards discovery."
           ).catch((error) =>
