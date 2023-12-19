@@ -1,4 +1,4 @@
-import shuffle from "lodash/shuffle";
+import sortBy from "lodash/sortBy";
 import type { Client } from "./Client";
 
 /**
@@ -9,22 +9,30 @@ import type { Client } from "./Client";
  * code. The caller code should use only Client and Shard abstractions.
  */
 export class Island<TClient extends Client> {
-  constructor(
-    public readonly master: TClient,
-    public readonly replicas: TClient[]
-  ) {}
+  private clients: TClient[];
+
+  /**
+   * Initializes the Island by copying the Client references into it.
+   */
+  constructor(clients: readonly TClient[]) {
+    this.clients = [...clients];
+    if (this.clients.length === 0) {
+      throw Error("Island does not have nodes");
+    }
+  }
 
   /**
    * Returns all Shards on the first available Client (master, then replicas).
    */
   async shardNos(): Promise<readonly number[]> {
-    for (const client of [this.master, ...shuffle(this.replicas)]) {
+    this.sortClients();
+    for (const client of this.clients) {
       const startTime = performance.now();
       try {
         return await client.shardNos();
       } catch (error: unknown) {
         client.options.loggers.swallowedErrorLogger({
-          where: `${client.constructor.name}(${client.options.name}): ${this.shardNos.name}()`,
+          where: `${client.constructor.name}(${client.options.name}): shardNos`,
           error,
           elapsed: performance.now() - startTime,
         });
@@ -40,10 +48,60 @@ export class Island<TClient extends Client> {
   }
 
   /**
+   * Returns the master Client among the Clients of this Island. In case all
+   * Clients are read-only (replicas), still returns the 1st of them, assuming
+   * that it's better to throw at the caller side on a failed write (at worst)
+   * rather than here. It is not common to have an Island without a master
+   * Client, that happens only temporarily during failover/switchover, so the
+   * caller will likely rediscover and find a new master on a next retry.
+   */
+  master(): TClient {
+    const firstClient = this.clients[0];
+    if (firstClient.isMaster()) {
+      return firstClient;
+    }
+
+    this.sortClients();
+    // Since sortClients() puts the master to the beginning of the list, we just
+    // pick it from there. In case it is not master though (e.g. there is no
+    // master at all temporarily), we still return the 1s element hoping that
+    // the caller will retry and rediscover.
+    return this.clients[0];
+  }
+
+  /**
+   * Returns a random replica Client. In case there are no replicas, returns the
+   * master Client.
+   */
+  replica(): TClient {
+    if (this.clients.length === 1) {
+      return this.clients[0];
+    }
+
+    if (!this.clients[0].isMaster()) {
+      this.sortClients();
+    }
+
+    const skipHead = this.clients[0].isMaster() ? 1 : 0;
+    return this.clients[
+      skipHead + Math.trunc(Math.random() * (this.clients.length - skipHead))
+    ];
+  }
+
+  /**
    * Makes sure the prewarm loop is running on all Clients.
    */
   prewarm(): void {
-    this.master.prewarm();
-    this.replicas.forEach((client) => client.prewarm());
+    this.clients.forEach((client) => client.prewarm());
+  }
+
+  /**
+   * Reorders the Clients stored internally, so the master Client will appear in
+   * the head of the list.
+   */
+  private sortClients(): void {
+    this.clients = sortBy(this.clients, (client) =>
+      client.isMaster() ? 0 : 1
+    );
   }
 }

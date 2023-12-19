@@ -13,13 +13,17 @@ import {
   nullthrows,
   sanitizeIDForDebugPrinting,
 } from "../helpers/misc";
+import { Ref } from "../helpers/Ref";
 import type { Literal } from "../types";
 import { parseCompositeRow } from "./helpers/parseCompositeRow";
 import { SQLError } from "./SQLError";
 
 const MAX_BIGINT = "9223372036854775807";
 const MAX_BIGINT_RE = new RegExp("^\\d{1," + MAX_BIGINT.length + "}$");
+
+// https://www.postgresql.org/docs/current/errcodes-appendix.html
 const PG_CODE_UNDEFINED_TABLE = "42P01";
+const PG_CODE_READ_ONLY_SQL_TRANSACTION = "25006";
 
 /**
  * Options for SQLClient constructor.
@@ -69,6 +73,10 @@ export interface SQLClientConn {
  * An abstract PostgreSQL Client which doesn't know how to acquire an actual
  * connection and send queries; these things are up to the derived classes to
  * implement.
+ *
+ * Since the class is cloneable internally (using the prototype substitution
+ * technique), the contract of this class is that ALL its derived classes may
+ * only have readonly immediate properties.
  */
 export abstract class SQLClient extends Client {
   /** Default values for the constructor options. */
@@ -86,13 +94,14 @@ export abstract class SQLClient extends Client {
   /** Number of decimal digits in an ID allocated for shard number. Calculated
    * dynamically based on shards.nameFormat (e.g. for "sh%04d", it will be 4
    * since it expands to "sh0012"). */
-  private shardNoPadLen: number;
+  private readonly shardNoPadLen: number = 0;
 
   /** The derived class must set this flag after each request to reflect the
    * actual role of the client. The idea is that master/replica role may change
    * online, without reconnecting the Client, so we need to refresh it after
-   * each request and be ready for a fallback. */
-  private reportedMasterAfterLastQuery: boolean = false;
+   * each request and be ready for a fallback. The expectation is that the
+   * initial value is populated during the very first shardNos() query. */
+  private readonly reportedMasterAfterLastQuery = new Ref(false);
 
   /** SQLClient configuration options. */
   override readonly options: Required<SQLClientOptions>;
@@ -150,8 +159,6 @@ export abstract class SQLClient extends Client {
       if (!this.shardNoPadLen) {
         throw Error("Invalid shards.nameFormat value");
       }
-    } else {
-      this.shardNoPadLen = 0;
     }
   }
 
@@ -198,8 +205,10 @@ export abstract class SQLClient extends Client {
     // Prepend internal per-Client hints to the prologue.
     if (this.options.hints) {
       queriesPrologue.unshift(
-        ...Object.entries(maybeCall(this.options.hints)).map(
-          ([k, v]) => `SET LOCAL ${k} TO ${v}`
+        ...Object.entries(maybeCall(this.options.hints)).map(([k, v]) =>
+          k.toLowerCase() === "transaction"
+            ? `SET LOCAL ${k} ${v}`
+            : `SET LOCAL ${k} TO ${v}`
         )
       );
     }
@@ -285,7 +294,7 @@ export abstract class SQLClient extends Client {
             pg_last_wal_replay_lsn: string | null;
           };
 
-          this.reportedMasterAfterLastQuery = this.options
+          this.reportedMasterAfterLastQuery.current = this.options
             .isAlwaysLaggingReplica
             ? false
             : lsns.pg_current_wal_insert_lsn !== null;
@@ -333,6 +342,15 @@ export abstract class SQLClient extends Client {
         origError instanceof Error &&
         (origError as any).code === PG_CODE_UNDEFINED_TABLE
       ) {
+        // Table doesn't exist or disappeared (e.g. the Shard was relocated to
+        // another Island).
+        throw new ShardError(origError, this.options.name, "rediscover");
+      } else if (
+        origError instanceof Error &&
+        (origError as any).code === PG_CODE_READ_ONLY_SQL_TRANSACTION
+      ) {
+        // A write happened in a read-only client: probably the Client role was
+        // changed from master to replica due to a failover/switchover.
         throw new ShardError(origError, this.options.name, "rediscover");
       } else if (origError instanceof Error && (origError as any).severity) {
         // Only wrap the errors which PG sent to us explicitly. Those errors
@@ -434,13 +452,15 @@ export abstract class SQLClient extends Client {
     return Object.assign(Object.create(this.constructor.prototype), {
       ...this,
       shardName: this.buildShardName(no),
-      // Notice that timelineManager is DERIVED from the current object; thus,
-      // it's shared across all the Clients within the Island.
+      // Notice that we can ONLY have readonly properties in this and all
+      // derived classes to make it work. If we need some mutable props shared
+      // across all of the clones, we need to wrap them in a Ref (and make the
+      // Ref object itself readonly). That's a pretty fragile contract though.
     });
   }
 
   isMaster(): boolean {
-    return this.reportedMasterAfterLastQuery;
+    return this.reportedMasterAfterLastQuery.current;
   }
 
   private buildShardName(no: number | string): string {
