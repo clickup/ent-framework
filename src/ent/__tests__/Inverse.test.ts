@@ -387,7 +387,9 @@ test("inverses are not deleted when ent creation times out", async () => {
   // On an accidental disconnect, we don't know, whether the DB applied the
   // insert or not, so we should expect Ent Framework to NOT delete the inverse.
   const inverse = EntTestTopic.INVERSES[0];
-  expect(await inverse.id2s(vc, myCompany.id)).toHaveLength(1);
+  expect(
+    await inverse.id2s(vc.withOneTimeStaleReplica(), myCompany.id)
+  ).toHaveLength(1);
 });
 
 test("inverses are not deleted when ent insertion is requested with an existing ID", async () => {
