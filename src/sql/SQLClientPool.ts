@@ -5,6 +5,7 @@ import { Pool } from "pg";
 import type { ClientQueryLoggerProps } from "../abstract/Loggers";
 import type { MaybeCallable, PickPartial } from "../helpers/misc";
 import { maybeCall, runInVoid } from "../helpers/misc";
+import { Ref } from "../helpers/Ref";
 import type { SQLClientOptions } from "./SQLClient";
 import { SQLClient } from "./SQLClient";
 
@@ -46,22 +47,23 @@ export class SQLClientPool extends SQLClient {
     prewarmQuery: 'SELECT 1 AS "prewarmQuery"',
   };
 
-  /** Client.withShard() clones `this`, so we must put all of the primitive
-   * typed props to a separate object to make them shareable across all of the
-   * clones. (Another option would be to introduce a proxy, but it's an
-   * overkill.) */
-  private state: {
-    pool: Pool;
-    clients: Set<PoolClient>;
-    prewarmTimeout: NodeJS.Timeout | null;
-    ended: boolean;
-  };
+  /** PG connection pool to use. */
+  private readonly pool: Pool;
+
+  /** All open PG client connections. */
+  private readonly clients = new Set<PoolClient>();
+
+  /** Prewarming periodic timer (if scheduled). */
+  private readonly prewarmTimeout = new Ref<NodeJS.Timeout | null>(null);
+
+  /** Whether the pool has been ended and is not usable anymore. */
+  private readonly ended = new Ref(false);
 
   /** SQLClientPool configuration options. */
   override readonly options: Required<SQLClientPoolOptions>;
 
   protected async acquireConn(): Promise<PoolClient> {
-    return this.state.pool.connect();
+    return this.pool.connect();
   }
 
   protected releaseConn(conn: SQLClientPoolClient): void {
@@ -71,9 +73,9 @@ export class SQLClientPool extends SQLClient {
 
   protected poolStats(): ClientQueryLoggerProps["poolStats"] {
     return {
-      totalCount: this.state.pool.totalCount,
-      waitingCount: this.state.pool.waitingCount,
-      idleCount: this.state.pool.idleCount,
+      totalCount: this.pool.totalCount,
+      waitingCount: this.pool.waitingCount,
+      idleCount: this.pool.idleCount,
     };
   }
 
@@ -86,34 +88,29 @@ export class SQLClientPool extends SQLClient {
       SQLClientPool.DEFAULT_OPTIONS
     );
 
-    this.state = {
-      pool: new Pool(this.options.config)
-        .on("connect", (client: SQLClientPoolClient) => {
-          this.state.clients.add(client);
-          client.id = connNo++;
-          client.closeAt =
-            this.options.maxConnLifetimeMs > 0
-              ? Date.now() +
-                this.options.maxConnLifetimeMs *
-                  (1 + this.options.maxConnLifetimeJitter * Math.random())
-              : undefined;
-          // Sets a "default error" handler to not let forceDisconnect errors
-          // leak to e.g. Jest and the outside world as "unhandled error".
-          // Appending an additional error handler to EventEmitter doesn't
-          // affect the existing error handlers anyhow, so should be safe.
-          client.on("error", () => {});
-        })
-        .on("remove", (conn) => {
-          this.state.clients.delete(conn);
-        })
-        .on("error", (e) => {
-          // Having this hook prevents node from crashing.
-          this.logSwallowedError('Pool.on("error")', e, null);
-        }),
-      clients: new Set(),
-      prewarmTimeout: null,
-      ended: false,
-    };
+    this.pool = new Pool(this.options.config)
+      .on("connect", (client: SQLClientPoolClient) => {
+        this.clients.add(client);
+        client.id = connNo++;
+        client.closeAt =
+          this.options.maxConnLifetimeMs > 0
+            ? Date.now() +
+              this.options.maxConnLifetimeMs *
+                (1 + this.options.maxConnLifetimeJitter * Math.random())
+            : undefined;
+        // Sets a "default error" handler to not let forceDisconnect errors
+        // leak to e.g. Jest and the outside world as "unhandled error".
+        // Appending an additional error handler to EventEmitter doesn't
+        // affect the existing error handlers anyhow, so should be safe.
+        client.on("error", () => {});
+      })
+      .on("remove", (conn) => {
+        this.clients.delete(conn);
+      })
+      .on("error", (e) => {
+        // Having this hook prevents node from crashing.
+        this.logSwallowedError('Pool.on("error")', e, null);
+      });
   }
 
   override logSwallowedError(
@@ -121,36 +118,36 @@ export class SQLClientPool extends SQLClient {
     e: unknown,
     elapsed: number | null
   ): void {
-    if (!this.state.ended) {
+    if (!this.ended.current) {
       super.logSwallowedError(where, e, elapsed);
     }
   }
 
   async end(forceDisconnect?: boolean): Promise<void> {
-    if (this.state.ended) {
+    if (this.ended.current) {
       return;
     }
 
-    this.state.ended = true;
-    this.state.prewarmTimeout && clearTimeout(this.state.prewarmTimeout);
-    this.state.prewarmTimeout = null;
+    this.ended.current = true;
+    this.prewarmTimeout.current && clearTimeout(this.prewarmTimeout.current);
+    this.prewarmTimeout.current = null;
 
     if (forceDisconnect) {
-      for (const client of this.state.clients) {
+      for (const client of this.clients) {
         const connection: Connection = (client as any).connection;
         connection.stream.destroy();
       }
     } else {
-      return this.state.pool.end();
+      return this.pool.end();
     }
   }
 
   isEnded(): boolean {
-    return this.state.ended;
+    return this.ended.current;
   }
 
   override prewarm(): void {
-    if (this.state.prewarmTimeout) {
+    if (this.prewarmTimeout.current) {
       // Already scheduled a prewarm, so skipping.
       return;
     }
@@ -159,12 +156,12 @@ export class SQLClientPool extends SQLClient {
       return;
     }
 
-    const toPrewarm = this.options.config.min - this.state.pool.waitingCount;
+    const toPrewarm = this.options.config.min - this.pool.waitingCount;
     if (toPrewarm > 0) {
       const startTime = performance.now();
       range(toPrewarm).forEach(() =>
         runInVoid(
-          this.state.pool
+          this.pool
             .query(maybeCall(this.options.prewarmQuery))
             .catch((error) =>
               this.logSwallowedError(
@@ -177,9 +174,8 @@ export class SQLClientPool extends SQLClient {
       );
     }
 
-    this.state.prewarmTimeout && clearTimeout(this.state.prewarmTimeout);
-    this.state.prewarmTimeout = setTimeout(() => {
-      this.state.prewarmTimeout = null;
+    this.prewarmTimeout.current = setTimeout(() => {
+      this.prewarmTimeout.current = null;
       this.prewarm();
     }, this.options.prewarmIntervalMs);
   }

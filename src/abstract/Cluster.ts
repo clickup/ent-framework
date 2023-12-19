@@ -137,11 +137,7 @@ export class Cluster<TClient extends Client, TNode = any> {
 
     this.islandRegistry = new Registry({
       key: ({ nodes }) => jsonHash(nodes),
-      create: ({ clients }) =>
-        new Island(
-          nullthrows(clients[0], "Island does not have nodes"),
-          clients.slice(1)
-        ),
+      create: ({ clients }) => new Island(clients),
     });
 
     const [client] = this.clientRegistry.getOrCreate(
@@ -275,9 +271,7 @@ export class Cluster<TClient extends Client, TNode = any> {
       islandsMap.get(islandNo),
       () => `Unknown island ${islandNo}`
     );
-    return freshness === MASTER || island.replicas.length === 0
-      ? island.master
-      : island.replicas[Math.trunc(Math.random() * island.replicas.length)];
+    return freshness === MASTER ? island.master() : island.replica();
   }
 
   /**
@@ -296,7 +290,7 @@ export class Cluster<TClient extends Client, TNode = any> {
         const islandNo = shardNoToIslandNo.get(shardNo);
         if (islandNo === undefined) {
           const masterNames = [...islandsMap.entries()]
-            .map(([no, { master }]) => `${no}:${master.options.name}`)
+            .map(([no, island]) => `${no}:${island.master().options.name}`)
             .join(", ");
           throw new ShardError(
             `Shard ${shardNo} is not discoverable (some islands are down? connections limit? no such Shard in the cluster?)`,
@@ -377,10 +371,10 @@ export class Cluster<TClient extends Client, TNode = any> {
           if (otherIslandNo !== undefined) {
             throw Error(
               `Shard #${shardNo} exists in more than one island: ` +
-                islandsMap.get(otherIslandNo)?.master.options.name +
+                islandsMap.get(otherIslandNo)?.master().options.name +
                 `(${otherIslandNo})` +
                 " and " +
-                island.master.options.name +
+                island.master().options.name +
                 `(${islandNo})`
             );
           }
