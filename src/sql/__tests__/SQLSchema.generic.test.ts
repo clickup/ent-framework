@@ -1,10 +1,8 @@
 import delay from "delay";
 import range from "lodash/range";
 import sortBy from "lodash/sortBy";
-import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
 import { MASTER, STALE_REPLICA } from "../../abstract/Shard";
-import { Timeline } from "../../abstract/Timeline";
 import { join, nullthrows } from "../../helpers/misc";
 import { ID } from "../../types";
 import { SQLError } from "../SQLError";
@@ -13,7 +11,13 @@ import { SQLRunnerIDGen } from "../SQLQueryIDGen";
 import { SQLRunnerInsert } from "../SQLQueryInsert";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./test-utils";
-import { EncryptedValue, recreateTestTables, testCluster } from "./test-utils";
+import {
+  EncryptedValue,
+  TEST_TIMELINE,
+  recreateTestTables,
+  shardRun,
+  testCluster,
+} from "./test-utils";
 
 const schema = new SQLSchema(
   'sql-schema.generic"table',
@@ -129,7 +133,6 @@ const schemaDate = new SQLSchema(
   ["date_id"]
 );
 
-const timeline = new Timeline();
 let shard: Shard<TestSQLClient>;
 let master: TestSQLClient;
 let replica: TestSQLClient;
@@ -227,36 +230,17 @@ beforeEach(async () => {
     },
   ]);
 
-  timeline.reset();
   shard = await testCluster.randomShard();
   master = await shard.client(MASTER);
   master.resetSnapshot();
-  replica = await shard.client(timeline);
+  replica = await shard.client(TEST_TIMELINE);
   replica.resetSnapshot();
 });
 
-async function shardRun<TOutput>(
-  query: Query<TOutput>,
-  freshness: typeof STALE_REPLICA | null = null
-): Promise<TOutput> {
-  return shard.run(
-    query,
-    {
-      trace: "some-trace",
-      debugStack: "",
-      vc: "some-vc",
-      whyClient: undefined,
-      attempt: 0,
-    },
-    timeline,
-    freshness
-  );
-}
-
 test("idGen single", async () => {
   master.resetSnapshot();
-  const id1 = await shardRun(schema.idGen());
-  const id2 = await shardRun(schema.idGen());
+  const id1 = await shardRun(shard, schema.idGen());
+  const id2 = await shardRun(shard, schema.idGen());
   master.toMatchSnapshot();
   expect(id1).not.toEqual(id2);
 });
@@ -264,8 +248,8 @@ test("idGen single", async () => {
 test("idGen batched", async () => {
   master.resetSnapshot();
   const [id1, id2] = await join([
-    shardRun(schema.idGen()),
-    shardRun(schema.idGen()),
+    shardRun(shard, schema.idGen()),
+    shardRun(shard, schema.idGen()),
   ]);
   master.toMatchSnapshot();
   expect(id1).not.toEqual(id2);
@@ -275,14 +259,17 @@ test("idGen with large batch", async () => {
   const maxBatchSize = new SQLRunnerIDGen(schema, master.client).maxBatchSize;
   master.resetSnapshot();
   await join(
-    range(maxBatchSize * 2 - 10).map(async () => shardRun(schema.idGen()))
+    range(maxBatchSize * 2 - 10).map(async () =>
+      shardRun(shard, schema.idGen())
+    )
   );
   expect(master.queries).toHaveLength(2);
 });
 
 test("insert single", async () => {
-  const id1Gen = await shardRun(schema.idGen());
+  const id1Gen = await shardRun(shard, schema.idGen());
   const id1 = await shardRun(
+    shard,
     schema.insert({
       name: "a'b\x00'c",
       url_name: "aaa",
@@ -295,12 +282,13 @@ test("insert single", async () => {
     })
   );
   const id2 = await shardRun(
+    shard,
     schema.insert({ name: "a'b'c", url_name: "aaa_dup" })
   );
   master.toMatchSnapshot();
 
   expect(id1).toEqual(id1Gen);
-  const row = await shardRun(schema.load(id1!));
+  const row = await shardRun(shard, schema.load(id1!));
   expect(row).toMatchObject({
     name: "a'b'c",
     some_flag: true,
@@ -314,20 +302,21 @@ test("insert single", async () => {
 });
 
 test("insert pre-generated id with uniq key violation", async () => {
-  const id1 = await shardRun(schema.idGen());
-  const id2 = await shardRun(schema.idGen());
+  const id1 = await shardRun(shard, schema.idGen());
+  const id2 = await shardRun(shard, schema.idGen());
   const [res1, res2] = await join([
-    shardRun(schema.insert({ id: id1, name: "some", url_name: "aaa" })),
-    shardRun(schema.insert({ id: id2, name: "some", url_name: "aaa" })),
+    shardRun(shard, schema.insert({ id: id1, name: "some", url_name: "aaa" })),
+    shardRun(shard, schema.insert({ id: id2, name: "some", url_name: "aaa" })),
   ]);
   master.toMatchSnapshot();
   expect(res1 === null || res2 === null).toBeTruthy();
 });
 
 test("insert batched", async () => {
-  const id2Gen = await shardRun(schema.idGen());
+  const id2Gen = await shardRun(shard, schema.idGen());
   const [id1, id2, id3] = await join([
     shardRun(
+      shard,
       schema.insert({
         name: "z'b'c",
         url_name: null,
@@ -336,15 +325,16 @@ test("insert batched", async () => {
       })
     ),
     shardRun(
+      shard,
       schema.insert({ name: "a", url_name: "u", some_flag: null, id: id2Gen })
     ),
-    shardRun(schema.insert({ name: "a", url_name: "u_dup" })),
+    shardRun(shard, schema.insert({ name: "a", url_name: "u_dup" })),
   ]);
   master.toMatchSnapshot();
 
   const rows = await join([
-    shardRun(schema.load(id1!)),
-    shardRun(schema.load(id2!)),
+    shardRun(shard, schema.load(id1!)),
+    shardRun(shard, schema.load(id2!)),
   ]);
   expect(rows).toMatchObject([
     { name: "z'b'c", some_flag: true, jsonb_field: null },
@@ -359,7 +349,7 @@ test("insert large batch", async () => {
   master.resetSnapshot();
   await join(
     range(maxBatchSize * 2 - 10).map(async (i) =>
-      shardRun(schema.insert({ name: `aaa${i}`, url_name: `uuu${i}` }))
+      shardRun(shard, schema.insert({ name: `aaa${i}`, url_name: `uuu${i}` }))
     )
   );
   expect(master.queries).toHaveLength(2);
@@ -367,8 +357,14 @@ test("insert large batch", async () => {
 
 test("insert is never dedupped", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "aaa", url_name: "uuu", some_flag: null })),
-    shardRun(schema.insert({ name: "aaa", url_name: "uuu", some_flag: null })),
+    shardRun(
+      shard,
+      schema.insert({ name: "aaa", url_name: "uuu", some_flag: null })
+    ),
+    shardRun(
+      shard,
+      schema.insert({ name: "aaa", url_name: "uuu", some_flag: null })
+    ),
   ]);
   master.toMatchSnapshot();
   expect((id1 === null) !== (id2 === null)).toBeTruthy();
@@ -377,10 +373,12 @@ test("insert is never dedupped", async () => {
 test("insert de-batches pg error", async () => {
   const [res1, res2] = await join([
     shardRun(
+      shard,
       // should succeed
       schema.insert({ name: "some", url_name: null })
     ).catch((e) => e),
     shardRun(
+      shard,
       // should fail with FK constraint error
       schema.insert({ name: "other", url_name: null, parent_id: "0" })
     ).catch((e) => e),
@@ -393,7 +391,10 @@ test("insert de-batches pg error", async () => {
 });
 
 test("upsert single", async () => {
-  const id1 = await shardRun(schema.upsert({ name: "a'b'c", url_name: "aaa" }));
+  const id1 = await shardRun(
+    shard,
+    schema.upsert({ name: "a'b'c", url_name: "aaa" })
+  );
   const origRow1 = await master.rows(
     "SELECT created_at FROM %T WHERE id=?",
     ...[schema.name, id1]
@@ -401,9 +402,13 @@ test("upsert single", async () => {
   await delay(20); // to check that created_at is constant
 
   const id2 = await shardRun(
+    shard,
     schema.upsert({ name: "a'b'c", url_name: "aaa_dup" })
   );
-  const id3 = await shardRun(schema.upsert({ name: "zzz", url_name: "n" }));
+  const id3 = await shardRun(
+    shard,
+    schema.upsert({ name: "zzz", url_name: "n" })
+  );
   master.toMatchSnapshot();
 
   expect(id2).toEqual(id1);
@@ -419,17 +424,17 @@ test("upsert single", async () => {
 
 test("upsert batched normal", async () => {
   const [id1, id2, id3] = await join([
-    shardRun(schema.upsert({ name: "a'b'c", url_name: "aaa" })),
-    shardRun(schema.upsert({ name: "bbb", url_name: "bbb" })),
-    shardRun(schema.upsert({ name: "ccc", url_name: "ccc" })),
+    shardRun(shard, schema.upsert({ name: "a'b'c", url_name: "aaa" })),
+    shardRun(shard, schema.upsert({ name: "bbb", url_name: "bbb" })),
+    shardRun(shard, schema.upsert({ name: "ccc", url_name: "ccc" })),
   ]);
   master.resetSnapshot();
 
   const [r1, r2, r4, r4dup] = await join([
-    shardRun(schema.upsert({ name: "a'b'c", url_name: "aaa_new" })),
-    shardRun(schema.upsert({ name: "bbb", url_name: "bbb_new" })),
-    shardRun(schema.upsert({ name: "zzz", url_name: "zzz" })),
-    shardRun(schema.upsert({ name: "zzz", url_name: "zzz_dup" })),
+    shardRun(shard, schema.upsert({ name: "a'b'c", url_name: "aaa_new" })),
+    shardRun(shard, schema.upsert({ name: "bbb", url_name: "bbb_new" })),
+    shardRun(shard, schema.upsert({ name: "zzz", url_name: "zzz" })),
+    shardRun(shard, schema.upsert({ name: "zzz", url_name: "zzz_dup" })),
   ]);
   master.toMatchSnapshot();
 
@@ -451,12 +456,24 @@ test("upsert batched normal", async () => {
 
 test("upsert batched with nullable unique key", async () => {
   const [id0] = await join([
-    shardRun(schemaNullableUniqueKey.upsert({ name: "000", url_name: "0" })),
+    shardRun(
+      shard,
+      schemaNullableUniqueKey.upsert({ name: "000", url_name: "0" })
+    ),
   ]);
   const [id1, id2, id3] = await join([
-    shardRun(schemaNullableUniqueKey.upsert({ name: "a'b'c", url_name: null })),
-    shardRun(schemaNullableUniqueKey.upsert({ name: "bbb", url_name: null })),
-    shardRun(schemaNullableUniqueKey.upsert({ name: "ccc", url_name: null })),
+    shardRun(
+      shard,
+      schemaNullableUniqueKey.upsert({ name: "a'b'c", url_name: null })
+    ),
+    shardRun(
+      shard,
+      schemaNullableUniqueKey.upsert({ name: "bbb", url_name: null })
+    ),
+    shardRun(
+      shard,
+      schemaNullableUniqueKey.upsert({ name: "ccc", url_name: null })
+    ),
   ]);
   master.toMatchSnapshot();
 
@@ -478,32 +495,33 @@ test("upsert batched with nullable unique key", async () => {
 
 test("update single", async () => {
   const [id1, id2, id3] = await join([
-    shardRun(schema.insert({ name: "a'url", url_name: "a" })),
-    shardRun(schema.insert({ name: "b'url", url_name: "b" })),
-    shardRun(schema.insert({ name: "null'url", url_name: null })),
+    shardRun(shard, schema.insert({ name: "a'url", url_name: "a" })),
+    shardRun(shard, schema.insert({ name: "b'url", url_name: "b" })),
+    shardRun(shard, schema.insert({ name: "null'url", url_name: null })),
   ]);
 
   const origRows = await join([
-    shardRun(schema.load(id1!)),
-    shardRun(schema.load(id2!)),
-    shardRun(schema.load(id3!)),
+    shardRun(shard, schema.load(id1!)),
+    shardRun(shard, schema.load(id2!)),
+    shardRun(shard, schema.load(id3!)),
   ]);
   await delay(20); // to check updated_at change
 
   master.resetSnapshot();
-  await shardRun(schema.update(nullthrows(id1), {})); // no DB query is sent here
+  await shardRun(shard, schema.update(nullthrows(id1), {})); // no DB query is sent here
   const [r1, r2, r3] = await join([
-    shardRun(schema.update(nullthrows(id1), { name: "a'upd" })),
+    shardRun(shard, schema.update(nullthrows(id1), { name: "a'upd" })),
     shardRun(
+      shard,
       schema.update(nullthrows(id2), {
         name: "b'upd",
         url_name: null,
         some_flag: true,
       })
     ),
-    shardRun(schema.update(nullthrows(id3), { url_name: "n" })),
+    shardRun(shard, schema.update(nullthrows(id3), { url_name: "n" })),
   ]);
-  const r4 = await shardRun(schema.update("42", { name: "absent" }));
+  const r4 = await shardRun(shard, schema.update("42", { name: "absent" }));
   master.toMatchSnapshot();
 
   expect(r1).toBeTruthy();
@@ -512,9 +530,9 @@ test("update single", async () => {
   expect(r4).toBeFalsy();
 
   const rows = await join([
-    shardRun(schema.load(id1!)),
-    shardRun(schema.load(id2!)),
-    shardRun(schema.load(id3!)),
+    shardRun(shard, schema.load(id1!)),
+    shardRun(shard, schema.load(id2!)),
+    shardRun(shard, schema.load(id3!)),
   ]);
   expect(rows).toMatchObject([
     { id: id1, name: "a'upd", url_name: "a" },
@@ -528,8 +546,8 @@ test("update single", async () => {
 
 test("update skips if no known fields present", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a'url", url_name: "a" })),
-    shardRun(schema.insert({ name: "b'url", url_name: "b" })),
+    shardRun(shard, schema.insert({ name: "a'url", url_name: "a" })),
+    shardRun(shard, schema.insert({ name: "b'url", url_name: "b" })),
   ]);
   master.resetSnapshot();
 
@@ -538,12 +556,15 @@ test("update skips if no known fields present", async () => {
     [Symbol("symbol")]: 42,
   } as any;
   const [r1, r2, r3] = await join([
-    shardRun(schema.update(nullthrows(id1), unrelatedFields)),
-    shardRun(schema.update(nullthrows(id2), unrelatedFields)),
-    shardRun(schema.update("101", unrelatedFields)),
+    shardRun(shard, schema.update(nullthrows(id1), unrelatedFields)),
+    shardRun(shard, schema.update(nullthrows(id2), unrelatedFields)),
+    shardRun(shard, schema.update("101", unrelatedFields)),
   ]);
-  const r4 = await shardRun(schema.update(nullthrows(id1), unrelatedFields));
-  const r5 = await shardRun(schema.update("42", { name: "absent" }));
+  const r4 = await shardRun(
+    shard,
+    schema.update(nullthrows(id1), unrelatedFields)
+  );
+  const r5 = await shardRun(shard, schema.update("42", { name: "absent" }));
 
   master.toMatchSnapshot(); // only r5 update will actually be sent to the DB
   expect(r1).toBeTruthy();
@@ -555,39 +576,43 @@ test("update skips if no known fields present", async () => {
 
 test("update batched", async () => {
   const [id1, id2, id3] = await join([
-    shardRun(schema.insert({ name: "a'url", url_name: "a" })),
-    shardRun(schema.insert({ name: "b'url", url_name: "b" })),
-    shardRun(schema.insert({ name: "null'url", url_name: null })),
+    shardRun(shard, schema.insert({ name: "a'url", url_name: "a" })),
+    shardRun(shard, schema.insert({ name: "b'url", url_name: "b" })),
+    shardRun(shard, schema.insert({ name: "null'url", url_name: null })),
   ]);
   master.resetSnapshot();
 
   await join([
-    shardRun(schema.update(nullthrows(id1), {})),
-    shardRun(schema.update(nullthrows(id2), {})),
+    shardRun(shard, schema.update(nullthrows(id1), {})),
+    shardRun(shard, schema.update(nullthrows(id2), {})),
   ]);
   const [r1, r2, r3, r3dup, r4] = await join([
     shardRun(
+      shard,
       schema.update(nullthrows(id1), { name: "a'upd", some_flag: true })
     ),
     shardRun(
+      shard,
       schema.update(nullthrows(id2), {
         name: "b'upd",
         url_name: null,
       })
     ),
     shardRun(
+      shard,
       schema.update(nullthrows(id3), {
         name: "null'upd",
         url_name: "n",
       })
     ),
     shardRun(
+      shard,
       schema.update(nullthrows(id3), {
         name: "null'upd",
         url_name: "n1",
       })
     ),
-    shardRun(schema.update("42", { name: "absent", some_flag: true })),
+    shardRun(shard, schema.update("42", { name: "absent", some_flag: true })),
   ]);
   master.toMatchSnapshot();
 
@@ -598,9 +623,9 @@ test("update batched", async () => {
   expect(r4).toBeFalsy();
 
   const rows = await join([
-    shardRun(schema.load(id1!)),
-    shardRun(schema.load(id2!)),
-    shardRun(schema.load(id3!)),
+    shardRun(shard, schema.load(id1!)),
+    shardRun(shard, schema.load(id2!)),
+    shardRun(shard, schema.load(id3!)),
   ]);
   expect(rows).toMatchObject([
     { id: id1, name: "a'upd", url_name: "a", some_flag: true },
@@ -611,22 +636,28 @@ test("update batched", async () => {
 
 test("update date", async () => {
   const [id1, id2] = await join([
-    shardRun(schemaDate.insert({ name: "a", some_date: new Date(1234567890) })),
-    shardRun(schemaDate.insert({ name: "b" })),
+    shardRun(
+      shard,
+      schemaDate.insert({ name: "a", some_date: new Date(1234567890) })
+    ),
+    shardRun(shard, schemaDate.insert({ name: "b" })),
   ]);
   master.resetSnapshot();
 
-  await shardRun(schemaDate.update(id1!, { some_date: undefined }));
-  await shardRun(schemaDate.update(id2!, { name: "bb", some_date: undefined }));
+  await shardRun(shard, schemaDate.update(id1!, { some_date: undefined }));
+  await shardRun(
+    shard,
+    schemaDate.update(id2!, { name: "bb", some_date: undefined })
+  );
   await join([
-    shardRun(schemaDate.update(id1!, { some_date: undefined })),
-    shardRun(schemaDate.update(id2!, { some_date: undefined })),
+    shardRun(shard, schemaDate.update(id1!, { some_date: undefined })),
+    shardRun(shard, schemaDate.update(id2!, { some_date: undefined })),
   ]);
   master.toMatchSnapshot();
 
   const [row1, row2] = await join([
-    shardRun(schemaDate.load(id1!)),
-    shardRun(schemaDate.load(id2!)),
+    shardRun(shard, schemaDate.load(id1!)),
+    shardRun(shard, schemaDate.load(id2!)),
   ]);
   expect(row1!.some_date).toBeTruthy();
   expect(row2!.name).toEqual("bb");
@@ -634,22 +665,31 @@ test("update date", async () => {
 
 test("update literal", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a", url_name: "a" })),
-    shardRun(schema.insert({ name: "b", url_name: "b" })),
+    shardRun(shard, schema.insert({ name: "a", url_name: "a" })),
+    shardRun(shard, schema.insert({ name: "b", url_name: "b" })),
   ]);
   master.resetSnapshot();
 
   await join([
-    shardRun(schema.update(id1!, { $literal: ["name = name || ?", 42] })),
-    shardRun(schema.update(id2!, { name: "bbb" })),
-    shardRun(schema.update(id1!, { $literal: ["name = name || ?", 42] })),
-    shardRun(schemaDate.update("42", { $literal: ["name = name || ?", 42] })),
+    shardRun(
+      shard,
+      schema.update(id1!, { $literal: ["name = name || ?", 42] })
+    ),
+    shardRun(shard, schema.update(id2!, { name: "bbb" })),
+    shardRun(
+      shard,
+      schema.update(id1!, { $literal: ["name = name || ?", 42] })
+    ),
+    shardRun(
+      shard,
+      schemaDate.update("42", { $literal: ["name = name || ?", 42] })
+    ),
   ]);
   master.toMatchSnapshot();
 
   const [row1, row2] = await join([
-    shardRun(schema.load(id1!)),
-    shardRun(schema.load(id2!)),
+    shardRun(shard, schema.load(id1!)),
+    shardRun(shard, schema.load(id2!)),
   ]);
   expect(row1!.name).toEqual("a4242");
   expect(row2!.name).toEqual("bbb");
@@ -657,14 +697,14 @@ test("update literal", async () => {
 
 test("delete single", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a", url_name: "a" })),
-    shardRun(schema.insert({ name: "b", url_name: "b" })),
+    shardRun(shard, schema.insert({ name: "a", url_name: "a" })),
+    shardRun(shard, schema.insert({ name: "b", url_name: "b" })),
   ]);
   master.resetSnapshot();
 
-  const r1 = await shardRun(schema.delete(nullthrows(id1)));
-  const r2 = await shardRun(schema.delete("42"));
-  const r3 = await shardRun(schema.delete(null as unknown as string));
+  const r1 = await shardRun(shard, schema.delete(nullthrows(id1)));
+  const r2 = await shardRun(shard, schema.delete("42"));
+  const r3 = await shardRun(shard, schema.delete(null as unknown as string));
   master.toMatchSnapshot();
 
   expect(r1).toBeTruthy();
@@ -672,25 +712,25 @@ test("delete single", async () => {
   expect(r3).toBeFalsy();
 
   const rows = await join([
-    shardRun(schema.load(id1!)),
-    shardRun(schema.load(id2!)),
+    shardRun(shard, schema.load(id1!)),
+    shardRun(shard, schema.load(id2!)),
   ]);
   expect(rows).toMatchObject([null, { id: id2 }]);
 });
 
 test("delete batched", async () => {
   const [id1, id2, id3] = await join([
-    shardRun(schema.insert({ name: "a", url_name: "a" })),
-    shardRun(schema.insert({ name: "b", url_name: "b" })),
-    shardRun(schema.insert({ name: "n", url_name: null })),
+    shardRun(shard, schema.insert({ name: "a", url_name: "a" })),
+    shardRun(shard, schema.insert({ name: "b", url_name: "b" })),
+    shardRun(shard, schema.insert({ name: "n", url_name: null })),
   ]);
   master.resetSnapshot();
 
   const [r1, r2, r3] = await join([
-    shardRun(schema.delete(nullthrows(id1))),
-    shardRun(schema.delete(nullthrows(id2))),
-    shardRun(schema.delete("42")),
-    shardRun(schema.delete(null as unknown as string)),
+    shardRun(shard, schema.delete(nullthrows(id1))),
+    shardRun(shard, schema.delete(nullthrows(id2))),
+    shardRun(shard, schema.delete("42")),
+    shardRun(shard, schema.delete(null as unknown as string)),
   ]);
   master.toMatchSnapshot();
 
@@ -699,44 +739,45 @@ test("delete batched", async () => {
   expect(r3).toBeFalsy();
 
   const rows = await join([
-    shardRun(schema.load(id1!)),
-    shardRun(schema.load(id2!)),
-    shardRun(schema.load(id3!)),
+    shardRun(shard, schema.load(id1!)),
+    shardRun(shard, schema.load(id2!)),
+    shardRun(shard, schema.load(id3!)),
   ]);
   expect(rows).toMatchObject([null, null, { id: id3 }]);
 });
 
 test("delete where", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a", url_name: "a" })),
-    shardRun(schema.insert({ name: "b", url_name: "b" })),
+    shardRun(shard, schema.insert({ name: "a", url_name: "a" })),
+    shardRun(shard, schema.insert({ name: "b", url_name: "b" })),
   ]);
   master.resetSnapshot();
 
   const res = await shardRun(
+    shard,
     new SQLQueryDeleteWhere(schema, { id: [id1!, id2!], $literal: ["1=1"] })
   );
   master.toMatchSnapshot();
   expect(res.length).toEqual(2);
 
   const rows = await join([
-    shardRun(schema.load(id1!)),
-    shardRun(schema.load(id2!)),
+    shardRun(shard, schema.load(id1!)),
+    shardRun(shard, schema.load(id2!)),
   ]);
   expect(rows).toEqual([null, null]);
 });
 
 test("load batched", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a", url_name: "a" })),
-    shardRun(schema.insert({ name: "b", url_name: "b" })),
+    shardRun(shard, schema.insert({ name: "a", url_name: "a" })),
+    shardRun(shard, schema.insert({ name: "b", url_name: "b" })),
   ]);
 
   master.resetSnapshot();
   const rows = await join([
-    shardRun(schema.load(id1!)),
-    shardRun(schema.load(id2!)),
-    shardRun(schema.load(id1!)),
+    shardRun(shard, schema.load(id1!)),
+    shardRun(shard, schema.load(id2!)),
+    shardRun(shard, schema.load(id1!)),
   ]);
   master.toMatchSnapshot();
   expect(rows).toMatchObject([{ id: id1 }, { id: id2 }, { id: id1 }]);
@@ -744,27 +785,31 @@ test("load batched", async () => {
 
 test("loadBy single one column", async () => {
   const [, id2] = await join([
-    shardRun(schema.insert({ name: "a", url_name: "aaa" })),
-    shardRun(schema.insert({ name: "b", url_name: "bbb" })),
+    shardRun(shard, schema.insert({ name: "a", url_name: "aaa" })),
+    shardRun(shard, schema.insert({ name: "b", url_name: "bbb" })),
   ]);
 
-  const row = await shardRun(schema.loadBy({ name: "b" }), STALE_REPLICA);
+  const row = await shardRun(
+    shard,
+    schema.loadBy({ name: "b" }),
+    STALE_REPLICA
+  );
   replica.toMatchSnapshot();
   expect(row).toMatchObject({ id: id2, name: "b" });
 });
 
 test("loadBy batched one column", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: String.raw`a\a`, url_name: "aaa" })),
-    shardRun(schema.insert({ name: String.raw`b\nb`, url_name: "bbb" })),
+    shardRun(shard, schema.insert({ name: String.raw`a\a`, url_name: "aaa" })),
+    shardRun(shard, schema.insert({ name: String.raw`b\nb`, url_name: "bbb" })),
   ]);
 
   master.resetSnapshot();
   const rows = await join([
-    shardRun(schema.loadBy({ name: String.raw`a\a` })),
-    shardRun(schema.loadBy({ name: String.raw`b\nb` })),
-    shardRun(schema.loadBy({ name: "no value" })),
-    shardRun(schema.loadBy({ name: String.raw`a\a` })),
+    shardRun(shard, schema.loadBy({ name: String.raw`a\a` })),
+    shardRun(shard, schema.loadBy({ name: String.raw`b\nb` })),
+    shardRun(shard, schema.loadBy({ name: "no value" })),
+    shardRun(shard, schema.loadBy({ name: String.raw`a\a` })),
   ]);
   master.toMatchSnapshot();
   expect(rows).toMatchObject([{ id: id1 }, { id: id2 }, null, { id: id1 }]);
@@ -772,33 +817,39 @@ test("loadBy batched one column", async () => {
 
 test("loadBy single two columns", async () => {
   const [, id2] = await join([
-    shardRun(schema2Col.insert({ name: "a", url_name: "aaa" })),
-    shardRun(schema2Col.insert({ name: "b", url_name: "bbb" })),
+    shardRun(shard, schema2Col.insert({ name: "a", url_name: "aaa" })),
+    shardRun(shard, schema2Col.insert({ name: "b", url_name: "bbb" })),
   ]);
 
   master.resetSnapshot();
-  const row = await shardRun(schema2Col.loadBy({ name: "b", url_name: "bbb" }));
+  const row = await shardRun(
+    shard,
+    schema2Col.loadBy({ name: "b", url_name: "bbb" })
+  );
   master.toMatchSnapshot();
   expect(row).toMatchObject({ id: id2, name: "b" });
 });
 
 test("loadBy batched two columns", async () => {
   const [id1, id2, id3, id4, id5] = await join([
-    shardRun(schema2Col.insert({ name: "z", url_name: "z1" })),
-    shardRun(schema2Col.insert({ name: "z", url_name: "z,2" })),
-    shardRun(schema2Col.insert({ name: "b", url_name: "b{1}" })),
-    shardRun(schema2Col.insert({ name: "c", url_name: "NuLL" })),
-    shardRun(schema2Col.insert({ name: "c", url_name: "" })),
+    shardRun(shard, schema2Col.insert({ name: "z", url_name: "z1" })),
+    shardRun(shard, schema2Col.insert({ name: "z", url_name: "z,2" })),
+    shardRun(shard, schema2Col.insert({ name: "b", url_name: "b{1}" })),
+    shardRun(shard, schema2Col.insert({ name: "c", url_name: "NuLL" })),
+    shardRun(shard, schema2Col.insert({ name: "c", url_name: "" })),
   ]);
 
   master.resetSnapshot();
   const rows = await join([
-    shardRun(schema2Col.loadBy({ name: "z", url_name: "z1" })),
-    shardRun(schema2Col.loadBy({ name: "z", url_name: "z,2" })),
-    shardRun(schema2Col.loadBy({ name: "b", url_name: String.raw`no\value` })),
-    shardRun(schema2Col.loadBy({ name: "b", url_name: "b{1}" })),
-    shardRun(schema2Col.loadBy({ name: "c", url_name: "NuLL" })),
-    shardRun(schema2Col.loadBy({ name: "c", url_name: "" })),
+    shardRun(shard, schema2Col.loadBy({ name: "z", url_name: "z1" })),
+    shardRun(shard, schema2Col.loadBy({ name: "z", url_name: "z,2" })),
+    shardRun(
+      shard,
+      schema2Col.loadBy({ name: "b", url_name: String.raw`no\value` })
+    ),
+    shardRun(shard, schema2Col.loadBy({ name: "b", url_name: "b{1}" })),
+    shardRun(shard, schema2Col.loadBy({ name: "c", url_name: "NuLL" })),
+    shardRun(shard, schema2Col.loadBy({ name: "c", url_name: "" })),
   ]);
   master.toMatchSnapshot();
   expect(rows).toMatchObject([
@@ -814,19 +865,26 @@ test("loadBy batched two columns", async () => {
 test("loadBy single two columns with nullable unique key", async () => {
   const [, id2] = await join([
     shardRun(
+      shard,
       schema2ColNullableUniqueKey.insert({ name: "a", url_name: "aaa" })
     ),
-    shardRun(schema2ColNullableUniqueKey.insert({ name: "b", url_name: null })),
+    shardRun(
+      shard,
+      schema2ColNullableUniqueKey.insert({ name: "b", url_name: null })
+    ),
   ]);
 
   master.resetSnapshot();
   const row = await shardRun(
+    shard,
     schema2ColNullableUniqueKey.loadBy({ name: "b", url_name: null })
   );
   await shardRun(
+    shard,
     schema2ColNullableUniqueKey.loadBy({ name: null, url_name: "a" })
   );
   await shardRun(
+    shard,
     schema2ColNullableUniqueKey.loadBy({ name: null, url_name: null })
   );
   master.toMatchSnapshot();
@@ -835,23 +893,54 @@ test("loadBy single two columns with nullable unique key", async () => {
 
 test("loadBy batched with two columns nullable unique key", async () => {
   const [id1, id2, id3, id4, id5] = await join([
-    shardRun(schema2ColNullableUniqueKey.insert({ name: "z", url_name: "z1" })),
-    shardRun(schema2ColNullableUniqueKey.insert({ name: "z", url_name: "z2" })),
-    shardRun(schema2ColNullableUniqueKey.insert({ name: "b", url_name: null })),
-    shardRun(schema2ColNullableUniqueKey.insert({ name: "c", url_name: null })),
-    shardRun(schema2ColNullableUniqueKey.insert({ name: "c", url_name: "c2" })),
+    shardRun(
+      shard,
+      schema2ColNullableUniqueKey.insert({ name: "z", url_name: "z1" })
+    ),
+    shardRun(
+      shard,
+      schema2ColNullableUniqueKey.insert({ name: "z", url_name: "z2" })
+    ),
+    shardRun(
+      shard,
+      schema2ColNullableUniqueKey.insert({ name: "b", url_name: null })
+    ),
+    shardRun(
+      shard,
+      schema2ColNullableUniqueKey.insert({ name: "c", url_name: null })
+    ),
+    shardRun(
+      shard,
+      schema2ColNullableUniqueKey.insert({ name: "c", url_name: "c2" })
+    ),
   ]);
 
   master.resetSnapshot();
   const rows = await join([
-    shardRun(schema2ColNullableUniqueKey.loadBy({ name: "z", url_name: "z1" })),
-    shardRun(schema2ColNullableUniqueKey.loadBy({ name: "z", url_name: "z2" })),
     shardRun(
+      shard,
+      schema2ColNullableUniqueKey.loadBy({ name: "z", url_name: "z1" })
+    ),
+    shardRun(
+      shard,
+      schema2ColNullableUniqueKey.loadBy({ name: "z", url_name: "z2" })
+    ),
+    shardRun(
+      shard,
       schema2ColNullableUniqueKey.loadBy({ name: "no", url_name: "Null" })
     ),
-    shardRun(schema2ColNullableUniqueKey.loadBy({ name: "b", url_name: null })),
-    shardRun(schema2ColNullableUniqueKey.loadBy({ name: "c", url_name: null })),
-    shardRun(schema2ColNullableUniqueKey.loadBy({ name: "c", url_name: "c2" })),
+    shardRun(
+      shard,
+      schema2ColNullableUniqueKey.loadBy({ name: "b", url_name: null })
+    ),
+    shardRun(
+      shard,
+      schema2ColNullableUniqueKey.loadBy({ name: "c", url_name: null })
+    ),
+    shardRun(
+      shard,
+      schema2ColNullableUniqueKey.loadBy({ name: "c", url_name: "c2" })
+    ),
   ]);
   master.toMatchSnapshot();
   expect(rows).toMatchObject([
@@ -866,12 +955,15 @@ test("loadBy batched with two columns nullable unique key", async () => {
 
 test("selectBy single three columns", async () => {
   const [id1, id2] = await join([
-    shardRun(schema3Col.insert({ type: "a", id1: "1", id2: "21" })),
-    shardRun(schema3Col.insert({ type: "a", id1: "1", id2: "22" })),
+    shardRun(shard, schema3Col.insert({ type: "a", id1: "1", id2: "21" })),
+    shardRun(shard, schema3Col.insert({ type: "a", id1: "1", id2: "22" })),
   ]);
 
   master.resetSnapshot();
-  const rows = await shardRun(schema3Col.selectBy({ type: "a", id1: "1" }));
+  const rows = await shardRun(
+    shard,
+    schema3Col.selectBy({ type: "a", id1: "1" })
+  );
   master.toMatchSnapshot();
   expect(sortBy(rows, (row) => row.id2)).toMatchObject([
     { id: id1, type: "a", id1: "1", id2: "21" },
@@ -881,18 +973,18 @@ test("selectBy single three columns", async () => {
 
 test("selectBy batched three columns", async () => {
   const [id1, id2, id3, id4] = await join([
-    shardRun(schema3Col.insert({ type: "a", id1: "1", id2: "21" })),
-    shardRun(schema3Col.insert({ type: "a", id1: "1", id2: "22" })),
-    shardRun(schema3Col.insert({ type: "a", id1: "2", id2: "23" })),
-    shardRun(schema3Col.insert({ type: "b", id1: "1", id2: "24" })),
+    shardRun(shard, schema3Col.insert({ type: "a", id1: "1", id2: "21" })),
+    shardRun(shard, schema3Col.insert({ type: "a", id1: "1", id2: "22" })),
+    shardRun(shard, schema3Col.insert({ type: "a", id1: "2", id2: "23" })),
+    shardRun(shard, schema3Col.insert({ type: "b", id1: "1", id2: "24" })),
   ]);
 
   master.resetSnapshot();
   const [rows1, rows2, rows3, rows4] = await join([
-    shardRun(schema3Col.selectBy({ type: "a", id1: "1" })),
-    shardRun(schema3Col.selectBy({ type: "a", id1: "2" })),
-    shardRun(schema3Col.selectBy({ type: "b", id1: "1" })),
-    shardRun(schema3Col.selectBy({ type: "b" })),
+    shardRun(shard, schema3Col.selectBy({ type: "a", id1: "1" })),
+    shardRun(shard, schema3Col.selectBy({ type: "a", id1: "2" })),
+    shardRun(shard, schema3Col.selectBy({ type: "b", id1: "1" })),
+    shardRun(shard, schema3Col.selectBy({ type: "b" })),
   ]);
   master.toMatchSnapshot();
   expect(sortBy(rows1, (row) => row.id2)).toMatchObject([
@@ -912,17 +1004,21 @@ test("selectBy batched three columns", async () => {
 
 test("select and count batched", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a\na", url_name: "a1", some_flag: true })),
     shardRun(
+      shard,
+      schema.insert({ name: "a\na", url_name: "a1", some_flag: true })
+    ),
+    shardRun(
+      shard,
       schema.insert({
         name: String.raw`a\a`,
         url_name: "aa1",
         some_flag: true,
       })
     ),
-    shardRun(schema.insert({ name: "c", url_name: "c1" })),
-    shardRun(schema.insert({ name: "d", url_name: "d1" })),
-    shardRun(schema.insert({ name: "e", url_name: "ce1" })),
+    shardRun(shard, schema.insert({ name: "c", url_name: "c1" })),
+    shardRun(shard, schema.insert({ name: "d", url_name: "d1" })),
+    shardRun(shard, schema.insert({ name: "e", url_name: "ce1" })),
   ]);
   master.resetSnapshot();
 
@@ -952,25 +1048,25 @@ test("select and count batched", async () => {
     limit: 10,
   };
   const [rows1] = await join([
-    shardRun(schema.select(input)),
-    shardRun(schema.select({ where: { name: "b" }, limit: 10 })),
+    shardRun(shard, schema.select(input)),
+    shardRun(shard, schema.select({ where: { name: "b" }, limit: 10 })),
   ]);
 
   const [count1, count2, count3, count4] = await join([
-    shardRun(schema.count(input.where!)),
-    shardRun(schema.count(input.where!)),
-    shardRun(schema.count({ ...input.where!, url_name: "a1" })),
-    shardRun(schema.count({ name: "b" })),
+    shardRun(shard, schema.count(input.where!)),
+    shardRun(shard, schema.count(input.where!)),
+    shardRun(shard, schema.count({ ...input.where!, url_name: "a1" })),
+    shardRun(shard, schema.count({ name: "b" })),
   ]);
-  const count5 = await shardRun(schema.count(input.where!));
+  const count5 = await shardRun(shard, schema.count(input.where!));
 
   const [exists1, exists2, exists3, exists4] = await join([
-    shardRun(schema.exists(input.where!)),
-    shardRun(schema.exists(input.where!)),
-    shardRun(schema.exists({ ...input.where!, url_name: "a1" })),
-    shardRun(schema.exists({ name: "b" })),
+    shardRun(shard, schema.exists(input.where!)),
+    shardRun(shard, schema.exists(input.where!)),
+    shardRun(shard, schema.exists({ ...input.where!, url_name: "a1" })),
+    shardRun(shard, schema.exists({ name: "b" })),
   ]);
-  const exists5 = await shardRun(schema.exists(input.where!));
+  const exists5 = await shardRun(shard, schema.exists(input.where!));
 
   master.toMatchSnapshot();
   expect(rows1).toMatchObject([{ id: id1 }, { id: id2 }]);
@@ -988,8 +1084,8 @@ test("select and count batched", async () => {
 
 test("select custom", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a", url_name: "a1" })),
-    shardRun(schema.insert({ name: "b", url_name: "b1" })),
+    shardRun(shard, schema.insert({ name: "a", url_name: "a1" })),
+    shardRun(shard, schema.insert({ name: "b", url_name: "b1" })),
   ]);
   master.resetSnapshot();
 
@@ -1015,12 +1111,12 @@ test("select custom", async () => {
     },
   };
 
-  const [rows1] = await join([shardRun(schema.select(input))]);
+  const [rows1] = await join([shardRun(shard, schema.select(input))]);
   expect(rows1).toMatchObject([{ id: id1 }]);
 
   const [rows1a, rows2] = await join([
-    shardRun(schema.select(input)),
-    shardRun(schema.select({ where: { name: "b" }, limit: 10 })),
+    shardRun(shard, schema.select(input)),
+    shardRun(shard, schema.select({ where: { name: "b" }, limit: 10 })),
   ]);
   expect(rows1a).toMatchObject([{ id: id1 }]);
   expect(rows2).toMatchObject([{ id: id2 }]);
@@ -1030,14 +1126,20 @@ test("select custom", async () => {
 
 test("test empty $or and $and", async () => {
   await join([
-    shardRun(schema.insert({ name: "a", url_name: "a1", some_flag: true })),
-    shardRun(schema.insert({ name: "aa", url_name: "aa1", some_flag: true })),
+    shardRun(
+      shard,
+      schema.insert({ name: "a", url_name: "a1", some_flag: true })
+    ),
+    shardRun(
+      shard,
+      schema.insert({ name: "aa", url_name: "aa1", some_flag: true })
+    ),
   ]);
 
   const [all, emptyOR, emptyAND] = await join([
-    shardRun(schema.select({ where: {}, limit: 2 })),
-    shardRun(schema.select({ where: { $or: [] }, limit: 2 })),
-    shardRun(schema.select({ where: { $and: [] }, limit: 2 })),
+    shardRun(shard, schema.select({ where: {}, limit: 2 })),
+    shardRun(shard, schema.select({ where: { $or: [] }, limit: 2 })),
+    shardRun(shard, schema.select({ where: { $and: [] }, limit: 2 })),
   ]);
   expect(all.length).toBe(2);
   expect(emptyOR.length).toBe(0);
