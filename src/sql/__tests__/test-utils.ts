@@ -3,7 +3,10 @@ import compact from "lodash/compact";
 import { types } from "pg";
 import { Client } from "../../abstract/Client";
 import { Cluster } from "../../abstract/Cluster";
+import type { Query } from "../../abstract/Query";
+import type { STALE_REPLICA, Shard } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
+import { Timeline } from "../../abstract/Timeline";
 import type { TimelineManager } from "../../abstract/TimelineManager";
 import { GLOBAL_SHARD, type ShardAffinity } from "../../ent/Configuration";
 import { join, mapJoin, nullthrows } from "../../helpers/misc";
@@ -166,6 +169,26 @@ export const TEST_CONFIG = {
 };
 
 /**
+ * A stub value for QueryAnnotation.
+ */
+export const TEST_ANNOTATION = {
+  trace: "some-trace",
+  debugStack: "",
+  vc: "some-vc",
+  whyClient: undefined,
+  attempt: 0,
+};
+
+/**
+ * A stub Timeline used in shardRun() helper.
+ */
+export const TEST_TIMELINE = new Timeline();
+
+beforeEach(() => {
+  TEST_TIMELINE.reset();
+});
+
+/**
  * Test Cluster backed by the test config.
  */
 export const testCluster = new Cluster({
@@ -245,6 +268,17 @@ export async function recreateTestTables(
       ]);
     }
   );
+}
+
+/**
+ * A shortcut helper to run a query against a Shard.
+ */
+export async function shardRun<TOutput>(
+  shard: Shard<TestSQLClient>,
+  query: Query<TOutput>,
+  freshness: typeof STALE_REPLICA | null = null
+): Promise<TOutput> {
+  return shard.run(query, TEST_ANNOTATION, TEST_TIMELINE, freshness);
 }
 
 /**

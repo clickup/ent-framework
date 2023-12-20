@@ -1,15 +1,15 @@
 import assert from "assert";
-import type { Query } from "../../abstract/Query";
-import type { Shard, STALE_REPLICA } from "../../abstract/Shard";
+import type { Shard } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
-import { Timeline } from "../../abstract/Timeline";
 import { join, nullthrows } from "../../helpers/misc";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./test-utils";
 import {
   ByteaBuffer,
   EncryptedValue,
+  TEST_TIMELINE,
   recreateTestTables,
+  shardRun,
   testCluster,
 } from "./test-utils";
 
@@ -35,7 +35,6 @@ const schema = new SQLSchema(
   ["name"]
 );
 
-const timeline = new Timeline();
 let shard: Shard<TestSQLClient>;
 let master: TestSQLClient;
 let replica: TestSQLClient;
@@ -60,31 +59,12 @@ beforeEach(async () => {
     },
   ]);
 
-  timeline.reset();
   shard = await testCluster.randomShard();
   master = await shard.client(MASTER);
   master.resetSnapshot();
-  replica = await shard.client(timeline);
+  replica = await shard.client(TEST_TIMELINE);
   replica.resetSnapshot();
 });
-
-async function shardRun<TOutput>(
-  query: Query<TOutput>,
-  freshness: typeof STALE_REPLICA | null = null
-): Promise<TOutput> {
-  return shard.run(
-    query,
-    {
-      trace: "some-trace",
-      debugStack: "",
-      vc: "some-vc",
-      whyClient: undefined,
-      attempt: 0,
-    },
-    timeline,
-    freshness
-  );
-}
 
 test("CAS single success", async () => {
   const ts1 = new Date("2000-01-01T00:00:00.001Z");
@@ -92,6 +72,7 @@ test("CAS single success", async () => {
 
   const [id1, id2] = await join([
     shardRun(
+      shard,
       schema.insert({
         name: "a",
         ts: ts1,
@@ -99,17 +80,18 @@ test("CAS single success", async () => {
         buffer_field: Buffer.from([1, 2, 3]),
       })
     ),
-    shardRun(schema.insert({ name: "b", ts: null })),
+    shardRun(shard, schema.insert({ name: "b", ts: null })),
   ]);
   assert(id1 && id2);
   const [row1, row2] = await join([
-    shardRun(schema.load(id1)),
-    shardRun(schema.load(id2)),
+    shardRun(shard, schema.load(id1)),
+    shardRun(shard, schema.load(id2)),
   ]);
   assert(row1 && row2);
   master.resetSnapshot();
 
   const r1 = await shardRun(
+    shard,
     schema.update(nullthrows(id1), {
       name: "a-upd",
       ts: ts1upd,
@@ -123,6 +105,7 @@ test("CAS single success", async () => {
     })
   );
   const r2 = await shardRun(
+    shard,
     schema.update(nullthrows(id2), {
       name: "b-upd",
       ts: row2.updated_at,
@@ -135,8 +118,8 @@ test("CAS single success", async () => {
   expect(r2).toBeTruthy();
 
   const rows = await join([
-    shardRun(schema.load(id1)),
-    shardRun(schema.load(id2)),
+    shardRun(shard, schema.load(id1)),
+    shardRun(shard, schema.load(id2)),
   ]);
   expect(rows).toMatchObject([
     { id: id1, name: "a-upd", ts: ts1upd },
@@ -146,8 +129,9 @@ test("CAS single success", async () => {
 
 test("CAS single skip", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a", ts: new Date() })),
+    shardRun(shard, schema.insert({ name: "a", ts: new Date() })),
     shardRun(
+      shard,
       schema.insert({
         name: "b",
         ts: null,
@@ -157,19 +141,21 @@ test("CAS single skip", async () => {
   ]);
   assert(id1 && id2);
   const [row1, row2] = await join([
-    shardRun(schema.load(id1)),
-    shardRun(schema.load(id2)),
+    shardRun(shard, schema.load(id1)),
+    shardRun(shard, schema.load(id2)),
   ]);
   assert(row1 && row2);
   master.resetSnapshot();
 
   const r1Skip = await shardRun(
+    shard,
     schema.update(nullthrows(id1), {
       name: "a-skip",
       $cas: { name: "a-old", updated_at: row1.updated_at },
     })
   );
   const r2Skip = await shardRun(
+    shard,
     schema.update(nullthrows(id2), {
       name: "b-skip",
       $cas: { buffer_field: Buffer.from([4, 5, 6]) },
@@ -181,8 +167,8 @@ test("CAS single skip", async () => {
   expect(r2Skip).toBeFalsy();
 
   const rows = await join([
-    shardRun(schema.load(id1)),
-    shardRun(schema.load(id2)),
+    shardRun(shard, schema.load(id1)),
+    shardRun(shard, schema.load(id2)),
   ]);
   expect(rows).toMatchObject([
     { id: id1, name: "a", ts: row1.ts, updated_at: row1.updated_at },
@@ -195,19 +181,20 @@ test("CAS batched success", async () => {
   const ts1upd = new Date("2000-02-01T00:00:00.001Z");
 
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a", ts: ts1 })),
-    shardRun(schema.insert({ name: "b", ts: null })),
+    shardRun(shard, schema.insert({ name: "a", ts: ts1 })),
+    shardRun(shard, schema.insert({ name: "b", ts: null })),
   ]);
   assert(id1 && id2);
   const [row1, row2] = await join([
-    shardRun(schema.load(id1)),
-    shardRun(schema.load(id2)),
+    shardRun(shard, schema.load(id1)),
+    shardRun(shard, schema.load(id2)),
   ]);
   assert(row1 && row2);
   master.resetSnapshot();
 
   const [r1, r2] = await join([
     shardRun(
+      shard,
       schema.update(nullthrows(id1), {
         name: "a-upd",
         ts: ts1upd,
@@ -215,6 +202,7 @@ test("CAS batched success", async () => {
       })
     ),
     shardRun(
+      shard,
       schema.update(nullthrows(id2), {
         name: "b-upd",
         ts: row2.updated_at,
@@ -228,8 +216,8 @@ test("CAS batched success", async () => {
   expect(r2).toBeTruthy();
 
   const rows = await join([
-    shardRun(schema.load(id1)),
-    shardRun(schema.load(id2)),
+    shardRun(shard, schema.load(id1)),
+    shardRun(shard, schema.load(id2)),
   ]);
   expect(rows).toMatchObject([
     { id: id1, name: "a-upd", ts: ts1upd },
@@ -239,24 +227,26 @@ test("CAS batched success", async () => {
 
 test("CAS batched success and skip", async () => {
   const [id1, id2] = await join([
-    shardRun(schema.insert({ name: "a", ts: new Date() })),
-    shardRun(schema.insert({ name: "b", ts: null })),
+    shardRun(shard, schema.insert({ name: "a", ts: new Date() })),
+    shardRun(shard, schema.insert({ name: "b", ts: null })),
   ]);
   assert(id1 && id2);
   const [row1, row2] = await join([
-    shardRun(schema.load(id1)),
-    shardRun(schema.load(id2)),
+    shardRun(shard, schema.load(id1)),
+    shardRun(shard, schema.load(id2)),
   ]);
   assert(row1 && row2);
 
   const [r1, r2] = await join([
     shardRun(
+      shard,
       schema.update(nullthrows(id1), {
         name: "a-upd",
         $cas: { name: "a", updated_at: row1.updated_at },
       })
     ),
     shardRun(
+      shard,
       schema.update(nullthrows(id2), {
         name: "b-upd",
         $cas: { name: "b-old", updated_at: row2.updated_at },
@@ -267,8 +257,8 @@ test("CAS batched success and skip", async () => {
   expect(r2).toBeFalsy();
 
   const rows = await join([
-    shardRun(schema.load(id1)),
-    shardRun(schema.load(id2)),
+    shardRun(shard, schema.load(id1)),
+    shardRun(shard, schema.load(id2)),
   ]);
   expect(rows).toMatchObject([
     { id: id1, name: "a-upd" },
@@ -278,19 +268,21 @@ test("CAS batched success and skip", async () => {
 
 test("CAS batched success and skip for the same row", async () => {
   const id1 = nullthrows(
-    await shardRun(schema.insert({ name: "a", ts: new Date() }))
+    await shardRun(shard, schema.insert({ name: "a", ts: new Date() }))
   );
-  const row1 = nullthrows(await shardRun(schema.load(id1)));
+  const row1 = nullthrows(await shardRun(shard, schema.load(id1)));
   master.resetSnapshot();
 
   const [r1, r2] = await join([
     shardRun(
+      shard,
       schema.update(nullthrows(id1), {
         name: "a-upd",
         $cas: { name: "a", updated_at: row1.updated_at },
       })
     ),
     shardRun(
+      shard,
       schema.update(nullthrows(id1), {
         name: "a-skip",
         $cas: { name: "a", updated_at: new Date(42) },
@@ -302,6 +294,6 @@ test("CAS batched success and skip for the same row", async () => {
   expect(r1).toBeTruthy();
   expect(r2).toBeFalsy();
 
-  const rows = await join([shardRun(schema.load(id1))]);
+  const rows = await join([shardRun(shard, schema.load(id1))]);
   expect(rows).toMatchObject([{ id: id1, name: "a-upd" }]);
 });

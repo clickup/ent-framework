@@ -1,12 +1,10 @@
 import delay from "delay";
 import hash from "object-hash";
-import type { Query } from "../../abstract/Query";
 import type { Shard } from "../../abstract/Shard";
-import { Timeline } from "../../abstract/Timeline";
 import { join, mapJoin, nullthrows } from "../../helpers/misc";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./test-utils";
-import { recreateTestTables, testCluster } from "./test-utils";
+import { recreateTestTables, shardRun, testCluster } from "./test-utils";
 
 const schema = new SQLSchema(
   'sql-schema.stress"table',
@@ -18,7 +16,6 @@ const schema = new SQLSchema(
   ["prefix", "name"]
 );
 
-const timeline = new Timeline();
 let shard: Shard<TestSQLClient>;
 
 beforeEach(async () => {
@@ -37,36 +34,22 @@ beforeEach(async () => {
     },
   ]);
 
-  timeline.reset();
   shard = await testCluster.randomShard();
 });
-
-async function shardRun<TOutput>(query: Query<TOutput>): Promise<TOutput> {
-  return shard.run(
-    query,
-    {
-      trace: "some-trace",
-      debugStack: "",
-      vc: "some-vc",
-      whyClient: undefined,
-      attempt: 0,
-    },
-    timeline,
-    null
-  );
-}
 
 test("stress", async () => {
   await runStress(50, 18, async (uniq) => {
     const names = range(2).map((i) => i + "-" + uniq);
 
     const ids = await mapJoin(names, async (name) =>
-      shardRun(schema.insert({ prefix: "pfx", name }))
+      shardRun(shard, schema.insert({ prefix: "pfx", name }))
     );
 
     await join(
       ids.map(async (id, i) => {
-        const row = nullthrows(await shardRun(schema.load(nullthrows(id))));
+        const row = nullthrows(
+          await shardRun(shard, schema.load(nullthrows(id)))
+        );
         expect(row.name).toEqual(names[i]);
       })
     );
@@ -74,7 +57,10 @@ test("stress", async () => {
     await join(
       ids.map(async (id, i) => {
         const row = nullthrows(
-          await shardRun(schema.loadBy({ prefix: "pfx", name: names[i] }))
+          await shardRun(
+            shard,
+            schema.loadBy({ prefix: "pfx", name: names[i] })
+          )
         );
         expect(row.id).toEqual(id);
       })
@@ -83,10 +69,13 @@ test("stress", async () => {
     await join(
       ids.map(async (id, i) => {
         const updated = await shardRun(
+          shard,
           schema.update(nullthrows(id), { name: "upd" + names[i] })
         );
         expect(updated).toBeTruthy();
-        const row = nullthrows(await shardRun(schema.load(nullthrows(id))));
+        const row = nullthrows(
+          await shardRun(shard, schema.load(nullthrows(id)))
+        );
         expect(row.name).toEqual("upd" + names[i]);
       })
     );

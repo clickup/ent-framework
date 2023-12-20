@@ -1,11 +1,9 @@
-import type { Query } from "../../abstract/Query";
 import { MASTER, STALE_REPLICA, type Shard } from "../../abstract/Shard";
 import { ShardError } from "../../abstract/ShardError";
-import { Timeline } from "../../abstract/Timeline";
 import type { SQLClient } from "../SQLClient";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./test-utils";
-import { recreateTestTables, testCluster } from "./test-utils";
+import { recreateTestTables, shardRun, testCluster } from "./test-utils";
 
 const schema = new SQLSchema(
   'sql-schema.failover"table',
@@ -16,7 +14,6 @@ const schema = new SQLSchema(
   []
 );
 
-const timeline = new Timeline();
 let shard: Shard<TestSQLClient>;
 let islandClient1: SQLClient;
 let islandClient2: SQLClient;
@@ -43,28 +40,8 @@ beforeEach(async () => {
     },
   ]);
 
-  timeline.reset();
   shard = await testCluster.randomShard();
 });
-
-async function shardRun<TOutput>(
-  shard: Shard<TestSQLClient>,
-  query: Query<TOutput>,
-  freshness: typeof STALE_REPLICA | null = null
-): Promise<TOutput> {
-  return shard.run(
-    query,
-    {
-      trace: "some-trace",
-      debugStack: "",
-      vc: "some-vc",
-      whyClient: undefined,
-      attempt: 0,
-    },
-    timeline,
-    freshness
-  );
-}
 
 test("query retries on new master when switchover happens", async () => {
   islandClient1.options.hints = { transaction: "read only" };
