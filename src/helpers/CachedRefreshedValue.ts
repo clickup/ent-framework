@@ -47,9 +47,8 @@ export class CachedRefreshedValue<TValue> {
   /** Deferred promise containing the next value. Fulfilled promises are
    * replaced right away. */
   private nextValue: DeferredPromise<TValue> = pDefer<TValue>();
-  /** Timestamp of the moment when the last value was pulled. Implemented for
-   * eventual consistency. */
-  private latestAt: number = 0;
+  /** Each time before resolverFn() is called, this value is increased. */
+  private resolverFnCallCount: number = 0;
   /** Whether the instance is destroyed or not. Used to prevent memory leaks in
    * unit tests. */
   private destroyedError: Error | null = null;
@@ -85,9 +84,11 @@ export class CachedRefreshedValue<TValue> {
    */
   async waitRefresh(): Promise<void> {
     runInVoid(this.refreshLoop());
-    // Keep waiting till we get a value which is fresh enough.
-    const startTime = performance.now();
-    while (this.latestAt <= startTime) {
+    // To unfreeze, we want a completely new resolverFn() call to finish within
+    // refreshLoop(). I.e. the call to resolverFn() must start strictly AFTER we
+    // entered waitRefresh(); thus, `while` loop below may spin twice.
+    const startCallCount = this.resolverFnCallCount;
+    while (this.resolverFnCallCount <= startCallCount) {
       // Skip waiting between loops.
       this.skipDelay?.();
       // After await resolves here, it's guaranteed that this.nextValue will be
@@ -126,16 +127,11 @@ export class CachedRefreshedValue<TValue> {
         warningDelayMs
       );
       try {
-        const val = await this.options.resolverFn();
-        if (this.latestAt < startTime) {
-          this.latestAt = startTime;
-          this.latestValue = val;
-          // We must ensure that we fulfill and replace the promise during one
-          // event loop iteration.
-          const oldNextValue = this.nextValue;
-          this.nextValue = pDefer<TValue>();
-          oldNextValue.resolve(val);
-        }
+        this.resolverFnCallCount++;
+        this.latestValue = await this.options.resolverFn();
+        const oldNextValue = this.nextValue;
+        this.nextValue = pDefer();
+        oldNextValue.resolve(this.latestValue);
       } catch (e: unknown) {
         this.onErrorNothrow(e, performance.now() - startTime);
       } finally {
