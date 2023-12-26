@@ -1,6 +1,11 @@
+import type { AddressInfo, Server, Socket } from "net";
+import { connect, createServer } from "net";
 import delay from "delay";
 import compact from "lodash/compact";
+import type { PoolConfig } from "pg";
 import { types } from "pg";
+import waitForExpect from "wait-for-expect";
+import type { ClientOptions } from "../../abstract/Client";
 import { Client } from "../../abstract/Client";
 import { Cluster } from "../../abstract/Cluster";
 import type { Query } from "../../abstract/Query";
@@ -9,7 +14,7 @@ import { MASTER } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
 import type { TimelineManager } from "../../abstract/TimelineManager";
 import { GLOBAL_SHARD, type ShardAffinity } from "../../ent/Configuration";
-import { join, mapJoin, nullthrows } from "../../helpers/misc";
+import { join, mapJoin, nullthrows, runInVoid } from "../../helpers/misc";
 import { buildShape } from "../helpers/buildShape";
 import type { SQLClient } from "../SQLClient";
 import { escapeLiteral, escapeIdent } from "../SQLClient";
@@ -157,15 +162,67 @@ export class ByteaBuffer {
 }
 
 /**
+ * A simple PGBouncer simulation to test connection issues.
+ */
+export class TCPProxyServer {
+  private connections = new Set<Socket>();
+  private server: Server;
+
+  constructor({
+    host,
+    port,
+    delayOnConnect,
+  }: {
+    host: string;
+    port: number;
+    delayOnConnect?: number;
+  }) {
+    this.server = createServer((socket) => {
+      this.connections.add(socket);
+      socket.once("close", () => this.connections.delete(socket));
+      runInVoid(
+        delay(delayOnConnect ?? 0).then(() =>
+          socket.pipe(connect(port, host)).pipe(socket)
+        )
+      );
+    }).listen();
+  }
+
+  async destroy(): Promise<void> {
+    this.server.close();
+    this.connections.forEach((socket) => socket.destroy());
+    await waitForExpect(() => expect(this.connections.size).toEqual(0));
+  }
+
+  async waitForAtLeastConnections(n: number): Promise<void> {
+    await waitForExpect(() =>
+      expect(this.connections.size).toBeGreaterThanOrEqual(n)
+    );
+  }
+
+  connectionCount(): number {
+    return this.connections.size;
+  }
+
+  address(): AddressInfo {
+    return this.server.address() as AddressInfo;
+  }
+}
+
+/**
  * A node-postgres config we use in tests.
  */
-export const TEST_CONFIG = {
+export const TEST_CONFIG: PoolConfig & {
+  isAlwaysLaggingReplica: boolean;
+  swallowedErrorLogger: ClientOptions["loggers"]["swallowedErrorLogger"];
+} = {
   host: process.env.PGHOST || process.env.DB_HOST_DEFAULT,
   port: parseInt(process.env.PGPORT || process.env.DB_PORT || "5432"),
   database: process.env.PGDATABASE || process.env.DB_DATABASE,
   user: process.env.PGUSER || process.env.DB_USER,
   password: process.env.PGPASSWORD || process.env.DB_PASS,
-  nodeNo: 0,
+  isAlwaysLaggingReplica: false,
+  swallowedErrorLogger: () => {},
 };
 
 /**
@@ -196,18 +253,15 @@ export const testCluster = new Cluster({
   islands: [
     {
       no: 0,
-      nodes: [
-        { ...TEST_CONFIG, nodeNo: 0 },
-        { ...TEST_CONFIG, nodeNo: 1 },
-      ],
+      nodes: [TEST_CONFIG, { ...TEST_CONFIG, isAlwaysLaggingReplica: true }],
     },
   ],
-  createClient: ({ nodeNo, ...config }) =>
+  createClient: ({ isAlwaysLaggingReplica, swallowedErrorLogger, ...config }) =>
     new TestSQLClient(
       new SQLClientPool({
-        name: `test-pool(replica=${nodeNo > 0})`,
-        loggers: { swallowedErrorLogger: () => {} },
-        isAlwaysLaggingReplica: nodeNo > 0,
+        name: `test-pool(replica=${isAlwaysLaggingReplica})`,
+        loggers: { swallowedErrorLogger },
+        isAlwaysLaggingReplica,
         shards: {
           nameFormat: "sh%04d",
           discoverQuery:
@@ -299,6 +353,24 @@ export async function waitTillIslandCount(count: number): Promise<void> {
 
   expect(await testCluster.islands()).toHaveLength(count);
   errorSpy.mockReset();
+}
+
+/**
+ * Reconfigures the Cluster to have 2 Islands, where both Island 0 and Island 1
+ * has 1 master node each.
+ */
+export async function reconfigureToTwoIslands(): Promise<void> {
+  // Since we add the same physical host to island 1 as we already have in
+  // island 0, we force the old Client to discover 0 shards to avoid "Shard
+  // exists in more than one island" error.
+  const oldMaster0 = await testCluster.islandClient(0, MASTER); // will be reused
+  jest.spyOn(oldMaster0, "shardNos").mockResolvedValue([]);
+
+  testCluster.options.islands = () => [
+    { no: 0, nodes: [TEST_CONFIG] },
+    { no: 1, nodes: [{ ...TEST_CONFIG, some: 1 }] },
+  ];
+  await waitTillIslandCount(2);
 }
 
 function indentQuery(query: string): string {

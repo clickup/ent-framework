@@ -9,7 +9,7 @@ import type { TestSQLClient } from "./test-utils";
 import { recreateTestTables, shardRun, testCluster } from "./test-utils";
 
 const schema = new SQLSchema(
-  'sql-schema.discover"table',
+  'sql-schema.rediscover"table',
   {
     id: { type: String, autoInsert: "id_gen()" },
     name: { type: String },

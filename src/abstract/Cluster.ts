@@ -37,7 +37,7 @@ export interface ClusterOptions<TClient extends Client, TNode> {
   shardsDiscoverIntervalMs?: MaybeCallable<number>;
   /** How often to recheck for changes in options.islands (typically, often,
    * since it's assumed that options.islands calculation is cheap). If the
-   * Cluster configuration is changed, then trigger rediscovery ASAP. */
+   * Cluster configuration is changed, then we trigger rediscovery ASAP. */
   shardsDiscoverRecheckIslandsIntervalMs?: MaybeCallable<number>;
   /** If there were DB errors during Shards discovery (e.g. transport errors,
    * which is rare), the discovery is retried that many times before giving up
