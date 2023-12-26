@@ -1,6 +1,10 @@
 import { MASTER, STALE_REPLICA } from "../../abstract/Shard";
 import { maybeCall } from "../../helpers/misc";
-import { TEST_CONFIG, testCluster, waitTillIslandCount } from "./test-utils";
+import {
+  reconfigureToTwoIslands,
+  testCluster,
+  waitTillIslandCount,
+} from "./test-utils";
 
 const OLD_ISLANDS = maybeCall(testCluster.options.islands);
 const TEST_ID = "100001234";
@@ -10,7 +14,6 @@ beforeEach(async () => {
   testCluster.options.shardsDiscoverRecheckIslandsIntervalMs = 100; // recheck config that often
   testCluster.options.islands = OLD_ISLANDS;
   await waitTillIslandCount(1);
-  expect(await testCluster.islands()).toHaveLength(1);
 });
 
 test("node added dynamically appears in the cluster, old client is removed", async () => {
@@ -58,17 +61,3 @@ test("old client is ended without killing the running queries", async () => {
   expect(oldShard0Replica.isEnded()).toBeTruthy();
   expect(await promise).toEqual([{ pg_sleep: "" }]);
 });
-
-async function reconfigureToTwoIslands(): Promise<void> {
-  // Since we add the same physical host to island 1 as we already have in
-  // island 0, we force the old Client to discover 0 shards to avoid "Shard
-  // exists in more than one island" error.
-  const oldMaster0 = await testCluster.islandClient(0, MASTER); // will be reused
-  jest.spyOn(oldMaster0, "shardNos").mockResolvedValue([]);
-
-  testCluster.options.islands = () => [
-    { no: 0, nodes: [OLD_ISLANDS[0].nodes[0]] },
-    { no: 1, nodes: [{ ...TEST_CONFIG, some: 1 }] },
-  ];
-  await waitTillIslandCount(2);
-}

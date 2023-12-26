@@ -1,7 +1,8 @@
 import delay from "delay";
+import range from "lodash/range";
 import hash from "object-hash";
 import type { Shard } from "../../abstract/Shard";
-import { join, mapJoin, nullthrows } from "../../helpers/misc";
+import { mapJoin, nullthrows } from "../../helpers/misc";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./test-utils";
 import { recreateTestTables, shardRun, testCluster } from "./test-utils";
@@ -45,42 +46,33 @@ test("stress", async () => {
       shardRun(shard, schema.insert({ prefix: "pfx", name }))
     );
 
-    await join(
-      ids.map(async (id, i) => {
-        const row = nullthrows(
-          await shardRun(shard, schema.load(nullthrows(id)))
-        );
-        expect(row.name).toEqual(names[i]);
-      })
-    );
+    await mapJoin(ids, async (id, i) => {
+      const row = nullthrows(
+        await shardRun(shard, schema.load(nullthrows(id)))
+      );
+      expect(row.name).toEqual(names[i]);
+    });
 
-    await join(
-      ids.map(async (id, i) => {
-        const row = nullthrows(
-          await shardRun(
-            shard,
-            schema.loadBy({ prefix: "pfx", name: names[i] })
-          )
-        );
-        expect(row.id).toEqual(id);
-      })
-    );
+    await mapJoin(ids, async (id, i) => {
+      const row = nullthrows(
+        await shardRun(shard, schema.loadBy({ prefix: "pfx", name: names[i] }))
+      );
+      expect(row.id).toEqual(id);
+    });
 
-    await join(
-      ids.map(async (id, i) => {
-        const updated = await shardRun(
-          shard,
-          schema.update(nullthrows(id), { name: "upd" + names[i] })
-        );
-        expect(updated).toBeTruthy();
-        const row = nullthrows(
-          await shardRun(shard, schema.load(nullthrows(id)))
-        );
-        expect(row.name).toEqual("upd" + names[i]);
-      })
-    );
+    await mapJoin(ids, async (id, i) => {
+      const updated = await shardRun(
+        shard,
+        schema.update(nullthrows(id), { name: `upd${names[i]}` })
+      );
+      expect(updated).toBeTruthy();
+      const row = nullthrows(
+        await shardRun(shard, schema.load(nullthrows(id)))
+      );
+      expect(row.name).toEqual(`upd${names[i]}`);
+    });
   });
-}, 300000);
+});
 
 async function runStress(
   parallelism: number,
@@ -88,17 +80,11 @@ async function runStress(
   func: (uniq: string) => Promise<void>
 ): Promise<void> {
   let uniq = "";
-  await join(
-    range(parallelism).map(async () => {
-      for (let i = 0; i < iterations; i++) {
-        await delay(Math.round(Math.random() * 5));
-        uniq = hash(uniq);
-        await func(uniq);
-      }
-    })
-  );
-}
-
-function range(count: number): number[] {
-  return Array.from(Array(count).keys());
+  await mapJoin(range(parallelism), async () => {
+    for (let i = 0; i < iterations; i++) {
+      await delay(Math.round(Math.random() * 5));
+      uniq = hash(uniq);
+      await func(uniq);
+    }
+  });
 }
