@@ -3,6 +3,8 @@ import pDefer from "p-defer";
 import waitForExpect from "wait-for-expect";
 import { CachedRefreshedValue } from "../CachedRefreshedValue";
 
+jest.useFakeTimers({ advanceTimers: true });
+
 const OPTIONS = {
   delayMs: 10,
   deps: {
@@ -44,7 +46,7 @@ test("latest value", async () => {
   });
   for (let i = 0; i < 3; i++) {
     await cache.cached();
-    await delay(10);
+    await delay(30);
   }
 
   expect(await cache.cached()).toBe("latest value");
