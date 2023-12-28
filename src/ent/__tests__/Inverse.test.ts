@@ -381,7 +381,7 @@ test("inverses are not deleted when ent creation times out", async () => {
   await delay(1000);
   await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
     const master = await shard.client(MASTER);
-    await master.end(true).catch(() => {});
+    master.forceDisconnect();
   });
   expect(await promise).toContain("Connection terminated unexpectedly");
   // On an accidental disconnect, we don't know, whether the DB applied the

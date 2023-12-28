@@ -45,11 +45,18 @@ export abstract class Client {
   abstract readonly timelineManager: TimelineManager;
 
   /**
-   * Closes the connections to let the caller destroy the Client. By default,
-   * the pending queries are awaited to finish before returning, but if you pass
-   * forceDisconnect, all of the connections will be closed immediately.
+   * Gracefully closes the connections to let the caller destroy the Client. The
+   * pending queries are awaited to finish before returning. The Client becomes
+   * unusable after calling this method: you should not send queries to it.
    */
-  abstract end(forceDisconnect?: boolean): Promise<void>;
+  abstract end(): Promise<void>;
+
+  /**
+   * Forces the existing open connections to close immediately. The pending
+   * queries are aborted. The Client remains usable though, it will just open
+   * new connections on the next queries.
+   */
+  abstract forceDisconnect(): void;
 
   /**
    * Returns true if the Client is ended and can't be used anymore.
