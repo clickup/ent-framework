@@ -302,14 +302,15 @@ export class Cluster<TClient extends Client, TNode = any> {
         }
       },
       onRunError: async (attempt: number, error: unknown) => {
+        // E.g. a Shard is relocated to another Island, or a master node
+        // suddenly appears as replica (e.g. a switchover happened).
         if (
           error instanceof ShardError &&
           error.postAction === "rediscover" &&
           attempt < maybeCall(this.options.locateIslandErrorRetryCount)
         ) {
           await delay(maybeCall(this.options.locateIslandErrorRetryDelayMs));
-          // We must timeout here, otherwise we may wait forever if some Island
-          // is totally down.
+          // Timeout, or we may wait forever if an Island is completely down.
           const startTime = performance.now();
           await pTimeout(
             this.discoverShardsCache.waitRefresh(),
@@ -324,9 +325,26 @@ export class Cluster<TClient extends Client, TNode = any> {
             })
           );
           return "retry";
-        } else {
-          return "throw";
         }
+
+        // E.g. an attempt to use a Client which is end()'ed already: trigger
+        // a retry which will choose another Client. This may happen when e.g.
+        // a Client instance is returned to the Shards logic, and immediately
+        // after that it's been end()'ed due to a rediscovery succeeding and
+        // recycling the old Clients. We can't control the lifetime of Client
+        // instances returned to the caller (i.e. there is always a chance
+        // that the caller will try to use the Client after it's been
+        // end()'ed), but at least for Shards logic, we are able to retry.
+        if (
+          error instanceof ShardError &&
+          error.postAction === "choose-another-client" &&
+          attempt < maybeCall(this.options.locateIslandErrorRetryCount)
+        ) {
+          return "retry";
+        }
+
+        // Giving up on retries.
+        return "throw";
       },
     });
   }

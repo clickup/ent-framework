@@ -1,4 +1,4 @@
-import { maybeCall } from "../helpers/misc";
+import { hasKey, maybeCall } from "../helpers/misc";
 import type { Client } from "./Client";
 import type { Query } from "./Query";
 import type { QueryAnnotation, WhyClient } from "./QueryAnnotation";
@@ -83,11 +83,20 @@ export class Shard<TClient extends Client> {
           attempt: annotation.attempt + attempt,
         });
       } catch (error: unknown) {
+        if (
+          hasKey("stack", error) &&
+          typeof error.stack === "string" &&
+          attempt > 0
+        ) {
+          error.stack =
+            error.stack.trimEnd() + `\n    after ${attempt + 1} attempts`;
+        }
+
         if ((await this.options.onRunError(attempt, error)) === "retry") {
           continue;
-        } else {
-          throw error;
         }
+
+        throw error;
       }
 
       if (query.IS_WRITE && freshness !== STALE_REPLICA) {

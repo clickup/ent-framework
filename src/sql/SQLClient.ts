@@ -74,6 +74,10 @@ export interface SQLClientConn {
  * connection and send queries; these things are up to the derived classes to
  * implement.
  *
+ * The idea is that in each particular project, people may have they own classes
+ * derived from SQLClient, in case the codebase already has some existing
+ * connection pooling solution. They don't have to use SQLClientPool.
+ *
  * Since the class is cloneable internally (using the prototype substitution
  * technique), the contract of this class is that ALL its derived classes may
  * only have readonly immediate properties.
@@ -246,11 +250,19 @@ export abstract class SQLClient extends Client {
     try {
       const startTime = performance.now();
       let acquireElapsed: number | null = null;
-      let error: string | undefined;
+      let error: unknown = undefined;
       let connID: number | null = null;
       let res: TRow[] | undefined;
 
       try {
+        if (this.isEnded()) {
+          throw new ShardError(
+            Error(`Cannot use ${this.constructor.name} since it's ended`),
+            this.options.name,
+            "choose-another-client"
+          );
+        }
+
         const conn = await this.acquireConn();
         acquireElapsed = performance.now() - startTime;
         connID = conn.id ?? 0;
@@ -312,14 +324,13 @@ export abstract class SQLClient extends Client {
           this.releaseConn(conn);
         }
       } catch (e: unknown) {
-        error = "" + e;
+        error = e;
         throw e;
       } finally {
         const totalElapsed = performance.now() - startTime;
         this.options.loggers.clientQueryLogger?.({
           annotations,
           connID: "" + connID,
-          backend: this.options.name,
           op,
           shard: this.shardName,
           table,
@@ -331,39 +342,46 @@ export abstract class SQLClient extends Client {
             acquire: acquireElapsed ?? totalElapsed,
           },
           poolStats: this.poolStats(),
-          error,
+          error: "" + error,
           isMaster: this.isMaster(),
+          backend: this.options.name,
         });
       }
 
       return res;
     } catch (origError: unknown) {
-      if (
-        origError instanceof Error &&
-        (origError as any).code === PG_CODE_UNDEFINED_TABLE
-      ) {
-        // Table doesn't exist or disappeared (e.g. the Shard was relocated to
-        // another Island).
-        throw new ShardError(origError, this.options.name, "rediscover");
-      } else if (
-        origError instanceof Error &&
-        (origError as any).code === PG_CODE_READ_ONLY_SQL_TRANSACTION
-      ) {
-        // A write happened in a read-only client: probably the Client role was
-        // changed from master to replica due to a failover/switchover.
-        throw new ShardError(origError, this.options.name, "rediscover");
-      } else if (origError instanceof Error && (origError as any).severity) {
-        // Only wrap the errors which PG sent to us explicitly. Those errors
-        // mean that there was some aborted transaction.
+      // We can't do "instanceof Error" check, since Node internals sometimes
+      // throw errors which are not instanceof Error (although they look like
+      // regular instances of Error class).
+      const error = origError as
+        | { code?: string; severity?: unknown }
+        | null
+        | undefined;
+
+      // Table doesn't exist or disappeared (e.g. the Shard was relocated to
+      // another Island).
+      if (error?.code === PG_CODE_UNDEFINED_TABLE) {
+        throw new ShardError(error, this.options.name, "rediscover");
+      }
+
+      // A write happened in a read-only client: probably the Client role was
+      // changed from master to replica due to a failover/switchover.
+      if (error?.code === PG_CODE_READ_ONLY_SQL_TRANSACTION) {
+        throw new ShardError(error, this.options.name, "rediscover");
+      }
+
+      // Only wrap the errors which PG sent to us explicitly. Those errors
+      // mean that there was some aborted transaction.
+      if (error?.severity) {
         throw new SQLError(
-          origError,
+          error,
           this.options.name,
           debugQueryWithHints.trim()
         );
-      } else {
-        // Some other error (hard to reproduce; possibly a connection error?).
-        throw origError;
       }
+
+      // Either ShardError or some other error.
+      throw error;
     }
   }
 

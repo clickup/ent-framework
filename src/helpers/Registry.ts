@@ -42,8 +42,8 @@ export class Registry<TData, TObj> {
   async deleteExcept(keepKeys: Set<string>): Promise<void> {
     await mapJoin([...this.map], async ([key, obj]) => {
       if (!keepKeys.has(key)) {
-        await this.options.end?.(obj);
         this.map.delete(key);
+        await this.options.end?.(obj);
       }
     });
   }

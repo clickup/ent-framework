@@ -35,6 +35,14 @@ export type SQLClientPoolClient = PoolClient & {
   closeAt?: number;
 };
 
+/**
+ * This class carries connection pooling logic only and delegates the rest to
+ * SQLClient base class.
+ *
+ * The idea is that in each particular project, people may have they own classes
+ * derived from SQLClient, in case the codebase already has some existing
+ * connection pooling solution. They don't have to use SQLClientPool.
+ */
 export class SQLClientPool extends SQLClient {
   /** Default values for the constructor options. */
   static override readonly DEFAULT_OPTIONS: Required<
@@ -123,7 +131,7 @@ export class SQLClientPool extends SQLClient {
     }
   }
 
-  async end(forceDisconnect?: boolean): Promise<void> {
+  async end(): Promise<void> {
     if (this.ended.current) {
       return;
     }
@@ -131,14 +139,13 @@ export class SQLClientPool extends SQLClient {
     this.ended.current = true;
     this.prewarmTimeout.current && clearTimeout(this.prewarmTimeout.current);
     this.prewarmTimeout.current = null;
+    return this.pool.end();
+  }
 
-    if (forceDisconnect) {
-      for (const client of this.clients) {
-        const connection: Connection = (client as any).connection;
-        connection.stream.destroy();
-      }
-    } else {
-      return this.pool.end();
+  forceDisconnect(): void {
+    for (const client of this.clients) {
+      const connection: Connection = (client as any).connection;
+      connection.stream.destroy();
     }
   }
 
