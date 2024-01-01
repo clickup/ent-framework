@@ -47,10 +47,6 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
     return this.client.forceDisconnect();
   }
 
-  isEnded(): boolean {
-    return this.client.isEnded();
-  }
-
   async shardNos(): Promise<readonly number[]> {
     return this.client.shardNos();
   }
@@ -63,8 +59,16 @@ export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
     return new TestSQLClient(this.client.withShard(no)) as this;
   }
 
+  isEnded(): boolean {
+    return this.client.isEnded();
+  }
+
   isMaster(): boolean {
     return this.client.isMaster();
+  }
+
+  isConnectionProblem(): boolean {
+    return this.client.isConnectionProblem();
   }
 
   async query<TRes>(
@@ -171,6 +175,7 @@ export class ByteaBuffer {
 export class TCPProxyServer {
   private connections = new Set<Socket>();
   private server: Server;
+  private port?: number;
 
   constructor({
     host,
@@ -189,13 +194,22 @@ export class TCPProxyServer {
           socket.pipe(connect(port, host)).pipe(socket)
         )
       );
-    }).listen();
+    });
+    this.listen();
+  }
+
+  async abortConnections(): Promise<void> {
+    this.connections.forEach((socket) => socket.destroy());
+    await waitForExpect(() => expect(this.connections.size).toEqual(0));
   }
 
   async destroy(): Promise<void> {
     this.server.close();
-    this.connections.forEach((socket) => socket.destroy());
-    await waitForExpect(() => expect(this.connections.size).toEqual(0));
+    await this.abortConnections();
+  }
+
+  resurrectOnSamePort(): void {
+    this.listen(this.port);
   }
 
   async waitForAtLeastConnections(n: number): Promise<void> {
@@ -210,6 +224,11 @@ export class TCPProxyServer {
 
   address(): AddressInfo {
     return this.server.address() as AddressInfo;
+  }
+
+  private listen(port?: number): void {
+    this.server.listen(port);
+    this.port = this.address().port;
   }
 }
 

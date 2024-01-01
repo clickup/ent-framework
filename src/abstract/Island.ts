@@ -1,4 +1,5 @@
 import compact from "lodash/compact";
+import random from "lodash/random";
 import sortBy from "lodash/sortBy";
 import { mapJoin } from "../helpers/misc";
 import type { Client } from "./Client";
@@ -102,14 +103,46 @@ export class Island<TClient extends Client> {
       return this.clients[0];
     }
 
+    // In case of a switchover, the head of the list may stop being a master, so
+    // we sort the list again.
     if (!this.clients[0].isMaster()) {
       this.sortClients();
     }
 
-    const skipHead = this.clients[0].isMaster() ? 1 : 0;
-    return this.clients[
-      skipHead + Math.trunc(Math.random() * (this.clients.length - skipHead))
-    ];
+    let firstReplicaIndex = 0;
+    while (
+      firstReplicaIndex < this.clients.length &&
+      this.clients[firstReplicaIndex].isMaster()
+    ) {
+      firstReplicaIndex++;
+    }
+
+    let lastReplicaIndex = this.clients.length - 1;
+    while (
+      lastReplicaIndex >= firstReplicaIndex &&
+      this.clients[lastReplicaIndex].isConnectionProblem()
+    ) {
+      lastReplicaIndex--;
+    }
+
+    // No healthy replicas found at all: fallback to master.
+    if (lastReplicaIndex < firstReplicaIndex) {
+      return this.master();
+    }
+
+    // Clients in the range firstReplicaIndex...lastReplicaIndex will likely be
+    // replicas with healthy connections (since the tail of the list tends to
+    // consist of unhealthy Clients), so the Client in `client` will likely be a
+    // valid replica. But in case some Client got connection issues after we
+    // sorted them last time (rare), and we picked it as a random one, sort the
+    // list and try again.
+    const client = this.clients[random(firstReplicaIndex, lastReplicaIndex)];
+    if (client.isConnectionProblem()) {
+      this.sortClients();
+      return this.replica();
+    }
+
+    return client;
   }
 
   /**
@@ -120,12 +153,16 @@ export class Island<TClient extends Client> {
   }
 
   /**
-   * Reorders the Clients stored internally, so the master Client will appear in
-   * the head of the list.
+   * Sorts the Clients stored internally, so the master Client(s) will appear in
+   * the head of the list, and replica Clients with connection issues will
+   * appear in the end of the list. This is relatively expensive when there are
+   * lots of replicas, but we call it only when something goes wrong.
    */
   private sortClients(): void {
-    this.clients = sortBy(this.clients, (client) =>
-      client.isMaster() ? 0 : 1
+    this.clients = sortBy(
+      this.clients,
+      (client) => (client.isMaster() ? 0 : 1),
+      (client) => (!client.isConnectionProblem() ? 0 : 1)
     );
   }
 }

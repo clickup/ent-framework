@@ -59,11 +59,6 @@ export abstract class Client {
   abstract forceDisconnect(): void;
 
   /**
-   * Returns true if the Client is ended and can't be used anymore.
-   */
-  abstract isEnded(): boolean;
-
-  /**
    * Returns all Shard numbers discoverable via the connection to the Client's
    * database.
    */
@@ -81,11 +76,24 @@ export abstract class Client {
   abstract withShard(no: number): this;
 
   /**
+   * Returns true if the Client is ended and can't be used anymore.
+   */
+  abstract isEnded(): boolean;
+
+  /**
    * Returns true if, after the last query, the Client reported being a master
    * node. Master and replica roles may switch online unpredictably, without
    * reconnecting, so we only know the role after a query.
    */
   abstract isMaster(): boolean;
+
+  /**
+   * Returns true if the Client couldn't connect to the server (or it could, but
+   * the load balancer reported the remote server as not working), so it should
+   * ideally be removed from the list of active replicas until e.g. the next
+   * discovery query to it (or any query) succeeds.
+   */
+  abstract isConnectionProblem(): boolean;
 
   /**
    * Initializes an instance of Client.

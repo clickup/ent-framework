@@ -275,6 +275,15 @@ export class Cluster<TClient extends Client, TNode = any> {
   }
 
   /**
+   * Triggers shards rediscovery and finishes as soon as it's done. To be used
+   * in unit tests mostly, because in real life, it's enough to just modify the
+   * cluster configuration.
+   */
+  async rediscover(): Promise<void> {
+    await this.discoverShardsCache.waitRefresh();
+  }
+
+  /**
    * The idea: for each Shard number (even for non-discovered yet Shard), we
    * keep the corresponding Shard object in a Memoize cache, so Shards with the
    * same number always resolve into the same Shard object. Then, an actual
