@@ -9,6 +9,7 @@ import { ShardError } from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
 import type { MaybeCallable, PickPartial } from "../helpers/misc";
 import {
+  entries,
   maybeCall,
   nullthrows,
   sanitizeIDForDebugPrinting,
@@ -20,10 +21,44 @@ import { SQLError } from "./SQLError";
 
 const MAX_BIGINT = "9223372036854775807";
 const MAX_BIGINT_RE = new RegExp("^\\d{1," + MAX_BIGINT.length + "}$");
+const TIMELINE_POS_REFRESH = "TIMELINE_POS_REFRESH";
 
-// https://www.postgresql.org/docs/current/errcodes-appendix.html
-const PG_CODE_UNDEFINED_TABLE = "42P01";
-const PG_CODE_READ_ONLY_SQL_TRANSACTION = "25006";
+/**
+ * Some errors affect the logic of choosing another replica Client when a query
+ * retry is requested (controlled via ShardError error). Mostly, those are the
+ * situation when a PG node went down.
+ */
+const IS_SHARD_ERROR: Partial<
+  Record<
+    ShardError["postAction"],
+    (error: { code: string; message: string }) => boolean
+  >
+> = {
+  ["rediscover"]: ({ code }) =>
+    // Table doesn't exist or disappeared (e.g. the Shard was relocated to
+    // another Island).
+    code === "42P01" || // undefined_table
+    // A write happened in a read-only client: probably the Client role was
+    // changed from master to replica due to a failover/switchover.
+    code === "25006" || // read_only_sql_transaction
+    code === "57P01" || // admin_shutdown
+    code === "57P02", // crash_shutdown
+  ["choose-another-client"]: ({ code, message }) =>
+    // Node-postgres connection abort error.
+    message === "Connection terminated unexpectedly" || // from client.js
+    // Node TCP library connect error: "connect ECONNREFUSED 127.0.0.1:16432"
+    code === "ECONNREFUSED" ||
+    // PG became down a few seconds ago, but a pgbouncer connection is still
+    // open, so the query sent to it times out waiting. After some time,
+    // pgbouncer will stop emitting this error and start emitting
+    // server_login_retry on new connections instead.
+    (code === "08P01" && // protocol_violation
+      message === "query_wait_timeout") ||
+    // PG is down for quite some time, so pgbouncer throws this exception on
+    // each new connection immediately.
+    (code === "08P01" && // protocol_violation
+      message.includes("server_login_retry")),
+};
 
 /**
  * Options for SQLClient constructor.
@@ -100,12 +135,16 @@ export abstract class SQLClient extends Client {
    * since it expands to "sh0012"). */
   private readonly shardNoPadLen: number = 0;
 
-  /** The derived class must set this flag after each request to reflect the
-   * actual role of the client. The idea is that master/replica role may change
-   * online, without reconnecting the Client, so we need to refresh it after
-   * each request and be ready for a fallback. The expectation is that the
-   * initial value is populated during the very first shardNos() query. */
+  /** This flag is set after each request to reflect the actual role of the
+   * client. The idea is that master/replica role may change online, without
+   * reconnecting the Client, so we need to refresh it after each request and be
+   * ready for a fallback. The expectation is that the initial value is
+   * populated during the very first shardNos() call. */
   private readonly reportedMasterAfterLastQuery = new Ref(false);
+
+  /** This flag is set if there was an unsuccessful connection attempt (i.e. the
+   * PG may be down), and there were no successful queries since then. */
+  private readonly reportedConnectionProblem = new Ref(false);
 
   /** SQLClient configuration options. */
   override readonly options: Required<SQLClientOptions>;
@@ -146,14 +185,24 @@ export abstract class SQLClient extends Client {
     this.timelineManager = new TimelineManager(
       this.options.maxReplicationLagMs,
       this.options.replicaTimelinePosRefreshMs,
-      async () =>
-        this.query({
-          query: ["SELECT 'TIMELINE_POS_REFRESH'"],
-          isWrite: false,
-          annotations: [],
-          op: "TIMELINE_POS_REFRESH",
-          table: "pg_catalog",
-        })
+      async () => {
+        const startTime = performance.now();
+        try {
+          await this.query({
+            query: [`SELECT '${TIMELINE_POS_REFRESH}'`],
+            isWrite: false,
+            annotations: [],
+            op: TIMELINE_POS_REFRESH,
+            table: "pg_catalog",
+          });
+        } catch (error: unknown) {
+          this.logSwallowedError(
+            TIMELINE_POS_REFRESH,
+            error,
+            performance.now() - startTime
+          );
+        }
+      }
     );
 
     if (this.options.shards) {
@@ -251,7 +300,7 @@ export abstract class SQLClient extends Client {
       const startTime = performance.now();
       let acquireElapsed: number | null = null;
       let error: unknown = undefined;
-      let connID: number | null = null;
+      let connID: string = "?";
       let res: TRow[] | undefined;
 
       try {
@@ -265,7 +314,7 @@ export abstract class SQLClient extends Client {
 
         const conn = await this.acquireConn();
         acquireElapsed = performance.now() - startTime;
-        connID = conn.id ?? 0;
+        connID = "" + (conn.id ?? 0);
         try {
           if (query === "") {
             throw Error("Empty query passed to query()");
@@ -274,14 +323,15 @@ export abstract class SQLClient extends Client {
           let resMulti: Array<QueryResult<any>>;
           try {
             // A good and simple explanation of the protocol is here:
-            // https://www.postgresql.org/docs/13/protocol-flow.html. In short, we
-            // can't use prepared-statement-based operations even theoretically,
-            // because this mode doesn't support multi-queries. Also notice that
-            // TS typing is doomed for multi-queries:
+            // https://www.postgresql.org/docs/13/protocol-flow.html. In short,
+            // we can't use prepared-statement-based operations even
+            // theoretically, because this mode doesn't support multi-queries.
+            // Also notice that TS typing is doomed for multi-queries:
             // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/33297
             resMulti = await conn.query(
               `/*${this.shardName}*/${queries.join("; ")}`
             );
+            this.reportedConnectionProblem.current = false;
           } catch (e: unknown) {
             // We must run a ROLLBACK if we used BEGIN in the queries, because
             // otherwise the connection is released to the pool in "aborted
@@ -330,7 +380,7 @@ export abstract class SQLClient extends Client {
         const totalElapsed = performance.now() - startTime;
         this.options.loggers.clientQueryLogger?.({
           annotations,
-          connID: "" + connID,
+          connID,
           op,
           shard: this.shardName,
           table,
@@ -342,7 +392,7 @@ export abstract class SQLClient extends Client {
             acquire: acquireElapsed ?? totalElapsed,
           },
           poolStats: this.poolStats(),
-          error: "" + error,
+          error: error === undefined ? undefined : "" + error,
           isMaster: this.isMaster(),
           backend: this.options.name,
         });
@@ -350,38 +400,38 @@ export abstract class SQLClient extends Client {
 
       return res;
     } catch (origError: unknown) {
+      if (origError instanceof ShardError) {
+        throw origError;
+      }
+
       // We can't do "instanceof Error" check, since Node internals sometimes
       // throw errors which are not instanceof Error (although they look like
       // regular instances of Error class).
-      const error = origError as
-        | { code?: string; severity?: unknown }
+      const e = origError as
+        | { code?: string; severity?: unknown; message?: unknown }
         | null
         | undefined;
 
-      // Table doesn't exist or disappeared (e.g. the Shard was relocated to
-      // another Island).
-      if (error?.code === PG_CODE_UNDEFINED_TABLE) {
-        throw new ShardError(error, this.options.name, "rediscover");
+      // Infer ShardError errors which affect Client choosing logic.
+      for (const [postAction, predicate] of entries(IS_SHARD_ERROR)) {
+        if (predicate({ code: "" + e?.code, message: "" + e?.message })) {
+          if (postAction === "choose-another-client") {
+            this.reportedConnectionProblem.current = true;
+          }
+
+          throw new ShardError(e, this.options.name, postAction);
+        }
       }
 
-      // A write happened in a read-only client: probably the Client role was
-      // changed from master to replica due to a failover/switchover.
-      if (error?.code === PG_CODE_READ_ONLY_SQL_TRANSACTION) {
-        throw new ShardError(error, this.options.name, "rediscover");
+      // Only wrap the errors which PG sent to us explicitly. Those errors mean
+      // that there was some aborted transaction, so it's safe to retry.
+      if (e?.severity) {
+        throw new SQLError(e, this.options.name, debugQueryWithHints.trim());
       }
 
-      // Only wrap the errors which PG sent to us explicitly. Those errors
-      // mean that there was some aborted transaction.
-      if (error?.severity) {
-        throw new SQLError(
-          error,
-          this.options.name,
-          debugQueryWithHints.trim()
-        );
-      }
-
-      // Either ShardError or some other error.
-      throw error;
+      // Some other error which should not trigger query retries or
+      // Shards/Islands rediscovery.
+      throw e;
     }
   }
 
@@ -479,6 +529,10 @@ export abstract class SQLClient extends Client {
 
   isMaster(): boolean {
     return this.reportedMasterAfterLastQuery.current;
+  }
+
+  isConnectionProblem(): boolean {
+    return this.reportedConnectionProblem.current;
   }
 
   private buildShardName(no: number | string): string {

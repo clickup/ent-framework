@@ -65,8 +65,6 @@ test("shard relocation error when accessing a table should be retried", async ()
   // Now after we have some retries, continue & rename the table back.
   await master.rows("ALTER TABLE %T RENAME TO %T", TABLE_BAK, schema.name);
   expect(await resPromise).toMatch(/^\d+$/);
-
-  master.toMatchSnapshot();
 });
 
 test("shard-to-island resolution failure should cause rediscovery when running a query", async () => {

@@ -6,7 +6,7 @@ import type { ClientQueryLoggerProps } from "../abstract/Loggers";
 import type { MaybeCallable, PickPartial } from "../helpers/misc";
 import { maybeCall, runInVoid } from "../helpers/misc";
 import { Ref } from "../helpers/Ref";
-import type { SQLClientOptions } from "./SQLClient";
+import type { SQLClientConn, SQLClientOptions } from "./SQLClient";
 import { SQLClient } from "./SQLClient";
 
 /**
@@ -25,12 +25,10 @@ export interface SQLClientPoolOptions extends SQLClientOptions {
  * in on("connect") handler (persistent for the same connection objects, i.e.
  * across queries in the same connection).
  */
-export type SQLClientPoolClient = PoolClient & {
+export type SQLClientPoolConn = SQLClientConn & {
   /** Implemented but not documented property, see:
    * https://github.com/brianc/node-postgres/issues/2665 */
   processID?: number | null;
-  /** Assigned manually in addition to PoolClient props. */
-  id?: number;
   /** Assigned manually in addition to PoolClient props. */
   closeAt?: number;
 };
@@ -59,7 +57,7 @@ export class SQLClientPool extends SQLClient {
   private readonly pool: Pool;
 
   /** All open PG client connections. */
-  private readonly clients = new Set<PoolClient>();
+  private readonly clients = new Set<SQLClientPoolConn>();
 
   /** Prewarming periodic timer (if scheduled). */
   private readonly prewarmTimeout = new Ref<NodeJS.Timeout | null>(null);
@@ -70,11 +68,11 @@ export class SQLClientPool extends SQLClient {
   /** SQLClientPool configuration options. */
   override readonly options: Required<SQLClientPoolOptions>;
 
-  protected async acquireConn(): Promise<PoolClient> {
+  protected async acquireConn(): Promise<SQLClientPoolConn> {
     return this.pool.connect();
   }
 
-  protected releaseConn(conn: SQLClientPoolClient): void {
+  protected releaseConn(conn: SQLClientPoolConn): void {
     const needClose = !!(conn.closeAt && Date.now() > conn.closeAt);
     conn.release(needClose);
   }
@@ -97,7 +95,7 @@ export class SQLClientPool extends SQLClient {
     );
 
     this.pool = new Pool(this.options.config)
-      .on("connect", (client: SQLClientPoolClient) => {
+      .on("connect", (client: SQLClientPoolConn & PoolClient) => {
         this.clients.add(client);
         client.id = connNo++;
         client.closeAt =
@@ -106,19 +104,17 @@ export class SQLClientPool extends SQLClient {
               this.options.maxConnLifetimeMs *
                 (1 + this.options.maxConnLifetimeJitter * Math.random())
             : undefined;
-        // Sets a "default error" handler to not let forceDisconnect errors
-        // leak to e.g. Jest and the outside world as "unhandled error".
-        // Appending an additional error handler to EventEmitter doesn't
-        // affect the existing error handlers anyhow, so should be safe.
+        // Sets a "default error" handler to not let forceDisconnect errors leak
+        // to e.g. Jest and the outside world as "unhandled error". Appending an
+        // additional error handler to EventEmitter doesn't affect the existing
+        // error handlers anyhow, so should be safe.
         client.on("error", () => {});
       })
-      .on("remove", (conn) => {
-        this.clients.delete(conn);
-      })
-      .on("error", (e) => {
+      .on("remove", (conn) => this.clients.delete(conn))
+      .on("error", (e) =>
         // Having this hook prevents node from crashing.
-        this.logSwallowedError('Pool.on("error")', e, null);
-      });
+        this.logSwallowedError('Pool.on("error")', e, null)
+      );
   }
 
   override logSwallowedError(

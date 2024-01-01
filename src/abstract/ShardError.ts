@@ -15,7 +15,10 @@ export class ShardError extends ServerError {
   constructor(
     origError: any,
     where: string,
-    public readonly postAction: "rediscover" | "choose-another-client" | "fail"
+    public readonly postAction:
+      | "rediscover" // re-run Shards/Islands discovery before retrying
+      | "choose-another-client" // choose another replica, but don't rerun discovery
+      | "fail" // do not retry, fail immediately
   ) {
     super(origError, where);
   }
