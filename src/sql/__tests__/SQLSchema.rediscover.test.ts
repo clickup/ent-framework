@@ -41,6 +41,7 @@ beforeEach(async () => {
   testCluster.options.locateIslandErrorRetryCount = 2;
   testCluster.options.locateIslandErrorRetryDelayMs = 1000;
   testCluster.options.shardsDiscoverIntervalMs = 1000;
+
   shard = await testCluster.randomShard();
   master = await shard.client(MASTER);
 });

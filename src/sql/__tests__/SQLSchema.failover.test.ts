@@ -1,6 +1,5 @@
 import { MASTER, STALE_REPLICA, type Shard } from "../../abstract/Shard";
 import { ShardError } from "../../abstract/ShardError";
-import type { SQLClient } from "../SQLClient";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./test-utils";
 import { recreateTestTables, shardRun, testCluster } from "./test-utils";
@@ -15,15 +14,15 @@ const schema = new SQLSchema(
 );
 
 let shard: Shard<TestSQLClient>;
-let islandClient1: SQLClient;
-let islandClient2: SQLClient;
+let islandClient1: TestSQLClient;
+let islandClient2: TestSQLClient;
 
 beforeEach(async () => {
   testCluster.options.locateIslandErrorRetryCount = 1;
   testCluster.options.locateIslandErrorRetryDelayMs = 100;
 
-  islandClient1 = (await testCluster.islandClient(0, MASTER)).client;
-  islandClient2 = (await testCluster.islandClient(0, STALE_REPLICA)).client;
+  islandClient1 = await testCluster.islandClient(0, MASTER);
+  islandClient2 = await testCluster.islandClient(0, STALE_REPLICA);
   islandClient1.options.hints = { transaction: "read write" };
   islandClient2.options.hints = { transaction: "read only" };
 
@@ -48,7 +47,7 @@ test("query retries on new master when switchover happens", async () => {
   islandClient2.options.hints = { transaction: "read write" };
 
   const shardOnRunErrorSpy = jest.spyOn(shard.options, "onRunError");
-  const shardClient1 = (await shard.client(MASTER)).client;
+  const shardClient1 = await shard.client(MASTER);
   jest.spyOn(shardClient1, "query").mockImplementationOnce(async (...args) => {
     // On the 1st call here, the mock will be removed (restored) due to
     // mockImplementationOnce().

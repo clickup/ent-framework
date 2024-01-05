@@ -25,18 +25,31 @@ const schema = new SQLSchema(
 
 let shard: Shard<TestSQLClient>;
 let proxyServer: TCPProxyServer;
-let proxyTestConfig: typeof TEST_CONFIG;
-
-const OLD_ISLANDS = maybeCall(testCluster.options.islands);
-const locateIslandErrorRetryDelayMs = 10000;
 
 beforeEach(async () => {
   testCluster.options.locateIslandErrorRetryCount = 1;
-  testCluster.options.locateIslandErrorRetryDelayMs =
-    locateIslandErrorRetryDelayMs;
+  testCluster.options.locateIslandErrorRetryDelayMs = 10000;
   testCluster.options.shardsDiscoverRecheckIslandsIntervalMs = 10;
   testCluster.options.shardsDiscoverIntervalMs = 100000;
-  testCluster.options.islands = OLD_ISLANDS;
+
+  shard = await testCluster.randomShard();
+
+  proxyServer = new TCPProxyServer({
+    host: TEST_CONFIG.host!,
+    port: TEST_CONFIG.port!,
+  });
+  const proxyTestConfig = {
+    ...TEST_CONFIG,
+    isAlwaysLaggingReplica: true,
+    host: proxyServer.address().address,
+    port: proxyServer.address().port,
+    connectionTimeoutMillis: 30000,
+  };
+
+  testCluster.options.islands = [
+    { no: 0, nodes: [TEST_CONFIG, proxyTestConfig] },
+  ];
+  await testCluster.rediscover();
 
   await recreateTestTables([
     {
@@ -50,25 +63,6 @@ beforeEach(async () => {
       SHARD_AFFINITY: [],
     },
   ]);
-
-  shard = await testCluster.randomShard();
-
-  proxyServer = new TCPProxyServer({
-    host: TEST_CONFIG.host!,
-    port: TEST_CONFIG.port!,
-  });
-  proxyTestConfig = {
-    ...TEST_CONFIG,
-    isAlwaysLaggingReplica: true,
-    host: proxyServer.address().address,
-    port: proxyServer.address().port,
-    connectionTimeoutMillis: 30000,
-  };
-
-  testCluster.options.islands = [
-    { no: 0, nodes: [TEST_CONFIG, proxyTestConfig] },
-  ];
-  await testCluster.rediscover();
 });
 
 afterEach(async () => {
@@ -80,12 +74,16 @@ test("chooses another replica if new connection can't be opened", async () => {
   const shardOnRunErrorSpy = jest.spyOn(shard.options, "onRunError");
   const promise = shardRun(shard, schema.select({ where: {}, limit: 1 }));
 
-  jest.advanceTimersByTime(locateIslandErrorRetryDelayMs * 1.5);
+  jest.advanceTimersByTime(
+    maybeCall(testCluster.options.locateIslandErrorRetryDelayMs) * 1.5
+  );
   await waitForExpect(() =>
     expect("" + shardOnRunErrorSpy.mock.lastCall?.[1]).toContain("ECONNREFUSED")
   );
 
-  await jest.advanceTimersByTimeAsync(locateIslandErrorRetryDelayMs * 3);
+  await jest.advanceTimersByTimeAsync(
+    maybeCall(testCluster.options.locateIslandErrorRetryDelayMs) * 3
+  );
   await promise;
 });
 

@@ -1,20 +1,19 @@
+import pDefer from "p-defer";
 import waitForExpect from "wait-for-expect";
 import { MASTER, STALE_REPLICA } from "../../abstract/Shard";
 import { ShardError } from "../../abstract/ShardError";
-import { maybeCall } from "../../helpers/misc";
 import { SQLSchema } from "../SQLSchema";
 import {
   TEST_CONFIG,
+  TEST_ISLANDS,
   reconfigureToTwoIslands,
   recreateTestTables,
   shardRun,
   testCluster,
-  waitTillIslandCount,
 } from "./test-utils";
 
 jest.useFakeTimers({ advanceTimers: true });
 
-const OLD_ISLANDS = maybeCall(testCluster.options.islands);
 const TEST_ID = "100001234";
 
 const schema = new SQLSchema(
@@ -27,10 +26,13 @@ const schema = new SQLSchema(
 );
 
 beforeEach(async () => {
+  testCluster.options.locateIslandErrorRetryCount = 1;
   testCluster.options.shardsDiscoverIntervalMs = 20000; // very large intentionally
   testCluster.options.shardsDiscoverRecheckIslandsIntervalMs = 10;
-  testCluster.options.islands = OLD_ISLANDS;
-  await waitTillIslandCount(1);
+
+  testCluster.options.islands = TEST_ISLANDS;
+  await testCluster.rediscover();
+
   await recreateTestTables([
     {
       CREATE: [
@@ -75,24 +77,45 @@ test("shard client changes when cluster is reconfigured", async () => {
   expect(newShard0Replica).not.toBe(oldShard0Replica);
 });
 
-test("when old client is returned to the code, but then ended, the operation is retried", async () => {
+test("when old client is returned to the shard code, but then ended, the operation is retried", async () => {
   const shard = await testCluster.randomShard();
-  const master = await testCluster.islandClient(0, MASTER); // will be reused
+  const master = await shard.client(MASTER);
+  const oldReplica = await shard.client(STALE_REPLICA);
+
+  const oldReplicaQueryCalledDefer = pDefer();
+  const oldReplicaQueryUnfreezeDefer = pDefer();
+  jest.spyOn(oldReplica, "query").mockImplementationOnce(async (...args) => {
+    oldReplicaQueryCalledDefer.resolve();
+    expect(oldReplica.isEnded()).toBeFalsy();
+    await oldReplicaQueryUnfreezeDefer.promise;
+    expect(oldReplica.isEnded()).toBeTruthy();
+    return oldReplica.query(...args);
+  });
+  const promise = shardRun(shard, schema.select({ where: {}, limit: 1 }));
+  await oldReplicaQueryCalledDefer.promise;
+
+  testCluster.options.islands = () => [
+    { no: 0, nodes: [TEST_CONFIG, { ...TEST_CONFIG, nameSuffix: "modified" }] },
+  ];
+  await testCluster.rediscover();
+
+  // By this time, Client#query() is called for an already ended Client, and
+  // it's frozen till oldReplicaQueryUnfreezeDefer is resolved. Sharded calls
+  // should be retried, so a new Client should be chosen internally.
+  const masterQuerySpy = jest.spyOn(master, "query");
+  oldReplicaQueryUnfreezeDefer.resolve();
+  await promise;
+  expect(masterQuerySpy).toBeCalledTimes(1);
+});
+
+test("low level (non-sharded) client queries are not retried if the client is ended", async () => {
   const oldReplica = await testCluster.islandClient(0, STALE_REPLICA);
 
-  const masterShardNosSpy = jest.spyOn(master.client, "shardNos");
   testCluster.options.islands = () => [
-    { no: 0, nodes: [TEST_CONFIG, { ...TEST_CONFIG, some: 1 }] },
+    { no: 0, nodes: [TEST_CONFIG, { ...TEST_CONFIG, nameSuffix: "modified" }] },
   ];
-  await waitForExpect(() => expect(masterShardNosSpy).toBeCalled());
+  await testCluster.rediscover();
 
-  // By this time, it's mid-discovery, so the old clients are still being
-  // returned to the caller. Sharded calls should be retried, so a new Client
-  // should be chosen internally.
-  await shardRun(shard, schema.select({ where: {}, limit: 1 }));
-
-  // This one should fail, since we got the old Client before starting the
-  // cluster reconfiguration.
   await waitForExpect(() => expect(oldReplica.isEnded()).toBeTruthy());
   await expect(
     oldReplica.query({
