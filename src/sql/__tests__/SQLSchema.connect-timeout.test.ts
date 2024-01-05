@@ -11,6 +11,7 @@ import {
   shardRun,
   testCluster,
   TCPProxyServer,
+  TEST_ISLANDS,
 } from "./test-utils";
 
 jest.useFakeTimers({ advanceTimers: true });
@@ -24,22 +25,20 @@ const schema = new SQLSchema(
   []
 );
 
-const OLD_ISLANDS = maybeCall(testCluster.options.islands);
 const TABLE_BAK = `${schema.name}_bak`;
 
 let shard: Shard<TestSQLClient>;
 let connStuckServer: TCPProxyServer;
 let connStuckTestConfig: typeof TEST_CONFIG;
 
-const shardsDiscoverRecheckIslandsIntervalMs = 20000; // intentionally large
-
 beforeEach(async () => {
   testCluster.options.locateIslandErrorRetryCount = 2;
   testCluster.options.locateIslandErrorRetryDelayMs = 100;
-  testCluster.options.shardsDiscoverRecheckIslandsIntervalMs =
-    shardsDiscoverRecheckIslandsIntervalMs;
+  testCluster.options.shardsDiscoverRecheckIslandsIntervalMs = 20000; // intentionally large
   testCluster.options.shardsDiscoverIntervalMs = 100000;
-  testCluster.options.islands = OLD_ISLANDS;
+
+  testCluster.options.islands = TEST_ISLANDS;
+  await testCluster.rediscover();
 
   await recreateTestTables([
     {
@@ -80,8 +79,9 @@ test("when connection gets stuck during background rediscovery, it does not slow
   testCluster.options.islands = [
     { no: 0, nodes: [TEST_CONFIG, connStuckTestConfig] },
   ];
-
-  jest.advanceTimersByTime(shardsDiscoverRecheckIslandsIntervalMs);
+  jest.advanceTimersByTime(
+    maybeCall(testCluster.options.shardsDiscoverRecheckIslandsIntervalMs)
+  );
   await connStuckServer.waitForAtLeastConnections(1);
 
   expect(await shardRun(shard, schema.insert({ name: "abc" }))).toBeTruthy();
@@ -103,14 +103,15 @@ test("when rediscovery is triggered by a failed query, and connection gets stuck
     { no: 0, nodes: [TEST_CONFIG, connStuckTestConfig] },
   ];
 
+  // The query below fails and thus triggers rediscovery.
   let shardRunResult: unknown = undefined;
   runInVoid(
     shardRun(shard, schema.insert({ name: "abc" }))
       .then(() => (shardRunResult = true))
       .catch((e) => (shardRunResult = e))
   );
-
   await connStuckServer.waitForAtLeastConnections(1);
+
   await master.rows("ALTER TABLE %T RENAME TO %T", TABLE_BAK, schema.name);
   await delay(1000);
   expect(shardRunResult).toBeUndefined();

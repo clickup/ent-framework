@@ -16,7 +16,7 @@ import type { TimelineManager } from "../../abstract/TimelineManager";
 import { GLOBAL_SHARD, type ShardAffinity } from "../../ent/Configuration";
 import { join, mapJoin, nullthrows, runInVoid } from "../../helpers/misc";
 import { buildShape } from "../helpers/buildShape";
-import type { SQLClient } from "../SQLClient";
+import type { SQLClient, SQLClientOptions } from "../SQLClient";
 import { escapeLiteral, escapeIdent } from "../SQLClient";
 import { SQLClientPool } from "../SQLClientPool";
 
@@ -24,11 +24,16 @@ import { SQLClientPool } from "../SQLClientPool";
  * A proxy for an SQLClient which records all the queries passing through and
  * has some other helper methods.
  */
-export class TestSQLClient extends Client implements Pick<SQLClient, "query"> {
+export class TestSQLClient
+  extends Client
+  implements Pick<SQLClient, "query" | "options">
+{
   readonly queries: string[] = [];
+  override readonly options: Required<SQLClientOptions>;
 
   constructor(public readonly client: SQLClient) {
-    super({ ...client.options, name: "test" });
+    super(client.options);
+    this.options = client.options;
   }
 
   get shardName(): string {
@@ -236,6 +241,7 @@ export class TCPProxyServer {
  * A node-postgres config we use in tests.
  */
 export const TEST_CONFIG: PoolConfig & {
+  nameSuffix: string | undefined;
   isAlwaysLaggingReplica: boolean;
   swallowedErrorLogger: ClientOptions["loggers"]["swallowedErrorLogger"];
 } = {
@@ -244,9 +250,21 @@ export const TEST_CONFIG: PoolConfig & {
   database: process.env.PGDATABASE || process.env.DB_DATABASE,
   user: process.env.PGUSER || process.env.DB_USER,
   password: process.env.PGPASSWORD || process.env.DB_PASS,
+  // Additional custom props (tests facilities).
+  nameSuffix: undefined,
   isAlwaysLaggingReplica: false,
   swallowedErrorLogger: () => {},
 };
+
+/**
+ * An initial test list of Islands to start from.
+ */
+export const TEST_ISLANDS = [
+  {
+    no: 0,
+    nodes: [TEST_CONFIG, { ...TEST_CONFIG, isAlwaysLaggingReplica: true }],
+  },
+];
 
 /**
  * A stub value for QueryAnnotation.
@@ -273,16 +291,18 @@ beforeEach(() => {
  */
 export const testCluster = new Cluster({
   shardsDiscoverIntervalMs: 500,
-  islands: [
-    {
-      no: 0,
-      nodes: [TEST_CONFIG, { ...TEST_CONFIG, isAlwaysLaggingReplica: true }],
-    },
-  ],
-  createClient: ({ isAlwaysLaggingReplica, swallowedErrorLogger, ...config }) =>
+  islands: TEST_ISLANDS,
+  createClient: ({
+    nameSuffix,
+    isAlwaysLaggingReplica,
+    swallowedErrorLogger,
+    ...config
+  }) =>
     new TestSQLClient(
       new SQLClientPool({
-        name: `test-pool(replica=${isAlwaysLaggingReplica})`,
+        name:
+          `test-pool(replica=${isAlwaysLaggingReplica})` +
+          (nameSuffix ? `-${nameSuffix}` : ""),
         loggers: { swallowedErrorLogger },
         isAlwaysLaggingReplica,
         shards: {
@@ -359,26 +379,6 @@ export async function shardRun<TOutput>(
 }
 
 /**
- * Waits till the Cluster reaches to the provided number of Islands after a
- * reconfiguration.
- */
-export async function waitTillIslandCount(count: number): Promise<void> {
-  const errorSpy = jest.spyOn(testCluster.loggers, "swallowedErrorLogger");
-
-  const startTime = performance.now();
-  while (
-    performance.now() - startTime < 10000 &&
-    (await testCluster.islands()).length !== count
-  ) {
-    await delay(100);
-    expect(errorSpy).not.toHaveBeenCalled();
-  }
-
-  expect(await testCluster.islands()).toHaveLength(count);
-  errorSpy.mockReset();
-}
-
-/**
  * Reconfigures the Cluster to have 2 Islands, where both Island 0 and Island 1
  * has 1 master node each.
  */
@@ -391,9 +391,9 @@ export async function reconfigureToTwoIslands(): Promise<void> {
 
   testCluster.options.islands = () => [
     { no: 0, nodes: [TEST_CONFIG] },
-    { no: 1, nodes: [{ ...TEST_CONFIG, some: 1 }] },
+    { no: 1, nodes: [{ ...TEST_CONFIG, nameSuffix: "island1" }] },
   ];
-  await waitTillIslandCount(2);
+  await testCluster.rediscover();
 }
 
 function indentQuery(query: string): string {
