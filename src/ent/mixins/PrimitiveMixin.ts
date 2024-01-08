@@ -295,7 +295,7 @@ export function PrimitiveMixin<
                 return id;
               } catch (error: unknown) {
                 // Do we know for sure whether the server applied the insert or
-                // not? Some examples are: "connection reset" or pgbouncer
+                // not? Some examples are: "connection reset" or PgBouncer
                 // timeout: in those cases, it's quite possible that the insert
                 // actually DID succeed internally, but we still received an
                 // error, so we must NOT delete inverses as a cleanup action.

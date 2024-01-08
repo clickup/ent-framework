@@ -48,16 +48,20 @@ const IS_SHARD_ERROR: Partial<
     message === "Connection terminated unexpectedly" || // from client.js
     // Node TCP library connect error: "connect ECONNREFUSED 127.0.0.1:16432"
     code === "ECONNREFUSED" ||
-    // PG became down a few seconds ago, but a pgbouncer connection is still
+    // PG became down a few seconds ago, but a PgBouncer connection is still
     // open, so the query sent to it times out waiting. After some time,
-    // pgbouncer will stop emitting this error and start emitting
+    // PgBouncer will stop emitting this error and start emitting
     // server_login_retry on new connections instead.
     (code === "08P01" && // protocol_violation
       message === "query_wait_timeout") ||
-    // PG is down for quite some time, so pgbouncer throws this exception on
+    // PG is down for quite some time, so PgBouncer throws this exception on
     // each new connection immediately.
     (code === "08P01" && // protocol_violation
-      message.includes("server_login_retry")),
+      message.includes("server_login_retry")) ||
+    // PgBouncer 1.16.1 seems to emit this error sometimes instead of
+    // query_wait_timeout and server_login_retry.
+    (code === "08P01" && // protocol_violation
+      message === "pgbouncer cannot connect to server"),
 };
 
 /**
@@ -144,7 +148,7 @@ export abstract class SQLClient extends Client {
 
   /** This flag is set if there was an unsuccessful connection attempt (i.e. the
    * PG may be down), and there were no successful queries since then. */
-  private readonly reportedConnectionProblem = new Ref(false);
+  private readonly reportedConnectionIssue = new Ref(false);
 
   /** SQLClient configuration options. */
   override readonly options: Required<SQLClientOptions>;
@@ -271,9 +275,9 @@ export abstract class SQLClient extends Client {
     // operators (e.g. "citext" exposes comparison operators) which must be
     // available in all Shards by default, so they should live in "public".
     // (There is a way to install an extension to a particular schema, but a)
-    // there can be only one such schema, and b) there are be problems running
-    // pg_dump to migrate this Shard to another machine since pg_dump doesn't
-    // emit CREATE EXTENSION statement when filtering by schema name).
+    // there can be only one such schema, and b) there are problems running
+    // pg_dump when migrating this Shard to another machine since pg_dump
+    // doesn't emit CREATE EXTENSION statement when filtering by schema name).
     queriesPrologue.unshift(
       `SET LOCAL search_path TO ${this.shardName}, public`
     );
@@ -299,7 +303,7 @@ export abstract class SQLClient extends Client {
     try {
       const startTime = performance.now();
       let acquireElapsed: number | null = null;
-      let error: unknown = undefined;
+      let e: any = undefined;
       let connID: string = "?";
       let res: TRow[] | undefined;
 
@@ -331,7 +335,7 @@ export abstract class SQLClient extends Client {
             resMulti = await conn.query(
               `/*${this.shardName}*/${queries.join("; ")}`
             );
-            this.reportedConnectionProblem.current = false;
+            this.reportedConnectionIssue.current = false;
           } catch (e: unknown) {
             // We must run a ROLLBACK if we used BEGIN in the queries, because
             // otherwise the connection is released to the pool in "aborted
@@ -373,9 +377,9 @@ export abstract class SQLClient extends Client {
         } finally {
           this.releaseConn(conn);
         }
-      } catch (e: unknown) {
-        error = e;
-        throw e;
+      } catch (ex: unknown) {
+        e = ex;
+        throw ex;
       } finally {
         const totalElapsed = performance.now() - startTime;
         this.options.loggers.clientQueryLogger?.({
@@ -392,7 +396,11 @@ export abstract class SQLClient extends Client {
             acquire: acquireElapsed ?? totalElapsed,
           },
           poolStats: this.poolStats(),
-          error: error === undefined ? undefined : "" + error,
+          error:
+            e === undefined
+              ? undefined
+              : `${e}` +
+                (typeof e?.code === "string" ? ` (code=${e.code})` : ""),
           isMaster: this.isMaster(),
           backend: this.options.name,
         });
@@ -416,7 +424,7 @@ export abstract class SQLClient extends Client {
       for (const [postAction, predicate] of entries(IS_SHARD_ERROR)) {
         if (predicate({ code: "" + e?.code, message: "" + e?.message })) {
           if (postAction === "choose-another-client") {
-            this.reportedConnectionProblem.current = true;
+            this.reportedConnectionIssue.current = true;
           }
 
           throw new ShardError(e, this.options.name, postAction);
@@ -531,8 +539,8 @@ export abstract class SQLClient extends Client {
     return this.reportedMasterAfterLastQuery.current;
   }
 
-  isConnectionProblem(): boolean {
-    return this.reportedConnectionProblem.current;
+  isConnectionIssue(): boolean {
+    return this.reportedConnectionIssue.current;
   }
 
   private buildShardName(no: number | string): string {
