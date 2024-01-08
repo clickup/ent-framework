@@ -82,7 +82,7 @@ export class Island<TClient extends Client> {
    */
   master(): TClient {
     const firstClient = this.clients[0];
-    if (firstClient.isMaster()) {
+    if (firstClient.isMaster() && !firstClient.isConnectionIssue()) {
       return firstClient;
     }
 
