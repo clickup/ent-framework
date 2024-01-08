@@ -93,7 +93,7 @@ export abstract class Client {
    * ideally be removed from the list of active replicas until e.g. the next
    * discovery query to it (or any query) succeeds.
    */
-  abstract isConnectionProblem(): boolean;
+  abstract isConnectionIssue(): boolean;
 
   /**
    * Initializes an instance of Client.

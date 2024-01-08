@@ -120,7 +120,7 @@ export class Island<TClient extends Client> {
     let lastReplicaIndex = this.clients.length - 1;
     while (
       lastReplicaIndex >= firstReplicaIndex &&
-      this.clients[lastReplicaIndex].isConnectionProblem()
+      this.clients[lastReplicaIndex].isConnectionIssue()
     ) {
       lastReplicaIndex--;
     }
@@ -137,7 +137,7 @@ export class Island<TClient extends Client> {
     // sorted them last time (rare), and we picked it as a random one, sort the
     // list and try again.
     const client = this.clients[random(firstReplicaIndex, lastReplicaIndex)];
-    if (client.isConnectionProblem()) {
+    if (client.isConnectionIssue()) {
       this.sortClients();
       return this.replica();
     }
@@ -162,7 +162,7 @@ export class Island<TClient extends Client> {
     this.clients = sortBy(
       this.clients,
       (client) => (client.isMaster() ? 0 : 1),
-      (client) => (!client.isConnectionProblem() ? 0 : 1)
+      (client) => (!client.isConnectionIssue() ? 0 : 1)
     );
   }
 }

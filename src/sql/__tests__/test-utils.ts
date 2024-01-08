@@ -72,8 +72,8 @@ export class TestSQLClient
     return this.client.isMaster();
   }
 
-  isConnectionProblem(): boolean {
-    return this.client.isConnectionProblem();
+  isConnectionIssue(): boolean {
+    return this.client.isConnectionIssue();
   }
 
   async query<TRes>(
