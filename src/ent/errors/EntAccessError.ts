@@ -1,5 +1,4 @@
-import { inspect } from "util";
-import { copyStack, indent } from "../../helpers/misc";
+import { copyStack, indent, inspectCompact } from "../../helpers/misc";
 
 /**
  * A base class for errors which trigger the validation framework to process
@@ -20,7 +19,13 @@ export class EntAccessError extends Error {
             indent(causeToString(cause))
         : message
     );
-    this.name = this.constructor.name; // https://javascript.info/custom-errors#further-inheritance
+
+    Object.defineProperty(this, "name", {
+      value: this.constructor.name,
+      writable: true,
+      enumerable: false,
+    });
+
     if (cause instanceof Error) {
       this.cause = cause;
       copyStack(this, cause);
@@ -36,5 +41,5 @@ function causeToString(cause: unknown): string {
   // - Any other object will be inspected in compact mode.
   return cause instanceof Error || typeof cause === "string"
     ? String(cause).trimEnd()
-    : inspect(cause, { compact: true, breakLength: Infinity });
+    : inspectCompact(cause);
 }

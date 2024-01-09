@@ -40,7 +40,7 @@ export function expectToMatchSnapshot(
 export class ValidationTester {
   private log: string[] = [];
 
-  respond(predName: string, response: boolean | Error, row?: any): boolean {
+  respond(predName: string, response: boolean | Error, row?: unknown): boolean {
     predName += row ? " " + inspect(row) : "";
     if (response instanceof Error) {
       this.log.push(`[${predName} threw] ${response}`);
@@ -79,7 +79,7 @@ export class ValidationTester {
       }
 
       res = "OK";
-    } catch (e: any) {
+    } catch (e: unknown) {
       res = "Failure\n--- (error returned to client) ---\n" + e;
     }
 

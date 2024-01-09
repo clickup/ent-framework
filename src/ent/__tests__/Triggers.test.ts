@@ -94,10 +94,10 @@ export class EntTestHeadline extends BaseEnt(
   static readonly TRIGGER_CALLS: Array<{
     type: string;
     op?: string;
-    oldRow?: any;
-    newRow?: any;
-    newOrOldRow?: any;
-    input?: any;
+    oldRow?: unknown;
+    newRow?: unknown;
+    newOrOldRow?: unknown;
+    input?: unknown;
   }> = [];
 
   static override configure() {
@@ -291,9 +291,9 @@ export class EntTestCountry extends BaseEnt(
 
   static readonly TRIGGER_CALLS: Array<{
     type: string;
-    old?: any;
-    new?: any;
-    input?: any;
+    old?: unknown;
+    new?: unknown;
+    input?: unknown;
   }> = [];
 
   static override configure() {

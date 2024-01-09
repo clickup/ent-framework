@@ -176,7 +176,7 @@ export function HelpersMixin<
     ): Promise<HelpersMixin | null> {
       try {
         return await this.loadNullable(vc, id);
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (e instanceof EntAccessError) {
           return null;
         }

@@ -179,9 +179,9 @@ export type Row<TTable extends Table> = RowWithID & {
  * Insert: Table -> "field1" | "field2" |  ... deduction (required).
  */
 export type InsertFieldsRequired<TTable extends Table> = {
-  [K in keyof TTable]: TTable[K] extends { autoInsert: any }
+  [K in keyof TTable]: TTable[K] extends { autoInsert: unknown }
     ? never
-    : TTable[K] extends { autoUpdate: any }
+    : TTable[K] extends { autoUpdate: unknown }
     ? never
     : K;
 }[keyof TTable];
@@ -190,9 +190,9 @@ export type InsertFieldsRequired<TTable extends Table> = {
  * Insert: Table -> "created_at" | "field2" |  ... deduction (optional fields).
  */
 export type InsertFieldsOptional<TTable extends Table> = {
-  [K in keyof TTable]: TTable[K] extends { autoInsert: any }
+  [K in keyof TTable]: TTable[K] extends { autoInsert: unknown }
     ? K
-    : TTable[K] extends { autoUpdate: any }
+    : TTable[K] extends { autoUpdate: unknown }
     ? K
     : never;
 }[keyof TTable];

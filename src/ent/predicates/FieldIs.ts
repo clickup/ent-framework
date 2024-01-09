@@ -20,7 +20,7 @@ export class FieldIs
     public readonly message: string
   ) {}
 
-  async check(vc: VC, row: Record<string, any>): Promise<boolean> {
+  async check(vc: VC, row: Record<string, unknown>): Promise<boolean> {
     const fieldValue = row[this.field];
     return this.validator(fieldValue, row, vc);
   }

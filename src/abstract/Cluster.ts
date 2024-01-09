@@ -16,6 +16,7 @@ import {
 } from "../helpers/misc";
 import { Registry } from "../helpers/Registry";
 import type { Client } from "./Client";
+import { ClientError } from "./ClientError";
 import { Island } from "./Island";
 import type { Loggers } from "./Loggers";
 import type { STALE_REPLICA } from "./Shard";
@@ -301,10 +302,11 @@ export class Cluster<TClient extends Client, TNode = any> {
           const masterNames = [...islandsMap.entries()]
             .map(([no, island]) => `${no}:${island.master().options.name}`)
             .join(", ");
+          // We don't retry it to avoid DoS, since it could be e.g. a fake ID
+          // passed to us by a user in some URL or something else.
           throw new ShardError(
-            `Shard ${shardNo} is not discoverable (some islands are down? connections limit? no such Shard in the cluster?)`,
-            masterNames,
-            "rediscover"
+            `Shard ${shardNo} is not discoverable (no such Shard in the Cluster? some Islands are down? connections limit?)`,
+            masterNames
           );
         } else {
           return this.islandClient(islandNo, freshness);
@@ -314,7 +316,7 @@ export class Cluster<TClient extends Client, TNode = any> {
         // E.g. a Shard is relocated to another Island, or a master node
         // suddenly appears as replica (e.g. a switchover happened).
         if (
-          error instanceof ShardError &&
+          error instanceof ClientError &&
           error.postAction === "rediscover" &&
           attempt < maybeCall(this.options.locateIslandErrorRetryCount)
         ) {
@@ -345,7 +347,7 @@ export class Cluster<TClient extends Client, TNode = any> {
         // that the caller will try to use the Client after it's been
         // end()'ed), but at least for Shards logic, we are able to retry.
         if (
-          error instanceof ShardError &&
+          error instanceof ClientError &&
           error.postAction === "choose-another-client" &&
           attempt < maybeCall(this.options.locateIslandErrorRetryCount)
         ) {

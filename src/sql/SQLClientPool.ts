@@ -1,6 +1,6 @@
 import defaults from "lodash/defaults";
 import range from "lodash/range";
-import type { Connection, PoolClient, PoolConfig } from "pg";
+import type { PoolClient, PoolConfig } from "pg";
 import { Pool } from "pg";
 import type { ClientQueryLoggerProps } from "../abstract/Loggers";
 import type { MaybeCallable, PickPartial } from "../helpers/misc";
@@ -104,10 +104,10 @@ export class SQLClientPool extends SQLClient {
               this.options.maxConnLifetimeMs *
                 (1 + this.options.maxConnLifetimeJitter * Math.random())
             : undefined;
-        // Sets a "default error" handler to not let forceDisconnect errors leak
-        // to e.g. Jest and the outside world as "unhandled error". Appending an
-        // additional error handler to EventEmitter doesn't affect the existing
-        // error handlers anyhow, so should be safe.
+        // Sets a "default error" handler to not let errors leak to e.g. Jest
+        // and the outside world as "unhandled error". Appending an additional
+        // error handler to EventEmitter doesn't affect the existing error
+        // handlers anyhow, so should be safe.
         client.on("error", () => {});
       })
       .on("remove", (conn) => this.clients.delete(conn))
@@ -136,13 +136,6 @@ export class SQLClientPool extends SQLClient {
     this.prewarmTimeout.current && clearTimeout(this.prewarmTimeout.current);
     this.prewarmTimeout.current = null;
     return this.pool.end();
-  }
-
-  forceDisconnect(): void {
-    for (const client of this.clients) {
-      const connection: Connection = (client as any).connection;
-      connection.stream.destroy();
-    }
   }
 
   isEnded(): boolean {

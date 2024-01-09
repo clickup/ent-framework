@@ -1,5 +1,5 @@
+import { inspect } from "util";
 import { MASTER, STALE_REPLICA, type Shard } from "../../abstract/Shard";
-import { ShardError } from "../../abstract/ShardError";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./test-utils";
 import { recreateTestTables, shardRun, testCluster } from "./test-utils";
@@ -55,7 +55,7 @@ test("query retries on new master when switchover happens", async () => {
       await shardClient1.query(...args); // should throw
       throw "The query() call above should fail with a read-only SQL transaction error";
     } catch (e: unknown) {
-      expect(e).toBeInstanceOf(ShardError);
+      expect(inspect(e)).toMatch(/read_only_sql_transaction/);
       throw e;
     } finally {
       // After the query(), pretend that islandClient1 became replica and
@@ -77,6 +77,6 @@ test("query fails when no master appears after a retry", async () => {
   const shardOnRunErrorSpy = jest.spyOn(shard.options, "onRunError");
   await expect(
     shardRun(shard, schema.insert({ name: "test" }))
-  ).rejects.toThrow(ShardError);
+  ).rejects.toThrow(/read_only_sql_transaction/);
   expect(shardOnRunErrorSpy).toBeCalledTimes(2);
 });

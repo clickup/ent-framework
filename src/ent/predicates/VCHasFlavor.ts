@@ -8,7 +8,7 @@ import type { Predicate } from "./Predicate";
 export class VCHasFlavor implements Predicate<never> {
   readonly name = this.constructor.name + ":" + this.Flavor.name;
 
-  constructor(private Flavor: new (...args: any[]) => VCFlavor) {}
+  constructor(private Flavor: new (...args: never[]) => VCFlavor) {}
 
   async check(vc: VC): Promise<boolean> {
     return !!vc.flavor(this.Flavor);

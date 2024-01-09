@@ -45,7 +45,7 @@ export abstract class Runner<TInput, TOutput> {
    * error), returns the number of milliseconds to wait before retrying.
    */
   abstract delayForSingleQueryRetryOnError(
-    error: any
+    error: unknown
   ): number | "immediate_retry" | "no_retry";
 
   /**
@@ -61,7 +61,7 @@ export abstract class Runner<TInput, TOutput> {
    * Client doesn't support transactions at all, then the method should return
    * false.)
    */
-  abstract shouldDebatchOnError(error: any): boolean;
+  abstract shouldDebatchOnError(error: unknown): boolean;
 
   /**
    * Parameter `name` is typically a table name.

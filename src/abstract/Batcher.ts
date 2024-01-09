@@ -51,7 +51,7 @@ export class Batcher<TInput, TOutput> {
       try {
         // Called most of the times.
         outputs = await this.runner.runBatch(inputs, annotations);
-      } catch (e: any) {
+      } catch (e: unknown) {
         // Relatively rare under heavy load (since errors are rare).
         if (this.runner.shouldDebatchOnError(e)) {
           await this.runSingleForEach(

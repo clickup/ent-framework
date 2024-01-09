@@ -1032,7 +1032,7 @@ export abstract class SQLRunner<
    * serialize data in SQL format. This allows to remove lots of logic and "ifs"
    * from runtime and speed up hot code paths.
    */
-  private newFunction(...argsAndBody: string[]): any {
+  private newFunction(...argsAndBody: string[]): (...args: unknown[]) => never {
     return new Function(...argsAndBody).bind({
       ...sqlClientMod,
       stringify: this.stringify,

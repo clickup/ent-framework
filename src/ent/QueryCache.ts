@@ -11,7 +11,7 @@ const OPS = [
   "exists",
 ] as const;
 
-export type AnyClass = new (...args: any) => any;
+export type AnyClass = new (...args: never[]) => unknown;
 
 type Op = typeof OPS[number];
 

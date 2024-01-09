@@ -1,15 +1,20 @@
-import { inspect } from "util";
 import defaults from "lodash/defaults";
 import type { QueryResult, QueryResultRow } from "pg";
 import type { ClientOptions } from "../abstract/Client";
 import { Client } from "../abstract/Client";
+import type {
+  ClientErrorKind,
+  ClientErrorPostAction,
+} from "../abstract/ClientError";
+import { ClientError } from "../abstract/ClientError";
 import type { ClientQueryLoggerProps } from "../abstract/Loggers";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { ShardError } from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
 import type { MaybeCallable, PickPartial } from "../helpers/misc";
 import {
-  entries,
+  hasKey,
+  inspectCompact,
   maybeCall,
   nullthrows,
   sanitizeIDForDebugPrinting,
@@ -25,44 +30,83 @@ const TIMELINE_POS_REFRESH = "TIMELINE_POS_REFRESH";
 
 /**
  * Some errors affect the logic of choosing another replica Client when a query
- * retry is requested (controlled via ShardError error). Mostly, those are the
- * situation when a PG node went down.
+ * retry is requested (controlled via ClientError). Mostly, those are the
+ * situation when a PG node goes down.
  */
-const IS_SHARD_ERROR: Partial<
-  Record<
-    ShardError["postAction"],
-    (error: { code: string; message: string }) => boolean
-  >
-> = {
-  ["rediscover"]: ({ code }) =>
-    // Table doesn't exist or disappeared (e.g. the Shard was relocated to
-    // another Island).
-    code === "42P01" || // undefined_table
-    // A write happened in a read-only client: probably the Client role was
-    // changed from master to replica due to a failover/switchover.
-    code === "25006" || // read_only_sql_transaction
-    code === "57P01" || // admin_shutdown
-    code === "57P02", // crash_shutdown
-  ["choose-another-client"]: ({ code, message }) =>
-    // Node-postgres connection abort error.
-    message === "Connection terminated unexpectedly" || // from client.js
-    // Node TCP library connect error: "connect ECONNREFUSED 127.0.0.1:16432"
-    code === "ECONNREFUSED" ||
-    // PG became down a few seconds ago, but a PgBouncer connection is still
-    // open, so the query sent to it times out waiting. After some time,
-    // PgBouncer will stop emitting this error and start emitting
-    // server_login_retry on new connections instead.
-    (code === "08P01" && // protocol_violation
-      message === "query_wait_timeout") ||
-    // PG is down for quite some time, so PgBouncer throws this exception on
-    // each new connection immediately.
-    (code === "08P01" && // protocol_violation
-      message.includes("server_login_retry")) ||
-    // PgBouncer 1.16.1 seems to emit this error sometimes instead of
-    // query_wait_timeout and server_login_retry.
-    (code === "08P01" && // protocol_violation
-      message === "pgbouncer cannot connect to server"),
-};
+const CLIENT_ERROR_PREDICATES: Array<
+  (error: { code: string; message: string }) =>
+    | false
+    | {
+        postAction: ClientErrorPostAction;
+        kind: ClientErrorKind;
+        comment: string;
+      }
+> = [
+  ({ code }) =>
+    code === "42P01" && {
+      postAction: "rediscover",
+      kind: "data-on-server-is-unchanged",
+      comment:
+        "Table doesn't exist or disappeared (undefined_table; e.g. the Shard was relocated to another Island).",
+    },
+  ({ code }) =>
+    code === "25006" && {
+      postAction: "rediscover",
+      kind: "data-on-server-is-unchanged",
+      comment:
+        "A write happened in a read-only Client (read_only_sql_transaction; probably the Client's role was changed from master to replica due to a failover/switchover).",
+    },
+  ({ code }) =>
+    code === "57P01" && {
+      postAction: "rediscover",
+      kind: "data-on-server-is-unchanged",
+      comment:
+        "The database is shutting down by an administrator (admin_shutdown).",
+    },
+  ({ code }) =>
+    code === "57P02" && {
+      postAction: "rediscover",
+      kind: "data-on-server-is-unchanged",
+      comment: "The database is crashed and is shutting down (crash_shutdown).",
+    },
+  ({ message }) =>
+    message === "Connection terminated unexpectedly" && {
+      postAction: "choose-another-client",
+      kind: "unknown-server-state", // !!!
+      comment:
+        "Node-postgres connection terminated unexpectedly (from client.js).",
+    },
+  ({ code }) =>
+    code === "ECONNREFUSED" && {
+      postAction: "choose-another-client",
+      kind: "data-on-server-is-unchanged",
+      comment: "Node TCP library connect error (ECONNREFUSED).",
+    },
+  ({ code, message }) =>
+    code === "08P01" && // protocol_violation
+    message === "query_wait_timeout" && {
+      postAction: "choose-another-client",
+      kind: "data-on-server-is-unchanged",
+      comment:
+        "PG went down a few seconds ago, but a PgBouncer connection is still open, so the query sent to it times out waiting (query_wait_timeout). After some time, PgBouncer will stop emitting this error and start emitting server_login_retry on new connections instead.",
+    },
+  ({ code, message }) =>
+    code === "08P01" && // protocol_violation
+    message.includes("server_login_retry") && {
+      postAction: "choose-another-client",
+      kind: "data-on-server-is-unchanged",
+      comment:
+        "PG is down for quite some time, so PgBouncer throws this exception on each new connection immediately (server_login_retry).",
+    },
+  ({ code, message }) =>
+    code === "08P01" && // protocol_violation
+    message === "pgbouncer cannot connect to server" && {
+      postAction: "choose-another-client",
+      kind: "data-on-server-is-unchanged",
+      comment:
+        'PgBouncer emits "cannot connect to server" error sometimes instead of query_wait_timeout and server_login_retry.',
+    },
+];
 
 /**
  * Options for SQLClient constructor.
@@ -303,16 +347,17 @@ export abstract class SQLClient extends Client {
     try {
       const startTime = performance.now();
       let acquireElapsed: number | null = null;
-      let e: any = undefined;
+      let e: unknown = undefined;
       let connID: string = "?";
       let res: TRow[] | undefined;
 
       try {
         if (this.isEnded()) {
-          throw new ShardError(
+          throw new ClientError(
             Error(`Cannot use ${this.constructor.name} since it's ended`),
             this.options.name,
-            "choose-another-client"
+            "choose-another-client",
+            "data-on-server-is-unchanged"
           );
         }
 
@@ -399,35 +444,49 @@ export abstract class SQLClient extends Client {
           error:
             e === undefined
               ? undefined
-              : `${e}` +
-                (typeof e?.code === "string" ? ` (code=${e.code})` : ""),
+              : `${e}` + (hasKey("code", e) ? ` (code=${e.code})` : ""),
           isMaster: this.isMaster(),
           backend: this.options.name,
         });
       }
 
       return res;
-    } catch (origError: unknown) {
-      if (origError instanceof ShardError) {
-        throw origError;
+    } catch (cause: unknown) {
+      if (cause instanceof ClientError) {
+        throw cause;
       }
 
       // We can't do "instanceof Error" check, since Node internals sometimes
       // throw errors which are not instanceof Error (although they look like
       // regular instances of Error class).
-      const e = origError as
+      const e = cause as
         | { code?: string; severity?: unknown; message?: unknown }
         | null
         | undefined;
 
-      // Infer ShardError errors which affect Client choosing logic.
-      for (const [postAction, predicate] of entries(IS_SHARD_ERROR)) {
-        if (predicate({ code: "" + e?.code, message: "" + e?.message })) {
-          if (postAction === "choose-another-client") {
+      // Infer ClientError which affects Client choosing logic.
+      for (const predicate of CLIENT_ERROR_PREDICATES) {
+        const res = predicate({ code: "" + e?.code, message: "" + e?.message });
+        if (res) {
+          if (res.postAction === "choose-another-client") {
             this.reportedConnectionIssue.current = true;
           }
 
-          throw new ShardError(e, this.options.name, postAction);
+          if (!isWrite) {
+            // For read queries, we know for sure that the data wasn't changed.
+            res.kind = "data-on-server-is-unchanged";
+          }
+
+          throw new ClientError(
+            e,
+            this.options.name,
+            res.postAction,
+            res.kind,
+            res.comment +
+              (res.kind === "unknown-server-state"
+                ? " The write might have been committed on the PG server though."
+                : "")
+          );
         }
       }
 
@@ -516,8 +575,7 @@ export abstract class SQLClient extends Client {
       const idSafe = sanitizeIDForDebugPrinting(id);
       throw new ShardError(
         `Cannot parse ID ${idSafe} to detect shard number`,
-        this.options.name,
-        "fail"
+        this.options.name
       );
     }
 
@@ -569,7 +627,7 @@ export function isBigintStr(str: string): boolean {
 /**
  * Optionally encloses a PG identifier (like table name) in "".
  */
-export function escapeIdent(ident: any): string {
+export function escapeIdent(ident: string): string {
   return ident.match(/^[a-z_][a-z_0-9]*$/is)
     ? ident
     : '"' + ident.replace(/"/g, '""') + '"';
@@ -582,7 +640,7 @@ export function escapeIdent(ident: any): string {
  * it's not aware of the actual field type, so it e.g. cannot prevent a bigint
  * overflow SQL error.
  */
-export function escapeAny(v: any): string {
+export function escapeAny(v: unknown): string {
   return v === null || v === undefined
     ? "NULL"
     : typeof v === "number"
@@ -593,7 +651,7 @@ export function escapeAny(v: any): string {
     ? escapeDate(v)
     : v instanceof Array
     ? escapeArray(v)
-    : escapeString(v);
+    : escapeString(v as string | null | undefined);
 }
 
 /**
@@ -709,7 +767,10 @@ export function escapeIdentComposite(
  * A helper method which additionally calls to a stringify() function before
  * escaping the value as string.
  */
-export function escapeStringify(v: any, stringify: (v: any) => string): string {
+export function escapeStringify(
+  v: unknown,
+  stringify: (v: unknown) => string
+): string {
   return v === null || v === undefined ? "NULL" : escapeString(stringify(v));
 }
 
@@ -730,7 +791,7 @@ export function escapeLiteral(literal: Literal): string {
   ) {
     throw Error(
       "Invalid literal value (must be an array with 1st element as a format): " +
-        inspect(literal)
+        inspectCompact(literal)
     );
   }
 

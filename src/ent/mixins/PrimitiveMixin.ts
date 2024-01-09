@@ -4,7 +4,7 @@ import first from "lodash/first";
 import flatten from "lodash/flatten";
 import sum from "lodash/sum";
 import type { Client } from "../../abstract/Client";
-import { ServerError } from "../../abstract/ServerError";
+import { ClientError } from "../../abstract/ClientError";
 import type { OmitNew } from "../../helpers/misc";
 import { hasKey, join, mapJoin } from "../../helpers/misc";
 import type {
@@ -219,8 +219,7 @@ export function PrimitiveMixin<
       const [shard] = await join([
         this.SHARD_LOCATOR.singleShardForInsert(
           input,
-          "insert",
-          true // fallbackToRandomShard
+          "insert" // falls back to random Shard
         ),
         vc.heartbeater.heartbeat(),
       ]);
@@ -299,10 +298,9 @@ export function PrimitiveMixin<
                 // timeout: in those cases, it's quite possible that the insert
                 // actually DID succeed internally, but we still received an
                 // error, so we must NOT delete inverses as a cleanup action.
-                if (!(error instanceof ServerError)) {
-                  isKnownServerState = false;
-                }
-
+                isKnownServerState =
+                  error instanceof ClientError &&
+                  error.kind === "data-on-server-is-unchanged";
                 throw error;
               }
             },
@@ -362,8 +360,7 @@ export function PrimitiveMixin<
       const [shard] = await join([
         this.SHARD_LOCATOR.singleShardForInsert(
           input,
-          "upsert",
-          false // fallbackToRandomShard
+          "upsert" // does not fallback to random Shard
         ),
         vc.heartbeater.heartbeat(),
       ]);
@@ -409,7 +406,7 @@ export function PrimitiveMixin<
       id: string
     ): Promise<PrimitiveInstance<TTable> | null> {
       const [shard] = await join([
-        this.SHARD_LOCATOR.singleShardFromID(ID, id),
+        this.SHARD_LOCATOR.singleShardFromID(ID, id, "loadNullable"),
         vc.heartbeater.heartbeat(),
       ]);
       if (!shard) {
@@ -609,7 +606,11 @@ export function PrimitiveMixin<
       ) as UpdateInput<TTable>;
 
       const [shard] = await join([
-        this.constructor.SHARD_LOCATOR.singleShardFromID(ID, this[ID]),
+        this.constructor.SHARD_LOCATOR.singleShardFromID(
+          ID,
+          this[ID],
+          "updateOriginal"
+        ),
         this.vc.heartbeater.heartbeat(),
       ]);
 
@@ -660,7 +661,11 @@ export function PrimitiveMixin<
 
     async deleteOriginal(): Promise<boolean> {
       const [shard] = await join([
-        this.constructor.SHARD_LOCATOR.singleShardFromID(ID, this[ID]),
+        this.constructor.SHARD_LOCATOR.singleShardFromID(
+          ID,
+          this[ID],
+          "deleteOriginal"
+        ),
         this.vc.heartbeater.heartbeat(),
       ]);
 
@@ -720,7 +725,7 @@ export function PrimitiveMixin<
       const creator = memoize2(
         row,
         $CACHED_ENT,
-        async (vc: VC, _EntCls: any) => {
+        async (vc: VC, _EntCls: unknown) => {
           // Try to reduce permissions and freshness for the injected VC. Also
           // turn the omni VC into an user-owning VC (or a guest). For most of
           // cases, this call is a no-op (we rarely upgrade/downgrade VCs).

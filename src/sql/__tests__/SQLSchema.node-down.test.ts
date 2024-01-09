@@ -1,6 +1,6 @@
 import waitForExpect from "wait-for-expect";
+import { ClientError } from "../../abstract/ClientError";
 import { STALE_REPLICA, type Shard } from "../../abstract/Shard";
-import { ShardError } from "../../abstract/ShardError";
 import { maybeCall } from "../../helpers/misc";
 import { SQLSchema } from "../SQLSchema";
 import type { TestSQLClient } from "./test-utils";
@@ -105,6 +105,6 @@ test("retries on another replica if connection is aborted mid-query", async () =
   await proxyServer.abortConnections();
 
   const error = await promise;
-  expect(error).toBeInstanceOf(ShardError);
-  expect((error as ShardError).postAction).toEqual("choose-another-client");
+  expect(error).toBeInstanceOf(ClientError);
+  expect((error as ClientError).postAction).toEqual("choose-another-client");
 });
