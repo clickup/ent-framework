@@ -9,11 +9,12 @@ import { join, mapJoin } from "../../helpers/misc";
 import {
   recreateTestTables,
   testCluster,
+  TEST_CONFIG,
+  TCPProxyServer,
 } from "../../sql/__tests__/test-utils";
 import { SQLSchema } from "../../sql/SQLSchema";
 import { ID } from "../../types";
 import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
-import { EntCannotDetectShardError } from "../errors/EntCannotDetectShardError";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
@@ -150,6 +151,9 @@ let vc: VC;
 let myCompany: EntTestCompany;
 
 beforeEach(async () => {
+  testCluster.options.islands = [{ no: 0, nodes: [TEST_CONFIG] }];
+  await testCluster.rediscover();
+
   await recreateTestTables(
     [EntTestCompany, EntTestUser, EntTestTopic],
     TABLE_INVERSE
@@ -345,7 +349,7 @@ test("inverses are deleted when ent insert DB operation fails", async () => {
       owner_id: myCompany.id,
       slug: "topic",
     })
-  ).rejects.toThrow(ShardError);
+  ).rejects.toThrow(/undefined_table/);
   const inverse = EntTestTopic.INVERSES[0];
   expect(await inverse.id2s(vc, myCompany.id)).toEqual([]);
 });
@@ -372,18 +376,37 @@ test("inverses are NOT deleted when throwInAfterMutation trigger throws any erro
   expect(await inverse.id2s(vc, myCompany.id)).toHaveLength(1);
 });
 
-test("inverses are not deleted when ent creation times out", async () => {
+test("inverses are NOT deleted when connection aborts at ent creation", async () => {
+  const proxyServer = new TCPProxyServer({
+    host: TEST_CONFIG.host!,
+    port: TEST_CONFIG.port!,
+  });
+  testCluster.options.islands = [
+    {
+      no: 0,
+      nodes: [
+        {
+          ...TEST_CONFIG,
+          host: proxyServer.address().address,
+          port: proxyServer.address().port,
+        },
+      ],
+    },
+  ];
+  await testCluster.rediscover();
+
   const promise = EntTestTopic.insertIfNotExists(vc, {
     owner_id: myCompany.id,
     slug: "pg_sleep",
     sleep: 5,
   }).catch((e) => e.message);
+
   await delay(1000);
-  await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
-    const master = await shard.client(MASTER);
-    master.forceDisconnect();
-  });
+
+  await proxyServer.abortConnections();
+
   expect(await promise).toContain("Connection terminated unexpectedly");
+
   // On an accidental disconnect, we don't know, whether the DB applied the
   // insert or not, so we should expect Ent Framework to NOT delete the inverse.
   const inverse = EntTestTopic.INVERSES[0];
@@ -392,7 +415,7 @@ test("inverses are not deleted when ent creation times out", async () => {
   ).toHaveLength(1);
 });
 
-test("inverses are not deleted when ent insertion is requested with an existing ID", async () => {
+test("inverses are NOT deleted when ent insertion is requested with an existing ID", async () => {
   const user = await EntTestUser.insertReturning(vc, {
     company_id: myCompany.id,
     team_id: null,
@@ -471,7 +494,7 @@ test("multiShardsFromInput returns minimal number of Shard candidates", async ()
 
 test("exception", async () => {
   await expect(EntTestUser.select(vc, { name: "u2" }, 42)).rejects.toThrow(
-    EntCannotDetectShardError
+    ShardError
   );
 });
 

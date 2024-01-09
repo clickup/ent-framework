@@ -1,8 +1,7 @@
-import { inspect } from "util";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { QueryBase } from "../abstract/QueryBase";
 import type { Schema } from "../abstract/Schema";
-import { stringHash, hasKey } from "../helpers/misc";
+import { stringHash, hasKey, inspectCompact } from "../helpers/misc";
 import type { Literal, Order, Row, SelectInput, Table } from "../types";
 import type { SQLClient } from "./SQLClient";
 import { escapeLiteral, escapeString } from "./SQLClient";
@@ -184,7 +183,7 @@ export class SQLRunnerSelect<TTable extends Table> extends SQLRunner<
         if (Object.keys(item).length > 1) {
           throw Error(
             "Invalid order specification - $literal must be the only key: " +
-              inspect(item)
+              inspectCompact(item)
           );
         }
 

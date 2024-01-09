@@ -1,7 +1,6 @@
 import pDefer from "p-defer";
 import waitForExpect from "wait-for-expect";
 import { MASTER, STALE_REPLICA } from "../../abstract/Shard";
-import { ShardError } from "../../abstract/ShardError";
 import { SQLSchema } from "../SQLSchema";
 import {
   TEST_CONFIG,
@@ -125,5 +124,5 @@ test("low level (non-sharded) client queries are not retried if the client is en
       op: "test",
       table: "test",
     })
-  ).rejects.toThrow(ShardError);
+  ).rejects.toThrow(/ended/);
 });

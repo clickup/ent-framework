@@ -1,8 +1,12 @@
-import { ServerError } from "../abstract/ServerError";
+import { ClientError } from "../abstract/ClientError";
 
-export class SQLError extends ServerError {
-  constructor(origError: any, where: string, public readonly sql: string) {
-    super(origError, where);
+export class SQLError extends ClientError {
+  constructor(
+    cause: null | undefined | {},
+    where: string,
+    public readonly sql: string
+  ) {
+    super(cause, where, "fail", "data-on-server-is-unchanged");
 
     Object.defineProperty(this, "sql", {
       value: sql,

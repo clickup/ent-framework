@@ -15,6 +15,7 @@ import { Timeline } from "../../abstract/Timeline";
 import type { TimelineManager } from "../../abstract/TimelineManager";
 import { GLOBAL_SHARD, type ShardAffinity } from "../../ent/Configuration";
 import { join, mapJoin, nullthrows, runInVoid } from "../../helpers/misc";
+import type { Literal } from "../../types";
 import { buildShape } from "../helpers/buildShape";
 import type { SQLClient, SQLClientOptions } from "../SQLClient";
 import { escapeLiteral, escapeIdent } from "../SQLClient";
@@ -46,10 +47,6 @@ export class TestSQLClient
 
   async end(): Promise<void> {
     return this.client.end();
-  }
-
-  forceDisconnect(): void {
-    return this.client.forceDisconnect();
   }
 
   async shardNos(): Promise<readonly number[]> {
@@ -104,8 +101,8 @@ export class TestSQLClient
     this.queries.length = 0;
   }
 
-  async rows(sql: string, ...values: any[]): Promise<any[]> {
-    sql = sql.replace(/%T/g, (_) => escapeIdent(values.shift()));
+  async rows(sql: string, ...values: Literal): Promise<any[]> {
+    sql = sql.replace(/%T/g, (_) => escapeIdent("" + values.shift()));
     return nullthrows(
       await this.client.query<any>({
         query: [sql, ...values],

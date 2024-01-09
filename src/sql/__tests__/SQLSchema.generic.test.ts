@@ -37,7 +37,7 @@ const schema = new SQLSchema(
     },
     json_strongly_typed_field: {
       type: {
-        dbValueToJs: (v: any) => v as { a: number }, // node-postgres does conversion from JSON internally
+        dbValueToJs: (v: unknown) => v as { a: number }, // node-postgres does conversion from JSON internally
         stringify: JSON.stringify,
         parse: JSON.parse,
       },
@@ -46,7 +46,7 @@ const schema = new SQLSchema(
     },
     jsonb_field: {
       type: {
-        dbValueToJs: (v: any) => v, // node-postgres does conversion from JSON internally
+        dbValueToJs: (v: unknown) => v, // node-postgres does conversion from JSON internally
         stringify: JSON.stringify,
         parse: JSON.parse,
       },

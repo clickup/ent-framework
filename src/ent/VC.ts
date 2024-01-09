@@ -304,7 +304,7 @@ export class VC {
    */
   withFlavor(prepend: "prepend", ...flavors: Array<VCFlavor | undefined>): this;
   withFlavor(...flavors: Array<VCFlavor | undefined>): this;
-  withFlavor(...args: any[]): VC {
+  withFlavor(...args: unknown[]): VC {
     const prepend = args[0] === "prepend" ? args.shift() : undefined;
     const pairs = (args as Array<VCFlavor | undefined>)
       .filter((flavor): flavor is VCFlavor => flavor !== undefined)
@@ -430,7 +430,7 @@ export class VC {
    * Returns VC's flavor of the particular type.
    */
   flavor<TFlavor extends VCFlavor>(
-    flavor: new (...args: any[]) => TFlavor
+    flavor: new (...args: never[]) => TFlavor
   ): TFlavor | null {
     return (this.flavors.get(flavor) as TFlavor | undefined) ?? null;
   }

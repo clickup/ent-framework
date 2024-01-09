@@ -1,7 +1,6 @@
 import waitForExpect from "wait-for-expect";
 import type { Shard } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
-import { ShardError } from "../../abstract/ShardError";
 import { maybeCall } from "../../helpers/misc";
 import { escapeIdent } from "../SQLClient";
 import { SQLSchema } from "../SQLSchema";
@@ -61,14 +60,16 @@ test("shard relocation error when accessing a table should be retried", async ()
     maybeCall(testCluster.options.locateIslandErrorRetryDelayMs) * 4, // timeout
     maybeCall(testCluster.options.locateIslandErrorRetryDelayMs) // retry interval
   );
-  await expect(spyQueryRun.mock.results[0].value).rejects.toThrow(ShardError);
+  await expect(spyQueryRun.mock.results[0].value).rejects.toThrow(
+    /undefined_table/
+  );
 
   // Now after we have some retries, continue & rename the table back.
   await master.rows("ALTER TABLE %T RENAME TO %T", TABLE_BAK, schema.name);
   expect(await resPromise).toMatch(/^\d+$/);
 });
 
-test("shard-to-island resolution failure should cause rediscovery when running a query", async () => {
+test("shard-to-island resolution failure should NOT cause rediscovery when running a query", async () => {
   testCluster.options.locateIslandErrorRetryDelayMs = 1;
 
   const shard = testCluster.shard(ID_FROM_UNKNOWN_SHARD);
@@ -76,18 +77,18 @@ test("shard-to-island resolution failure should cause rediscovery when running a
 
   await expect(
     shardRun(shard, schema.load(ID_FROM_UNKNOWN_SHARD))
-  ).rejects.toThrow(ShardError);
-  expect(spyShardOnRunError).toBeCalledTimes(3);
+  ).rejects.toThrow(/not discoverable/);
+  expect(spyShardOnRunError).toBeCalledTimes(1);
 });
 
-test("shard-to-island resolution failure should cause rediscover when just getting a client", async () => {
+test("shard-to-island resolution failure should NOT cause rediscover when just getting a client", async () => {
   testCluster.options.locateIslandErrorRetryDelayMs = 1;
 
   const shard = testCluster.shard(ID_FROM_UNKNOWN_SHARD);
   const spyShardOnRunError = jest.spyOn(shard.options, "onRunError");
 
-  await expect(shard.client(MASTER)).rejects.toThrow(ShardError);
-  expect(spyShardOnRunError).toBeCalledTimes(3);
+  await expect(shard.client(MASTER)).rejects.toThrow(/not discoverable/);
+  expect(spyShardOnRunError).toBeCalledTimes(1);
 });
 
 test("shard-to-island resolution failure should run rediscovery immediately", async () => {
@@ -96,5 +97,5 @@ test("shard-to-island resolution failure should run rediscovery immediately", as
   const shard = testCluster.shard(ID_FROM_UNKNOWN_SHARD);
   await expect(
     shardRun(shard, schema.load(ID_FROM_UNKNOWN_SHARD))
-  ).rejects.toThrow(ShardError);
+  ).rejects.toThrow(/not discoverable/);
 }, 10_000 /* timeout */);

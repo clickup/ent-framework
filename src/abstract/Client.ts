@@ -52,13 +52,6 @@ export abstract class Client {
   abstract end(): Promise<void>;
 
   /**
-   * Forces the existing open connections to close immediately. The pending
-   * queries are aborted. The Client remains usable though, it will just open
-   * new connections on the next queries.
-   */
-  abstract forceDisconnect(): void;
-
-  /**
    * Returns all Shard numbers discoverable via the connection to the Client's
    * database.
    */

@@ -3,11 +3,10 @@ import type { Client } from "../abstract/Client";
 import type { Cluster } from "../abstract/Cluster";
 import type { Shard } from "../abstract/Shard";
 import { ShardError } from "../abstract/ShardError";
-import { mapJoin } from "../helpers/misc";
+import { inspectCompact, mapJoin } from "../helpers/misc";
 import { ID } from "../types";
 import type { ShardAffinity } from "./Configuration";
 import { GLOBAL_SHARD } from "./Configuration";
-import { EntCannotDetectShardError } from "./errors/EntCannotDetectShardError";
 import { EntNotFoundError } from "./errors/EntNotFoundError";
 import type { Inverse } from "./Inverse";
 import type { VC } from "./VC";
@@ -54,10 +53,10 @@ export class ShardLocator<TClient extends Client, TField extends string> {
 
   /**
    * Called in a context when we must know exactly 1 Shard to work with (e.g.
-   * INSERT, UPSERT etc.). If fallbackToRandomShard is true, then returns a
-   * random Shard in case when it can't infer the Shard number from the input
-   * (used in e.g. INSERT operations); otherwise throws
-   * EntCannotDetectShardError (happens in e.g. UPSERT).
+   * INSERT, UPSERT etc.). If op === "insert" (fallback to random Shard), then
+   * returns a random Shard in case when it can't infer the Shard number from
+   * the input (used in e.g. INSERT operations); otherwise throws ShardError
+   * (happens in e.g. UPSERT).
    *
    * The "randomness" of the "random Shard" is deterministic by the Ent's unique
    * key (if it's defined), so Ents with the same unique key will map to the
@@ -71,12 +70,11 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    */
   async singleShardForInsert(
     input: Record<string, any>,
-    op: string,
-    fallbackToRandomShard: boolean
+    op: "insert" | "upsert"
   ): Promise<Shard<TClient>> {
-    let shard = await this.singleShardFromAffinity(input);
+    let shard = await this.singleShardFromAffinity(input, op);
 
-    if (!shard && fallbackToRandomShard) {
+    if (!shard && op === "insert") {
       shard = await this.cluster.randomShard(
         this.uniqueKey?.length
           ? this.uniqueKey.map((field) => input[field])
@@ -85,12 +83,13 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     }
 
     if (!shard) {
-      throw new EntCannotDetectShardError(
-        this.entName,
-        op,
-        this.shardAffinity instanceof Array ? this.shardAffinity : [ID],
-        input,
-        this.shardAffinity
+      throw new ShardError(
+        this.buildShardErrorMessage({
+          op,
+          fields:
+            this.shardAffinity instanceof Array ? this.shardAffinity : [ID],
+          input,
+        })
       );
     }
 
@@ -108,7 +107,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     input: Record<string, any>,
     op: string
   ): Promise<Array<Shard<TClient>>> {
-    const singleShard = await this.singleShardFromAffinity(input);
+    const singleShard = await this.singleShardFromAffinity(input, op);
     if (singleShard) {
       return [singleShard];
     }
@@ -126,9 +125,17 @@ export class ShardLocator<TClient extends Client, TField extends string> {
       if (id1 !== undefined) {
         hadInputFieldWithInverse = true;
         await mapJoin(id1 instanceof Array ? id1 : [id1], async (id1) => {
-          const id2s = await inverse.id2s(vc, id1);
+          let id2s: string[];
+          try {
+            id2s = await inverse.id2s(vc, id1);
+          } catch (e: unknown) {
+            throw e instanceof ShardError
+              ? new EntNotFoundError(this.entName, { [field]: id1 }, e)
+              : e;
+          }
+
           for (const id2 of id2s) {
-            const shard = await this.singleShardFromID(field, id2);
+            const shard = await this.singleShardFromID(field, id2, op);
             if (shard) {
               shards.add(shard);
             }
@@ -140,16 +147,17 @@ export class ShardLocator<TClient extends Client, TField extends string> {
 
     if (!hadInputFieldWithInverse) {
       const inverseFields = this.inverses.map(({ id2Field }) => id2Field);
-      throw new EntCannotDetectShardError(
-        this.entName,
-        op,
-        uniq([
-          ...(this.shardAffinity instanceof Array ? this.shardAffinity : [ID]),
-          ...inverseFields,
-        ]),
-        input,
-        this.shardAffinity,
-        inverseFields
+      throw new ShardError(
+        this.buildShardErrorMessage({
+          op,
+          fields: uniq([
+            ...(this.shardAffinity instanceof Array
+              ? this.shardAffinity
+              : [ID]),
+            ...inverseFields,
+          ]),
+          input,
+        })
       );
     }
 
@@ -168,7 +176,8 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    */
   async singleShardFromID(
     field: string,
-    id: string | null | undefined
+    id: string | null | undefined,
+    op: string
   ): Promise<Shard<TClient> | null> {
     try {
       let shard: Shard<TClient>;
@@ -181,20 +190,23 @@ export class ShardLocator<TClient extends Client, TField extends string> {
         shard = this.globalShard;
       } else if (id === GUEST_ID) {
         throw new ShardError(
-          "can't locate shard; most likely you're trying to use a guest VC's principal instead of an ID",
-          `${this.entName}.${field}`,
-          "fail"
+          this.buildShardErrorMessage({
+            op,
+            why: "most likely you're trying to use a guest VC's principal instead of an ID",
+          })
         );
       } else {
         if (id === null || id === undefined) {
           throw new ShardError(
-            "can't locate shard",
-            `null ID in ${this.entName}.${field}`,
-            "fail"
+            this.buildShardErrorMessage({
+              op,
+              why: `you should not pass null or undefined value in "${field}" field`,
+            })
           );
         }
 
         shard = this.cluster.shard(id);
+
         if (shard.no === this.globalShard.no) {
           // We're trying to load a sharded Ent using an ID from the global
           // Shard. We know for sure that there will be no such Ent there then.
@@ -202,17 +214,18 @@ export class ShardLocator<TClient extends Client, TField extends string> {
         }
       }
 
-      // We want to throw early to wrap the possible exception with
-      // EntNotFoundError below.
+      // We want to throw ShardError early to wrap the possible exception with
+      // EntNotFoundError below. This is a little kludge, since on success, it
+      // will call into Shard#options.locateClient() twice (here and when
+      // running the actual query). Also, assertDiscoverable() is used only in
+      // this single place.
       await shard.assertDiscoverable();
 
       return shard;
-    } catch (origError: unknown) {
-      if (origError instanceof ShardError) {
-        throw new EntNotFoundError(this.entName, { [field]: id }, origError);
-      } else {
-        throw origError;
-      }
+    } catch (e: unknown) {
+      throw e instanceof ShardError
+        ? new EntNotFoundError(this.entName, { [field]: id }, e)
+        : e;
     }
   }
   /**
@@ -235,7 +248,8 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    *   only enabled when using Inverses; see multiShardsFromInput().
    */
   private async singleShardFromAffinity(
-    input: Record<string, any>
+    input: Record<string, any>,
+    op: string
   ): Promise<Shard<TClient> | null> {
     // For a low number of a very global objects only. ATTENTION: GLOBAL_SHARD
     // has precedence over a Shard number from ID! This allows to move some
@@ -247,7 +261,11 @@ export class ShardLocator<TClient extends Client, TField extends string> {
 
     // Explicit info about which Shard to use.
     if (input.$shardOfID !== undefined) {
-      return this.singleShardFromID("$shardOfID", input.$shardOfID?.toString());
+      return this.singleShardFromID(
+        "$shardOfID",
+        input.$shardOfID?.toString(),
+        op
+      );
     }
 
     // An explicit list of fields is passed in SHARD_AFFINITY.
@@ -257,11 +275,35 @@ export class ShardLocator<TClient extends Client, TField extends string> {
           ? input[fromField][0]
           : input[fromField];
       if (typeof value === "string" && value) {
-        return this.singleShardFromID(fromField, value);
+        return this.singleShardFromID(fromField, value, op);
       }
     }
 
     // Couldn't detect Shard number from any of the sources.
     return null;
+  }
+
+  /**
+   * A helper to build uniform ShardError error messages.
+   */
+  private buildShardErrorMessage({
+    op,
+    why,
+    fields,
+    input,
+  }: { op: string } & (
+    | { why: string; fields?: never; input?: never }
+    | { why?: never; fields: readonly string[]; input: object }
+  )): string {
+    throw new ShardError(
+      `${this.entName}: cannot detect shard in "${op}" query: ` +
+        (typeof why === "string"
+          ? why
+          : (fields.length > 1
+              ? `at least one of non-empty "${fields.join(", ")}" fields`
+              : `non-empty "${fields[0]}" field`) +
+            " must be present at TOP LEVEL of the input, but got " +
+            inspectCompact(input))
+    );
   }
 }

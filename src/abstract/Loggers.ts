@@ -16,7 +16,7 @@ export interface ClientQueryLoggerProps {
   table: string;
   batchFactor: number;
   msg: string;
-  output: any;
+  output: unknown;
   elapsed: {
     total: number;
     acquire: number;

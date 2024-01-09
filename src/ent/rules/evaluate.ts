@@ -1,5 +1,4 @@
-import { inspect } from "util";
-import { indent, mapJoin } from "../../helpers/misc";
+import { indent, inspectCompact, mapJoin } from "../../helpers/misc";
 import { EntAccessError } from "../errors/EntAccessError";
 import type { VC } from "../VC";
 import type { Rule, RuleResult } from "./Rule";
@@ -88,7 +87,7 @@ export async function evaluate<TInput extends object>(
       case RuleDecision.SKIP:
         continue;
       default:
-        throw Error("BUG: weird RuleResult " + inspect(lastResult));
+        throw Error("BUG: weird RuleResult " + inspectCompact(lastResult));
     }
   }
 
@@ -106,7 +105,7 @@ export async function evaluate<TInput extends object>(
     return { allow: true, results, cause };
   }
 
-  throw Error("BUG: weird last rule result: " + inspect(lastResult));
+  throw Error("BUG: weird last rule result: " + inspectCompact(lastResult));
 }
 
 /**

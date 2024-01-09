@@ -308,8 +308,8 @@ test("loadNullable with no access", async () => {
   try {
     await EntTestUser.loadNullable(vcOther, vc.principal);
     fail("must throw an exception");
-  } catch (e: any) {
-    expectToMatchSnapshot(e.message);
+  } catch (e: unknown) {
+    expectToMatchSnapshot("" + e);
   }
 });
 
@@ -325,8 +325,8 @@ test("load child with no access", async () => {
   try {
     await EntTestComment.loadNullable(vcOther, comment.id);
     fail("must throw an exception");
-  } catch (e: any) {
-    expectToMatchSnapshot(e.message);
+  } catch (e: unknown) {
+    expectToMatchSnapshot("" + e);
   }
 });
 
@@ -341,8 +341,8 @@ test("loadBy with no access", async () => {
   try {
     await EntTestUser.loadByX(vcOther, { name: "John" });
     fail("must throw an exception");
-  } catch (e: any) {
-    expectToMatchSnapshot(e.message);
+  } catch (e: unknown) {
+    expectToMatchSnapshot("" + e);
   }
 });
 
@@ -677,8 +677,8 @@ test("cannot create posts for different users", async () => {
       title: "something",
     });
     fail("must throw an exception");
-  } catch (e: any) {
-    expectToMatchSnapshot(e.message);
+  } catch (e: unknown) {
+    expectToMatchSnapshot("" + e);
   }
 });
 

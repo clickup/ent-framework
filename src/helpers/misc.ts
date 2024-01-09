@@ -1,11 +1,15 @@
 import { createHash } from "crypto";
+import { inspect } from "util";
 import objectHashModule from "object-hash";
 
 /**
  * Removes constructor signature from a type.
  * https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
  */
-export type OmitNew<T extends new (...args: any[]) => any> = Pick<T, keyof T>;
+export type OmitNew<T extends new (...args: never[]) => unknown> = Pick<
+  T,
+  keyof T
+>;
 
 /**
  * Adds a type alternative to constructor signature's return value. This is
@@ -13,7 +17,7 @@ export type OmitNew<T extends new (...args: any[]) => any> = Pick<T, keyof T>;
  * type where Row is dynamically inferred from the schema.
  */
 export type AddNew<
-  TClass extends new (...args: any[]) => any,
+  TClass extends new (...args: never[]) => unknown,
   TRet
 > = OmitNew<TClass> & { new (): InstanceType<TClass> & TRet };
 
@@ -143,10 +147,10 @@ export async function mapJoin<TElem, TRet>(
  * Copies a stack-trace from fromErr error into toErr object. Useful for
  * lightweight exceptions wrapping.
  */
-export function copyStack<TError extends Error>(
-  toErr: TError,
-  fromErr: any
-): TError {
+export function copyStack<
+  TError extends Error,
+  TFrom extends { stack?: unknown; message?: unknown } | null | undefined
+>(toErr: TError, fromErr: TFrom): TError {
   if (
     typeof fromErr?.stack !== "string" ||
     typeof fromErr?.message !== "string"
@@ -223,7 +227,7 @@ export function objectHash(obj: object): Buffer {
  * that it's faster than objectHash(). Also, doesn't throw when the object
  * contains bigint values (as opposed to JSON.stringify()).
  */
-export function jsonHash(obj: any): string {
+export function jsonHash(obj: unknown): string {
   return stringHash(
     JSON.stringify(obj, (_, value) =>
       typeof value === "bigint" ? value.toString() : value
@@ -239,11 +243,21 @@ export function indent(message: string): string {
 }
 
 /**
+ * A shorthand for inspect() in compact/no-break mode.
+ */
+export function inspectCompact(obj: unknown): string {
+  return inspect(obj, { compact: true, breakLength: Infinity }).replace(
+    /^([[])\s+|\s+([\]])$/gs,
+    (_, $1, $2) => $1 || $2
+  );
+}
+
+/**
  * Prepares something which is claimed to be an ID for debug printing in e.g.
  * exception messages. We replace all non-ASCII characters to their \u
  * representations.
  */
-export function sanitizeIDForDebugPrinting(idIn: any): string {
+export function sanitizeIDForDebugPrinting(idIn: unknown): string {
   const MAX_LEN = 32;
   const id = "" + idIn;
   const value =
@@ -306,13 +320,13 @@ export function runInVoid(
  */
 export function hasKey<K extends symbol | string>(
   k: K,
-  o: any
+  o: unknown
 ): o is { [_ in K]: any } {
   return (
-    o &&
+    !!o &&
     (typeof o === "object" || typeof o === "function") &&
     k in o &&
-    o[k] !== undefined
+    (o as Record<K, unknown>)[k] !== undefined
   );
 }
 
