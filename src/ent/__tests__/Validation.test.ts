@@ -1,3 +1,4 @@
+import type { Row } from "../../types";
 import { ID } from "../../types";
 import { EntNotReadableError } from "../errors/EntNotReadableError";
 import { FieldIs } from "../predicates/FieldIs";
@@ -176,7 +177,7 @@ test("0044: update succeeds user validation when field untouched", async () => {
     new Validation<typeof companyTable>("table", {
       load: [],
       insert: [new Require(new True())],
-      validate: [new FieldIs("id", (_value) => false, "some one")],
+      validate: [new FieldIs("id", (_value, _row) => false, "some one")],
     }),
     { id: "123", tenant_id: "42" },
     "validateUpdate",
@@ -382,7 +383,7 @@ test("0130: fail when tenant user id mismatches", async () => {
   );
   await tester.matchSnapshot(
     validation,
-    { id: "123" } as any,
+    { id: "123" } as Row<typeof companyTable>,
     "validateInsert",
     undefined,
     vc.toLowerInternal("999")

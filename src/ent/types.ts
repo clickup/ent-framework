@@ -1,5 +1,6 @@
 import type { Client } from "../abstract/Client";
 import type { Schema } from "../abstract/Schema";
+import type { DesperateAny } from "../helpers/misc";
 import type {
   CountInput,
   ExistsInput,
@@ -23,10 +24,10 @@ import type { VC } from "./VC";
  * A very shallow interface of Ent class (as a collection of static methods).
  * Used in some places where we need the very minimum from the Ent.
  */
-export interface EntClass<TTable extends Table = any> {
+export type EntClass<TTable extends Table = DesperateAny> = {
   readonly SCHEMA: Schema<TTable>;
   readonly VALIDATION: Validation<TTable>;
-  readonly SHARD_LOCATOR: ShardLocator<Client, string>;
+  readonly SHARD_LOCATOR: ShardLocator<Client, TTable, string>;
   readonly name: string; // class constructor name
 
   new (): Ent<TTable>;
@@ -58,17 +59,17 @@ export interface EntClass<TTable extends Table = any> {
   ): Promise<Ent<TTable> | null>;
   insert(vc: VC, input: InsertInput<TTable>): Promise<string>;
   upsert(vc: VC, input: InsertInput<TTable>): Promise<string>;
-}
+};
 
 /**
  * A very shallow interface of one Ent.
  */
-export interface Ent<TTable extends Table = any> {
+export type Ent<TTable extends Table = {}> = {
   readonly [ID]: string;
   readonly vc: VC;
   deleteOriginal(): Promise<boolean>;
   updateOriginal(input: UpdateOriginalInput<TTable>): Promise<boolean>;
-}
+};
 
 /**
  * The input of updateOriginal() method. It supports some additional syntax

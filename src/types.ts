@@ -1,4 +1,4 @@
-import type { TuplePrefixes } from "./helpers/misc";
+import type { DesperateAny, TuplePrefixes } from "./helpers/misc";
 
 // Primary key field's name is currently hardcoded for simplicity.
 export const ID = "id";
@@ -47,7 +47,7 @@ export type SpecType =
        * conversions internally: e.g. for node-postgres and an array field,
        * dbValue returned by the engine is already an array of things, so
        * dbValueToJs for it will likely do nothing. */
-      dbValueToJs: (dbValue: any) => any;
+      dbValueToJs: (dbValue: DesperateAny) => unknown;
       /** Converts a Client value to the internal stringified representation of
        * the low-level DB engine, which is suitable for injecting it into a
        * plaintext query (with e.g. ?-placeholders).
@@ -62,11 +62,11 @@ export type SpecType =
        *   for various reasons, like batching queries and better logging). So we
        *   trust the library on the dbValueToJs path, but must manually
        *   serialize on stringify path. */
-      stringify: (jsValue: any) => string;
+      stringify: (jsValue: DesperateAny) => string;
       /** The opposite to stringify function. Generally, it is not used on the
        * read path (because the low level engine returns the rows suitable for
        * dbValueToJs), but it's still here for completeness of the interface. */
-      parse: (str: string) => any;
+      parse: (str: string) => unknown;
     };
 
 /**
@@ -151,7 +151,7 @@ export type ValueRequired<TSpec extends Spec> =
     : TSpec["type"] extends typeof Date
     ? Date
     : TSpec["type"] extends {
-        dbValueToJs: (dbValue: any) => infer TJSValue;
+        dbValueToJs: (dbValue: never) => infer TJSValue;
       }
     ? TSpec["type"] extends {
         stringify: (jsValue: TJSValue) => string;

@@ -1,6 +1,7 @@
 import { Memoize } from "fast-typescript-memoize";
 import defaults from "lodash/defaults";
 import type { MaybeCallable, PickPartial } from "../helpers/misc";
+import type { Table } from "../types";
 import { Batcher } from "./Batcher";
 import type { Loggers } from "./Loggers";
 import type { Runner } from "./Runner";
@@ -115,12 +116,12 @@ export abstract class Client {
    * 1000x20x8 Batchers/Runners (assuming we have 8 different operations).
    */
   @Memoize(
-    (QueryClass: Function, schema: Schema<any, any>, additionalShape: string) =>
+    (QueryClass: Function, schema: Schema<Table>, additionalShape: string) =>
       QueryClass.name + ":" + schema.hash + ":" + additionalShape
   )
-  batcher<TInput, TOutput>(
+  batcher<TInput, TOutput, TTable extends Table>(
     _QueryClass: Function,
-    _schema: Schema<any, any>,
+    _schema: Schema<TTable>,
     _additionalShape: string,
     runnerCreator: () => Runner<TInput, TOutput>
   ): Batcher<TInput, TOutput> {

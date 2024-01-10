@@ -77,7 +77,7 @@ export class SQLRunnerUpsert<TTable extends Table> extends SQLRunner<
       throw Error(`Define unique key fields to use upsert for ${this.name}`);
     }
 
-    const input: Partial<Record<string, any>> = inputIn;
+    const input: Partial<Record<string, unknown>> = inputIn;
     const key: unknown[] = [];
     for (const field of this.schema.uniqueKey as readonly string[]) {
       key.push(

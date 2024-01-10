@@ -87,6 +87,8 @@ export class EntTestUser extends BaseEnt(
     )`,
   ];
 
+  some!: number;
+
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
@@ -291,8 +293,8 @@ test("loadX coalescing produces same objects", async () => {
     EntTestUser.loadX(vc, vc.principal),
     EntTestUser.loadX(vc, vc.principal),
   ]);
-  (user1 as any).some = 10;
-  expect((user2 as any).some).toEqual(10);
+  user1.some = 10;
+  expect(user2.some).toEqual(10);
 });
 
 test("loadX coalescing produces different objects for different vc", async () => {
@@ -300,8 +302,8 @@ test("loadX coalescing produces different objects for different vc", async () =>
     EntTestUser.loadX(vc, vc.principal),
     EntTestUser.loadX(vc.toOmniDangerous(), vc.principal),
   ]);
-  (user1 as any).some = 10;
-  expect((user2 as any).some).toBeUndefined();
+  user1.some = 10;
+  expect(user2.some).toBeUndefined();
 });
 
 test("loadNullable with no access", async () => {
@@ -713,6 +715,8 @@ test("heisenbug: two different schema field sets make schema hash different", as
   }
 
   class Ent2 extends BaseEnt(testCluster, schema2) {
+    company_id!: string;
+
     static override configure() {
       return new this.Configuration({
         shardAffinity: GLOBAL_SHARD,
@@ -726,10 +730,11 @@ test("heisenbug: two different schema field sets make schema hash different", as
   const row1 = await Ent1.loadX(vc, vc.principal);
   const row2 = await Ent2.loadX(vc, vc.principal);
   expect(row1.company_id).toBeTruthy();
-  expect((row2 as any).company_id).toBeUndefined(); // heisenbug was here
+  expect(row2.company_id).toBeUndefined(); // heisenbug was here
 });
 
 test("attempt to use guest VC to load Ents", async () => {
+  const fakeNull = null as unknown as string;
   await expect(
     EntTestPost.loadNullable(vc.toGuest(), vc.toGuest().principal)
   ).rejects.toThrowErrorMatchingSnapshot();
@@ -740,10 +745,10 @@ test("attempt to use guest VC to load Ents", async () => {
     EntTestPost.select(vc.toGuest(), { post_id: vc.toGuest().principal }, 1)
   ).rejects.toThrowErrorMatchingSnapshot();
   await expect(
-    EntTestPost.select(vc.toGuest(), { post_id: null as any }, 1)
+    EntTestPost.select(vc.toGuest(), { post_id: fakeNull }, 1)
   ).rejects.toThrowErrorMatchingSnapshot();
   await expect(
-    EntTestPost.loadNullable(vc.toGuest(), null as any)
+    EntTestPost.loadNullable(vc.toGuest(), fakeNull)
   ).rejects.toThrowErrorMatchingSnapshot();
 });
 

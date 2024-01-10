@@ -42,7 +42,7 @@ export class Batcher<TInput, TOutput> {
     this.queuedAnnotations = new Map();
 
     let outputs = new Map<string, TOutput | undefined>();
-    const errors = new Map<string, any>();
+    const errors = new Map<string, unknown>();
 
     if (inputs.size === 1 || !this.runner.runBatch) {
       // Relatively rare since most of the requests come batched.
@@ -141,7 +141,7 @@ export class Batcher<TInput, TOutput> {
     inputs: Map<string, TInput>,
     annotations: QueryAnnotation[],
     outOutputs: Map<string, TOutput | undefined>,
-    outErrors: Map<string, any>
+    outErrors: Map<string, unknown>
   ): Promise<void> {
     const promises: Array<Promise<unknown>> = [];
     for (const [key, input] of inputs) {

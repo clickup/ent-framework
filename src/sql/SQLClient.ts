@@ -146,7 +146,7 @@ export interface SQLClientOptions extends ClientOptions {
  */
 export interface SQLClientConn {
   id?: number;
-  query<R extends QueryResultRow = any>(
+  query<R extends QueryResultRow>(
     query: string
   ): Promise<Array<QueryResult<R>>>;
   release(err?: Error | boolean): void;
@@ -369,7 +369,7 @@ export abstract class SQLClient extends Client {
             throw Error("Empty query passed to query()");
           }
 
-          let resMulti: Array<QueryResult<any>>;
+          let resMulti: QueryResult[];
           try {
             // A good and simple explanation of the protocol is here:
             // https://www.postgresql.org/docs/13/protocol-flow.html. In short,

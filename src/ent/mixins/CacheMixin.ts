@@ -51,7 +51,7 @@ export function CacheMixin<
     }
 
     static override async loadNullable<TEnt extends PrimitiveInstance<TTable>>(
-      this: new (...args: any[]) => TEnt,
+      this: new () => TEnt,
       vc: VC,
       id: string
     ): Promise<TEnt | null> {
@@ -65,7 +65,7 @@ export function CacheMixin<
     static override async loadByNullable<
       TEnt extends PrimitiveInstance<TTable>
     >(
-      this: new (...args: any[]) => TEnt,
+      this: new () => TEnt,
       vc: VC,
       input: LoadByInput<TTable, TUniqueKey>
     ): Promise<TEnt | null> {
@@ -77,7 +77,7 @@ export function CacheMixin<
     }
 
     static override async select<TEnt extends PrimitiveInstance<TTable>>(
-      this: new (...args: any[]) => TEnt,
+      this: new () => TEnt,
       vc: VC,
       where: Where<TTable>,
       limit: number,

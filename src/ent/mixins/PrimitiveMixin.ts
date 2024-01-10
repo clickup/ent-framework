@@ -99,7 +99,7 @@ export type PrimitiveClass<
    * loadX() instead as much as you can.
    */
   loadNullable: <TEnt extends PrimitiveInstance<TTable>>(
-    this: new (...args: any[]) => TEnt,
+    this: new () => TEnt,
     vc: VC,
     id: string
   ) => Promise<TEnt | null>;
@@ -111,7 +111,7 @@ export type PrimitiveClass<
    * non-unique keys!
    */
   loadByNullable: <TEnt extends PrimitiveInstance<TTable>>(
-    this: new (...args: any[]) => TEnt,
+    this: new () => TEnt,
     vc: VC,
     input: LoadByInput<TTable, TUniqueKey>
   ) => Promise<TEnt | null>;
@@ -123,7 +123,7 @@ export type PrimitiveClass<
    * guaranteed.
    */
   selectBy: <TEnt extends PrimitiveInstance<TTable>>(
-    this: new (...args: any[]) => TEnt,
+    this: new () => TEnt,
     vc: VC,
     input: SelectByInput<TTable, TUniqueKey>
   ) => Promise<TEnt[]>;
@@ -138,7 +138,7 @@ export type PrimitiveClass<
    *   then freedom to reorder & slice the results as they wish.
    */
   select: <TEnt extends PrimitiveInstance<TTable>>(
-    this: new (...args: any[]) => TEnt,
+    this: new () => TEnt,
     vc: VC,
     where: Where<TTable>,
     limit: number,
@@ -156,7 +156,7 @@ export type PrimitiveClass<
    *   index in the database.
    */
   selectChunked: <TEnt extends PrimitiveInstance<TTable>>(
-    this: new (...args: any[]) => TEnt,
+    this: new () => TEnt,
     vc: VC,
     where: Where<TTable>,
     chunkSize: number,
@@ -186,7 +186,7 @@ export type PrimitiveClass<
    * thus breaks the chain of mixins. So we add Row<TTable> only at the very
    * late stage, in the latest mixin in the chain and not here.
    */
-  new (...args: any[]): PrimitiveInstance<TTable>;
+  new (): PrimitiveInstance<TTable>;
 };
 
 /**
@@ -646,7 +646,9 @@ export function PrimitiveMixin<
                   this.vc,
                   input[inverse.id2Field] as string | null,
                   this[ID],
-                  (this as any)[inverse.id2Field] as string | null
+                  (this as unknown as Record<string, string | null>)[
+                    inverse.id2Field
+                  ]
                 )
             );
           }
@@ -694,7 +696,9 @@ export function PrimitiveMixin<
             await mapJoin(this.constructor.INVERSES, async (inverse) =>
               inverse.afterDelete(
                 this.vc,
-                (this as any)[inverse.id2Field] as string | null,
+                (this as unknown as Record<string, string | null>)[
+                  inverse.id2Field
+                ],
                 this[ID]
               )
             );
@@ -771,8 +775,8 @@ export function PrimitiveMixin<
         newRowPrincipal = null;
 
         if (this.VALIDATION.tenantPrincipalField) {
-          newRowPrincipal =
-            (row[this.VALIDATION.tenantPrincipalField as any] as any) ?? null;
+          newRowPrincipal = (row[this.VALIDATION.tenantPrincipalField] ??
+            null) as string | null;
         }
 
         if (!newRowPrincipal) {

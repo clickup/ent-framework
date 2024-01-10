@@ -42,8 +42,8 @@ export abstract class SQLRunner<
 > extends Runner<TInput, TOutput> {
   private escapers: Partial<Record<string, (v: unknown) => string>> = {};
   private oneOfBuilders: Partial<Record<string, (v: unknown[]) => string>> = {};
-  private dbValueToJs: Array<[string, (v: unknown) => any]> = [];
-  private stringify: Partial<Record<string, (v: unknown) => string>> = {};
+  private dbValueToJs: Array<[string, (v: unknown) => unknown]> = [];
+  private stringify: Partial<Record<string, (v: never) => string>> = {};
 
   override ["constructor"]!: typeof SQLRunner;
 
@@ -72,7 +72,7 @@ export abstract class SQLRunner<
           for (const row of rows) {
             const dbValue = row[field as keyof TOutput];
             if (dbValue !== null && dbValue !== undefined) {
-              row[field as keyof TOutput] = dbValueToJs(dbValue);
+              (row as Record<string, unknown>)[field] = dbValueToJs(dbValue);
             }
           }
         }
@@ -598,7 +598,7 @@ export abstract class SQLRunner<
               prefix += " AND ";
             }
 
-            const value = (input[1] as any)[field];
+            const value = (input[1] as Record<string, unknown>)[field];
             prefix +=
               value !== null
                 ? field + "=" + this.escapeValue(field, value)
@@ -810,7 +810,7 @@ export abstract class SQLRunner<
   private buildLogical(
     specs: TTable,
     op: "OR" | "AND",
-    items: Array<Where<TTable>>
+    items: ReadonlyArray<Where<TTable>>
   ): string {
     const clause = op === "OR" ? " OR " : " AND ";
     if (items.length === 0) {
@@ -1072,20 +1072,16 @@ export abstract class SQLRunner<
    * ```
    */
   private unfoldCompositePK<TInput extends object>(inputIn: TInput): TInput {
-    let input = inputIn as Record<any, any>;
-    if (
-      !this.schema.table[ID] &&
-      input[ID] !== null &&
-      input[ID] !== undefined
-    ) {
+    let input = inputIn as Record<string, string | null>;
+    if (!this.schema.table[ID] && typeof input[ID] === "string") {
       const compositePK = parseCompositeRow(input[ID]);
       input = { ...input };
       for (const [i, field] of this.schema.uniqueKey.entries()) {
-        input[field] = compositePK[i] as any;
+        input[field] = compositePK[i];
       }
     }
 
-    return input;
+    return input as TInput;
   }
 
   /**

@@ -4,6 +4,7 @@ import sortBy from "lodash/sortBy";
 import type { Shard } from "../../abstract/Shard";
 import { MASTER, STALE_REPLICA } from "../../abstract/Shard";
 import { join, nullthrows } from "../../helpers/misc";
+import type { UpdateInput } from "../../types";
 import { ID } from "../../types";
 import { SQLError } from "../SQLError";
 import { SQLQueryDeleteWhere } from "../SQLQueryDeleteWhere";
@@ -554,7 +555,7 @@ test("update skips if no known fields present", async () => {
   const unrelatedFields = {
     unrelated: 123,
     [Symbol("symbol")]: 42,
-  } as any;
+  } as UpdateInput<typeof schema.table>;
   const [r1, r2, r3] = await join([
     shardRun(shard, schema.update(nullthrows(id1), unrelatedFields)),
     shardRun(shard, schema.update(nullthrows(id2), unrelatedFields)),

@@ -13,7 +13,7 @@ import type { STALE_REPLICA, Shard } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
 import type { TimelineManager } from "../../abstract/TimelineManager";
-import { GLOBAL_SHARD, type ShardAffinity } from "../../ent/Configuration";
+import { GLOBAL_SHARD } from "../../ent/Configuration";
 import { join, mapJoin, nullthrows, runInVoid } from "../../helpers/misc";
 import type { Literal } from "../../types";
 import { buildShape } from "../helpers/buildShape";
@@ -101,10 +101,13 @@ export class TestSQLClient
     this.queries.length = 0;
   }
 
-  async rows(sql: string, ...values: Literal): Promise<any[]> {
+  async rows(
+    sql: string,
+    ...values: Literal
+  ): Promise<Array<Record<string, unknown>>> {
     sql = sql.replace(/%T/g, (_) => escapeIdent("" + values.shift()));
     return nullthrows(
-      await this.client.query<any>({
+      await this.client.query({
         query: [sql, ...values],
         isWrite: true, // because used for BOTH read and write queries in tests
         annotations: [],
@@ -319,7 +322,7 @@ export async function recreateTestTables(
   EntClasses: Array<{
     CREATE: string[];
     SCHEMA: { name: string };
-    SHARD_AFFINITY: ShardAffinity<any>;
+    SHARD_AFFINITY: typeof GLOBAL_SHARD | readonly string[];
   }>,
   tableInverse?: string
 ): Promise<void> {

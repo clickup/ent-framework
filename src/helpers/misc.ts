@@ -3,6 +3,13 @@ import { inspect } from "util";
 import objectHashModule from "object-hash";
 
 /**
+ * In some cases (e.g. when actively working with callbacks), TS is still weak
+ * enough, so we are not always able to use generics/unknown/never types.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type DesperateAny = any;
+
+/**
  * Removes constructor signature from a type.
  * https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
  */
@@ -316,12 +323,14 @@ export function runInVoid(
 
 /**
  * A typesafe-way to invariant the object's key presence and being
- * non-undefined.
+ * non-undefined. It is not always working for union types: sometimes it asserts
+ * the value of the key to be "any". It also doesn't remove "undefined" from the
+ * type of the value.
  */
 export function hasKey<K extends symbol | string>(
   k: K,
   o: unknown
-): o is { [_ in K]: any } {
+): o is { [_ in K]: DesperateAny } {
   return (
     !!o &&
     (typeof o === "object" || typeof o === "function") &&

@@ -128,7 +128,7 @@ export class VC {
    * Returns a cached instance of Loader whose actual code is defined in
    * HandlerClass. In case there is no such Loader yet, creates it.
    */
-  loader<TLoadArgs extends any[], TReturn>(HandlerClass: {
+  loader<TLoadArgs extends unknown[], TReturn>(HandlerClass: {
     new (vc: VC): Handler<TLoadArgs, TReturn>;
     $loader?: symbol;
   }): Loader<TLoadArgs, TReturn> {

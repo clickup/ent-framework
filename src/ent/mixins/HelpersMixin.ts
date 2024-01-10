@@ -79,7 +79,7 @@ export interface HelpersClass<
    * Same as insert(), but returns the created Ent.
    */
   insertReturning: <TEnt extends HelpersInstance<TTable>>(
-    this: new (...args: any[]) => TEnt,
+    this: new () => TEnt,
     vc: VC,
     input: InsertInput<TTable>
   ) => Promise<TEnt>;
@@ -88,7 +88,7 @@ export interface HelpersClass<
    * Same, but returns the created/updated Ent.
    */
   upsertReturning: <TEnt extends HelpersInstance<TTable>>(
-    this: new (...args: any[]) => TEnt,
+    this: new () => TEnt,
     vc: VC,
     input: InsertInput<TTable>
   ) => Promise<TEnt>;
@@ -98,7 +98,7 @@ export interface HelpersClass<
    * doesn't throw. It's more a convenience function rather than a concept.
    */
   loadIfReadableNullable: <TEnt extends HelpersInstance<TTable>>(
-    this: new (...args: any[]) => TEnt,
+    this: new () => TEnt,
     vc: VC,
     id: string
   ) => Promise<TEnt | null>;
@@ -108,7 +108,7 @@ export interface HelpersClass<
    * This method is used VERY often.
    */
   loadX: <TEnt extends HelpersInstance<TTable>>(
-    this: new (...args: any[]) => TEnt,
+    this: new () => TEnt,
     vc: VC,
     id: string
   ) => Promise<TEnt>;
@@ -118,7 +118,7 @@ export interface HelpersClass<
    * This method is used VERY often.
    */
   loadByX: <TEnt extends HelpersInstance<TTable>>(
-    this: new (...args: any[]) => TEnt,
+    this: new () => TEnt,
     vc: VC,
     input: LoadByInput<TTable, TUniqueKey>
   ) => Promise<TEnt>;
@@ -127,7 +127,7 @@ export interface HelpersClass<
    * TS requires us to have a public constructor to infer instance types in
    * various places. We make this constructor throw if it's called.
    */
-  new (...args: any[]): HelpersInstance<TTable> & Row<TTable>;
+  new (): HelpersInstance<TTable> & Row<TTable>;
 }
 
 /**
@@ -225,7 +225,7 @@ export function HelpersMixin<
 
         const field = keyOrSymbol as Exclude<keyof TTable, typeof ID>;
         const value = input[field];
-        const existingValue = (this as any)[field];
+        const existingValue = (this as Record<typeof field, unknown>)[field];
 
         // Undefined is treated as "do not touch" signal for the field.
         if (value === undefined) {

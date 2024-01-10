@@ -4,6 +4,7 @@ import type { Cluster } from "../abstract/Cluster";
 import type { Query } from "../abstract/Query";
 import type { Schema } from "../abstract/Schema";
 import type { Shard } from "../abstract/Shard";
+import type { DesperateAny } from "../helpers/misc";
 import { join } from "../helpers/misc";
 import type { FieldOfIDTypeRequired, Table } from "../types";
 import { ID } from "../types";
@@ -146,11 +147,14 @@ export class Inverse<TClient extends Client, TTable extends Table> {
    * Runner batches by schema hash, not by schema object instance, but anyways).
    */
   @Memoize(
-    (id2Schema: Schema<any>, name: string) =>
+    (id2Schema: Schema<DesperateAny>, name: string) =>
       id2Schema.table[ID].autoInsert + name
   )
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  private static buildInverseSchema(id2Schema: Schema<any>, name: string) {
+  private static buildInverseSchema(
+    id2Schema: Schema<DesperateAny>,
+    name: string
+  ) {
     return new id2Schema.constructor(
       name,
       {

@@ -1,5 +1,5 @@
 import { inspect } from "util";
-import type { Row, Table, UpdateInput } from "../../types";
+import type { InsertInput, Row, Table, UpdateInput } from "../../types";
 import type { Validation } from "../Validation";
 import { VC } from "../VC";
 import { VCWithQueryCache } from "../VCFlavor";
@@ -11,8 +11,9 @@ const vcTestGuest =
  * Creates a test VC.
  */
 export function createVC(): VC {
-  const vc = vcTestGuest.withFlavor(new VCWithQueryCache({ maxQueries: 1000 }));
-  (vc as any).freshness = null;
+  const vc = vcTestGuest
+    .withFlavor(new VCWithQueryCache({ maxQueries: 1000 }))
+    .withDefaultFreshness();
   return vc;
 }
 
@@ -75,7 +76,7 @@ export class ValidationTester {
       if (method === "validateUpdate") {
         await validation.validateUpdate(vc, row, updateInput);
       } else {
-        await validation[method](vc, row as any);
+        await validation[method](vc, row as InsertInput<TTable> & Row<TTable>);
       }
 
       res = "OK";
