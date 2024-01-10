@@ -55,7 +55,7 @@ export interface ConfigClass<
   /**
    * Shard locator for this Ent, responsible for resolving IDs into Shard objects.
    */
-  readonly SHARD_LOCATOR: ShardLocator<TClient, FieldOfIDType<TTable>>;
+  readonly SHARD_LOCATOR: ShardLocator<TClient, TTable, FieldOfIDType<TTable>>;
 
   /**
    * Privacy rules for this Ent class.
@@ -76,7 +76,7 @@ export interface ConfigClass<
    * TS requires us to have a public constructor to infer instance types in
    * various places. We make this constructor throw if it's called.
    */
-  new (...args: any[]): ConfigInstance;
+  new (): ConfigInstance;
 }
 
 /**
@@ -88,7 +88,7 @@ export function ConfigMixin<
   TUniqueKey extends UniqueKey<TTable>,
   TClient extends Client
 >(
-  Base: new (...args: any[]) => {},
+  Base: new () => {},
   cluster: Cluster<TClient>,
   schema: Schema<TTable, TUniqueKey>
 ): ConfigClass<TTable, TUniqueKey, TClient> {
@@ -109,7 +109,11 @@ export function ConfigMixin<
       return this.SHARD_AFFINITY;
     }
 
-    static get SHARD_LOCATOR(): ShardLocator<TClient, FieldOfIDType<TTable>> {
+    static get SHARD_LOCATOR(): ShardLocator<
+      TClient,
+      TTable,
+      FieldOfIDType<TTable>
+    > {
       Object.defineProperty(this, "SHARD_LOCATOR", {
         value: new ShardLocator({
           cluster,

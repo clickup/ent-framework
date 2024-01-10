@@ -1,14 +1,14 @@
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 
-export interface Handler<TLoadArgs extends any[], TReturn> {
+export interface Handler<TLoadArgs extends unknown[], TReturn> {
   onCollect: (...args: TLoadArgs) => void | "flush" | "wait";
   onWait?: () => Promise<void>;
   onFlush: (collected: number) => Promise<void>;
   onReturn: (...args: TLoadArgs) => TReturn;
 }
 
-interface LoaderSession<TLoadArgs extends any[], TReturn> {
+interface LoaderSession<TLoadArgs extends unknown[], TReturn> {
   handler: Handler<TLoadArgs, TReturn>;
   flush: Promise<void>;
   flushNow: DeferredPromise<void>;
@@ -39,7 +39,7 @@ interface LoaderSession<TLoadArgs extends any[], TReturn> {
  * engine, but for now they're separate (Batcher is much more domain logic
  * specific and Loader is completely abstract).
  */
-export class Loader<TLoadArgs extends any[], TReturn> {
+export class Loader<TLoadArgs extends unknown[], TReturn> {
   private session: LoaderSession<TLoadArgs, TReturn> | null = null;
 
   constructor(private handlerCreator: () => Handler<TLoadArgs, TReturn>) {}

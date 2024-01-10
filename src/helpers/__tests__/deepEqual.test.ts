@@ -408,7 +408,7 @@ class MySet extends Set {}
 function map(
   obj: Record<string, unknown>,
   Class?: typeof MyMap
-): Map<any, any> {
+): Map<unknown, unknown> {
   const a = new (Class || Map)();
   for (const key in obj) {
     a.set(key, obj[key]);
@@ -421,7 +421,7 @@ function myMap(obj: Record<string, unknown>): MyMap {
   return map(obj, MyMap);
 }
 
-function set(arr: unknown[], Class?: typeof MySet): Set<any> {
+function set(arr: unknown[], Class?: typeof MySet): Set<unknown> {
   const a = new (Class || Set)();
   for (const value of arr) {
     a.add(value);
@@ -430,7 +430,7 @@ function set(arr: unknown[], Class?: typeof MySet): Set<any> {
   return a;
 }
 
-function mySet(arr: unknown[]): Set<any> {
+function mySet(arr: unknown[]): Set<unknown> {
   return set(arr, MySet);
 }
 

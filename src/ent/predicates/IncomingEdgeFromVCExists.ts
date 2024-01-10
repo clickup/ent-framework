@@ -65,7 +65,9 @@ export class IncomingEdgeFromVCExists<TEdgeTable extends Table>
       // 2. The edgeEntFilter function is synchronous, so it can't physically
       //    access the database anyway.
       const ents = await this.EntEdge.select(vc.toOmniDangerous(), where, 1);
-      const filtered = ents.filter((ent) => this.entEdgeFilter!(ent as any));
+      const filtered = ents.filter((ent) =>
+        this.entEdgeFilter!(ent as Row<TEdgeTable>)
+      );
       allow = filtered.length > 0;
     } else {
       // Exists is not privacy-checked (it doesn't fetch any row to be checked).

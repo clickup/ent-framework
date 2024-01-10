@@ -7,14 +7,14 @@ import { EntAccessError } from "./EntAccessError";
 export class EntNotFoundError extends EntAccessError {
   constructor(
     entName: string,
-    public readonly where: Record<string, any>,
+    public readonly where: Record<string, unknown>,
     cause: unknown = null
   ) {
     super(entName, `${entName} not found: ${whereToText(where)}`, cause);
   }
 }
 
-function whereToText(where: Record<string, any>): string {
+function whereToText(where: Record<string, unknown>): string {
   if (Object.keys(where).length === 1) {
     const [k, v] = Object.entries(where)[0];
     return `${k}=${sanitizeIDForDebugPrinting(v)}`;

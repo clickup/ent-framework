@@ -125,7 +125,12 @@ export function deepEqual(a: unknown, b: unknown): boolean {
 
     const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
     for (const key of keys) {
-      if (!deepEqual((a as any)[key], (b as any)[key])) {
+      if (
+        !deepEqual(
+          (a as Record<string, unknown>)[key],
+          (b as Record<string, unknown>)[key]
+        )
+      ) {
         return false;
       }
     }

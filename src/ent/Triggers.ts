@@ -340,7 +340,7 @@ export class Triggers<TTable extends Table> {
     for (const [_, triggerAfterMutation] of this.afterMutation) {
       await triggerAfterMutation(vc, {
         op: "DELETE",
-        newOrOldRow: oldRow as any,
+        newOrOldRow: oldRow,
       });
     }
 
@@ -359,13 +359,13 @@ export function buildUpdateNewRow<TTable extends Table>(
 
   for (const k of Object.getOwnPropertyNames(input)) {
     if (input[k] !== undefined) {
-      (newRow as any)[k] = input[k];
+      (newRow as Record<string, unknown>)[k] = input[k];
     }
   }
 
   for (const k of Object.getOwnPropertySymbols(input)) {
-    if ((input as any)[k] !== undefined) {
-      (newRow as any)[k] = (input as any)[k];
+    if (input[k] !== undefined) {
+      (newRow as Record<symbol, unknown>)[k] = input[k];
     }
   }
 

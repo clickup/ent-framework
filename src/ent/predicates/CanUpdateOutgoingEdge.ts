@@ -32,7 +32,7 @@ export class CanUpdateOutgoingEdge<TField extends string>
     const toEnt = await this.toEntClass.loadX(vc, toID!);
     await this.toEntClass.VALIDATION.validateUpdate(
       vc,
-      toEnt as any,
+      toEnt,
       {},
       true /* privacyOnly */
     );

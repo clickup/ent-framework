@@ -4,6 +4,7 @@ import type { Cluster } from "../abstract/Cluster";
 import type { Shard } from "../abstract/Shard";
 import { ShardError } from "../abstract/ShardError";
 import { inspectCompact, mapJoin } from "../helpers/misc";
+import type { Table } from "../types";
 import { ID } from "../types";
 import type { ShardAffinity } from "./Configuration";
 import { GLOBAL_SHARD } from "./Configuration";
@@ -17,7 +18,11 @@ import { GUEST_ID } from "./VC";
  * expect exactly one Shard returned, and in other contexts, multiple Shards are
  * okay.
  */
-export class ShardLocator<TClient extends Client, TField extends string> {
+export class ShardLocator<
+  TClient extends Client,
+  TTable extends Table,
+  TField extends string
+> {
   private cluster;
   private entName;
   private shardAffinity;
@@ -37,7 +42,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
     entName: string;
     shardAffinity: ShardAffinity<TField>;
     uniqueKey: readonly string[] | undefined;
-    inverses: ReadonlyArray<Inverse<TClient, any>>;
+    inverses: ReadonlyArray<Inverse<TClient, TTable>>;
   }) {
     this.cluster = cluster;
     this.entName = entName;
@@ -69,7 +74,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    * been changed).
    */
   async singleShardForInsert(
-    input: Record<string, any>,
+    input: Record<string, unknown>,
     op: "insert" | "upsert"
   ): Promise<Shard<TClient>> {
     let shard = await this.singleShardFromAffinity(input, op);
@@ -104,7 +109,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    */
   async multiShardsFromInput(
     vc: VC,
-    input: Record<string, any>,
+    input: Record<string, unknown>,
     op: string
   ): Promise<Array<Shard<TClient>>> {
     const singleShard = await this.singleShardFromAffinity(input, op);
@@ -248,7 +253,7 @@ export class ShardLocator<TClient extends Client, TField extends string> {
    *   only enabled when using Inverses; see multiShardsFromInput().
    */
   private async singleShardFromAffinity(
-    input: Record<string, any>,
+    input: Record<string, unknown>,
     op: string
   ): Promise<Shard<TClient> | null> {
     // For a low number of a very global objects only. ATTENTION: GLOBAL_SHARD
@@ -270,10 +275,8 @@ export class ShardLocator<TClient extends Client, TField extends string> {
 
     // An explicit list of fields is passed in SHARD_AFFINITY.
     for (const fromField of this.idAndShardAffinity) {
-      const value =
-        input[fromField] instanceof Array
-          ? input[fromField][0]
-          : input[fromField];
+      const fromValue = input[fromField];
+      const value = fromValue instanceof Array ? fromValue[0] : fromValue;
       if (typeof value === "string" && value) {
         return this.singleShardFromID(fromField, value, op);
       }

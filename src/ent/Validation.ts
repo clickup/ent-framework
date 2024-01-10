@@ -1,10 +1,11 @@
 import pickBy from "lodash/pickBy";
-import type {
-  InsertFieldsRequired,
-  InsertInput,
-  Row,
-  Table,
-  UpdateInput,
+import {
+  ID,
+  type InsertFieldsRequired,
+  type InsertInput,
+  type Row,
+  type Table,
+  type UpdateInput,
 } from "../types";
 import { EntNotInsertableError } from "./errors/EntNotInsertableError";
 import { EntNotReadableError } from "./errors/EntNotReadableError";
@@ -66,7 +67,9 @@ export type ValidationRules<TTable extends Table> = {
   readonly insert: Validation<TTable>["insert"];
   readonly update?: Validation<TTable>["update"];
   readonly delete?: Validation<TTable>["delete"];
-  readonly validate?: Array<Predicate<Row<TTable>> & EntValidationErrorInfo>;
+  readonly validate?: Array<
+    Predicate<InsertInput<TTable>> & EntValidationErrorInfo
+  >;
 };
 
 export class Validation<TTable extends Table> {
@@ -76,14 +79,14 @@ export class Validation<TTable extends Table> {
   readonly insert: WriteRules<InsertInput<TTable>>;
   readonly update: WriteRules<Row<TTable>>;
   readonly delete: WriteRules<Row<TTable>>;
-  readonly validate: Array<Require<Row<TTable>>>;
+  readonly validate: Array<Require<InsertInput<TTable>>>;
 
   constructor(private entName: string, rules: ValidationRules<TTable>) {
     this.tenantPrincipalField = rules.tenantPrincipalField;
     this.inferPrincipal = rules.inferPrincipal;
     this.load = rules.load;
     this.insert = rules.insert;
-    this.update = rules.update || (this.insert as any);
+    this.update = rules.update || (this.insert as typeof this.update);
     this.delete = rules.delete || this.update;
     this.validate = (rules.validate || []).map((pred) => new Require(pred));
   }
@@ -100,7 +103,7 @@ export class Validation<TTable extends Table> {
   }
 
   async validateInsert(vc: VC, input: InsertInput<TTable>): Promise<void> {
-    await this.validateUserInputImpl(vc, input as Row<TTable>, input);
+    await this.validateUserInputImpl(vc, input, input);
     await this.validatePrivacyImpl(
       "insert",
       this.insert,
@@ -121,7 +124,11 @@ export class Validation<TTable extends Table> {
     const newRow = buildUpdateNewRow(old, input);
 
     if (!privacyOnly) {
-      await this.validateUserInputImpl(vc, newRow, input);
+      await this.validateUserInputImpl(
+        vc,
+        newRow as InsertInput<TTable>,
+        input
+      );
     }
 
     await this.validatePrivacyImpl(
@@ -166,7 +173,12 @@ export class Validation<TTable extends Table> {
       return;
     }
 
-    throw new ExceptionClass(this.entName, vc.toString(), row as any, cause);
+    throw new ExceptionClass(
+      this.entName,
+      vc.toString(),
+      { [ID]: "?", ...row },
+      cause
+    );
   }
 
   private validateTenantUserIDImpl(
@@ -181,7 +193,9 @@ export class Validation<TTable extends Table> {
       return;
     }
 
-    const rowTenantUserID = (row as any)[this.tenantPrincipalField];
+    const rowTenantUserID = (row as Record<string, unknown>)[
+      this.tenantPrincipalField
+    ];
     if (rowTenantUserID === vc.principal) {
       return;
     }
@@ -189,7 +203,7 @@ export class Validation<TTable extends Table> {
     throw new ExceptionClass(
       this.entName,
       vc.toString(),
-      row as any,
+      { [ID]: "?", ...row },
       `${this.tenantPrincipalField} is expected to be ` +
         JSON.stringify(vc.principal) +
         ", but got " +
@@ -199,7 +213,7 @@ export class Validation<TTable extends Table> {
 
   private async validateUserInputImpl(
     vc: VC,
-    newRow: Row<TTable>,
+    newRow: InsertInput<TTable>,
     input: object
   ): Promise<void> {
     const { allow, results } = await evaluate(

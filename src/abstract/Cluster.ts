@@ -5,7 +5,7 @@ import random from "lodash/random";
 import pTimeout from "p-timeout";
 import { CachedRefreshedValue } from "../helpers/CachedRefreshedValue";
 import { DefaultMap } from "../helpers/DefaultMap";
-import type { MaybeCallable, PickPartial } from "../helpers/misc";
+import type { DesperateAny, MaybeCallable, PickPartial } from "../helpers/misc";
 import {
   nullthrows,
   mapJoin,
@@ -80,10 +80,10 @@ interface DiscoveredShards<TClient extends Client> {
  *
  * Shard 0 is a special "global" Shard.
  */
-export class Cluster<TClient extends Client, TNode = any> {
+export class Cluster<TClient extends Client, TNode = DesperateAny> {
   /** Default values for the constructor options. */
   static readonly DEFAULT_OPTIONS: Required<
-    PickPartial<ClusterOptions<any, any>>
+    PickPartial<ClusterOptions<Client, never>>
   > = {
     shardsDiscoverIntervalMs: 10000,
     shardsDiscoverRecheckIslandsIntervalMs: 500,

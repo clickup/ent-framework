@@ -74,7 +74,10 @@ export class SQLRunnerLoadBy<
     );
     const output = new Map<string, Row<TTable>>();
     for (const row of rows) {
-      output.set(this.key(row as any), row);
+      output.set(
+        this.key(row as unknown as LoadByInput<TTable, TUniqueKey>),
+        row
+      );
     }
 
     return output;

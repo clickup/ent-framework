@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { VC } from "../VC";
 import { VCFlavor } from "../VCFlavor";
 import { createVC } from "./test-utils";
 
-class Cache extends Map<any, any> {
+class Cache extends Map<unknown, unknown> {
   constructor() {
     super([]);
   }
@@ -36,7 +37,7 @@ test("VC should be able to clone", () => {
 });
 
 test("root flag of the VC is changed", () => {
-  const vc1root = createVC();
+  const vc1root = createVC() as VC;
   expect((vc1root as any).isRoot).toBeTruthy();
 
   const vc2root = vc1root.toOmniDangerous();
