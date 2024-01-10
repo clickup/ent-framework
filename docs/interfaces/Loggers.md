@@ -27,7 +27,7 @@ batching).
 
 #### Defined in
 
-[src/abstract/Loggers.ts:6](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L6)
+[src/abstract/Loggers.ts:6](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L6)
 
 ___
 
@@ -53,4 +53,4 @@ Logs errors which did not throw through (typically recoverable).
 
 #### Defined in
 
-[src/abstract/Loggers.ts:8](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L8)
+[src/abstract/Loggers.ts:8](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L8)

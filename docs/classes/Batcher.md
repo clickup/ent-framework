@@ -21,7 +21,7 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 ### constructor
 
-• **new Batcher**<`TInput`, `TOutput`\>(`runner`, `maxBatchSize?`, `batchDelayMs?`)
+• **new Batcher**<`TInput`, `TOutput`\>(`runner`, `batchDelayMs`)
 
 #### Type parameters
 
@@ -32,15 +32,14 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `runner` | [`Runner`](Runner.md)<`TInput`, `TOutput`\> | `undefined` |
-| `maxBatchSize` | `number` | `0` |
-| `batchDelayMs` | [`MaybeCallable`](../modules.md#maybecallable)<`number`\> | `0` |
+| Name | Type |
+| :------ | :------ |
+| `runner` | [`Runner`](Runner.md)<`TInput`, `TOutput`\> |
+| `batchDelayMs` | [`MaybeCallable`](../modules.md#maybecallable)<`number`\> |
 
 #### Defined in
 
-[src/abstract/Batcher.ts:182](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L182)
+[src/abstract/Batcher.ts:90](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L90)
 
 ## Methods
 
@@ -54,7 +53,7 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 #### Defined in
 
-[src/abstract/Batcher.ts:124](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L124)
+[src/abstract/Batcher.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L32)
 
 ___
 
@@ -75,4 +74,4 @@ ___
 
 #### Defined in
 
-[src/abstract/Batcher.ts:192](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L192)
+[src/abstract/Batcher.ts:95](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L95)

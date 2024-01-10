@@ -13,7 +13,7 @@ decision, what was thrown etc.).
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:21](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L21)
+[src/ent/rules/Rule.ts:21](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L21)
 
 ___
 
@@ -23,7 +23,7 @@ ___
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:22](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L22)
+[src/ent/rules/Rule.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L22)
 
 ___
 
@@ -33,4 +33,4 @@ ___
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:23](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L23)
+[src/ent/rules/Rule.ts:23](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L23)

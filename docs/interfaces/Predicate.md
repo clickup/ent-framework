@@ -40,7 +40,7 @@ immediately. This saves us lots of database operations.
 
 #### Defined in
 
-[src/ent/predicates/Predicate.ts:18](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Predicate.ts#L18)
+[src/ent/predicates/Predicate.ts:18](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L18)
 
 ## Methods
 
@@ -61,4 +61,4 @@ immediately. This saves us lots of database operations.
 
 #### Defined in
 
-[src/ent/predicates/Predicate.ts:19](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Predicate.ts#L19)
+[src/ent/predicates/Predicate.ts:19](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L19)

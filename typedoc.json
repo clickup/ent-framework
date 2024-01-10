@@ -1,6 +1,6 @@
 {
   "entryPoints": ["src"],
-  "exclude": ["**/__tests__/**", "**/node_modules/**"],
+  "exclude": ["**/internal/**", "**/__tests__/**", "**/node_modules/**"],
   "entryPointStrategy": "expand",
   "mergeModulesMergeMode": "project",
   "sort": ["source-order"],
@@ -12,6 +12,6 @@
   "categorizeByGroup": true,
   "hideInPageTOC": true,
   "gitRevision": "master",
-  "sourceLinkTemplate": "https://github.com/clickup/rest-client/blob/master/{path}#L{line}",
+  "sourceLinkTemplate": "https://github.com/clickup/ent-framework/blob/master/{path}#L{line}",
   "basePath": "."
 }

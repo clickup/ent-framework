@@ -28,7 +28,7 @@ VC of this Ent.
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:36](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L36)
+[src/ent/mixins/PrimitiveMixin.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L36)
 
 ___
 
@@ -44,7 +44,7 @@ For simplicity, every Ent has an ID field name hardcoded to "id".
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:41](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L41)
+[src/ent/mixins/PrimitiveMixin.ts:41](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L41)
 
 ## Methods
 
@@ -76,7 +76,7 @@ in input and in the current object.
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:35](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L35)
+[src/ent/mixins/HelpersMixin.ts:35](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L35)
 
 ___
 
@@ -106,7 +106,7 @@ if no fields were updated).
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:43](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L43)
+[src/ent/mixins/HelpersMixin.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L43)
 
 ___
 
@@ -136,7 +136,7 @@ was no such Ent in the database).
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:52](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L52)
+[src/ent/mixins/HelpersMixin.ts:52](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L52)
 
 ___
 
@@ -166,7 +166,7 @@ doesn't exist after the update.
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:61](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L61)
+[src/ent/mixins/HelpersMixin.ts:61](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L61)
 
 ___
 
@@ -204,7 +204,7 @@ immutable).
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:58](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L58)
+[src/ent/mixins/PrimitiveMixin.ts:58](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L58)
 
 ___
 
@@ -225,4 +225,4 @@ the current object untouched (since it's immutable).
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:64](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L64)
+[src/ent/mixins/PrimitiveMixin.ts:64](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L64)

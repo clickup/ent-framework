@@ -21,7 +21,7 @@ A principal (typically user ID) represented by this VC.
 
 #### Defined in
 
-[src/ent/VC.ts:536](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L536)
+[src/ent/VC.ts:536](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L536)
 
 ___
 
@@ -35,7 +35,7 @@ requests are sent to master.
 
 #### Defined in
 
-[src/ent/VC.ts:540](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L540)
+[src/ent/VC.ts:540](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L540)
 
 ___
 
@@ -58,7 +58,7 @@ heartbeat exception.
 
 #### Defined in
 
-[src/ent/VC.ts:551](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L551)
+[src/ent/VC.ts:551](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L551)
 
 ## Methods
 
@@ -86,7 +86,7 @@ of calls and reasons, why some object was accessed.
 
 #### Defined in
 
-[src/ent/VC.ts:70](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L70)
+[src/ent/VC.ts:70](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L70)
 
 ___
 
@@ -102,7 +102,7 @@ This is to show VCs in console.log() and inspect() nicely.
 
 #### Defined in
 
-[src/ent/VC.ts:92](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L92)
+[src/ent/VC.ts:92](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L92)
 
 ___
 
@@ -131,7 +131,7 @@ this VC an admin VC?). Also, people may define their own VC-local caches.
 
 #### Defined in
 
-[src/ent/VC.ts:100](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L100)
+[src/ent/VC.ts:100](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L100)
 
 ▸ **cache**<`TInstance`\>(`tag`, `creator`): `TInstance`
 
@@ -157,7 +157,7 @@ This is useful when e.g. cached values are async-created.
 
 #### Defined in
 
-[src/ent/VC.ts:106](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L106)
+[src/ent/VC.ts:106](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L106)
 
 ___
 
@@ -172,7 +172,7 @@ HandlerClass. In case there is no such Loader yet, creates it.
 
 | Name | Type |
 | :------ | :------ |
-| `TLoadArgs` | extends `any`[] |
+| `TLoadArgs` | extends `unknown`[] |
 | `TReturn` | `TReturn` |
 
 #### Parameters
@@ -188,7 +188,7 @@ HandlerClass. In case there is no such Loader yet, creates it.
 
 #### Defined in
 
-[src/ent/VC.ts:131](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L131)
+[src/ent/VC.ts:131](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L131)
 
 ___
 
@@ -212,7 +212,7 @@ particular schema name (most likely, table).
 
 #### Defined in
 
-[src/ent/VC.ts:147](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L147)
+[src/ent/VC.ts:147](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L147)
 
 ___
 
@@ -230,7 +230,7 @@ withDeserializedTimelines() input.
 
 #### Defined in
 
-[src/ent/VC.ts:163](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L163)
+[src/ent/VC.ts:163](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L163)
 
 ___
 
@@ -262,7 +262,7 @@ position wins).
 
 #### Defined in
 
-[src/ent/VC.ts:193](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L193)
+[src/ent/VC.ts:193](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L193)
 
 ___
 
@@ -278,7 +278,7 @@ Returns a new VC derived from the current one, but with empty cache.
 
 #### Defined in
 
-[src/ent/VC.ts:217](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L217)
+[src/ent/VC.ts:217](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L217)
 
 ___
 
@@ -295,7 +295,7 @@ Master freshness is inherited by ent.vc after an Ent is loaded.
 
 #### Defined in
 
-[src/ent/VC.ts:234](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L234)
+[src/ent/VC.ts:234](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L234)
 
 ___
 
@@ -318,7 +318,7 @@ the master.
 
 #### Defined in
 
-[src/ent/VC.ts:261](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L261)
+[src/ent/VC.ts:261](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L261)
 
 ___
 
@@ -337,7 +337,7 @@ history of the VC, but for e.g. tests or benchmarks, it's fine.
 
 #### Defined in
 
-[src/ent/VC.ts:284](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L284)
+[src/ent/VC.ts:284](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L284)
 
 ___
 
@@ -361,7 +361,7 @@ it. If no flavors were added, returns the same VC (`this`).
 
 #### Defined in
 
-[src/ent/VC.ts:305](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L305)
+[src/ent/VC.ts:305](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L305)
 
 ▸ **withFlavor**(`...flavors`): [`VC`](VC.md)
 
@@ -377,7 +377,7 @@ it. If no flavors were added, returns the same VC (`this`).
 
 #### Defined in
 
-[src/ent/VC.ts:306](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L306)
+[src/ent/VC.ts:306](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L306)
 
 ___
 
@@ -399,7 +399,7 @@ Derives the VC with new trace ID.
 
 #### Defined in
 
-[src/ent/VC.ts:343](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L343)
+[src/ent/VC.ts:343](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L343)
 
 ___
 
@@ -423,7 +423,7 @@ Derives the VC with the provided heartbeater injected.
 
 #### Defined in
 
-[src/ent/VC.ts:359](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L359)
+[src/ent/VC.ts:359](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L359)
 
 ___
 
@@ -442,7 +442,7 @@ to a guest VC (see Ent.ts).
 
 #### Defined in
 
-[src/ent/VC.ts:379](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L379)
+[src/ent/VC.ts:379](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L379)
 
 ___
 
@@ -458,7 +458,7 @@ Creates a new VC downgraded to guest permissions.
 
 #### Defined in
 
-[src/ent/VC.ts:396](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L396)
+[src/ent/VC.ts:396](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L396)
 
 ___
 
@@ -474,7 +474,7 @@ Checks if it's an omni VC.
 
 #### Defined in
 
-[src/ent/VC.ts:411](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L411)
+[src/ent/VC.ts:411](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L411)
 
 ___
 
@@ -490,7 +490,7 @@ Checks if it's a guest VC.
 
 #### Defined in
 
-[src/ent/VC.ts:418](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L418)
+[src/ent/VC.ts:418](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L418)
 
 ___
 
@@ -506,7 +506,7 @@ Checks if it's a regular user (i.e. owning) VC.
 
 #### Defined in
 
-[src/ent/VC.ts:425](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L425)
+[src/ent/VC.ts:425](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L425)
 
 ___
 
@@ -526,7 +526,7 @@ Returns VC's flavor of the particular type.
 
 | Name | Type |
 | :------ | :------ |
-| `flavor` | (...`args`: `any`[]) => `TFlavor` |
+| `flavor` | (...`args`: `never`[]) => `TFlavor` |
 
 #### Returns
 
@@ -534,7 +534,7 @@ Returns VC's flavor of the particular type.
 
 #### Defined in
 
-[src/ent/VC.ts:432](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L432)
+[src/ent/VC.ts:432](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L432)
 
 ___
 
@@ -556,7 +556,7 @@ Used for debugging purposes.
 
 #### Defined in
 
-[src/ent/VC.ts:441](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L441)
+[src/ent/VC.ts:441](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L441)
 
 ___
 
@@ -572,7 +572,7 @@ Returns a debug annotation of this VC.
 
 #### Defined in
 
-[src/ent/VC.ts:460](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L460)
+[src/ent/VC.ts:460](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L460)
 
 ___
 
@@ -597,4 +597,4 @@ For guest, principal === null.
 
 #### Defined in
 
-[src/ent/VC.ts:491](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L491)
+[src/ent/VC.ts:491](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L491)

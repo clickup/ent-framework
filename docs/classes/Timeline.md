@@ -20,7 +20,7 @@ Tracks replication timeline position at master per "user" and Ent.
 
 #### Defined in
 
-[src/abstract/Timeline.ts:24](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L24)
+[src/abstract/Timeline.ts:26](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L26)
 
 ## Methods
 
@@ -41,7 +41,7 @@ Tracks replication timeline position at master per "user" and Ent.
 
 #### Defined in
 
-[src/abstract/Timeline.ts:30](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L30)
+[src/abstract/Timeline.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L32)
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Timeline.ts:52](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L52)
+[src/abstract/Timeline.ts:54](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L54)
 
 ___
 
@@ -75,7 +75,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Timeline.ts:65](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L65)
+[src/abstract/Timeline.ts:67](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L67)
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Timeline.ts:72](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L72)
+[src/abstract/Timeline.ts:74](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L74)
 
 ___
 
@@ -116,7 +116,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Timeline.ts:81](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L81)
+[src/abstract/Timeline.ts:83](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L83)
 
 ___
 
@@ -130,4 +130,4 @@ ___
 
 #### Defined in
 
-[src/abstract/Timeline.ts:91](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L91)
+[src/abstract/Timeline.ts:93](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L93)

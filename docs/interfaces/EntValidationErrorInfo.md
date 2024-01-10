@@ -16,7 +16,7 @@ Auxillary information which every validation predicate should have.
 
 #### Defined in
 
-[src/ent/errors/EntValidationError.ts:27](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntValidationError.ts#L27)
+[src/ent/errors/EntValidationError.ts:27](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntValidationError.ts#L27)
 
 ___
 
@@ -26,4 +26,4 @@ ___
 
 #### Defined in
 
-[src/ent/errors/EntValidationError.ts:28](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntValidationError.ts#L28)
+[src/ent/errors/EntValidationError.ts:28](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntValidationError.ts#L28)

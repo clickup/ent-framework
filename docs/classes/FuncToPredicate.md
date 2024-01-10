@@ -38,7 +38,7 @@ predicate.
 
 #### Defined in
 
-[src/ent/predicates/Predicate.ts:32](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Predicate.ts#L32)
+[src/ent/predicates/Predicate.ts:32](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L32)
 
 ## Properties
 
@@ -52,7 +52,7 @@ predicate.
 
 #### Defined in
 
-[src/ent/predicates/Predicate.ts:30](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Predicate.ts#L30)
+[src/ent/predicates/Predicate.ts:30](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L30)
 
 ## Methods
 
@@ -77,4 +77,4 @@ predicate.
 
 #### Defined in
 
-[src/ent/predicates/Predicate.ts:34](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Predicate.ts#L34)
+[src/ent/predicates/Predicate.ts:34](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L34)

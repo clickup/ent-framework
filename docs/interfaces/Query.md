@@ -25,7 +25,7 @@ that this interface is the only common part of them all.
 
 #### Defined in
 
-[src/abstract/Query.ts:9](https://github.com/clickup/rest-client/blob/master/src/abstract/Query.ts#L9)
+[src/abstract/Query.ts:9](https://github.com/clickup/ent-framework/blob/master/src/abstract/Query.ts#L9)
 
 ## Methods
 
@@ -46,4 +46,4 @@ that this interface is the only common part of them all.
 
 #### Defined in
 
-[src/abstract/Query.ts:10](https://github.com/clickup/rest-client/blob/master/src/abstract/Query.ts#L10)
+[src/abstract/Query.ts:10](https://github.com/clickup/ent-framework/blob/master/src/abstract/Query.ts#L10)

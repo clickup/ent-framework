@@ -84,4 +84,4 @@ Map<K, V\>.constructor
 
 #### Defined in
 
-[src/helpers/DefaultMap.ts:2](https://github.com/clickup/rest-client/blob/master/src/helpers/DefaultMap.ts#L2)
+[src/helpers/DefaultMap.ts:2](https://github.com/clickup/ent-framework/blob/master/src/helpers/DefaultMap.ts#L2)

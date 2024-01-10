@@ -23,16 +23,10 @@ https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
 
 ### constructor
 
-• **new HelpersClass**(`...args`)
+• **new HelpersClass**()
 
 TS requires us to have a public constructor to infer instance types in
 various places. We make this constructor throw if it's called.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `...args` | `any`[] |
 
 #### Inherited from
 
@@ -40,7 +34,7 @@ OmitNew<PrimitiveClass<TTable, TUniqueKey, TClient\>\>.constructor
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:130](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L130)
+[src/ent/mixins/HelpersMixin.ts:130](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L130)
 
 ## Properties
 
@@ -68,7 +62,7 @@ OmitNew.Configuration
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:36](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L36)
+[src/ent/mixins/ConfigMixin.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L36)
 
 ___
 
@@ -84,7 +78,7 @@ OmitNew.CLUSTER
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:43](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L43)
+[src/ent/mixins/ConfigMixin.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L43)
 
 ___
 
@@ -100,7 +94,7 @@ OmitNew.SCHEMA
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:48](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L48)
+[src/ent/mixins/ConfigMixin.ts:48](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L48)
 
 ___
 
@@ -116,13 +110,13 @@ OmitNew.SHARD\_AFFINITY
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:53](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L53)
+[src/ent/mixins/ConfigMixin.ts:53](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L53)
 
 ___
 
 ### SHARD\_LOCATOR
 
-• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)<`TClient`, [`FieldOfIDType`](../modules.md#fieldofidtype)<`TTable`\>\>
+• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)<`TClient`, `TTable`, [`FieldOfIDType`](../modules.md#fieldofidtype)<`TTable`\>\>
 
 Shard locator for this Ent, responsible for resolving IDs into Shard objects.
 
@@ -132,7 +126,7 @@ OmitNew.SHARD\_LOCATOR
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:58](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L58)
+[src/ent/mixins/ConfigMixin.ts:58](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L58)
 
 ___
 
@@ -148,7 +142,7 @@ OmitNew.VALIDATION
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:63](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L63)
+[src/ent/mixins/ConfigMixin.ts:63](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L63)
 
 ___
 
@@ -164,7 +158,7 @@ OmitNew.TRIGGERS
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:68](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L68)
+[src/ent/mixins/ConfigMixin.ts:68](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L68)
 
 ___
 
@@ -180,7 +174,7 @@ OmitNew.INVERSES
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:73](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L73)
+[src/ent/mixins/ConfigMixin.ts:73](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L73)
 
 ___
 
@@ -208,13 +202,13 @@ constraints.
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:76](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L76)
+[src/ent/mixins/HelpersMixin.ts:76](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L76)
 
 ___
 
 ### insertReturning
 
-• **insertReturning**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`TEnt`\>
+• **insertReturning**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`TEnt`\>
 
 #### Type declaration
 
@@ -232,7 +226,7 @@ Same as insert(), but returns the created Ent.
 
 | Name | Type |
 | :------ | :------ |
-| `this` | (...`args`: `any`[]) => `TEnt` |
+| `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
 | `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
 
@@ -242,13 +236,13 @@ Same as insert(), but returns the created Ent.
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:81](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L81)
+[src/ent/mixins/HelpersMixin.ts:81](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L81)
 
 ___
 
 ### upsertReturning
 
-• **upsertReturning**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`TEnt`\>
+• **upsertReturning**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`TEnt`\>
 
 #### Type declaration
 
@@ -266,7 +260,7 @@ Same, but returns the created/updated Ent.
 
 | Name | Type |
 | :------ | :------ |
-| `this` | (...`args`: `any`[]) => `TEnt` |
+| `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
 | `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
 
@@ -276,13 +270,13 @@ Same, but returns the created/updated Ent.
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:90](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L90)
+[src/ent/mixins/HelpersMixin.ts:90](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L90)
 
 ___
 
 ### loadIfReadableNullable
 
-• **loadIfReadableNullable**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<``null`` \| `TEnt`\>
+• **loadIfReadableNullable**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<``null`` \| `TEnt`\>
 
 #### Type declaration
 
@@ -301,7 +295,7 @@ doesn't throw. It's more a convenience function rather than a concept.
 
 | Name | Type |
 | :------ | :------ |
-| `this` | (...`args`: `any`[]) => `TEnt` |
+| `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
 | `id` | `string` |
 
@@ -311,13 +305,13 @@ doesn't throw. It's more a convenience function rather than a concept.
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:100](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L100)
+[src/ent/mixins/HelpersMixin.ts:100](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L100)
 
 ___
 
 ### loadX
 
-• **loadX**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<`TEnt`\>
+• **loadX**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<`TEnt`\>
 
 #### Type declaration
 
@@ -336,7 +330,7 @@ This method is used VERY often.
 
 | Name | Type |
 | :------ | :------ |
-| `this` | (...`args`: `any`[]) => `TEnt` |
+| `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
 | `id` | `string` |
 
@@ -346,13 +340,13 @@ This method is used VERY often.
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:110](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L110)
+[src/ent/mixins/HelpersMixin.ts:110](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L110)
 
 ___
 
 ### loadByX
 
-• **loadByX**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>) => `Promise`<`TEnt`\>
+• **loadByX**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>) => `Promise`<`TEnt`\>
 
 #### Type declaration
 
@@ -371,7 +365,7 @@ This method is used VERY often.
 
 | Name | Type |
 | :------ | :------ |
-| `this` | (...`args`: `any`[]) => `TEnt` |
+| `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
 | `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\> |
 
@@ -381,7 +375,7 @@ This method is used VERY often.
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:120](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L120)
+[src/ent/mixins/HelpersMixin.ts:120](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L120)
 
 ___
 
@@ -418,7 +412,7 @@ OmitNew.insertIfNotExists
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:81](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L81)
+[src/ent/mixins/PrimitiveMixin.ts:81](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L81)
 
 ___
 
@@ -455,13 +449,13 @@ OmitNew.upsert
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:95](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L95)
+[src/ent/mixins/PrimitiveMixin.ts:95](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L95)
 
 ___
 
 ### loadNullable
 
-• **loadNullable**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<``null`` \| `TEnt`\>
+• **loadNullable**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<``null`` \| `TEnt`\>
 
 #### Type declaration
 
@@ -480,7 +474,7 @@ loadX() instead as much as you can.
 
 | Name | Type |
 | :------ | :------ |
-| `this` | (...`args`: `any`[]) => `TEnt` |
+| `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
 | `id` | `string` |
 
@@ -494,13 +488,13 @@ OmitNew.loadNullable
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:101](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L101)
+[src/ent/mixins/PrimitiveMixin.ts:101](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L101)
 
 ___
 
 ### loadByNullable
 
-• **loadByNullable**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>) => `Promise`<``null`` \| `TEnt`\>
+• **loadByNullable**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>) => `Promise`<``null`` \| `TEnt`\>
 
 #### Type declaration
 
@@ -521,7 +515,7 @@ non-unique keys!
 
 | Name | Type |
 | :------ | :------ |
-| `this` | (...`args`: `any`[]) => `TEnt` |
+| `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
 | `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\> |
 
@@ -535,13 +529,13 @@ OmitNew.loadByNullable
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:113](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L113)
+[src/ent/mixins/PrimitiveMixin.ts:113](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L113)
 
 ___
 
 ### selectBy
 
-• **selectBy**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, [`TuplePrefixes`](../modules.md#tupleprefixes)<`TUniqueKey`\>\>) => `Promise`<`TEnt`[]\>
+• **selectBy**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, [`TuplePrefixes`](../modules.md#tupleprefixes)<`TUniqueKey`\>\>) => `Promise`<`TEnt`[]\>
 
 #### Type declaration
 
@@ -562,7 +556,7 @@ guaranteed.
 
 | Name | Type |
 | :------ | :------ |
-| `this` | (...`args`: `any`[]) => `TEnt` |
+| `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
 | `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, [`TuplePrefixes`](../modules.md#tupleprefixes)<`TUniqueKey`\>\> |
 
@@ -576,13 +570,13 @@ OmitNew.selectBy
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:125](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L125)
+[src/ent/mixins/PrimitiveMixin.ts:125](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L125)
 
 ___
 
 ### select
 
-• **select**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)<`TTable`\>, `limit`: `number`, `order?`: [`Order`](../modules.md#order)<`TTable`\>, `custom?`: {}) => `Promise`<`TEnt`[]\>
+• **select**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)<`TTable`\>, `limit`: `number`, `order?`: [`Order`](../modules.md#order)<`TTable`\>, `custom?`: {}) => `Promise`<`TEnt`[]\>
 
 #### Type declaration
 
@@ -606,7 +600,7 @@ Selects the list of Ents by some predicate.
 
 | Name | Type |
 | :------ | :------ |
-| `this` | (...`args`: `any`[]) => `TEnt` |
+| `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
 | `where` | [`Where`](../modules.md#where)<`TTable`\> |
 | `limit` | `number` |
@@ -623,13 +617,13 @@ OmitNew.select
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:140](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L140)
+[src/ent/mixins/PrimitiveMixin.ts:140](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L140)
 
 ___
 
 ### selectChunked
 
-• **selectChunked**: <TEnt\>(`this`: (...`args`: `any`[]) => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom?`: {}) => `AsyncIterableIterator`<`TEnt`[]\>
+• **selectChunked**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom?`: {}) => `AsyncIterableIterator`<`TEnt`[]\>
 
 #### Type declaration
 
@@ -653,7 +647,7 @@ Same as select(), but returns data in chunks.
 
 | Name | Type |
 | :------ | :------ |
-| `this` | (...`args`: `any`[]) => `TEnt` |
+| `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
 | `where` | [`Where`](../modules.md#where)<`TTable`\> |
 | `chunkSize` | `number` |
@@ -670,7 +664,7 @@ OmitNew.selectChunked
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:158](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L158)
+[src/ent/mixins/PrimitiveMixin.ts:158](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L158)
 
 ___
 
@@ -703,7 +697,7 @@ OmitNew.count
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:172](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L172)
+[src/ent/mixins/PrimitiveMixin.ts:172](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L172)
 
 ___
 
@@ -735,7 +729,7 @@ OmitNew.exists
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:178](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L178)
+[src/ent/mixins/PrimitiveMixin.ts:178](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L178)
 
 ## Methods
 
@@ -759,4 +753,4 @@ OmitNew.configure
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:29](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L29)
+[src/ent/mixins/ConfigMixin.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L29)

@@ -21,4 +21,4 @@
 
 #### Defined in
 
-[src/helpers/WeakTicker.ts:2](https://github.com/clickup/rest-client/blob/master/src/helpers/WeakTicker.ts#L2)
+[src/helpers/WeakTicker.ts:2](https://github.com/clickup/ent-framework/blob/master/src/helpers/WeakTicker.ts#L2)

@@ -53,7 +53,7 @@ interpret the result.
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:48](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L48)
+[src/ent/rules/Rule.ts:48](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L48)
 
 ## Properties
 
@@ -63,7 +63,7 @@ interpret the result.
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:43](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L43)
+[src/ent/rules/Rule.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L43)
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:44](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L44)
+[src/ent/rules/Rule.ts:44](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L44)
 
 ## Methods
 
@@ -94,4 +94,4 @@ ___
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:46](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L46)
+[src/ent/rules/Rule.ts:46](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L46)

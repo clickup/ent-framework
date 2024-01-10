@@ -36,7 +36,7 @@ EntOur[user_id] ---> vc.principal
 
 #### Defined in
 
-[src/ent/predicates/OutgoingEdgePointsToVC.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L14)
+[src/ent/predicates/OutgoingEdgePointsToVC.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L14)
 
 ## Properties
 
@@ -50,7 +50,7 @@ EntOur[user_id] ---> vc.principal
 
 #### Defined in
 
-[src/ent/predicates/OutgoingEdgePointsToVC.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L12)
+[src/ent/predicates/OutgoingEdgePointsToVC.ts:12](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L12)
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/OutgoingEdgePointsToVC.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L14)
+[src/ent/predicates/OutgoingEdgePointsToVC.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L14)
 
 ## Methods
 
@@ -85,4 +85,4 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/OutgoingEdgePointsToVC.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L16)
+[src/ent/predicates/OutgoingEdgePointsToVC.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L16)

@@ -31,7 +31,7 @@ Error: thrown when an Ent cannot be read due to privacy reasons.
 
 #### Defined in
 
-[src/ent/errors/EntNotReadableError.ts:9](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntNotReadableError.ts#L9)
+[src/ent/errors/EntNotReadableError.ts:9](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotReadableError.ts#L9)
 
 ## Properties
 
@@ -45,7 +45,7 @@ Error: thrown when an Ent cannot be read due to privacy reasons.
 
 #### Defined in
 
-[src/ent/errors/EntAccessError.ts:9](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L9)
+[src/ent/errors/EntAccessError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L8)
 
 ___
 
@@ -59,7 +59,7 @@ ___
 
 #### Defined in
 
-[src/ent/errors/EntAccessError.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L12)
+[src/ent/errors/EntAccessError.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L11)
 
 ___
 
@@ -69,7 +69,7 @@ ___
 
 #### Defined in
 
-[src/ent/errors/EntNotReadableError.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntNotReadableError.ts#L11)
+[src/ent/errors/EntNotReadableError.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotReadableError.ts#L11)
 
 ___
 
@@ -79,4 +79,4 @@ ___
 
 #### Defined in
 
-[src/ent/errors/EntNotReadableError.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntNotReadableError.ts#L12)
+[src/ent/errors/EntNotReadableError.ts:12](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotReadableError.ts#L12)

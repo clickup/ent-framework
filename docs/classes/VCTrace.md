@@ -20,7 +20,7 @@ they're a part of VC core interface to allow faster access.
 
 #### Defined in
 
-[src/ent/VCTrace.ts:18](https://github.com/clickup/rest-client/blob/master/src/ent/VCTrace.ts#L18)
+[src/ent/VCTrace.ts:18](https://github.com/clickup/ent-framework/blob/master/src/ent/VCTrace.ts#L18)
 
 ## Properties
 
@@ -30,4 +30,4 @@ they're a part of VC core interface to allow faster access.
 
 #### Defined in
 
-[src/ent/VCTrace.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/VCTrace.ts#L16)
+[src/ent/VCTrace.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/VCTrace.ts#L16)

@@ -8,15 +8,15 @@
 
 ## Classes
 
-- [Runner](classes/Runner.md)
 - [Batcher](classes/Batcher.md)
 - [Client](classes/Client.md)
+- [ClientError](classes/ClientError.md)
 - [Cluster](classes/Cluster.md)
 - [Island](classes/Island.md)
 - [Loader](classes/Loader.md)
 - [QueryBase](classes/QueryBase.md)
+- [Runner](classes/Runner.md)
 - [Schema](classes/Schema.md)
-- [ServerError](classes/ServerError.md)
 - [Shard](classes/Shard.md)
 - [ShardError](classes/ShardError.md)
 - [Timeline](classes/Timeline.md)
@@ -35,7 +35,6 @@
 - [VCTrace](classes/VCTrace.md)
 - [Validation](classes/Validation.md)
 - [EntAccessError](classes/EntAccessError.md)
-- [EntCannotDetectShardError](classes/EntCannotDetectShardError.md)
 - [EntNotFoundError](classes/EntNotFoundError.md)
 - [EntNotInsertableError](classes/EntNotInsertableError.md)
 - [EntNotReadableError](classes/EntNotReadableError.md)
@@ -60,6 +59,8 @@
 - [Rule](classes/Rule.md)
 - [CachedRefreshedValue](classes/CachedRefreshedValue.md)
 - [DefaultMap](classes/DefaultMap.md)
+- [Ref](classes/Ref.md)
+- [Registry](classes/Registry.md)
 - [WeakTicker](classes/WeakTicker.md)
 - [SQLClient](classes/SQLClient.md)
 - [SQLClientPool](classes/SQLClientPool.md)
@@ -111,8 +112,6 @@
 - [PrimitiveInstance](interfaces/PrimitiveInstance.md)
 - [Predicate](interfaces/Predicate.md)
 - [RuleResult](interfaces/RuleResult.md)
-- [EntClass](interfaces/EntClass.md)
-- [Ent](interfaces/Ent.md)
 - [CachedRefreshedValueOptions](interfaces/CachedRefreshedValueOptions.md)
 - [WeakTickerTarget](interfaces/WeakTickerTarget.md)
 - [SQLClientOptions](interfaces/SQLClientOptions.md)
@@ -120,6 +119,31 @@
 - [SQLClientPoolOptions](interfaces/SQLClientPoolOptions.md)
 
 ## Type Aliases
+
+### ClientErrorPostAction
+
+Ƭ **ClientErrorPostAction**: ``"rediscover"`` \| ``"choose-another-client"`` \| ``"fail"``
+
+The suggested action, what can we do when facing this error.
+
+#### Defined in
+
+[src/abstract/ClientError.ts:6](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L6)
+
+___
+
+### ClientErrorKind
+
+Ƭ **ClientErrorKind**: ``"data-on-server-is-unchanged"`` \| ``"unknown-server-state"``
+
+Sometimes we need to know for sure, is there a chance that the query failed,
+but the write was still applied in the database.
+
+#### Defined in
+
+[src/abstract/ClientError.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L15)
+
+___
 
 ### WhyClient
 
@@ -136,7 +160,7 @@ noticeable ones are:
 
 #### Defined in
 
-[src/abstract/QueryAnnotation.ts:13](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L13)
+[src/abstract/QueryAnnotation.ts:13](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L13)
 
 ___
 
@@ -149,7 +173,7 @@ been made.
 
 #### Defined in
 
-[src/abstract/Timeline.ts:7](https://github.com/clickup/rest-client/blob/master/src/abstract/Timeline.ts#L7)
+[src/abstract/Timeline.ts:7](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L7)
 
 ___
 
@@ -158,12 +182,14 @@ ___
 Ƭ **ShardAffinity**<`TField`, `TF`\>: typeof [`GLOBAL_SHARD`](modules.md#global_shard) \| `TField` extends typeof [`ID`](modules.md#id) ? readonly `TF`[] : readonly [`TF`, ...TF[]]
 
 Defines Ent Shard collocation to some Ent's field when this Ent is inserted.
-The Shard can always be Shard 0 ("global Shard"), be inferred based on the
-value in other Ent field during the insertion ("colocation"), or, in case
-colocation inference didn't succeed, be chosen pseudo-randomly at insertion
-time ("random Shard"). E.g. a random Shard can also be chosen in case an
-empty array is passed to Shard affinity (like "always fallback"), or when a
-field's value points to a global Shard.
+- The Shard can always be Shard 0 ("global Shard"), be inferred based on the
+  value in other Ent field during the insertion ("colocation"), or, in case
+  colocation inference didn't succeed, be chosen pseudo-randomly at insertion
+  time ("random Shard").
+- E.g. a random Shard can also be chosen in case an empty array is passed to
+  Shard affinity (like "always fallback"), or when a field's value points to
+  a global Shard.
+- Passing ID to ShardAffinity is prohibited by TS.
 
 #### Type parameters
 
@@ -174,13 +200,13 @@ field's value points to a global Shard.
 
 #### Defined in
 
-[src/ent/Configuration.ts:27](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L27)
+[src/ent/Configuration.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L29)
 
 ___
 
 ### AnyClass
 
-Ƭ **AnyClass**: (...`args`: `any`) => `any`
+Ƭ **AnyClass**: (...`args`: `never`[]) => `unknown`
 
 #### Type declaration
 
@@ -190,11 +216,11 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `...args` | `any` |
+| `...args` | `never`[] |
 
 #### Defined in
 
-[src/ent/QueryCache.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L14)
+[src/ent/QueryCache.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L14)
 
 ___
 
@@ -217,7 +243,7 @@ autoInsert), it will always be required in InsertInput too.
 
 #### Defined in
 
-[src/ent/Triggers.ts:22](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L22)
+[src/ent/Triggers.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L22)
 
 ___
 
@@ -235,7 +261,7 @@ Table -> trigger's before-update input.
 
 #### Defined in
 
-[src/ent/Triggers.ts:29](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L29)
+[src/ent/Triggers.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L29)
 
 ___
 
@@ -255,7 +281,7 @@ update method.
 
 #### Defined in
 
-[src/ent/Triggers.ts:38](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L38)
+[src/ent/Triggers.ts:38](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L38)
 
 ___
 
@@ -276,7 +302,7 @@ triggers without guard-checking of op value.
 
 #### Defined in
 
-[src/ent/Triggers.ts:52](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L52)
+[src/ent/Triggers.ts:52](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L52)
 
 ___
 
@@ -344,7 +370,7 @@ Naming convention for trigger arguments:
 
 #### Defined in
 
-[src/ent/Triggers.ts:94](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L94)
+[src/ent/Triggers.ts:94](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L94)
 
 ___
 
@@ -378,7 +404,7 @@ ___
 
 #### Defined in
 
-[src/ent/Triggers.ts:99](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L99)
+[src/ent/Triggers.ts:99](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L99)
 
 ___
 
@@ -411,7 +437,7 @@ ___
 
 #### Defined in
 
-[src/ent/Triggers.ts:108](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L108)
+[src/ent/Triggers.ts:108](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L108)
 
 ___
 
@@ -443,7 +469,7 @@ ___
 
 #### Defined in
 
-[src/ent/Triggers.ts:116](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L116)
+[src/ent/Triggers.ts:116](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L116)
 
 ___
 
@@ -474,7 +500,7 @@ ___
 
 #### Defined in
 
-[src/ent/Triggers.ts:123](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L123)
+[src/ent/Triggers.ts:123](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L123)
 
 ___
 
@@ -505,7 +531,7 @@ ___
 
 #### Defined in
 
-[src/ent/Triggers.ts:147](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L147)
+[src/ent/Triggers.ts:147](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L147)
 
 ___
 
@@ -536,7 +562,7 @@ ___
 
 #### Defined in
 
-[src/ent/Triggers.ts:164](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L164)
+[src/ent/Triggers.ts:164](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L164)
 
 ___
 
@@ -552,7 +578,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:24](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L24)
+[src/ent/Validation.ts:25](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L25)
 
 ___
 
@@ -574,7 +600,7 @@ unknown length), so we have to brute-force.
 
 #### Defined in
 
-[src/ent/Validation.ts:33](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L33)
+[src/ent/Validation.ts:34](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L34)
 
 ___
 
@@ -598,17 +624,17 @@ ___
 | `insert` | [`Validation`](classes/Validation.md)<`TTable`\>[``"insert"``] |
 | `update?` | [`Validation`](classes/Validation.md)<`TTable`\>[``"update"``] |
 | `delete?` | [`Validation`](classes/Validation.md)<`TTable`\>[``"delete"``] |
-| `validate?` | [`Predicate`](interfaces/Predicate.md)<[`Row`](modules.md#row)<`TTable`\>\> & [`EntValidationErrorInfo`](interfaces/EntValidationErrorInfo.md)[] |
+| `validate?` | [`Predicate`](interfaces/Predicate.md)<[`InsertInput`](modules.md#insertinput)<`TTable`\>\> & [`EntValidationErrorInfo`](interfaces/EntValidationErrorInfo.md)[] |
 
 #### Defined in
 
-[src/ent/Validation.ts:59](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L59)
+[src/ent/Validation.ts:60](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L60)
 
 ___
 
 ### PrimitiveClass
 
-Ƭ **PrimitiveClass**<`TTable`, `TUniqueKey`, `TClient`\>: [`OmitNew`](modules.md#omitnew)<[`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>\> & (...`args`: `any`[]) => [`PrimitiveInstance`](interfaces/PrimitiveInstance.md)<`TTable`\>
+Ƭ **PrimitiveClass**<`TTable`, `TUniqueKey`, `TClient`\>: [`OmitNew`](modules.md#omitnew)<[`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>\> & () => [`PrimitiveInstance`](interfaces/PrimitiveInstance.md)<`TTable`\>
 
 #### Type parameters
 
@@ -620,7 +646,81 @@ ___
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:67](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L67)
+[src/ent/mixins/PrimitiveMixin.ts:67](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L67)
+
+___
+
+### EntClass
+
+Ƭ **EntClass**<`TTable`\>: `Object`
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) = [`DesperateAny`](modules.md#desperateany) |
+
+#### Call signature
+
+• **new EntClass**(): [`Ent`](modules.md#ent)<`TTable`\>
+
+A very shallow interface of Ent class (as a collection of static methods).
+Used in some places where we need the very minimum from the Ent.
+
+##### Returns
+
+[`Ent`](modules.md#ent)<`TTable`\>
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `SCHEMA` | [`Schema`](classes/Schema.md)<`TTable`\> |
+| `VALIDATION` | [`Validation`](classes/Validation.md)<`TTable`\> |
+| `SHARD_LOCATOR` | [`ShardLocator`](classes/ShardLocator.md)<[`Client`](classes/Client.md), `TTable`, `string`\> |
+| `name` | `string` |
+| `loadX` | (`vc`: [`VC`](classes/VC.md), `id`: `string`) => `Promise`<[`Ent`](modules.md#ent)<`TTable`\>\> |
+| `loadNullable` | (`vc`: [`VC`](classes/VC.md), `id`: `string`) => `Promise`<``null`` \| [`Ent`](modules.md#ent)<`TTable`\>\> |
+| `loadIfReadableNullable` | (`vc`: [`VC`](classes/VC.md), `id`: `string`) => `Promise`<``null`` \| [`Ent`](modules.md#ent)<`TTable`\>\> |
+| `count` | (`vc`: [`VC`](classes/VC.md), `where`: [`CountInput`](modules.md#countinput)<`TTable`\>) => `Promise`<`number`\> |
+| `exists` | (`vc`: [`VC`](classes/VC.md), `where`: [`ExistsInput`](modules.md#existsinput)<`TTable`\>) => `Promise`<`boolean`\> |
+| `select` | (`vc`: [`VC`](classes/VC.md), `where`: [`Where`](modules.md#where)<`TTable`\>, `limit`: `number`, `order?`: [`Order`](modules.md#order)<`TTable`\>) => `Promise`<[`Ent`](modules.md#ent)<`TTable`\>[]\> |
+| `selectChunked` | (`vc`: [`VC`](classes/VC.md), `where`: [`Where`](modules.md#where)<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom?`: {}) => `AsyncIterableIterator`<[`Ent`](modules.md#ent)<`TTable`\>[]\> |
+| `loadByX` | (`vc`: [`VC`](classes/VC.md), `keys`: { [K in string]: Value<TTable[K]\> }) => `Promise`<[`Ent`](modules.md#ent)<`TTable`\>\> |
+| `loadByNullable` | (`vc`: [`VC`](classes/VC.md), `input`: { [K in string]: Value<TTable[K]\> }) => `Promise`<``null`` \| [`Ent`](modules.md#ent)<`TTable`\>\> |
+| `insert` | (`vc`: [`VC`](classes/VC.md), `input`: [`InsertInput`](modules.md#insertinput)<`TTable`\>) => `Promise`<`string`\> |
+| `upsert` | (`vc`: [`VC`](classes/VC.md), `input`: [`InsertInput`](modules.md#insertinput)<`TTable`\>) => `Promise`<`string`\> |
+
+#### Defined in
+
+[src/ent/types.ts:27](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L27)
+
+___
+
+### Ent
+
+Ƭ **Ent**<`TTable`\>: `Object`
+
+A very shallow interface of one Ent.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) = {} |
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `id` | `string` |
+| `vc` | [`VC`](classes/VC.md) |
+| `deleteOriginal` | () => `Promise`<`boolean`\> |
+| `updateOriginal` | (`input`: [`UpdateOriginalInput`](modules.md#updateoriginalinput)<`TTable`\>) => `Promise`<`boolean`\> |
+
+#### Defined in
+
+[src/ent/types.ts:67](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L67)
 
 ___
 
@@ -640,7 +740,20 @@ inference, we redefine this type from scratch.
 
 #### Defined in
 
-[src/ent/types.ts:78](https://github.com/clickup/rest-client/blob/master/src/ent/types.ts#L78)
+[src/ent/types.ts:79](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L79)
+
+___
+
+### DesperateAny
+
+Ƭ **DesperateAny**: `any`
+
+In some cases (e.g. when actively working with callbacks), TS is still weak
+enough, so we are not always able to use generics/unknown/never types.
+
+#### Defined in
+
+[src/helpers/misc.ts:10](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L10)
 
 ___
 
@@ -655,11 +768,11 @@ https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
 
 | Name | Type |
 | :------ | :------ |
-| `T` | extends (...`args`: `any`[]) => `any` |
+| `T` | extends (...`args`: `never`[]) => `unknown` |
 
 #### Defined in
 
-[src/helpers/misc.ts:8](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L8)
+[src/helpers/misc.ts:16](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L16)
 
 ___
 
@@ -675,12 +788,12 @@ type where Row is dynamically inferred from the schema.
 
 | Name | Type |
 | :------ | :------ |
-| `TClass` | extends (...`args`: `any`[]) => `any` |
+| `TClass` | extends (...`args`: `never`[]) => `unknown` |
 | `TRet` | `TRet` |
 
 #### Defined in
 
-[src/helpers/misc.ts:15](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L15)
+[src/helpers/misc.ts:26](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L26)
 
 ___
 
@@ -699,7 +812,7 @@ when someone modifies (picks, omits, etc.) a huge type.
 
 #### Defined in
 
-[src/helpers/misc.ts:24](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L24)
+[src/helpers/misc.ts:35](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L35)
 
 ___
 
@@ -717,7 +830,7 @@ Cancels "readonly" specifier on object's properties.
 
 #### Defined in
 
-[src/helpers/misc.ts:29](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L29)
+[src/helpers/misc.ts:40](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L40)
 
 ___
 
@@ -736,7 +849,7 @@ Returns a union type of all tuple strict prefixes:
 
 #### Defined in
 
-[src/helpers/misc.ts:35](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L35)
+[src/helpers/misc.ts:46](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L46)
 
 ___
 
@@ -754,7 +867,7 @@ Picks only partial (optional) keys of an object.
 
 #### Defined in
 
-[src/helpers/misc.ts:44](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L44)
+[src/helpers/misc.ts:55](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L55)
 
 ___
 
@@ -772,17 +885,21 @@ Denotes an option which can be dynamically configured at runtime.
 
 #### Defined in
 
-[src/helpers/misc.ts:51](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L51)
+[src/helpers/misc.ts:62](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L62)
 
 ___
 
-### SQLClientPoolClient
+### SQLClientPoolConn
 
-Ƭ **SQLClientPoolClient**: `PoolClient` & { `processID?`: `number` \| ``null`` ; `id?`: `number` ; `closeAt?`: `number`  }
+Ƭ **SQLClientPoolConn**: [`SQLClientConn`](interfaces/SQLClientConn.md) & { `processID?`: `number` \| ``null`` ; `closeAt?`: `number`  }
+
+Our extension to Pool connection which adds a couple props to the connection
+in on("connect") handler (persistent for the same connection objects, i.e.
+across queries in the same connection).
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:27](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L27)
+[src/sql/SQLClientPool.ts:28](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L28)
 
 ___
 
@@ -795,7 +912,7 @@ framework, but can be used by PG-dependent code.
 
 #### Defined in
 
-[src/sql/SQLQuerySelect.ts:33](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQuerySelect.ts#L33)
+[src/sql/SQLQuerySelect.ts:32](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQuerySelect.ts#L32)
 
 ___
 
@@ -809,7 +926,7 @@ which we don't want to do.
 
 #### Defined in
 
-[src/types.ts:11](https://github.com/clickup/rest-client/blob/master/src/types.ts#L11)
+[src/types.ts:11](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L11)
 
 ___
 
@@ -827,19 +944,19 @@ ___
 
 #### Defined in
 
-[src/types.ts:30](https://github.com/clickup/rest-client/blob/master/src/types.ts#L30)
+[src/types.ts:30](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L30)
 
 ___
 
 ### SpecType
 
-Ƭ **SpecType**: typeof `Boolean` \| typeof `Date` \| typeof [`ID`](modules.md#id) \| typeof `Number` \| typeof `String` \| { `dbValueToJs`: (`dbValue`: `any`) => `any` ; `stringify`: (`jsValue`: `any`) => `string` ; `parse`: (`str`: `string`) => `any`  }
+Ƭ **SpecType**: typeof `Boolean` \| typeof `Date` \| typeof [`ID`](modules.md#id) \| typeof `Number` \| typeof `String` \| { `dbValueToJs`: (`dbValue`: [`DesperateAny`](modules.md#desperateany)) => `unknown` ; `stringify`: (`jsValue`: [`DesperateAny`](modules.md#desperateany)) => `string` ; `parse`: (`str`: `string`) => `unknown`  }
 
 Spec (metadata) of some field.
 
 #### Defined in
 
-[src/types.ts:37](https://github.com/clickup/rest-client/blob/master/src/types.ts#L37)
+[src/types.ts:37](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L37)
 
 ___
 
@@ -860,7 +977,7 @@ ___
 
 #### Defined in
 
-[src/types.ts:75](https://github.com/clickup/rest-client/blob/master/src/types.ts#L75)
+[src/types.ts:75](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L75)
 
 ___
 
@@ -876,7 +993,7 @@ ___
 
 #### Defined in
 
-[src/types.ts:85](https://github.com/clickup/rest-client/blob/master/src/types.ts#L85)
+[src/types.ts:85](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L85)
 
 ___
 
@@ -901,7 +1018,7 @@ fields.
 
 #### Defined in
 
-[src/types.ts:99](https://github.com/clickup/rest-client/blob/master/src/types.ts#L99)
+[src/types.ts:99](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L99)
 
 ___
 
@@ -920,7 +1037,7 @@ source" for a field name (e.g. `{ field: "abc", alias: "$cas.abc" }`).
 
 #### Defined in
 
-[src/types.ts:105](https://github.com/clickup/rest-client/blob/master/src/types.ts#L105)
+[src/types.ts:105](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L105)
 
 ___
 
@@ -939,7 +1056,7 @@ which can potentially be used as a part of unique key.
 
 #### Defined in
 
-[src/types.ts:113](https://github.com/clickup/rest-client/blob/master/src/types.ts#L113)
+[src/types.ts:113](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L113)
 
 ___
 
@@ -957,7 +1074,7 @@ Table -> "user_id" | "some_id" | ...
 
 #### Defined in
 
-[src/types.ts:125](https://github.com/clickup/rest-client/blob/master/src/types.ts#L125)
+[src/types.ts:125](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L125)
 
 ___
 
@@ -975,13 +1092,13 @@ Table -> "user_id" | "some_id" | ...
 
 #### Defined in
 
-[src/types.ts:136](https://github.com/clickup/rest-client/blob/master/src/types.ts#L136)
+[src/types.ts:136](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L136)
 
 ___
 
 ### ValueRequired
 
-Ƭ **ValueRequired**<`TSpec`\>: `TSpec`[``"type"``] extends typeof `Number` ? `number` : `TSpec`[``"type"``] extends typeof `String` ? `string` : `TSpec`[``"type"``] extends typeof `Boolean` ? `boolean` : `TSpec`[``"type"``] extends typeof [`ID`](modules.md#id) ? `string` : `TSpec`[``"type"``] extends typeof `Date` ? `Date` : `TSpec`[``"type"``] extends { `dbValueToJs`: (`dbValue`: `any`) => infer TJSValue  } ? `TSpec`[``"type"``] extends { `stringify`: (`jsValue`: `TJSValue`) => `string` ; `parse`: (`str`: `string`) => `TJSValue`  } ? `TJSValue` : `never` : `never`
+Ƭ **ValueRequired**<`TSpec`\>: `TSpec`[``"type"``] extends typeof `Number` ? `number` : `TSpec`[``"type"``] extends typeof `String` ? `string` : `TSpec`[``"type"``] extends typeof `Boolean` ? `boolean` : `TSpec`[``"type"``] extends typeof [`ID`](modules.md#id) ? `string` : `TSpec`[``"type"``] extends typeof `Date` ? `Date` : `TSpec`[``"type"``] extends { `dbValueToJs`: (`dbValue`: `never`) => infer TJSValue  } ? `TSpec`[``"type"``] extends { `stringify`: (`jsValue`: `TJSValue`) => `string` ; `parse`: (`str`: `string`) => `TJSValue`  } ? `TJSValue` : `never` : `never`
 
 SpecType -> Value deduction (always deduces non-nullable type).
 
@@ -993,7 +1110,7 @@ SpecType -> Value deduction (always deduces non-nullable type).
 
 #### Defined in
 
-[src/types.ts:142](https://github.com/clickup/rest-client/blob/master/src/types.ts#L142)
+[src/types.ts:142](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L142)
 
 ___
 
@@ -1011,7 +1128,7 @@ Spec -> nullable Value or non-nullable Value.
 
 #### Defined in
 
-[src/types.ts:167](https://github.com/clickup/rest-client/blob/master/src/types.ts#L167)
+[src/types.ts:167](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L167)
 
 ___
 
@@ -1029,7 +1146,7 @@ Table -> Row deduction (no symbols).
 
 #### Defined in
 
-[src/types.ts:174](https://github.com/clickup/rest-client/blob/master/src/types.ts#L174)
+[src/types.ts:174](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L174)
 
 ___
 
@@ -1047,7 +1164,7 @@ Insert: Table -> "field1" | "field2" |  ... deduction (required).
 
 #### Defined in
 
-[src/types.ts:181](https://github.com/clickup/rest-client/blob/master/src/types.ts#L181)
+[src/types.ts:181](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L181)
 
 ___
 
@@ -1065,7 +1182,7 @@ Insert: Table -> "created_at" | "field2" |  ... deduction (optional fields).
 
 #### Defined in
 
-[src/types.ts:192](https://github.com/clickup/rest-client/blob/master/src/types.ts#L192)
+[src/types.ts:192](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L192)
 
 ___
 
@@ -1084,7 +1201,7 @@ Excludes id Spec entirely and makes autoInsert/autoUpdate Specs optional.
 
 #### Defined in
 
-[src/types.ts:204](https://github.com/clickup/rest-client/blob/master/src/types.ts#L204)
+[src/types.ts:204](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L204)
 
 ___
 
@@ -1102,7 +1219,7 @@ Update: Table -> "field1" | "created_at" | "updated_at" | ... deduction.
 
 #### Defined in
 
-[src/types.ts:213](https://github.com/clickup/rest-client/blob/master/src/types.ts#L213)
+[src/types.ts:213](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L213)
 
 ___
 
@@ -1125,7 +1242,7 @@ Update: Table -> { field?: string, created_at?: Date, updated_at?: Date }.
 
 #### Defined in
 
-[src/types.ts:226](https://github.com/clickup/rest-client/blob/master/src/types.ts#L226)
+[src/types.ts:226](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L226)
 
 ___
 
@@ -1144,7 +1261,7 @@ unique key on the table; fields must be allowed in insert/upsert.
 
 #### Defined in
 
-[src/types.ts:237](https://github.com/clickup/rest-client/blob/master/src/types.ts#L237)
+[src/types.ts:237](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L237)
 
 ___
 
@@ -1164,7 +1281,7 @@ loadBy operation is allowed for exact unique key attributes only.
 
 #### Defined in
 
-[src/types.ts:248](https://github.com/clickup/rest-client/blob/master/src/types.ts#L248)
+[src/types.ts:248](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L248)
 
 ___
 
@@ -1184,7 +1301,7 @@ selectBy operation is allowed for unique key PREFIX attributes only.
 
 #### Defined in
 
-[src/types.ts:259](https://github.com/clickup/rest-client/blob/master/src/types.ts#L259)
+[src/types.ts:259](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L259)
 
 ___
 
@@ -1202,7 +1319,7 @@ Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
 #### Defined in
 
-[src/types.ts:267](https://github.com/clickup/rest-client/blob/master/src/types.ts#L267)
+[src/types.ts:267](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L267)
 
 ___
 
@@ -1221,7 +1338,7 @@ Table -> [["f1", "ASC"], ["f2", "DESC"]] or [ [{[$literal]: ["a=?", 10]},
 
 #### Defined in
 
-[src/types.ts:301](https://github.com/clickup/rest-client/blob/master/src/types.ts#L301)
+[src/types.ts:301](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L301)
 
 ___
 
@@ -1248,7 +1365,7 @@ Table -> { where: ..., order?: ..., ... }
 
 #### Defined in
 
-[src/types.ts:308](https://github.com/clickup/rest-client/blob/master/src/types.ts#L308)
+[src/types.ts:308](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L308)
 
 ___
 
@@ -1266,7 +1383,7 @@ Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
 #### Defined in
 
-[src/types.ts:318](https://github.com/clickup/rest-client/blob/master/src/types.ts#L318)
+[src/types.ts:318](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L318)
 
 ___
 
@@ -1284,7 +1401,7 @@ Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
 #### Defined in
 
-[src/types.ts:323](https://github.com/clickup/rest-client/blob/master/src/types.ts#L323)
+[src/types.ts:323](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L323)
 
 ___
 
@@ -1302,19 +1419,9 @@ Table -> { id: ["1", "2", "3"], ... }
 
 #### Defined in
 
-[src/types.ts:328](https://github.com/clickup/rest-client/blob/master/src/types.ts#L328)
+[src/types.ts:328](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L328)
 
 ## Variables
-
-### DEFAULT\_MAX\_BATCH\_SIZE
-
-• `Const` **DEFAULT\_MAX\_BATCH\_SIZE**: ``100``
-
-#### Defined in
-
-[src/abstract/Batcher.ts:9](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L9)
-
-___
 
 ### MASTER
 
@@ -1324,7 +1431,7 @@ Master freshness: reads always go to master.
 
 #### Defined in
 
-[src/abstract/Shard.ts:9](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L9)
+[src/abstract/Shard.ts:10](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L10)
 
 ___
 
@@ -1336,7 +1443,7 @@ Stale replica freshness: reads always go to a replica, even if it's stale.
 
 #### Defined in
 
-[src/abstract/Shard.ts:14](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L14)
+[src/abstract/Shard.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L15)
 
 ___
 
@@ -1348,7 +1455,7 @@ The table is located in the global Shard (0).
 
 #### Defined in
 
-[src/ent/Configuration.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L16)
+[src/ent/Configuration.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L16)
 
 ___
 
@@ -1361,7 +1468,7 @@ this VC is used.
 
 #### Defined in
 
-[src/ent/VC.ts:22](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L22)
+[src/ent/VC.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L22)
 
 ___
 
@@ -1376,7 +1483,7 @@ with omni VC, its ent.vc is assigned to either this Ent's "owner" VC
 
 #### Defined in
 
-[src/ent/VC.ts:30](https://github.com/clickup/rest-client/blob/master/src/ent/VC.ts#L30)
+[src/ent/VC.ts:30](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L30)
 
 ___
 
@@ -1386,7 +1493,7 @@ ___
 
 #### Defined in
 
-[src/types.ts:4](https://github.com/clickup/rest-client/blob/master/src/types.ts#L4)
+[src/types.ts:4](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L4)
 
 ## Functions
 
@@ -1432,7 +1539,7 @@ to debug and develop.
 
 #### Defined in
 
-[src/ent/BaseEnt.ts:32](https://github.com/clickup/rest-client/blob/master/src/ent/BaseEnt.ts#L32)
+[src/ent/BaseEnt.ts:32](https://github.com/clickup/ent-framework/blob/master/src/ent/BaseEnt.ts#L32)
 
 ___
 
@@ -1461,7 +1568,7 @@ Simulates an update for a row, as if it's applied to the Ent.
 
 #### Defined in
 
-[src/ent/Triggers.ts:354](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L354)
+[src/ent/Triggers.ts:354](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L354)
 
 ___
 
@@ -1491,7 +1598,7 @@ Modifies the passed class adding VC-stored cache layer to it.
 
 #### Defined in
 
-[src/ent/mixins/CacheMixin.ts:20](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/CacheMixin.ts#L20)
+[src/ent/mixins/CacheMixin.ts:20](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/CacheMixin.ts#L20)
 
 ___
 
@@ -1514,7 +1621,7 @@ Cluster, table schema, privacy rules, triggers etc.).
 
 | Name | Type |
 | :------ | :------ |
-| `Base` | (...`args`: `any`[]) => {} |
+| `Base` | () => {} |
 | `cluster` | [`Cluster`](classes/Cluster.md)<`TClient`, `any`\> |
 | `schema` | [`Schema`](classes/Schema.md)<`TTable`, `TUniqueKey`\> |
 
@@ -1524,7 +1631,7 @@ Cluster, table schema, privacy rules, triggers etc.).
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:86](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L86)
+[src/ent/mixins/ConfigMixin.ts:86](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L86)
 
 ___
 
@@ -1556,7 +1663,7 @@ the primitive operations).
 
 #### Defined in
 
-[src/ent/mixins/HelpersMixin.ts:138](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/HelpersMixin.ts#L138)
+[src/ent/mixins/HelpersMixin.ts:138](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L138)
 
 ___
 
@@ -1587,7 +1694,7 @@ operations. Internally, uses Schema abstractions to run them.
 
 #### Defined in
 
-[src/ent/mixins/PrimitiveMixin.ts:196](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/PrimitiveMixin.ts#L196)
+[src/ent/mixins/PrimitiveMixin.ts:196](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L196)
 
 ___
 
@@ -1660,7 +1767,7 @@ Example of a chain:
 
 #### Defined in
 
-[src/ent/rules/evaluate.ts:53](https://github.com/clickup/rest-client/blob/master/src/ent/rules/evaluate.ts#L53)
+[src/ent/rules/evaluate.ts:52](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/evaluate.ts#L52)
 
 ___
 
@@ -1684,7 +1791,7 @@ undefined values.
 
 #### Defined in
 
-[src/helpers/deepEqual.ts:36](https://github.com/clickup/rest-client/blob/master/src/helpers/deepEqual.ts#L36)
+[src/helpers/deepEqual.ts:36](https://github.com/clickup/ent-framework/blob/master/src/helpers/deepEqual.ts#L36)
 
 ___
 
@@ -1712,7 +1819,7 @@ Turns a list of Promises to a list of Promise resolution results.
 
 #### Defined in
 
-[src/helpers/misc.ts:56](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L56)
+[src/helpers/misc.ts:67](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L67)
 
 ▸ **join**<`TRec`\>(`promises`): `Promise`<{ -readonly [K in keyof TRec]: Awaited<TRec[K]\> }\>
 
@@ -1737,7 +1844,7 @@ Promise resolution results.
 
 #### Defined in
 
-[src/helpers/misc.ts:64](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L64)
+[src/helpers/misc.ts:75](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L75)
 
 ___
 
@@ -1767,13 +1874,13 @@ A shortcut for `await join(arr.map(async ...))`.
 
 #### Defined in
 
-[src/helpers/misc.ts:135](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L135)
+[src/helpers/misc.ts:146](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L146)
 
 ___
 
 ### copyStack
 
-▸ **copyStack**<`TError`\>(`toErr`, `fromErr`): `TError`
+▸ **copyStack**<`TError`, `TFrom`\>(`toErr`, `fromErr`): `TError`
 
 Copies a stack-trace from fromErr error into toErr object. Useful for
 lightweight exceptions wrapping.
@@ -1783,13 +1890,14 @@ lightweight exceptions wrapping.
 | Name | Type |
 | :------ | :------ |
 | `TError` | extends `Error` |
+| `TFrom` | extends `undefined` \| ``null`` \| { `stack?`: `unknown` ; `message?`: `unknown`  } |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `toErr` | `TError` |
-| `fromErr` | `any` |
+| `fromErr` | `TFrom` |
 
 #### Returns
 
@@ -1797,7 +1905,7 @@ lightweight exceptions wrapping.
 
 #### Defined in
 
-[src/helpers/misc.ts:146](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L146)
+[src/helpers/misc.ts:157](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L157)
 
 ___
 
@@ -1821,7 +1929,7 @@ test with snapshot for examples.
 
 #### Defined in
 
-[src/helpers/misc.ts:176](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L176)
+[src/helpers/misc.ts:187](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L187)
 
 ___
 
@@ -1840,7 +1948,7 @@ processes.
 
 #### Defined in
 
-[src/helpers/misc.ts:197](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L197)
+[src/helpers/misc.ts:208](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L208)
 
 ___
 
@@ -1863,7 +1971,7 @@ https://medium.com/@chris_72272/what-is-the-fastest-node-js-hashing-algorithm-c1
 
 #### Defined in
 
-[src/helpers/misc.ts:207](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L207)
+[src/helpers/misc.ts:218](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L218)
 
 ___
 
@@ -1885,7 +1993,31 @@ Used to calculate stable hashes of e.g. unique keys.
 
 #### Defined in
 
-[src/helpers/misc.ts:214](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L214)
+[src/helpers/misc.ts:225](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L225)
+
+___
+
+### jsonHash
+
+▸ **jsonHash**(`obj`): `string`
+
+Similar to objectHash(), but uses JSON.stringify() under the hood, assuming
+that it's faster than objectHash(). Also, doesn't throw when the object
+contains bigint values (as opposed to JSON.stringify()).
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `obj` | `unknown` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/helpers/misc.ts:237](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L237)
 
 ___
 
@@ -1907,7 +2039,29 @@ Indents each line of the text with 2 spaces.
 
 #### Defined in
 
-[src/helpers/misc.ts:224](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L224)
+[src/helpers/misc.ts:248](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L248)
+
+___
+
+### inspectCompact
+
+▸ **inspectCompact**(`obj`): `string`
+
+A shorthand for inspect() in compact/no-break mode.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `obj` | `unknown` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/helpers/misc.ts:255](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L255)
 
 ___
 
@@ -1923,7 +2077,7 @@ representations.
 
 | Name | Type |
 | :------ | :------ |
-| `idIn` | `any` |
+| `idIn` | `unknown` |
 
 #### Returns
 
@@ -1931,7 +2085,7 @@ representations.
 
 #### Defined in
 
-[src/helpers/misc.ts:233](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L233)
+[src/helpers/misc.ts:267](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L267)
 
 ___
 
@@ -1950,7 +2104,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `x?` | ``null`` \| `T` |
-| `message?` | `string` \| `Error` |
+| `message?` | `string` \| `Error` \| () => `string` \| `Error` |
 
 #### Returns
 
@@ -1958,7 +2112,7 @@ ___
 
 #### Defined in
 
-[src/helpers/misc.ts:246](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L246)
+[src/helpers/misc.ts:280](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L280)
 
 ___
 
@@ -1990,7 +2144,7 @@ It's like an analog of "async on intent" comment in the code.
 
 #### Defined in
 
-[src/helpers/misc.ts:272](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L272)
+[src/helpers/misc.ts:313](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L313)
 
 ___
 
@@ -1999,7 +2153,9 @@ ___
 ▸ **hasKey**<`K`\>(`k`, `o`): o is { [\_ in string \| symbol]: any }
 
 A typesafe-way to invariant the object's key presence and being
-non-undefined.
+non-undefined. It is not always working for union types: sometimes it asserts
+the value of the key to be "any". It also doesn't remove "undefined" from the
+type of the value.
 
 #### Type parameters
 
@@ -2012,7 +2168,7 @@ non-undefined.
 | Name | Type |
 | :------ | :------ |
 | `k` | `K` |
-| `o` | `any` |
+| `o` | `unknown` |
 
 #### Returns
 
@@ -2020,7 +2176,7 @@ o is { [\_ in string \| symbol]: any }
 
 #### Defined in
 
-[src/helpers/misc.ts:287](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L287)
+[src/helpers/misc.ts:330](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L330)
 
 ___
 
@@ -2049,7 +2205,7 @@ Same as Object.entries(), but returns strongly-typed entries.
 
 #### Defined in
 
-[src/helpers/misc.ts:302](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L302)
+[src/helpers/misc.ts:345](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L345)
 
 ___
 
@@ -2077,7 +2233,7 @@ If the passed value is a function, calls it; otherwise, returns it intact.
 
 #### Defined in
 
-[src/helpers/misc.ts:311](https://github.com/clickup/rest-client/blob/master/src/helpers/misc.ts#L311)
+[src/helpers/misc.ts:354](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L354)
 
 ___
 
@@ -2100,7 +2256,7 @@ THis function checks that a string can be passed to PG as a bigint.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:428](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L428)
+[src/sql/SQLClient.ts:620](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L620)
 
 ___
 
@@ -2114,7 +2270,7 @@ Optionally encloses a PG identifier (like table name) in "".
 
 | Name | Type |
 | :------ | :------ |
-| `ident` | `any` |
+| `ident` | `string` |
 
 #### Returns
 
@@ -2122,7 +2278,7 @@ Optionally encloses a PG identifier (like table name) in "".
 
 #### Defined in
 
-[src/sql/SQLClient.ts:438](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L438)
+[src/sql/SQLClient.ts:630](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L630)
 
 ___
 
@@ -2140,7 +2296,7 @@ overflow SQL error.
 
 | Name | Type |
 | :------ | :------ |
-| `v` | `any` |
+| `v` | `unknown` |
 
 #### Returns
 
@@ -2148,7 +2304,7 @@ overflow SQL error.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:451](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L451)
+[src/sql/SQLClient.ts:643](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L643)
 
 ___
 
@@ -2171,7 +2327,7 @@ be a preferred way of escaping when we know that the value is a bigint.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:469](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L469)
+[src/sql/SQLClient.ts:661](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L661)
 
 ___
 
@@ -2193,7 +2349,7 @@ Escapes a string as PG string literal.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:485](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L485)
+[src/sql/SQLClient.ts:677](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L677)
 
 ___
 
@@ -2215,7 +2371,7 @@ Escapes an array of strings.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:496](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L496)
+[src/sql/SQLClient.ts:688](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L688)
 
 ___
 
@@ -2238,7 +2394,7 @@ Escapes a date as PG string literal.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:517](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L517)
+[src/sql/SQLClient.ts:709](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L709)
 
 ___
 
@@ -2260,7 +2416,7 @@ Escapes a boolean as PG string literal.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:528](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L528)
+[src/sql/SQLClient.ts:720](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L720)
 
 ___
 
@@ -2293,7 +2449,7 @@ treat them as the element itself. I.e. instead of emitting "(123)" or
 
 #### Defined in
 
-[src/sql/SQLClient.ts:546](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L546)
+[src/sql/SQLClient.ts:738](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L738)
 
 ___
 
@@ -2320,7 +2476,7 @@ of unique key fields), not with values.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:564](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L564)
+[src/sql/SQLClient.ts:756](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L756)
 
 ___
 
@@ -2335,8 +2491,8 @@ escaping the value as string.
 
 | Name | Type |
 | :------ | :------ |
-| `v` | `any` |
-| `stringify` | (`v`: `any`) => `string` |
+| `v` | `unknown` |
+| `stringify` | (`v`: `unknown`) => `string` |
 
 #### Returns
 
@@ -2344,7 +2500,7 @@ escaping the value as string.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:578](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L578)
+[src/sql/SQLClient.ts:770](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L770)
 
 ___
 
@@ -2372,7 +2528,7 @@ placeholder for the replacing value.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:591](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L591)
+[src/sql/SQLClient.ts:786](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L786)
 
 ___
 
@@ -2386,7 +2542,7 @@ ___
 
 #### Defined in
 
-[src/sql/__benchmarks__/batched-inserts.benchmark.ts:29](https://github.com/clickup/rest-client/blob/master/src/sql/__benchmarks__/batched-inserts.benchmark.ts#L29)
+[src/sql/__benchmarks__/batched-inserts.benchmark.ts:29](https://github.com/clickup/ent-framework/blob/master/src/sql/__benchmarks__/batched-inserts.benchmark.ts#L29)
 
 ___
 
@@ -2409,7 +2565,7 @@ used from the outside for logging/debugging, so it's here, not in __tests__.
 
 #### Defined in
 
-[src/sql/helpers/buildShape.ts:52](https://github.com/clickup/rest-client/blob/master/src/sql/helpers/buildShape.ts#L52)
+[src/sql/helpers/buildShape.ts:52](https://github.com/clickup/ent-framework/blob/master/src/sql/helpers/buildShape.ts#L52)
 
 ___
 
@@ -2434,4 +2590,4 @@ Parses composite row input into parts. See references at:
 
 #### Defined in
 
-[src/sql/helpers/parseCompositeRow.ts:7](https://github.com/clickup/rest-client/blob/master/src/sql/helpers/parseCompositeRow.ts#L7)
+[src/sql/helpers/parseCompositeRow.ts:7](https://github.com/clickup/ent-framework/blob/master/src/sql/helpers/parseCompositeRow.ts#L7)

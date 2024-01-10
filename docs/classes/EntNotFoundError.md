@@ -21,7 +21,7 @@ Error: non-existing ID in the database.
 | Name | Type | Default value |
 | :------ | :------ | :------ |
 | `entName` | `string` | `undefined` |
-| `where` | `Record`<`string`, `any`\> | `undefined` |
+| `where` | `Record`<`string`, `unknown`\> | `undefined` |
 | `cause` | `unknown` | `null` |
 
 #### Overrides
@@ -30,7 +30,7 @@ Error: non-existing ID in the database.
 
 #### Defined in
 
-[src/ent/errors/EntNotFoundError.ts:8](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntNotFoundError.ts#L8)
+[src/ent/errors/EntNotFoundError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotFoundError.ts#L8)
 
 ## Properties
 
@@ -44,7 +44,7 @@ Error: non-existing ID in the database.
 
 #### Defined in
 
-[src/ent/errors/EntAccessError.ts:9](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L9)
+[src/ent/errors/EntAccessError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L8)
 
 ___
 
@@ -58,14 +58,14 @@ ___
 
 #### Defined in
 
-[src/ent/errors/EntAccessError.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L12)
+[src/ent/errors/EntAccessError.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L11)
 
 ___
 
 ### where
 
-• `Readonly` **where**: `Record`<`string`, `any`\>
+• `Readonly` **where**: `Record`<`string`, `unknown`\>
 
 #### Defined in
 
-[src/ent/errors/EntNotFoundError.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntNotFoundError.ts#L10)
+[src/ent/errors/EntNotFoundError.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotFoundError.ts#L10)

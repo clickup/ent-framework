@@ -1,31 +1,45 @@
 [@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / FieldIs
 
-# Class: FieldIs
+# Class: FieldIs<TField, TRow\>
 
 Checks that the validator function returns true for the value in some field.
 
+## Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TField` | extends `string` |
+| `TRow` | extends `Partial`<`Record`<`TField`, `unknown`\>\> |
+
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)<`Record`<`string`, `any`\>\>
+- [`Predicate`](../interfaces/Predicate.md)<`TRow`\>
 - [`EntValidationErrorInfo`](../interfaces/EntValidationErrorInfo.md)
 
 ## Constructors
 
 ### constructor
 
-• **new FieldIs**(`field`, `validator`, `message`)
+• **new FieldIs**<`TField`, `TRow`\>(`field`, `validator`, `message`)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TField` | extends `string` |
+| `TRow` | extends `Partial`<`Record`<`TField`, `unknown`\>\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `field` | `string` |
-| `validator` | (`fieldValue`: `any`, `row`: `Record`<`string`, `any`\>, `vc`: [`VC`](VC.md)) => `boolean` \| `Promise`<`boolean`\> |
+| `field` | `TField` |
+| `validator` | (`fieldValue`: `TRow`[`TField`], `row`: `TRow`, `vc`: [`VC`](VC.md)) => `boolean` \| `Promise`<`boolean`\> |
 | `message` | `string` |
 
 #### Defined in
 
-[src/ent/predicates/FieldIs.ts:13](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L13)
+[src/ent/predicates/FieldIs.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L15)
 
 ## Properties
 
@@ -39,13 +53,13 @@ Checks that the validator function returns true for the value in some field.
 
 #### Defined in
 
-[src/ent/predicates/FieldIs.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L11)
+[src/ent/predicates/FieldIs.ts:13](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L13)
 
 ___
 
 ### field
 
-• `Readonly` **field**: `string`
+• `Readonly` **field**: `TField`
 
 #### Implementation of
 
@@ -53,13 +67,13 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/FieldIs.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L14)
+[src/ent/predicates/FieldIs.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L16)
 
 ___
 
 ### validator
 
-• `Readonly` **validator**: (`fieldValue`: `any`, `row`: `Record`<`string`, `any`\>, `vc`: [`VC`](VC.md)) => `boolean` \| `Promise`<`boolean`\>
+• `Readonly` **validator**: (`fieldValue`: `TRow`[`TField`], `row`: `TRow`, `vc`: [`VC`](VC.md)) => `boolean` \| `Promise`<`boolean`\>
 
 #### Type declaration
 
@@ -69,8 +83,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `fieldValue` | `any` |
-| `row` | `Record`<`string`, `any`\> |
+| `fieldValue` | `TRow`[`TField`] |
+| `row` | `TRow` |
 | `vc` | [`VC`](VC.md) |
 
 ##### Returns
@@ -79,7 +93,7 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/FieldIs.ts:15](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L15)
+[src/ent/predicates/FieldIs.ts:17](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L17)
 
 ___
 
@@ -93,7 +107,7 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/FieldIs.ts:20](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L20)
+[src/ent/predicates/FieldIs.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L22)
 
 ## Methods
 
@@ -106,7 +120,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | `Record`<`string`, `any`\> |
+| `row` | `TRow` |
 
 #### Returns
 
@@ -118,4 +132,4 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/FieldIs.ts:23](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/FieldIs.ts#L23)
+[src/ent/predicates/FieldIs.ts:25](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L25)

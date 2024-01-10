@@ -38,7 +38,7 @@ that this interface is the only common part of them all.
 
 #### Defined in
 
-[src/sql/SQLQuerySelectBy.ts:21](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQuerySelectBy.ts#L21)
+[src/sql/SQLQuerySelectBy.ts:21](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQuerySelectBy.ts#L21)
 
 ## Properties
 
@@ -52,7 +52,7 @@ that this interface is the only common part of them all.
 
 #### Defined in
 
-[src/sql/SQLQuerySelectBy.ts:19](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQuerySelectBy.ts#L19)
+[src/sql/SQLQuerySelectBy.ts:19](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQuerySelectBy.ts#L19)
 
 ___
 
@@ -62,7 +62,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLQuerySelectBy.ts:22](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQuerySelectBy.ts#L22)
+[src/sql/SQLQuerySelectBy.ts:22](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQuerySelectBy.ts#L22)
 
 ___
 
@@ -72,7 +72,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLQuerySelectBy.ts:23](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQuerySelectBy.ts#L23)
+[src/sql/SQLQuerySelectBy.ts:23](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQuerySelectBy.ts#L23)
 
 ## Methods
 
@@ -97,4 +97,4 @@ ___
 
 #### Defined in
 
-[src/sql/SQLQuerySelectBy.ts:26](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQuerySelectBy.ts#L26)
+[src/sql/SQLQuerySelectBy.ts:26](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQuerySelectBy.ts#L26)

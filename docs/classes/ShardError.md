@@ -2,11 +2,12 @@
 
 # Class: ShardError
 
-Thrown by the engine when an error is related to sharding.
+This non-retriable error is thrown when the system cannot detect the target
+shard to work with (e.g. a null ID or a missing field or something else).
 
 ## Hierarchy
 
-- [`ServerError`](ServerError.md)
+- `Error`
 
   ↳ **`ShardError`**
 
@@ -14,44 +15,19 @@ Thrown by the engine when an error is related to sharding.
 
 ### constructor
 
-• **new ShardError**(`origError`, `where`, `postAction`)
+• **new ShardError**(`message`, `where?`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `origError` | `any` |
-| `where` | `string` |
-| `postAction` | ``"rediscover"`` \| ``"fail"`` |
+| `message` | `string` |
+| `where?` | `string` |
 
 #### Overrides
 
-[ServerError](ServerError.md).[constructor](ServerError.md#constructor)
+Error.constructor
 
 #### Defined in
 
-[src/abstract/ShardError.ts:7](https://github.com/clickup/rest-client/blob/master/src/abstract/ShardError.ts#L7)
-
-## Properties
-
-### origError
-
-• `Readonly` **origError**: `any`
-
-#### Inherited from
-
-[ServerError](ServerError.md).[origError](ServerError.md#origerror)
-
-#### Defined in
-
-[src/abstract/ServerError.ts:10](https://github.com/clickup/rest-client/blob/master/src/abstract/ServerError.ts#L10)
-
-___
-
-### postAction
-
-• `Readonly` **postAction**: ``"rediscover"`` \| ``"fail"``
-
-#### Defined in
-
-[src/abstract/ShardError.ts:10](https://github.com/clickup/rest-client/blob/master/src/abstract/ShardError.ts#L10)
+[src/abstract/ShardError.ts:6](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardError.ts#L6)

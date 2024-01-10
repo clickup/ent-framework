@@ -52,7 +52,7 @@ Schema<TTable, TUniqueKey\>.constructor
 
 #### Defined in
 
-[src/abstract/Schema.ts:119](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L119)
+[src/abstract/Schema.ts:119](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L119)
 
 ## Properties
 
@@ -66,7 +66,7 @@ Schema<TTable, TUniqueKey\>.constructor
 
 #### Defined in
 
-[src/abstract/Schema.ts:42](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L42)
+[src/abstract/Schema.ts:42](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L42)
 
 ___
 
@@ -84,7 +84,7 @@ x.constructor is Function).
 
 #### Defined in
 
-[src/abstract/Schema.ts:49](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L49)
+[src/abstract/Schema.ts:49](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L49)
 
 ___
 
@@ -100,7 +100,7 @@ For SQL-like databases, it's likely a table name.
 
 #### Defined in
 
-[src/abstract/Schema.ts:121](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L121)
+[src/abstract/Schema.ts:121](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L121)
 
 ___
 
@@ -116,7 +116,7 @@ Structure of the table.
 
 #### Defined in
 
-[src/abstract/Schema.ts:123](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L123)
+[src/abstract/Schema.ts:123](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L123)
 
 ___
 
@@ -132,7 +132,7 @@ Fields which the native unique key consists of (if any).
 
 #### Defined in
 
-[src/abstract/Schema.ts:125](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L125)
+[src/abstract/Schema.ts:125](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L125)
 
 ## Methods
 
@@ -153,7 +153,7 @@ trigger on the Ent which needs to know the ID beforehand.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:31](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L31)
+[src/sql/SQLSchema.ts:31](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L31)
 
 ___
 
@@ -180,7 +180,7 @@ constraint, otherwise returns the row ID.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:35](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L35)
+[src/sql/SQLSchema.ts:35](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L35)
 
 ___
 
@@ -206,7 +206,7 @@ Upserts a row. Always returns the row ID.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:39](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L39)
+[src/sql/SQLSchema.ts:39](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L39)
 
 ___
 
@@ -233,7 +233,7 @@ Updates one single row by its ID. Returns true if it actually existed.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:43](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L43)
+[src/sql/SQLSchema.ts:43](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L43)
 
 ___
 
@@ -259,7 +259,7 @@ Deletes a row by id. Returns true if it actually existed.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:47](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L47)
+[src/sql/SQLSchema.ts:47](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L47)
 
 ___
 
@@ -286,7 +286,7 @@ returns a row by its ID or null if it's not found.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:51](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L51)
+[src/sql/SQLSchema.ts:51](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L51)
 
 ___
 
@@ -313,7 +313,7 @@ unique key, not on an ID). Returns null if it's not found.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:55](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L55)
+[src/sql/SQLSchema.ts:55](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L55)
 
 ___
 
@@ -341,7 +341,7 @@ returns all rows whose unique key prefix matches the input.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:59](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L59)
+[src/sql/SQLSchema.ts:59](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L59)
 
 ___
 
@@ -367,7 +367,7 @@ Returns all rows matching an arbitrary query.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:65](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L65)
+[src/sql/SQLSchema.ts:65](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L65)
 
 ___
 
@@ -393,7 +393,7 @@ Returns the number of rows matching an arbitrary query.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:69](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L69)
+[src/sql/SQLSchema.ts:69](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L69)
 
 ___
 
@@ -420,4 +420,4 @@ whether at least one row exists, and don't need a precise count.
 
 #### Defined in
 
-[src/sql/SQLSchema.ts:73](https://github.com/clickup/rest-client/blob/master/src/sql/SQLSchema.ts#L73)
+[src/sql/SQLSchema.ts:73](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLSchema.ts#L73)

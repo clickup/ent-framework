@@ -43,7 +43,7 @@ Motivation:
 
 #### Defined in
 
-[src/ent/Configuration.ts:143](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L143)
+[src/ent/Configuration.ts:145](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L145)
 
 ## Properties
 
@@ -75,7 +75,7 @@ defined in most of the cases.
 
 #### Defined in
 
-[src/ent/Configuration.ts:72](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L72)
+[src/ent/Configuration.ts:74](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L74)
 
 ___
 
@@ -89,7 +89,7 @@ value in this field, inverses allow to locate Shard(s) of the Ent.
 
 #### Defined in
 
-[src/ent/Configuration.ts:76](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L76)
+[src/ent/Configuration.ts:78](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L78)
 
 ___
 
@@ -103,7 +103,7 @@ in the privacy rules chain, thus it's bullet-proof.
 
 #### Defined in
 
-[src/ent/Configuration.ts:82](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L82)
+[src/ent/Configuration.ts:84](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L84)
 
 ___
 
@@ -132,7 +132,7 @@ even if the callback is not set (to a guest VC in such cases).
 
 #### Defined in
 
-[src/ent/Configuration.ts:86](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L86)
+[src/ent/Configuration.ts:88](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L88)
 
 ___
 
@@ -144,7 +144,7 @@ Privacy rules checked on every row loaded from the DB.
 
 #### Defined in
 
-[src/ent/Configuration.ts:88](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L88)
+[src/ent/Configuration.ts:90](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L90)
 
 ___
 
@@ -165,7 +165,7 @@ Privacy rules checked before a row is inserted to the DB.
 
 #### Defined in
 
-[src/ent/Configuration.ts:99](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L99)
+[src/ent/Configuration.ts:101](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L101)
 
 ___
 
@@ -179,7 +179,7 @@ Privacy rules checked before a row is updated in the DB.
 
 #### Defined in
 
-[src/ent/Configuration.ts:103](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L103)
+[src/ent/Configuration.ts:105](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L105)
 
 ___
 
@@ -193,19 +193,19 @@ Privacy rules checked before a row is deleted in the DB.
 
 #### Defined in
 
-[src/ent/Configuration.ts:107](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L107)
+[src/ent/Configuration.ts:109](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L109)
 
 ___
 
 ### validators
 
-• `Optional` `Readonly` **validators**: [`Predicate`](../interfaces/Predicate.md)<[`Row`](../modules.md#row)<`TTable`\>\> & [`EntValidationErrorInfo`](../interfaces/EntValidationErrorInfo.md)[]
+• `Optional` `Readonly` **validators**: [`Predicate`](../interfaces/Predicate.md)<[`InsertInput`](../modules.md#insertinput)<`TTable`\>\> & [`EntValidationErrorInfo`](../interfaces/EntValidationErrorInfo.md)[]
 
 Custom field values validators run before any insert/update.
 
 #### Defined in
 
-[src/ent/Configuration.ts:109](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L109)
+[src/ent/Configuration.ts:111](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L111)
 
 ___
 
@@ -217,7 +217,7 @@ Triggers run before every insert.
 
 #### Defined in
 
-[src/ent/Configuration.ts:111](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L111)
+[src/ent/Configuration.ts:113](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L113)
 
 ___
 
@@ -229,7 +229,7 @@ Triggers run before every update.
 
 #### Defined in
 
-[src/ent/Configuration.ts:113](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L113)
+[src/ent/Configuration.ts:115](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L115)
 
 ___
 
@@ -241,7 +241,7 @@ Triggers run before every delete.
 
 #### Defined in
 
-[src/ent/Configuration.ts:118](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L118)
+[src/ent/Configuration.ts:120](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L120)
 
 ___
 
@@ -255,7 +255,7 @@ if the deps are modified.
 
 #### Defined in
 
-[src/ent/Configuration.ts:122](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L122)
+[src/ent/Configuration.ts:124](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L124)
 
 ___
 
@@ -267,7 +267,7 @@ Triggers run after every delete.
 
 #### Defined in
 
-[src/ent/Configuration.ts:127](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L127)
+[src/ent/Configuration.ts:129](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L129)
 
 ___
 
@@ -279,7 +279,7 @@ Triggers run after every update.
 
 #### Defined in
 
-[src/ent/Configuration.ts:129](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L129)
+[src/ent/Configuration.ts:131](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L131)
 
 ___
 
@@ -291,7 +291,7 @@ Triggers run after every delete.
 
 #### Defined in
 
-[src/ent/Configuration.ts:134](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L134)
+[src/ent/Configuration.ts:136](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L136)
 
 ___
 
@@ -305,4 +305,4 @@ if the deps are modified.
 
 #### Defined in
 
-[src/ent/Configuration.ts:138](https://github.com/clickup/rest-client/blob/master/src/ent/Configuration.ts#L138)
+[src/ent/Configuration.ts:140](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L140)

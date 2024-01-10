@@ -12,7 +12,7 @@ Each Rule evaluates to some Decision (or throws).
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L10)
+[src/ent/rules/Rule.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L10)
 
 ___
 
@@ -22,7 +22,7 @@ ___
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L11)
+[src/ent/rules/Rule.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L11)
 
 ___
 
@@ -32,7 +32,7 @@ ___
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L12)
+[src/ent/rules/Rule.ts:12](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L12)
 
 ___
 
@@ -42,4 +42,4 @@ ___
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:13](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L13)
+[src/ent/rules/Rule.ts:13](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L13)

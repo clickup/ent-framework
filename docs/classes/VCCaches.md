@@ -42,7 +42,7 @@ Map&lt;TKey, TValue\&gt;.constructor
 
 #### Defined in
 
-[src/ent/VCCaches.ts:7](https://github.com/clickup/rest-client/blob/master/src/ent/VCCaches.ts#L7)
+[src/ent/VCCaches.ts:7](https://github.com/clickup/ent-framework/blob/master/src/ent/VCCaches.ts#L7)
 
 ## Methods
 
@@ -69,7 +69,7 @@ Map.get
 
 #### Defined in
 
-[src/ent/VCCaches.ts:15](https://github.com/clickup/rest-client/blob/master/src/ent/VCCaches.ts#L15)
+[src/ent/VCCaches.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/VCCaches.ts#L15)
 
 ___
 
@@ -91,4 +91,4 @@ Called periodically after VC#cache() was called at least once.
 
 #### Defined in
 
-[src/ent/VCCaches.ts:26](https://github.com/clickup/rest-client/blob/master/src/ent/VCCaches.ts#L26)
+[src/ent/VCCaches.ts:26](https://github.com/clickup/ent-framework/blob/master/src/ent/VCCaches.ts#L26)

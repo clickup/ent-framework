@@ -18,7 +18,7 @@ Delay between calling resolver.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:9](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L9)
+[src/helpers/CachedRefreshedValue.ts:9](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L9)
 
 ___
 
@@ -30,7 +30,28 @@ Log a timeout Error if a resolver takes more than X ms to complete.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:11](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L11)
+[src/helpers/CachedRefreshedValue.ts:11](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L11)
+
+___
+
+### deps
+
+• **deps**: `Object`
+
+The handler deps.handler() is called every deps.delayMs; if it returns a
+different value than previously, then waiting for the next delayMs is
+interrupted prematurely, and the value gets refreshed.
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `delayMs` | [`MaybeCallable`](../modules.md#maybecallable)<`number`\> |
+| `handler` | () => `string` |
+
+#### Defined in
+
+[src/helpers/CachedRefreshedValue.ts:15](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L15)
 
 ___
 
@@ -51,17 +72,17 @@ function would eventually either resolve or throw.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:14](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L14)
+[src/helpers/CachedRefreshedValue.ts:21](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L21)
 
 ___
 
 ### onError
 
-• **onError**: (`error`: `unknown`) => `void`
+• **onError**: (`error`: `unknown`, `elapsed`: `number`) => `void`
 
 #### Type declaration
 
-▸ (`error`): `void`
+▸ (`error`, `elapsed`): `void`
 
 An error handler.
 
@@ -70,6 +91,7 @@ An error handler.
 | Name | Type |
 | :------ | :------ |
 | `error` | `unknown` |
+| `elapsed` | `number` |
 
 ##### Returns
 
@@ -77,7 +99,7 @@ An error handler.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:16](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L16)
+[src/helpers/CachedRefreshedValue.ts:23](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L23)
 
 ___
 
@@ -103,4 +125,4 @@ A custom delay implementation.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:18](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L18)
+[src/helpers/CachedRefreshedValue.ts:25](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L25)

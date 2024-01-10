@@ -26,7 +26,7 @@ Always passes; used for e.g. globally accessed objects.
 
 #### Defined in
 
-[src/ent/predicates/True.ts:8](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/True.ts#L8)
+[src/ent/predicates/True.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/True.ts#L8)
 
 ## Methods
 
@@ -50,4 +50,4 @@ Always passes; used for e.g. globally accessed objects.
 
 #### Defined in
 
-[src/ent/predicates/True.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/True.ts#L10)
+[src/ent/predicates/True.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/True.ts#L10)

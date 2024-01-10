@@ -10,7 +10,7 @@
 
 #### Defined in
 
-[src/abstract/Loggers.ts:12](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L12)
+[src/abstract/Loggers.ts:12](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L12)
 
 ___
 
@@ -20,7 +20,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:13](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L13)
+[src/abstract/Loggers.ts:13](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L13)
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:14](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L14)
+[src/abstract/Loggers.ts:14](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L14)
 
 ___
 
@@ -40,7 +40,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:15](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L15)
+[src/abstract/Loggers.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L15)
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:16](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L16)
+[src/abstract/Loggers.ts:16](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L16)
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:17](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L17)
+[src/abstract/Loggers.ts:17](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L17)
 
 ___
 
@@ -70,17 +70,17 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:18](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L18)
+[src/abstract/Loggers.ts:18](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L18)
 
 ___
 
 ### output
 
-• **output**: `any`
+• **output**: `unknown`
 
 #### Defined in
 
-[src/abstract/Loggers.ts:19](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L19)
+[src/abstract/Loggers.ts:19](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L19)
 
 ___
 
@@ -97,7 +97,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:20](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L20)
+[src/abstract/Loggers.ts:20](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L20)
 
 ___
 
@@ -115,7 +115,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:24](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L24)
+[src/abstract/Loggers.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L24)
 
 ___
 
@@ -125,7 +125,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:29](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L29)
+[src/abstract/Loggers.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L29)
 
 ___
 
@@ -135,7 +135,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:30](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L30)
+[src/abstract/Loggers.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L30)
 
 ___
 
@@ -145,4 +145,4 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:31](https://github.com/clickup/rest-client/blob/master/src/abstract/Loggers.ts#L31)
+[src/abstract/Loggers.ts:31](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L31)

@@ -14,20 +14,14 @@
 
 ### constructor
 
-• **new ConfigClass**(`...args`)
+• **new ConfigClass**()
 
 TS requires us to have a public constructor to infer instance types in
 various places. We make this constructor throw if it's called.
 
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `...args` | `any`[] |
-
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:79](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L79)
+[src/ent/mixins/ConfigMixin.ts:79](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L79)
 
 ## Properties
 
@@ -51,7 +45,7 @@ a function, but having a class is a little more natural.
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:36](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L36)
+[src/ent/mixins/ConfigMixin.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L36)
 
 ___
 
@@ -63,7 +57,7 @@ A Cluster where this Ent lives.
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:43](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L43)
+[src/ent/mixins/ConfigMixin.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L43)
 
 ___
 
@@ -75,7 +69,7 @@ A schema which represents this Ent.
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:48](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L48)
+[src/ent/mixins/ConfigMixin.ts:48](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L48)
 
 ___
 
@@ -87,19 +81,19 @@ Defines how to find the right Shard during Ent insertion.
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:53](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L53)
+[src/ent/mixins/ConfigMixin.ts:53](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L53)
 
 ___
 
 ### SHARD\_LOCATOR
 
-• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)<`TClient`, [`FieldOfIDType`](../modules.md#fieldofidtype)<`TTable`\>\>
+• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)<`TClient`, `TTable`, [`FieldOfIDType`](../modules.md#fieldofidtype)<`TTable`\>\>
 
 Shard locator for this Ent, responsible for resolving IDs into Shard objects.
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:58](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L58)
+[src/ent/mixins/ConfigMixin.ts:58](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L58)
 
 ___
 
@@ -111,7 +105,7 @@ Privacy rules for this Ent class.
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:63](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L63)
+[src/ent/mixins/ConfigMixin.ts:63](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L63)
 
 ___
 
@@ -123,7 +117,7 @@ Triggers for this Ent class.
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:68](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L68)
+[src/ent/mixins/ConfigMixin.ts:68](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L68)
 
 ___
 
@@ -135,7 +129,7 @@ Inverse assoc managers for fields.
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:73](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L73)
+[src/ent/mixins/ConfigMixin.ts:73](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L73)
 
 ## Methods
 
@@ -155,4 +149,4 @@ abstract methods in TS yet, so making it non-abstract.
 
 #### Defined in
 
-[src/ent/mixins/ConfigMixin.ts:29](https://github.com/clickup/rest-client/blob/master/src/ent/mixins/ConfigMixin.ts#L29)
+[src/ent/mixins/ConfigMixin.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L29)

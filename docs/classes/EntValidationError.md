@@ -30,7 +30,7 @@ the row is invalid.
 
 #### Defined in
 
-[src/ent/errors/EntValidationError.ts:8](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntValidationError.ts#L8)
+[src/ent/errors/EntValidationError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntValidationError.ts#L8)
 
 ## Properties
 
@@ -44,7 +44,7 @@ the row is invalid.
 
 #### Defined in
 
-[src/ent/errors/EntAccessError.ts:9](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L9)
+[src/ent/errors/EntAccessError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L8)
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 #### Defined in
 
-[src/ent/errors/EntAccessError.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntAccessError.ts#L12)
+[src/ent/errors/EntAccessError.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L11)
 
 ___
 
@@ -68,4 +68,4 @@ ___
 
 #### Defined in
 
-[src/ent/errors/EntValidationError.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntValidationError.ts#L10)
+[src/ent/errors/EntValidationError.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntValidationError.ts#L10)

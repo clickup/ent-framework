@@ -32,7 +32,7 @@ Options passed to Shard constructor.
 
 #### Defined in
 
-[src/abstract/Shard.ts:20](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L20)
+[src/abstract/Shard.ts:21](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L21)
 
 ___
 
@@ -57,4 +57,4 @@ ___
 
 #### Defined in
 
-[src/abstract/Shard.ts:23](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L23)
+[src/abstract/Shard.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L24)

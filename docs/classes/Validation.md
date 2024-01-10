@@ -29,7 +29,7 @@
 
 #### Defined in
 
-[src/ent/Validation.ts:81](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L81)
+[src/ent/Validation.ts:84](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L84)
 
 ## Properties
 
@@ -39,7 +39,7 @@
 
 #### Defined in
 
-[src/ent/Validation.ts:73](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L73)
+[src/ent/Validation.ts:76](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L76)
 
 ___
 
@@ -64,7 +64,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:74](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L74)
+[src/ent/Validation.ts:77](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L77)
 
 ___
 
@@ -74,7 +74,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:75](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L75)
+[src/ent/Validation.ts:78](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L78)
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:76](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L76)
+[src/ent/Validation.ts:79](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L79)
 
 ___
 
@@ -94,7 +94,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:77](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L77)
+[src/ent/Validation.ts:80](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L80)
 
 ___
 
@@ -104,17 +104,17 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:78](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L78)
+[src/ent/Validation.ts:81](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L81)
 
 ___
 
 ### validate
 
-• `Readonly` **validate**: [`Require`](Require.md)<[`Row`](../modules.md#row)<`TTable`\>\>[]
+• `Readonly` **validate**: [`Require`](Require.md)<[`InsertInput`](../modules.md#insertinput)<`TTable`\>\>[]
 
 #### Defined in
 
-[src/ent/Validation.ts:79](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L79)
+[src/ent/Validation.ts:82](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L82)
 
 ## Methods
 
@@ -135,7 +135,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:91](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L91)
+[src/ent/Validation.ts:94](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L94)
 
 ___
 
@@ -156,7 +156,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:102](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L102)
+[src/ent/Validation.ts:105](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L105)
 
 ___
 
@@ -179,7 +179,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:114](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L114)
+[src/ent/Validation.ts:117](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L117)
 
 ___
 
@@ -200,4 +200,4 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:137](https://github.com/clickup/rest-client/blob/master/src/ent/Validation.ts#L137)
+[src/ent/Validation.ts:144](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L144)

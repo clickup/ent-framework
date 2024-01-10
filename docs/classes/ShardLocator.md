@@ -1,6 +1,6 @@
 [@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ShardLocator
 
-# Class: ShardLocator<TClient, TField\>
+# Class: ShardLocator<TClient, TTable, TField\>
 
 Knows how to locate Shard(s) based on various inputs. In some contexts, we
 expect exactly one Shard returned, and in other contexts, multiple Shards are
@@ -11,19 +11,21 @@ okay.
 | Name | Type |
 | :------ | :------ |
 | `TClient` | extends [`Client`](Client.md) |
+| `TTable` | extends [`Table`](../modules.md#table) |
 | `TField` | extends `string` |
 
 ## Constructors
 
 ### constructor
 
-• **new ShardLocator**<`TClient`, `TField`\>(`«destructured»`)
+• **new ShardLocator**<`TClient`, `TTable`, `TField`\>(`«destructured»`)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
 | `TClient` | extends [`Client`](Client.md) |
+| `TTable` | extends [`Table`](../modules.md#table) |
 | `TField` | extends `string` |
 
 #### Parameters
@@ -35,23 +37,23 @@ okay.
 | › `entName` | `string` |
 | › `shardAffinity` | [`ShardAffinity`](../modules.md#shardaffinity)<`TField`\> |
 | › `uniqueKey` | `undefined` \| readonly `string`[] |
-| › `inverses` | readonly [`Inverse`](Inverse.md)<`TClient`, `any`\>[] |
+| › `inverses` | readonly [`Inverse`](Inverse.md)<`TClient`, `TTable`\>[] |
 
 #### Defined in
 
-[src/ent/ShardLocator.ts:30](https://github.com/clickup/rest-client/blob/master/src/ent/ShardLocator.ts#L30)
+[src/ent/ShardLocator.ts:34](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L34)
 
 ## Methods
 
 ### singleShardForInsert
 
-▸ **singleShardForInsert**(`input`, `op`, `fallbackToRandomShard`): `Promise`<[`Shard`](Shard.md)<`TClient`\>\>
+▸ **singleShardForInsert**(`input`, `op`): `Promise`<[`Shard`](Shard.md)<`TClient`\>\>
 
 Called in a context when we must know exactly 1 Shard to work with (e.g.
-INSERT, UPSERT etc.). If fallbackToRandomShard is true, then returns a
-random Shard in case when it can't infer the Shard number from the input
-(used in e.g. INSERT operations); otherwise throws
-EntCannotDetectShardError (happens in e.g. UPSERT).
+INSERT, UPSERT etc.). If op === "insert" (fallback to random Shard), then
+returns a random Shard in case when it can't infer the Shard number from
+the input (used in e.g. INSERT operations); otherwise throws ShardError
+(happens in e.g. UPSERT).
 
 The "randomness" of the "random Shard" is deterministic by the Ent's unique
 key (if it's defined), so Ents with the same unique key will map to the
@@ -67,9 +69,8 @@ been changed).
 
 | Name | Type |
 | :------ | :------ |
-| `input` | `Record`<`string`, `any`\> |
-| `op` | `string` |
-| `fallbackToRandomShard` | `boolean` |
+| `input` | `Record`<`string`, `unknown`\> |
+| `op` | ``"insert"`` \| ``"upsert"`` |
 
 #### Returns
 
@@ -77,7 +78,7 @@ been changed).
 
 #### Defined in
 
-[src/ent/ShardLocator.ts:72](https://github.com/clickup/rest-client/blob/master/src/ent/ShardLocator.ts#L72)
+[src/ent/ShardLocator.ts:76](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L76)
 
 ___
 
@@ -95,7 +96,7 @@ filtering is correct), there are no Inverse rows existing in the database.
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `input` | `Record`<`string`, `any`\> |
+| `input` | `Record`<`string`, `unknown`\> |
 | `op` | `string` |
 
 #### Returns
@@ -104,13 +105,13 @@ filtering is correct), there are no Inverse rows existing in the database.
 
 #### Defined in
 
-[src/ent/ShardLocator.ts:106](https://github.com/clickup/rest-client/blob/master/src/ent/ShardLocator.ts#L106)
+[src/ent/ShardLocator.ts:110](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L110)
 
 ___
 
 ### singleShardFromID
 
-▸ **singleShardFromID**(`field`, `id`): `Promise`<``null`` \| [`Shard`](Shard.md)<`TClient`\>\>
+▸ **singleShardFromID**(`field`, `id`, `op`): `Promise`<``null`` \| [`Shard`](Shard.md)<`TClient`\>\>
 
 A wrapper for Cluster#shard() which injects Ent name to the exception (in
 case of e.g. "Cannot locate Shard" exception). This is just a convenience
@@ -127,6 +128,7 @@ identical to the case of an Ent not existing in the database.
 | :------ | :------ |
 | `field` | `string` |
 | `id` | `undefined` \| ``null`` \| `string` |
+| `op` | `string` |
 
 #### Returns
 
@@ -134,7 +136,7 @@ identical to the case of an Ent not existing in the database.
 
 #### Defined in
 
-[src/ent/ShardLocator.ts:169](https://github.com/clickup/rest-client/blob/master/src/ent/ShardLocator.ts#L169)
+[src/ent/ShardLocator.ts:182](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L182)
 
 ___
 
@@ -150,4 +152,4 @@ All shards for this particular Ent depending on its affinity.
 
 #### Defined in
 
-[src/ent/ShardLocator.ts:221](https://github.com/clickup/rest-client/blob/master/src/ent/ShardLocator.ts#L221)
+[src/ent/ShardLocator.ts:239](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L239)

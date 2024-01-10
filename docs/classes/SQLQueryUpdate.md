@@ -37,7 +37,7 @@ that this interface is the only common part of them all.
 
 #### Defined in
 
-[src/sql/SQLQueryUpdate.ts:16](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryUpdate.ts#L16)
+[src/sql/SQLQueryUpdate.ts:16](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryUpdate.ts#L16)
 
 ## Properties
 
@@ -47,7 +47,7 @@ that this interface is the only common part of them all.
 
 #### Defined in
 
-[src/sql/SQLQueryUpdate.ts:13](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryUpdate.ts#L13)
+[src/sql/SQLQueryUpdate.ts:13](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryUpdate.ts#L13)
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLQueryUpdate.ts:14](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryUpdate.ts#L14)
+[src/sql/SQLQueryUpdate.ts:14](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryUpdate.ts#L14)
 
 ___
 
@@ -71,7 +71,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLQueryUpdate.ts:17](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryUpdate.ts#L17)
+[src/sql/SQLQueryUpdate.ts:17](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryUpdate.ts#L17)
 
 ## Methods
 
@@ -96,4 +96,4 @@ ___
 
 #### Defined in
 
-[src/sql/SQLQueryUpdate.ts:25](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryUpdate.ts#L25)
+[src/sql/SQLQueryUpdate.ts:25](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryUpdate.ts#L25)
