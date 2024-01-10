@@ -2,7 +2,7 @@
 
 # Interface: SQLClientPoolOptions
 
-Options for SQLClient constructor.
+Options for SQLClientPool constructor.
 
 ## Hierarchy
 
@@ -24,7 +24,7 @@ Name of the Client; used for logging.
 
 #### Defined in
 
-[src/abstract/Client.ts:15](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L15)
+[src/abstract/Client.ts:16](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L16)
 
 ___
 
@@ -40,7 +40,7 @@ Loggers to be called at different stages.
 
 #### Defined in
 
-[src/abstract/Client.ts:17](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L17)
+[src/abstract/Client.ts:18](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L18)
 
 ___
 
@@ -58,13 +58,13 @@ Batcher#batchDelayMs.
 
 #### Defined in
 
-[src/abstract/Client.ts:21](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L21)
+[src/abstract/Client.ts:22](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L22)
 
 ___
 
 ### shards
 
-• `Optional` **shards**: ``null`` \| { `nameFormat`: `string` ; `discoverQuery`: `string`  }
+• `Optional` **shards**: ``null`` \| { `nameFormat`: `string` ; `discoverQuery`: [`MaybeCallable`](../modules.md#maybecallable)<`string`\>  }
 
 Info on how to discover the shards.
 
@@ -74,15 +74,19 @@ Info on how to discover the shards.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:29](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L29)
+[src/sql/SQLClient.ts:116](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L116)
 
 ___
 
 ### hints
 
-• `Optional` **hints**: ``null`` \| `Record`<`string`, `string`\>
+• `Optional` **hints**: ``null`` \| [`MaybeCallable`](../modules.md#maybecallable)<`Record`<`string`, `string`\>\>
 
-PG "SET key=value" hints to run before each query.
+PG "SET key=value" hints to run before each query. Often times we use it
+to pass statement_timeout option since e.g. PGBouncer doesn't support
+per-connection statement timeout in transaction pooling mode: it throws
+"unsupported startup parameter" error. I.e. we may want to emit "SET
+statement_timeout TO ..." before each query in multi-query mode.
 
 #### Inherited from
 
@@ -90,13 +94,13 @@ PG "SET key=value" hints to run before each query.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:37](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L37)
+[src/sql/SQLClient.ts:128](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L128)
 
 ___
 
 ### maxReplicationLagMs
 
-• `Optional` **maxReplicationLagMs**: `number`
+• `Optional` **maxReplicationLagMs**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
 
 After how many milliseconds we give up waiting for the replica to catch up
 with the master.
@@ -107,7 +111,23 @@ with the master.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:40](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L40)
+[src/sql/SQLClient.ts:131](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L131)
+
+___
+
+### replicaTimelinePosRefreshMs
+
+• `Optional` **replicaTimelinePosRefreshMs**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
+
+Up to how often we call TimelineManager#triggerRefresh().
+
+#### Inherited from
+
+[SQLClientOptions](SQLClientOptions.md).[replicaTimelinePosRefreshMs](SQLClientOptions.md#replicatimelineposrefreshms)
+
+#### Defined in
+
+[src/sql/SQLClient.ts:133](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L133)
 
 ___
 
@@ -128,7 +148,7 @@ master's pos.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:47](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L47)
+[src/sql/SQLClient.ts:140](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L140)
 
 ___
 
@@ -138,7 +158,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:17](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L17)
+[src/sql/SQLClientPool.ts:16](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L16)
 
 ___
 
@@ -148,7 +168,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:18](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L18)
+[src/sql/SQLClientPool.ts:17](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L17)
 
 ___
 
@@ -158,7 +178,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:19](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L19)
+[src/sql/SQLClientPool.ts:18](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L18)
 
 ___
 
@@ -168,7 +188,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:20](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L20)
+[src/sql/SQLClientPool.ts:19](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L19)
 
 ___
 
@@ -178,4 +198,4 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:21](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L21)
+[src/sql/SQLClientPool.ts:20](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L20)

@@ -25,4 +25,4 @@
 
 #### Defined in
 
-[src/abstract/Schema.ts:17](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L17)
+[src/abstract/Schema.ts:17](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L17)

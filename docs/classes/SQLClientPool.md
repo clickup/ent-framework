@@ -2,9 +2,12 @@
 
 # Class: SQLClientPool
 
-An abstract PostgreSQL Client which doesn't know how to acquire an actual
-connection and send queries; these things are up to the derived classes to
-implement.
+This class carries connection pooling logic only and delegates the rest to
+SQLClient base class.
+
+The idea is that in each particular project, people may have they own classes
+derived from SQLClient, in case the codebase already has some existing
+connection pooling solution. They don't have to use SQLClientPool.
 
 ## Hierarchy
 
@@ -30,7 +33,7 @@ implement.
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:68](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L68)
+[src/sql/SQLClientPool.ts:88](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L88)
 
 ## Properties
 
@@ -46,7 +49,7 @@ Name of the shard associated to this Client.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:80](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L80)
+[src/sql/SQLClient.ts:201](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L201)
 
 ___
 
@@ -62,21 +65,23 @@ An active TimelineManager for this particular Client.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:83](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L83)
+[src/sql/SQLClient.ts:204](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L204)
 
 ___
 
-### cnt
+### DEFAULT\_OPTIONS
 
-• `Readonly` **cnt**: `number`
+▪ `Static` `Readonly` **DEFAULT\_OPTIONS**: `Required`<[`PickPartial`](../modules.md#pickpartial)<[`SQLClientPoolOptions`](../interfaces/SQLClientPoolOptions.md)\>\>
 
-#### Inherited from
+Default values for the constructor options.
 
-[SQLClient](SQLClient.md).[cnt](SQLClient.md#cnt)
+#### Overrides
+
+[SQLClient](SQLClient.md).[DEFAULT_OPTIONS](SQLClient.md#default_options)
 
 #### Defined in
 
-[src/sql/SQLClient.ts:96](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L96)
+[src/sql/SQLClientPool.ts:46](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L46)
 
 ___
 
@@ -84,7 +89,7 @@ ___
 
 • `Readonly` **options**: `Required`<[`SQLClientPoolOptions`](../interfaces/SQLClientPoolOptions.md)\>
 
-SQLClient configuration options.
+SQLClientPool configuration options.
 
 #### Overrides
 
@@ -92,13 +97,13 @@ SQLClient configuration options.
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:49](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L49)
+[src/sql/SQLClientPool.ts:69](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L69)
 
 ## Methods
 
 ### batcher
 
-▸ **batcher**<`TInput`, `TOutput`\>(`_QueryClass`, `_schema`, `_additionalShape`, `runnerCreator`): [`Batcher`](Batcher.md)<`TInput`, `TOutput`\>
+▸ **batcher**<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `runnerCreator`): [`Batcher`](Batcher.md)<`TInput`, `TOutput`\>
 
 Batcher is per-Client per-query-type per-table-name-and-shape:
 - Per-Client means that batchers are removed as soon as the Client is
@@ -120,17 +125,18 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 #### Type parameters
 
-| Name |
-| :------ |
-| `TInput` |
-| `TOutput` |
+| Name | Type |
+| :------ | :------ |
+| `TInput` | `TInput` |
+| `TOutput` | `TOutput` |
+| `TTable` | extends [`Table`](../modules.md#table) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `_QueryClass` | `Function` |
-| `_schema` | [`Schema`](Schema.md)<`any`, `any`\> |
+| `_schema` | [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\> |
 | `_additionalShape` | `string` |
 | `runnerCreator` | () => [`Runner`](Runner.md)<`TInput`, `TOutput`\> |
 
@@ -144,7 +150,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 #### Defined in
 
-[src/abstract/Client.ts:105](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L105)
+[src/abstract/Client.ts:122](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L122)
 
 ___
 
@@ -184,7 +190,7 @@ should expect that isMaster() returns the actual master/replica role.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:128](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L128)
+[src/sql/SQLClient.ts:270](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L270)
 
 ___
 
@@ -205,7 +211,7 @@ database.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:318](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L318)
+[src/sql/SQLClient.ts:505](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L505)
 
 ___
 
@@ -231,7 +237,7 @@ Extracts Shard number from an ID.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:342](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L342)
+[src/sql/SQLClient.ts:529](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L529)
 
 ___
 
@@ -258,7 +264,7 @@ new Client will share the same connection pool with the parent's Client.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:399](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L399)
+[src/sql/SQLClient.ts:585](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L585)
 
 ___
 
@@ -280,17 +286,42 @@ reconnecting, so we only know the role after a query.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:408](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L408)
+[src/sql/SQLClient.ts:596](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L596)
+
+___
+
+### isConnectionIssue
+
+▸ **isConnectionIssue**(): `boolean`
+
+Returns true if the Client couldn't connect to the server (or it could, but
+the load balancer reported the remote server as not working), so it should
+ideally be removed from the list of active replicas until e.g. the next
+discovery query to it (or any query) succeeds.
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[SQLClient](SQLClient.md).[isConnectionIssue](SQLClient.md#isconnectionissue)
+
+#### Defined in
+
+[src/sql/SQLClient.ts:600](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L600)
 
 ___
 
 ### acquireConn
 
-▸ `Protected` **acquireConn**(): `Promise`<`PoolClient`\>
+▸ `Protected` **acquireConn**(): `Promise`<[`SQLClientPoolConn`](../modules.md#sqlclientpoolconn)\>
+
+Called when the Client needs a connection to run a query against.
 
 #### Returns
 
-`Promise`<`PoolClient`\>
+`Promise`<[`SQLClientPoolConn`](../modules.md#sqlclientpoolconn)\>
 
 #### Overrides
 
@@ -298,7 +329,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:51](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L51)
+[src/sql/SQLClientPool.ts:71](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L71)
 
 ___
 
@@ -306,11 +337,13 @@ ___
 
 ▸ `Protected` **releaseConn**(`conn`): `void`
 
+Called when the Client is done with the connection.
+
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `conn` | [`SQLClientPoolClient`](../modules.md#sqlclientpoolclient) |
+| `conn` | [`SQLClientPoolConn`](../modules.md#sqlclientpoolconn) |
 
 #### Returns
 
@@ -322,13 +355,15 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:55](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L55)
+[src/sql/SQLClientPool.ts:75](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L75)
 
 ___
 
 ### poolStats
 
 ▸ `Protected` **poolStats**(): `Object`
+
+Returns statistics about the connection pool.
 
 #### Returns
 
@@ -346,7 +381,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:60](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L60)
+[src/sql/SQLClientPool.ts:80](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L80)
 
 ___
 
@@ -374,23 +409,17 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:116](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L116)
+[src/sql/SQLClientPool.ts:120](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L120)
 
 ___
 
 ### end
 
-▸ **end**(`forceDisconnect?`): `Promise`<`void`\>
+▸ **end**(): `Promise`<`void`\>
 
-Closes the connections to let the caller destroy the Client. By default,
-the pending queries are awaited to finish before returning, but if you pass
-forceDisconnect, all of the connections will be closed immediately.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `forceDisconnect?` | `boolean` |
+Gracefully closes the connections to let the caller destroy the Client. The
+pending queries are awaited to finish before returning. The Client becomes
+unusable after calling this method: you should not send queries to it.
 
 #### Returns
 
@@ -402,7 +431,27 @@ forceDisconnect, all of the connections will be closed immediately.
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:126](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L126)
+[src/sql/SQLClientPool.ts:130](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L130)
+
+___
+
+### isEnded
+
+▸ **isEnded**(): `boolean`
+
+Returns true if the Client is ended and can't be used anymore.
+
+#### Returns
+
+`boolean`
+
+#### Overrides
+
+[SQLClient](SQLClient.md).[isEnded](SQLClient.md#isended)
+
+#### Defined in
+
+[src/sql/SQLClientPool.ts:141](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L141)
 
 ___
 
@@ -425,4 +474,4 @@ full-text dictionaries).
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:143](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClientPool.ts#L143)
+[src/sql/SQLClientPool.ts:145](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L145)

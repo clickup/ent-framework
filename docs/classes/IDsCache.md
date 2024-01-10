@@ -36,7 +36,7 @@
 
 #### Defined in
 
-[src/ent/IDsCache.ts:6](https://github.com/clickup/rest-client/blob/master/src/ent/IDsCache.ts#L6)
+[src/ent/IDsCache.ts:6](https://github.com/clickup/ent-framework/blob/master/src/ent/IDsCache.ts#L6)
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 #### Defined in
 
-[src/ent/IDsCache.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/IDsCache.ts#L10)
+[src/ent/IDsCache.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/IDsCache.ts#L10)
 
 ___
 
@@ -77,4 +77,4 @@ ___
 
 #### Defined in
 
-[src/ent/IDsCache.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/IDsCache.ts#L14)
+[src/ent/IDsCache.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/IDsCache.ts#L14)

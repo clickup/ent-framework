@@ -41,7 +41,7 @@ Parameter `name` is typically a table name.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:84](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L84)
+[src/abstract/Runner.ts:69](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L69)
 
 ## Properties
 
@@ -53,19 +53,31 @@ If true, it's a write operation.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:21](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L21)
+[src/abstract/Runner.ts:11](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L11)
+
+___
+
+### op
+
+• `Readonly` `Abstract` **op**: `string`
+
+Operation name for logging purposes.
+
+#### Defined in
+
+[src/abstract/Runner.ts:17](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L17)
 
 ___
 
 ### maxBatchSize
 
-• `Readonly` **maxBatchSize**: `number` = `DEFAULT_MAX_BATCH_SIZE`
+• `Readonly` `Abstract` **maxBatchSize**: `number`
 
 Maximum batch size for this type of operations.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:28](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L28)
+[src/abstract/Runner.ts:20](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L20)
 
 ___
 
@@ -78,19 +90,7 @@ instead.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:34](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L34)
-
-___
-
-### shardName
-
-• `Readonly` `Abstract` **shardName**: `string`
-
-Name of the Shard for this Runner.
-
-#### Defined in
-
-[src/abstract/Batcher.ts:39](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L39)
+[src/abstract/Runner.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L24)
 
 ___
 
@@ -100,7 +100,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Batcher.ts:84](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L84)
+[src/abstract/Runner.ts:69](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L69)
 
 ## Methods
 
@@ -124,7 +124,7 @@ one input to process, not many.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:45](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L45)
+[src/abstract/Runner.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L30)
 
 ___
 
@@ -147,7 +147,7 @@ Typically issues complex queries with magic.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:53](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L53)
+[src/abstract/Runner.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L38)
 
 ___
 
@@ -162,7 +162,7 @@ error), returns the number of milliseconds to wait before retrying.
 
 | Name | Type |
 | :------ | :------ |
-| `error` | `any` |
+| `error` | `unknown` |
 
 #### Returns
 
@@ -170,7 +170,7 @@ error), returns the number of milliseconds to wait before retrying.
 
 #### Defined in
 
-[src/abstract/Batcher.ts:62](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L62)
+[src/abstract/Runner.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L47)
 
 ___
 
@@ -194,7 +194,7 @@ false.)
 
 | Name | Type |
 | :------ | :------ |
-| `error` | `any` |
+| `error` | `unknown` |
 
 #### Returns
 
@@ -202,7 +202,7 @@ false.)
 
 #### Defined in
 
-[src/abstract/Batcher.ts:79](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L79)
+[src/abstract/Runner.ts:64](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L64)
 
 ___
 
@@ -226,4 +226,4 @@ into one input; e.g. this is needed for inserts).
 
 #### Defined in
 
-[src/abstract/Batcher.ts:91](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L91)
+[src/abstract/Runner.ts:76](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L76)

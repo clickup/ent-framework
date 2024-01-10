@@ -31,7 +31,7 @@ Shard lives within an Island with one master and N replicas.
 
 #### Defined in
 
-[src/abstract/Shard.ts:32](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L32)
+[src/abstract/Shard.ts:33](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L33)
 
 ## Properties
 
@@ -41,7 +41,7 @@ Shard lives within an Island with one master and N replicas.
 
 #### Defined in
 
-[src/abstract/Shard.ts:33](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L33)
+[src/abstract/Shard.ts:34](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L34)
 
 ___
 
@@ -51,7 +51,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Shard.ts:34](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L34)
+[src/abstract/Shard.ts:35](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L35)
 
 ## Methods
 
@@ -74,7 +74,7 @@ because the Shard may relocate to another Island during re-discovery.
 
 #### Defined in
 
-[src/abstract/Shard.ts:41](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L41)
+[src/abstract/Shard.ts:42](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L42)
 
 ___
 
@@ -106,7 +106,7 @@ Shard, annotation etc.)
 
 #### Defined in
 
-[src/abstract/Shard.ts:62](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L62)
+[src/abstract/Shard.ts:63](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L63)
 
 ___
 
@@ -123,4 +123,4 @@ else is wrong with it.
 
 #### Defined in
 
-[src/abstract/Shard.ts:107](https://github.com/clickup/rest-client/blob/master/src/abstract/Shard.ts#L107)
+[src/abstract/Shard.ts:117](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L117)

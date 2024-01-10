@@ -28,9 +28,21 @@ Initializes an instance of Client.
 
 #### Defined in
 
-[src/abstract/Client.ts:76](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L76)
+[src/abstract/Client.ts:95](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L95)
 
 ## Properties
+
+### DEFAULT\_OPTIONS
+
+▪ `Static` `Readonly` **DEFAULT\_OPTIONS**: `Required`<[`PickPartial`](../modules.md#pickpartial)<[`ClientOptions`](../interfaces/ClientOptions.md)\>\>
+
+Default values for the constructor options.
+
+#### Defined in
+
+[src/abstract/Client.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L32)
+
+___
 
 ### options
 
@@ -40,7 +52,7 @@ Client configuration options.
 
 #### Defined in
 
-[src/abstract/Client.ts:31](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L31)
+[src/abstract/Client.ts:37](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L37)
 
 ___
 
@@ -54,7 +66,7 @@ name (or "public" if the Client wasn't created by withShard() method).
 
 #### Defined in
 
-[src/abstract/Client.ts:36](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L36)
+[src/abstract/Client.ts:42](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L42)
 
 ___
 
@@ -67,23 +79,17 @@ the Clients within the same Island.
 
 #### Defined in
 
-[src/abstract/Client.ts:40](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L40)
+[src/abstract/Client.ts:46](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L46)
 
 ## Methods
 
 ### end
 
-▸ `Abstract` **end**(`forceDisconnect?`): `Promise`<`void`\>
+▸ `Abstract` **end**(): `Promise`<`void`\>
 
-Closes the connections to let the caller destroy the Client. By default,
-the pending queries are awaited to finish before returning, but if you pass
-forceDisconnect, all of the connections will be closed immediately.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `forceDisconnect?` | `boolean` |
+Gracefully closes the connections to let the caller destroy the Client. The
+pending queries are awaited to finish before returning. The Client becomes
+unusable after calling this method: you should not send queries to it.
 
 #### Returns
 
@@ -91,7 +97,7 @@ forceDisconnect, all of the connections will be closed immediately.
 
 #### Defined in
 
-[src/abstract/Client.ts:47](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L47)
+[src/abstract/Client.ts:53](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L53)
 
 ___
 
@@ -108,7 +114,7 @@ database.
 
 #### Defined in
 
-[src/abstract/Client.ts:53](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L53)
+[src/abstract/Client.ts:59](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L59)
 
 ___
 
@@ -130,7 +136,7 @@ Extracts Shard number from an ID.
 
 #### Defined in
 
-[src/abstract/Client.ts:58](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L58)
+[src/abstract/Client.ts:64](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L64)
 
 ___
 
@@ -153,7 +159,23 @@ new Client will share the same connection pool with the parent's Client.
 
 #### Defined in
 
-[src/abstract/Client.ts:64](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L64)
+[src/abstract/Client.ts:70](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L70)
+
+___
+
+### isEnded
+
+▸ `Abstract` **isEnded**(): `boolean`
+
+Returns true if the Client is ended and can't be used anymore.
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/abstract/Client.ts:75](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L75)
 
 ___
 
@@ -171,13 +193,32 @@ reconnecting, so we only know the role after a query.
 
 #### Defined in
 
-[src/abstract/Client.ts:71](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L71)
+[src/abstract/Client.ts:82](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L82)
+
+___
+
+### isConnectionIssue
+
+▸ `Abstract` **isConnectionIssue**(): `boolean`
+
+Returns true if the Client couldn't connect to the server (or it could, but
+the load balancer reported the remote server as not working), so it should
+ideally be removed from the list of active replicas until e.g. the next
+discovery query to it (or any query) succeeds.
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/abstract/Client.ts:90](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L90)
 
 ___
 
 ### batcher
 
-▸ **batcher**<`TInput`, `TOutput`\>(`_QueryClass`, `_schema`, `_additionalShape`, `runnerCreator`): [`Batcher`](Batcher.md)<`TInput`, `TOutput`\>
+▸ **batcher**<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `runnerCreator`): [`Batcher`](Batcher.md)<`TInput`, `TOutput`\>
 
 Batcher is per-Client per-query-type per-table-name-and-shape:
 - Per-Client means that batchers are removed as soon as the Client is
@@ -199,17 +240,18 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 #### Type parameters
 
-| Name |
-| :------ |
-| `TInput` |
-| `TOutput` |
+| Name | Type |
+| :------ | :------ |
+| `TInput` | `TInput` |
+| `TOutput` | `TOutput` |
+| `TTable` | extends [`Table`](../modules.md#table) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `_QueryClass` | `Function` |
-| `_schema` | [`Schema`](Schema.md)<`any`, `any`\> |
+| `_schema` | [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\> |
 | `_additionalShape` | `string` |
 | `runnerCreator` | () => [`Runner`](Runner.md)<`TInput`, `TOutput`\> |
 
@@ -219,7 +261,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 #### Defined in
 
-[src/abstract/Client.ts:105](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L105)
+[src/abstract/Client.ts:122](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L122)
 
 ___
 
@@ -243,7 +285,7 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 #### Defined in
 
-[src/abstract/Client.ts:126](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L126)
+[src/abstract/Client.ts:139](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L139)
 
 ___
 
@@ -262,4 +304,4 @@ full-text dictionaries).
 
 #### Defined in
 
-[src/abstract/Client.ts:144](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L144)
+[src/abstract/Client.ts:157](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L157)

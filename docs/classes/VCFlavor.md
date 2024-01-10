@@ -31,7 +31,7 @@ For each flavor type, only a single VCFlavor object may exist.
 
 #### Defined in
 
-[src/ent/VCFlavor.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L10)
+[src/ent/VCFlavor.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L10)
 
 ___
 
@@ -41,7 +41,7 @@ ___
 
 #### Defined in
 
-[src/ent/VCFlavor.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L11)
+[src/ent/VCFlavor.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L11)
 
 ## Methods
 
@@ -57,4 +57,4 @@ Appended to the end of VC.toString() result.
 
 #### Defined in
 
-[src/ent/VCFlavor.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L16)
+[src/ent/VCFlavor.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L16)

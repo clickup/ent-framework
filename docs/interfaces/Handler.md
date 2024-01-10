@@ -6,7 +6,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `TLoadArgs` | extends `any`[] |
+| `TLoadArgs` | extends `unknown`[] |
 | `TReturn` | `TReturn` |
 
 ## Properties
@@ -31,7 +31,7 @@
 
 #### Defined in
 
-[src/abstract/Loader.ts:5](https://github.com/clickup/rest-client/blob/master/src/abstract/Loader.ts#L5)
+[src/abstract/Loader.ts:5](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L5)
 
 ___
 
@@ -49,7 +49,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loader.ts:6](https://github.com/clickup/rest-client/blob/master/src/abstract/Loader.ts#L6)
+[src/abstract/Loader.ts:6](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L6)
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loader.ts:7](https://github.com/clickup/rest-client/blob/master/src/abstract/Loader.ts#L7)
+[src/abstract/Loader.ts:7](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L7)
 
 ___
 
@@ -97,4 +97,4 @@ ___
 
 #### Defined in
 
-[src/abstract/Loader.ts:8](https://github.com/clickup/rest-client/blob/master/src/abstract/Loader.ts#L8)
+[src/abstract/Loader.ts:8](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L8)

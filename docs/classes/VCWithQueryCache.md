@@ -29,7 +29,7 @@ If set, Ent cache is enabled for operations in this VC.
 
 #### Defined in
 
-[src/ent/VCFlavor.ts:31](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L31)
+[src/ent/VCFlavor.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L31)
 
 ## Properties
 
@@ -43,7 +43,7 @@ If set, Ent cache is enabled for operations in this VC.
 
 #### Defined in
 
-[src/ent/VCFlavor.ts:10](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L10)
+[src/ent/VCFlavor.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L10)
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 #### Defined in
 
-[src/ent/VCFlavor.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L11)
+[src/ent/VCFlavor.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L11)
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 #### Defined in
 
-[src/ent/VCFlavor.ts:31](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L31)
+[src/ent/VCFlavor.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L31)
 
 ## Methods
 
@@ -93,4 +93,4 @@ Appended to the end of VC.toString() result.
 
 #### Defined in
 
-[src/ent/VCFlavor.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/VCFlavor.ts#L16)
+[src/ent/VCFlavor.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L16)

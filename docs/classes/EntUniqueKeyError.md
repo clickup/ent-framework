@@ -22,7 +22,7 @@ so the Ent was not mutated.
 | Name | Type |
 | :------ | :------ |
 | `entName` | `string` |
-| `input` | `any` |
+| `input` | `unknown` |
 
 #### Overrides
 
@@ -30,7 +30,7 @@ Error.constructor
 
 #### Defined in
 
-[src/ent/errors/EntUniqueKeyError.ts:8](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntUniqueKeyError.ts#L8)
+[src/ent/errors/EntUniqueKeyError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L8)
 
 ## Properties
 
@@ -40,17 +40,17 @@ Error.constructor
 
 #### Defined in
 
-[src/ent/errors/EntUniqueKeyError.ts:8](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntUniqueKeyError.ts#L8)
+[src/ent/errors/EntUniqueKeyError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L8)
 
 ___
 
 ### input
 
-• `Readonly` **input**: `any`
+• `Readonly` **input**: `unknown`
 
 #### Defined in
 
-[src/ent/errors/EntUniqueKeyError.ts:8](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntUniqueKeyError.ts#L8)
+[src/ent/errors/EntUniqueKeyError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L8)
 
 ## Methods
 
@@ -79,4 +79,4 @@ violation happened during the promise resolution.
 
 #### Defined in
 
-[src/ent/errors/EntUniqueKeyError.ts:20](https://github.com/clickup/rest-client/blob/master/src/ent/errors/EntUniqueKeyError.ts#L20)
+[src/ent/errors/EntUniqueKeyError.ts:25](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L25)

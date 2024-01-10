@@ -46,25 +46,9 @@ specs.
 
 #### Defined in
 
-[src/sql/SQLQueryDelete.ts:28](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L28)
+[src/sql/SQLQueryDelete.ts:30](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryDelete.ts#L30)
 
 ## Properties
-
-### maxBatchSize
-
-• `Readonly` **maxBatchSize**: `number` = `DEFAULT_MAX_BATCH_SIZE`
-
-Maximum batch size for this type of operations.
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[maxBatchSize](SQLRunner.md#maxbatchsize)
-
-#### Defined in
-
-[src/abstract/Batcher.ts:28](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L28)
-
-___
 
 ### name
 
@@ -76,7 +60,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Batcher.ts:84](https://github.com/clickup/rest-client/blob/master/src/abstract/Batcher.ts#L84)
+[src/abstract/Runner.ts:69](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L69)
 
 ___
 
@@ -92,7 +76,7 @@ If true, it's a write operation.
 
 #### Defined in
 
-[src/sql/SQLQueryDelete.ts:23](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L23)
+[src/sql/SQLQueryDelete.ts:23](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryDelete.ts#L23)
 
 ___
 
@@ -100,13 +84,31 @@ ___
 
 • `Readonly` **op**: ``"DELETE"``
 
+Operation name for logging purposes.
+
 #### Overrides
 
 [SQLRunner](SQLRunner.md).[op](SQLRunner.md#op)
 
 #### Defined in
 
-[src/sql/SQLQueryDelete.ts:25](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L25)
+[src/sql/SQLQueryDelete.ts:26](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryDelete.ts#L26)
+
+___
+
+### maxBatchSize
+
+• `Readonly` **maxBatchSize**: ``100``
+
+Maximum batch size for this type of operations.
+
+#### Overrides
+
+[SQLRunner](SQLRunner.md).[maxBatchSize](SQLRunner.md#maxbatchsize)
+
+#### Defined in
+
+[src/sql/SQLQueryDelete.ts:27](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryDelete.ts#L27)
 
 ___
 
@@ -123,23 +125,7 @@ instead.
 
 #### Defined in
 
-[src/sql/SQLQueryDelete.ts:26](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L26)
-
-___
-
-### shardName
-
-• `Readonly` **shardName**: `string`
-
-Name of the Shard for this Runner.
-
-#### Inherited from
-
-[SQLRunner](SQLRunner.md).[shardName](SQLRunner.md#shardname)
-
-#### Defined in
-
-[src/sql/SQLRunner.ts:48](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L48)
+[src/sql/SQLQueryDelete.ts:28](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryDelete.ts#L28)
 
 ___
 
@@ -153,7 +139,7 @@ SQLRunner.constructor
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:50](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L50)
+[src/sql/SQLRunner.ts:48](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L48)
 
 ___
 
@@ -167,7 +153,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:497](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L497)
+[src/sql/SQLRunner.ts:493](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L493)
 
 ## Methods
 
@@ -195,7 +181,7 @@ into one input; e.g. this is needed for inserts).
 
 #### Defined in
 
-[src/sql/SQLQueryDelete.ts:37](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L37)
+[src/sql/SQLQueryDelete.ts:39](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryDelete.ts#L39)
 
 ___
 
@@ -223,7 +209,7 @@ one input to process, not many.
 
 #### Defined in
 
-[src/sql/SQLQueryDelete.ts:41](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L41)
+[src/sql/SQLQueryDelete.ts:43](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryDelete.ts#L43)
 
 ___
 
@@ -250,7 +236,7 @@ Typically issues complex queries with magic.
 
 #### Defined in
 
-[src/sql/SQLQueryDelete.ts:51](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L51)
+[src/sql/SQLQueryDelete.ts:53](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryDelete.ts#L53)
 
 ___
 
@@ -283,7 +269,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:54](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L54)
+[src/sql/SQLRunner.ts:50](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L50)
 
 ___
 
@@ -313,7 +299,7 @@ performance-critical path!
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:93](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L93)
+[src/sql/SQLRunner.ts:89](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L89)
 
 ___
 
@@ -345,7 +331,7 @@ use escapers table and the codegen for the following reasons:
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:159](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L159)
+[src/sql/SQLRunner.ts:155](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L155)
 
 ___
 
@@ -379,7 +365,7 @@ Escapes field name identifier.
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:172](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L172)
+[src/sql/SQLRunner.ts:168](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L168)
 
 ___
 
@@ -427,7 +413,7 @@ of columns is passed in specs.
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:214](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L214)
+[src/sql/SQLRunner.ts:210](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L210)
 
 ___
 
@@ -500,7 +486,7 @@ generate VALUES clause without exact identification of the destination.
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:282](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L282)
+[src/sql/SQLRunner.ts:278](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L278)
 
 ___
 
@@ -551,7 +537,7 @@ The set of columns is passed in specs, all other columns are ignored.
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:353](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L353)
+[src/sql/SQLRunner.ts:349](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L349)
 
 ___
 
@@ -594,7 +580,7 @@ a=ANY('{...}') clause). Otherwise, builds an IN(...) clause.
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:381](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L381)
+[src/sql/SQLRunner.ts:377](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L377)
 
 ___
 
@@ -658,7 +644,7 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:415](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L415)
+[src/sql/SQLRunner.ts:411](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L411)
 
 ___
 
@@ -697,7 +683,7 @@ returns the generated SQL WHERE clause.
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:450](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L450)
+[src/sql/SQLRunner.ts:446](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L446)
 
 ___
 
@@ -737,7 +723,7 @@ transactions. This lowers the chances of deadlocks too.
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:485](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L485)
+[src/sql/SQLRunner.ts:481](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L481)
 
 ___
 
@@ -764,7 +750,7 @@ error), returns the number of milliseconds to wait before retrying.
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:518](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L518)
+[src/sql/SQLRunner.ts:514](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L514)
 
 ___
 
@@ -800,4 +786,4 @@ false.)
 
 #### Defined in
 
-[src/sql/SQLRunner.ts:531](https://github.com/clickup/rest-client/blob/master/src/sql/SQLRunner.ts#L531)
+[src/sql/SQLRunner.ts:527](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLRunner.ts#L527)

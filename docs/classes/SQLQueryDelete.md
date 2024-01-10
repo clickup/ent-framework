@@ -45,7 +45,7 @@ Query is used directly instead.
 
 #### Defined in
 
-[src/abstract/QueryBase.ts:27](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L27)
+[src/abstract/QueryBase.ts:27](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L27)
 
 ## Properties
 
@@ -59,7 +59,7 @@ Query is used directly instead.
 
 #### Defined in
 
-[src/abstract/QueryBase.ts:28](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L28)
+[src/abstract/QueryBase.ts:28](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L28)
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 #### Defined in
 
-[src/abstract/QueryBase.ts:29](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L29)
+[src/abstract/QueryBase.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L29)
 
 ___
 
@@ -87,7 +87,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLQueryDelete.ts:15](https://github.com/clickup/rest-client/blob/master/src/sql/SQLQueryDelete.ts#L15)
+[src/sql/SQLQueryDelete.ts:15](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQueryDelete.ts#L15)
 
 ## Accessors
 
@@ -105,7 +105,7 @@ QueryBase.IS\_WRITE
 
 #### Defined in
 
-[src/abstract/QueryBase.ts:32](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L32)
+[src/abstract/QueryBase.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L32)
 
 ## Methods
 
@@ -130,4 +130,4 @@ QueryBase.IS\_WRITE
 
 #### Defined in
 
-[src/abstract/QueryBase.ts:36](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryBase.ts#L36)
+[src/abstract/QueryBase.ts:36](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L36)

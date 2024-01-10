@@ -15,24 +15,23 @@ Options for Cluster constructor.
 
 ### islands
 
-• **islands**: readonly { `no`: `number` ; `nodes`: readonly TNode[]  }[]
+• **islands**: [`MaybeCallable`](../modules.md#maybecallable)<readonly { `no`: `number` ; `nodes`: readonly TNode[]  }[]\>
 
-Islands configuration of the Cluster. May be changed dynamically by
-passing it as a getter.
+Islands configuration of the Cluster.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:30](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L30)
+[src/abstract/Cluster.ts:31](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L31)
 
 ___
 
 ### createClient
 
-• **createClient**: (`node`: `TNode`, `nodeNo`: `number`) => `TClient`
+• **createClient**: (`node`: `TNode`) => `TClient`
 
 #### Type declaration
 
-▸ (`node`, `nodeNo`): `TClient`
+▸ (`node`): `TClient`
 
 Given a node of some Island, instantiates a Client for this node. Called
 when a new node appears in the Cluster statically or dynamically.
@@ -42,7 +41,6 @@ when a new node appears in the Cluster statically or dynamically.
 | Name | Type |
 | :------ | :------ |
 | `node` | `TNode` |
-| `nodeNo` | `number` |
 
 ##### Returns
 
@@ -50,25 +48,39 @@ when a new node appears in the Cluster statically or dynamically.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:33](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L33)
+[src/abstract/Cluster.ts:36](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L36)
 
 ___
 
 ### shardsDiscoverIntervalMs
 
-• `Optional` **shardsDiscoverIntervalMs**: `number` \| () => `number`
+• `Optional` **shardsDiscoverIntervalMs**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
 
 How often to run Shards rediscovery in normal circumstances.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:35](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L35)
+[src/abstract/Cluster.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L38)
+
+___
+
+### shardsDiscoverRecheckIslandsIntervalMs
+
+• `Optional` **shardsDiscoverRecheckIslandsIntervalMs**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
+
+How often to recheck for changes in options.islands (typically, often,
+since it's assumed that options.islands calculation is cheap). If the
+Cluster configuration is changed, then we trigger rediscovery ASAP.
+
+#### Defined in
+
+[src/abstract/Cluster.ts:42](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L42)
 
 ___
 
 ### shardsDiscoverErrorRetryCount
 
-• `Optional` **shardsDiscoverErrorRetryCount**: `number`
+• `Optional` **shardsDiscoverErrorRetryCount**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
 
 If there were DB errors during Shards discovery (e.g. transport errors,
 which is rare), the discovery is retried that many times before giving up
@@ -77,26 +89,26 @@ rediscovery happens in background.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:40](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L40)
+[src/abstract/Cluster.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L47)
 
 ___
 
 ### shardsDiscoverErrorRetryDelayMs
 
-• `Optional` **shardsDiscoverErrorRetryDelayMs**: `number`
+• `Optional` **shardsDiscoverErrorRetryDelayMs**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
 
 If there were DB errors during Shards discovery (rare), this is how much
 we wait between attempts.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:43](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L43)
+[src/abstract/Cluster.ts:50](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L50)
 
 ___
 
 ### locateIslandErrorRetryCount
 
-• `Optional` **locateIslandErrorRetryCount**: `number`
+• `Optional` **locateIslandErrorRetryCount**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
 
 If we think that we know Island of a particular Shard, but an attempt to
 access it fails, this means that maybe the Shard is migrating to another
@@ -106,13 +118,13 @@ waiting for the resolution.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:49](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L49)
+[src/abstract/Cluster.ts:56](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L56)
 
 ___
 
 ### locateIslandErrorRetryDelayMs
 
-• `Optional` **locateIslandErrorRetryDelayMs**: `number`
+• `Optional` **locateIslandErrorRetryDelayMs**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
 
 How much time to wait between the retries mentioned above. The time here
 should be just enough to wait for switching the Shard from one Island to
@@ -120,4 +132,4 @@ another (typically quick).
 
 #### Defined in
 
-[src/abstract/Cluster.ts:53](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L53)
+[src/abstract/Cluster.ts:60](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L60)

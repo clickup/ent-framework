@@ -32,11 +32,11 @@ CanReadOutgoingEdge comments for more details.
 | Name | Type |
 | :------ | :------ |
 | `field` | `TField` |
-| `toEntClass` | [`EntClass`](../interfaces/EntClass.md)<`any`\> |
+| `toEntClass` | [`EntClass`](../modules.md#entclass) |
 
 #### Defined in
 
-[src/ent/predicates/CanUpdateOutgoingEdge.ts:15](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L15)
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L15)
 
 ## Properties
 
@@ -50,7 +50,7 @@ CanReadOutgoingEdge comments for more details.
 
 #### Defined in
 
-[src/ent/predicates/CanUpdateOutgoingEdge.ts:13](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L13)
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:13](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L13)
 
 ___
 
@@ -60,17 +60,17 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/CanUpdateOutgoingEdge.ts:16](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L16)
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L16)
 
 ___
 
 ### toEntClass
 
-• `Readonly` **toEntClass**: [`EntClass`](../interfaces/EntClass.md)<`any`\>
+• `Readonly` **toEntClass**: [`EntClass`](../modules.md#entclass)
 
 #### Defined in
 
-[src/ent/predicates/CanUpdateOutgoingEdge.ts:17](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L17)
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:17](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L17)
 
 ## Methods
 
@@ -95,4 +95,4 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/CanUpdateOutgoingEdge.ts:20](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L20)
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:20](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L20)

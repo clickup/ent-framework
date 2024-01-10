@@ -39,11 +39,11 @@ to another ent with ID equals to the value of our ent's field.
 | Name | Type |
 | :------ | :------ |
 | `field` | `TField` |
-| `toEntClass` | [`EntClass`](../interfaces/EntClass.md)<`any`\> |
+| `toEntClass` | [`EntClass`](../modules.md#entclass) |
 
 #### Defined in
 
-[src/ent/predicates/CanReadOutgoingEdge.ts:23](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L23)
+[src/ent/predicates/CanReadOutgoingEdge.ts:23](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L23)
 
 ## Properties
 
@@ -57,7 +57,7 @@ to another ent with ID equals to the value of our ent's field.
 
 #### Defined in
 
-[src/ent/predicates/CanReadOutgoingEdge.ts:21](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L21)
+[src/ent/predicates/CanReadOutgoingEdge.ts:21](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L21)
 
 ___
 
@@ -67,17 +67,17 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/CanReadOutgoingEdge.ts:24](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L24)
+[src/ent/predicates/CanReadOutgoingEdge.ts:24](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L24)
 
 ___
 
 ### toEntClass
 
-• `Readonly` **toEntClass**: [`EntClass`](../interfaces/EntClass.md)<`any`\>
+• `Readonly` **toEntClass**: [`EntClass`](../modules.md#entclass)
 
 #### Defined in
 
-[src/ent/predicates/CanReadOutgoingEdge.ts:25](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L25)
+[src/ent/predicates/CanReadOutgoingEdge.ts:25](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L25)
 
 ## Methods
 
@@ -102,4 +102,4 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/CanReadOutgoingEdge.ts:28](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L28)
+[src/ent/predicates/CanReadOutgoingEdge.ts:28](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L28)

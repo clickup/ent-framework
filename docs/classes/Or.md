@@ -34,7 +34,7 @@ Checks that at least one of the children predicates succeed.
 
 #### Defined in
 
-[src/ent/predicates/Or.ts:14](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Or.ts#L14)
+[src/ent/predicates/Or.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L14)
 
 ## Properties
 
@@ -48,7 +48,7 @@ Checks that at least one of the children predicates succeed.
 
 #### Defined in
 
-[src/ent/predicates/Or.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Or.ts#L11)
+[src/ent/predicates/Or.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L11)
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/Or.ts:12](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Or.ts#L12)
+[src/ent/predicates/Or.ts:12](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L12)
 
 ## Methods
 
@@ -83,4 +83,4 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/Or.ts:26](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/Or.ts#L26)
+[src/ent/predicates/Or.ts:26](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L26)

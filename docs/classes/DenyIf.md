@@ -45,7 +45,7 @@ Returns DENY if the predicate succeeds, otherwise SKIP.
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:48](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L48)
+[src/ent/rules/Rule.ts:48](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L48)
 
 ## Properties
 
@@ -55,7 +55,7 @@ Returns DENY if the predicate succeeds, otherwise SKIP.
 
 #### Defined in
 
-[src/ent/rules/DenyIf.ts:15](https://github.com/clickup/rest-client/blob/master/src/ent/rules/DenyIf.ts#L15)
+[src/ent/rules/DenyIf.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/DenyIf.ts#L15)
 
 ___
 
@@ -69,7 +69,7 @@ ___
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:43](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L43)
+[src/ent/rules/Rule.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L43)
 
 ___
 
@@ -83,7 +83,7 @@ ___
 
 #### Defined in
 
-[src/ent/rules/Rule.ts:44](https://github.com/clickup/rest-client/blob/master/src/ent/rules/Rule.ts#L44)
+[src/ent/rules/Rule.ts:44](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L44)
 
 ## Methods
 
@@ -108,4 +108,4 @@ ___
 
 #### Defined in
 
-[src/ent/rules/DenyIf.ts:17](https://github.com/clickup/rest-client/blob/master/src/ent/rules/DenyIf.ts#L17)
+[src/ent/rules/DenyIf.ts:17](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/DenyIf.ts#L17)

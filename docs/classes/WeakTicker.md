@@ -44,7 +44,7 @@ approximately.
 
 #### Defined in
 
-[src/helpers/WeakTicker.ts:34](https://github.com/clickup/rest-client/blob/master/src/helpers/WeakTicker.ts#L34)
+[src/helpers/WeakTicker.ts:34](https://github.com/clickup/ent-framework/blob/master/src/helpers/WeakTicker.ts#L34)
 
 ___
 
@@ -60,4 +60,4 @@ Returns true if there are no targets scheduled at the moment.
 
 #### Defined in
 
-[src/helpers/WeakTicker.ts:58](https://github.com/clickup/rest-client/blob/master/src/helpers/WeakTicker.ts#L58)
+[src/helpers/WeakTicker.ts:58](https://github.com/clickup/ent-framework/blob/master/src/helpers/WeakTicker.ts#L58)

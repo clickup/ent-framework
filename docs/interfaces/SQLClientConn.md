@@ -13,7 +13,7 @@ can't use $N parameter substitutions.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:55](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L55)
+[src/sql/SQLClient.ts:148](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L148)
 
 ## Methods
 
@@ -25,7 +25,7 @@ can't use $N parameter substitutions.
 
 | Name | Type |
 | :------ | :------ |
-| `R` | extends `QueryResultRow` = `any` |
+| `R` | extends `QueryResultRow` |
 
 #### Parameters
 
@@ -39,7 +39,7 @@ can't use $N parameter substitutions.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:56](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L56)
+[src/sql/SQLClient.ts:149](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L149)
 
 ___
 
@@ -59,4 +59,4 @@ ___
 
 #### Defined in
 
-[src/sql/SQLClient.ts:59](https://github.com/clickup/rest-client/blob/master/src/sql/SQLClient.ts#L59)
+[src/sql/SQLClient.ts:152](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L152)

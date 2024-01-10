@@ -48,7 +48,7 @@ too limited in the queries the DB engine can execute.
 
 #### Defined in
 
-[src/abstract/Schema.ts:119](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L119)
+[src/abstract/Schema.ts:119](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L119)
 
 ## Properties
 
@@ -58,7 +58,7 @@ too limited in the queries the DB engine can execute.
 
 #### Defined in
 
-[src/abstract/Schema.ts:42](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L42)
+[src/abstract/Schema.ts:42](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L42)
 
 ___
 
@@ -72,7 +72,7 @@ x.constructor is Function).
 
 #### Defined in
 
-[src/abstract/Schema.ts:49](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L49)
+[src/abstract/Schema.ts:49](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L49)
 
 ___
 
@@ -84,7 +84,7 @@ For SQL-like databases, it's likely a table name.
 
 #### Defined in
 
-[src/abstract/Schema.ts:121](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L121)
+[src/abstract/Schema.ts:121](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L121)
 
 ___
 
@@ -96,7 +96,7 @@ Structure of the table.
 
 #### Defined in
 
-[src/abstract/Schema.ts:123](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L123)
+[src/abstract/Schema.ts:123](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L123)
 
 ___
 
@@ -108,7 +108,7 @@ Fields which the native unique key consists of (if any).
 
 #### Defined in
 
-[src/abstract/Schema.ts:125](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L125)
+[src/abstract/Schema.ts:125](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L125)
 
 ## Methods
 
@@ -125,7 +125,7 @@ trigger on the Ent which needs to know the ID beforehand.
 
 #### Defined in
 
-[src/abstract/Schema.ts:57](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L57)
+[src/abstract/Schema.ts:57](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L57)
 
 ___
 
@@ -148,7 +148,7 @@ constraint, otherwise returns the row ID.
 
 #### Defined in
 
-[src/abstract/Schema.ts:63](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L63)
+[src/abstract/Schema.ts:63](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L63)
 
 ___
 
@@ -170,7 +170,7 @@ Upserts a row. Always returns the row ID.
 
 #### Defined in
 
-[src/abstract/Schema.ts:68](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L68)
+[src/abstract/Schema.ts:68](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L68)
 
 ___
 
@@ -193,7 +193,7 @@ Updates one single row by its ID. Returns true if it actually existed.
 
 #### Defined in
 
-[src/abstract/Schema.ts:73](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L73)
+[src/abstract/Schema.ts:73](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L73)
 
 ___
 
@@ -215,7 +215,7 @@ Deletes a row by id. Returns true if it actually existed.
 
 #### Defined in
 
-[src/abstract/Schema.ts:78](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L78)
+[src/abstract/Schema.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L78)
 
 ___
 
@@ -238,7 +238,7 @@ returns a row by its ID or null if it's not found.
 
 #### Defined in
 
-[src/abstract/Schema.ts:84](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L84)
+[src/abstract/Schema.ts:84](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L84)
 
 ___
 
@@ -261,7 +261,7 @@ unique key, not on an ID). Returns null if it's not found.
 
 #### Defined in
 
-[src/abstract/Schema.ts:90](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L90)
+[src/abstract/Schema.ts:90](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L90)
 
 ___
 
@@ -285,7 +285,7 @@ returns all rows whose unique key prefix matches the input.
 
 #### Defined in
 
-[src/abstract/Schema.ts:99](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L99)
+[src/abstract/Schema.ts:99](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L99)
 
 ___
 
@@ -307,7 +307,7 @@ Returns all rows matching an arbitrary query.
 
 #### Defined in
 
-[src/abstract/Schema.ts:106](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L106)
+[src/abstract/Schema.ts:106](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L106)
 
 ___
 
@@ -329,7 +329,7 @@ Returns the number of rows matching an arbitrary query.
 
 #### Defined in
 
-[src/abstract/Schema.ts:111](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L111)
+[src/abstract/Schema.ts:111](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L111)
 
 ___
 
@@ -352,4 +352,4 @@ whether at least one row exists, and don't need a precise count.
 
 #### Defined in
 
-[src/abstract/Schema.ts:117](https://github.com/clickup/rest-client/blob/master/src/abstract/Schema.ts#L117)
+[src/abstract/Schema.ts:117](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L117)

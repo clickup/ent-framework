@@ -2,14 +2,12 @@
 
 # Class: SQLError
 
-Encapsulates the error message passed from the DB server. Notice that in case
-of e.g. connection reset errors or network timeouts, this error is NOT thrown
-(because we actually don't know whether the server applied the query or not);
-instead, some other exception (lower level) is raised.
+Encapsulates the error thrown when running a Client query. The object also
+carries suggestions, what to do next.
 
 ## Hierarchy
 
-- [`ServerError`](ServerError.md)
+- [`ClientError`](ClientError.md)
 
   ↳ **`SQLError`**
 
@@ -17,37 +15,79 @@ instead, some other exception (lower level) is raised.
 
 ### constructor
 
-• **new SQLError**(`origError`, `where`, `sql`)
+• **new SQLError**(`cause`, `where`, `sql`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `origError` | `any` |
+| `cause` | `undefined` \| ``null`` \| {} |
 | `where` | `string` |
 | `sql` | `string` |
 
 #### Overrides
 
-[ServerError](ServerError.md).[constructor](ServerError.md#constructor)
+[ClientError](ClientError.md).[constructor](ClientError.md#constructor)
 
 #### Defined in
 
-[src/sql/SQLError.ts:4](https://github.com/clickup/rest-client/blob/master/src/sql/SQLError.ts#L4)
+[src/sql/SQLError.ts:4](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLError.ts#L4)
 
 ## Properties
 
-### origError
+### cause
 
-• `Readonly` **origError**: `any`
+• `Readonly` **cause**: `undefined` \| ``null`` \| { `message?`: `unknown` ; `stack?`: `unknown`  }
 
 #### Inherited from
 
-[ServerError](ServerError.md).[origError](ServerError.md#origerror)
+[ClientError](ClientError.md).[cause](ClientError.md#cause)
 
 #### Defined in
 
-[src/abstract/ServerError.ts:10](https://github.com/clickup/rest-client/blob/master/src/abstract/ServerError.ts#L10)
+[src/abstract/ClientError.ts:25](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L25)
+
+___
+
+### postAction
+
+• `Readonly` **postAction**: [`ClientErrorPostAction`](../modules.md#clienterrorpostaction)
+
+#### Inherited from
+
+[ClientError](ClientError.md).[postAction](ClientError.md#postaction)
+
+#### Defined in
+
+[src/abstract/ClientError.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L30)
+
+___
+
+### kind
+
+• `Readonly` **kind**: [`ClientErrorKind`](../modules.md#clienterrorkind)
+
+#### Inherited from
+
+[ClientError](ClientError.md).[kind](ClientError.md#kind)
+
+#### Defined in
+
+[src/abstract/ClientError.ts:31](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L31)
+
+___
+
+### comment
+
+• `Optional` `Readonly` **comment**: `string`
+
+#### Inherited from
+
+[ClientError](ClientError.md).[comment](ClientError.md#comment)
+
+#### Defined in
+
+[src/abstract/ClientError.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L32)
 
 ___
 
@@ -57,7 +97,7 @@ ___
 
 #### Defined in
 
-[src/sql/SQLError.ts:4](https://github.com/clickup/rest-client/blob/master/src/sql/SQLError.ts#L4)
+[src/sql/SQLError.ts:7](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLError.ts#L7)
 
 ## Methods
 
@@ -77,4 +117,4 @@ ___
 
 #### Defined in
 
-[src/sql/SQLError.ts:16](https://github.com/clickup/rest-client/blob/master/src/sql/SQLError.ts#L16)
+[src/sql/SQLError.ts:20](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLError.ts#L20)

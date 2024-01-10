@@ -18,11 +18,11 @@ Checks that the VC has some flavor.
 
 | Name | Type |
 | :------ | :------ |
-| `Flavor` | (...`args`: `any`[]) => [`VCFlavor`](VCFlavor.md) |
+| `Flavor` | (...`args`: `never`[]) => [`VCFlavor`](VCFlavor.md) |
 
 #### Defined in
 
-[src/ent/predicates/VCHasFlavor.ts:11](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/VCHasFlavor.ts#L11)
+[src/ent/predicates/VCHasFlavor.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L11)
 
 ## Properties
 
@@ -36,7 +36,7 @@ Checks that the VC has some flavor.
 
 #### Defined in
 
-[src/ent/predicates/VCHasFlavor.ts:9](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/VCHasFlavor.ts#L9)
+[src/ent/predicates/VCHasFlavor.ts:9](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L9)
 
 ## Methods
 
@@ -60,4 +60,4 @@ Checks that the VC has some flavor.
 
 #### Defined in
 
-[src/ent/predicates/VCHasFlavor.ts:13](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/VCHasFlavor.ts#L13)
+[src/ent/predicates/VCHasFlavor.ts:13](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L13)

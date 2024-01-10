@@ -35,7 +35,7 @@
 
 #### Defined in
 
-[src/ent/Triggers.ts:170](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L170)
+[src/ent/Triggers.ts:170](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L170)
 
 ## Methods
 
@@ -49,7 +49,7 @@
 
 #### Defined in
 
-[src/ent/Triggers.ts:189](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L189)
+[src/ent/Triggers.ts:189](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L189)
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 #### Defined in
 
-[src/ent/Triggers.ts:198](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L198)
+[src/ent/Triggers.ts:198](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L198)
 
 ___
 
@@ -85,7 +85,7 @@ ___
 
 #### Defined in
 
-[src/ent/Triggers.ts:207](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L207)
+[src/ent/Triggers.ts:207](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L207)
 
 ___
 
@@ -108,7 +108,7 @@ ___
 
 #### Defined in
 
-[src/ent/Triggers.ts:251](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L251)
+[src/ent/Triggers.ts:251](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L251)
 
 ___
 
@@ -130,4 +130,4 @@ ___
 
 #### Defined in
 
-[src/ent/Triggers.ts:312](https://github.com/clickup/rest-client/blob/master/src/ent/Triggers.ts#L312)
+[src/ent/Triggers.ts:312](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L312)

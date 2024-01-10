@@ -41,14 +41,14 @@ database.
 
 | Name | Type |
 | :------ | :------ |
-| `EntEdge` | [`EntClass`](../interfaces/EntClass.md)<`TEdgeTable`\> |
+| `EntEdge` | [`EntClass`](../modules.md#entclass)<`TEdgeTable`\> |
 | `entEdgeVCField` | ``"id"`` \| [`Field`](../modules.md#field)<`TEdgeTable`\> |
 | `entEdgeFKField` | ``"id"`` \| [`Field`](../modules.md#field)<`TEdgeTable`\> |
 | `entEdgeFilter?` | (`ent`: [`Row`](../modules.md#row)<`TEdgeTable`\>) => `boolean` |
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:38](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L38)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:38](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L38)
 
 ## Properties
 
@@ -62,17 +62,17 @@ database.
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:27](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L27)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:27](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L27)
 
 ___
 
 ### EntEdge
 
-• `Readonly` **EntEdge**: [`EntClass`](../interfaces/EntClass.md)<`TEdgeTable`\>
+• `Readonly` **EntEdge**: [`EntClass`](../modules.md#entclass)<`TEdgeTable`\>
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:39](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L39)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:39](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L39)
 
 ___
 
@@ -82,7 +82,7 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:40](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L40)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:40](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L40)
 
 ___
 
@@ -92,7 +92,7 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:41](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L41)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:41](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L41)
 
 ___
 
@@ -116,7 +116,7 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:42](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L42)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:42](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L42)
 
 ## Methods
 
@@ -141,4 +141,4 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:45](https://github.com/clickup/rest-client/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L45)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:45](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L45)

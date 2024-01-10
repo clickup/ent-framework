@@ -29,7 +29,7 @@ specific and Loader is completely abstract).
 
 | Name | Type |
 | :------ | :------ |
-| `TLoadArgs` | extends `any`[] |
+| `TLoadArgs` | extends `unknown`[] |
 | `TReturn` | `TReturn` |
 
 ## Constructors
@@ -42,7 +42,7 @@ specific and Loader is completely abstract).
 
 | Name | Type |
 | :------ | :------ |
-| `TLoadArgs` | extends `any`[] |
+| `TLoadArgs` | extends `unknown`[] |
 | `TReturn` | `TReturn` |
 
 #### Parameters
@@ -53,7 +53,7 @@ specific and Loader is completely abstract).
 
 #### Defined in
 
-[src/abstract/Loader.ts:45](https://github.com/clickup/rest-client/blob/master/src/abstract/Loader.ts#L45)
+[src/abstract/Loader.ts:45](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L45)
 
 ## Methods
 
@@ -73,4 +73,4 @@ specific and Loader is completely abstract).
 
 #### Defined in
 
-[src/abstract/Loader.ts:47](https://github.com/clickup/rest-client/blob/master/src/abstract/Loader.ts#L47)
+[src/abstract/Loader.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L47)

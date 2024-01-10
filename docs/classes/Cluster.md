@@ -15,7 +15,7 @@ Shard 0 is a special "global" Shard.
 | Name | Type |
 | :------ | :------ |
 | `TClient` | extends [`Client`](Client.md) |
-| `TNode` | `any` |
+| `TNode` | [`DesperateAny`](../modules.md#desperateany) |
 
 ## Constructors
 
@@ -38,17 +38,31 @@ Shard 0 is a special "global" Shard.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:95](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L95)
+[src/abstract/Cluster.ts:121](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L121)
 
 ## Properties
+
+### DEFAULT\_OPTIONS
+
+▪ `Static` `Readonly` **DEFAULT\_OPTIONS**: `Required`<[`PickPartial`](../modules.md#pickpartial)<[`ClusterOptions`](../interfaces/ClusterOptions.md)<[`Client`](Client.md), `never`\>\>\>
+
+Default values for the constructor options.
+
+#### Defined in
+
+[src/abstract/Cluster.ts:85](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L85)
+
+___
 
 ### options
 
 • `Readonly` **options**: `Required`<[`ClusterOptions`](../interfaces/ClusterOptions.md)<`TClient`, `TNode`\>\>
 
+Cluster configuration options.
+
 #### Defined in
 
-[src/abstract/Cluster.ts:92](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L92)
+[src/abstract/Cluster.ts:117](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L117)
 
 ___
 
@@ -56,9 +70,11 @@ ___
 
 • `Readonly` **loggers**: [`Loggers`](../interfaces/Loggers.md)
 
+Cluster logging handlers (derived from some node's Client).
+
 #### Defined in
 
-[src/abstract/Cluster.ts:93](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L93)
+[src/abstract/Cluster.ts:119](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L119)
 
 ## Methods
 
@@ -66,8 +82,9 @@ ___
 
 ▸ **prewarm**(): `void`
 
-If called once, keeps the Clients pre-warmed, e.g. open. (It's up to the
-particular Client's implementation, what does a "pre-warmed Client" mean.)
+Signals the Cluster to keep the Clients pre-warmed, e.g. open. (It's up to
+the particular Client's implementation, what does a "pre-warmed Client"
+mean; typically, it's keeping some minimal number of pooled connections.)
 
 #### Returns
 
@@ -75,7 +92,7 @@ particular Client's implementation, what does a "pre-warmed Client" mean.)
 
 #### Defined in
 
-[src/abstract/Cluster.ts:133](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L133)
+[src/abstract/Cluster.ts:177](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L177)
 
 ___
 
@@ -93,7 +110,7 @@ actual query.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:147](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L147)
+[src/abstract/Cluster.ts:192](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L192)
 
 ___
 
@@ -127,7 +144,7 @@ the query), no matter whether it was an immediate call or a deferred one.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:166](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L166)
+[src/abstract/Cluster.ts:211](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L211)
 
 ___
 
@@ -150,7 +167,7 @@ Returns a random Shard among the ones which are currently known
 
 #### Defined in
 
-[src/abstract/Cluster.ts:175](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L175)
+[src/abstract/Cluster.ts:219](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L219)
 
 ___
 
@@ -166,23 +183,23 @@ Returns all currently known (discovered) non-global Shards in the Cluster.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:194](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L194)
+[src/abstract/Cluster.ts:238](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L238)
 
 ___
 
 ### islands
 
-▸ **islands**(): `number`[]
+▸ **islands**(): `Promise`<`number`[]\>
 
 Returns all Island numbers in the Cluster.
 
 #### Returns
 
-`number`[]
+`Promise`<`number`[]\>
 
 #### Defined in
 
-[src/abstract/Cluster.ts:202](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L202)
+[src/abstract/Cluster.ts:246](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L246)
 
 ___
 
@@ -204,7 +221,7 @@ Returns all currently known (discovered) Shards of a particular Island.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:209](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L209)
+[src/abstract/Cluster.ts:254](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L254)
 
 ___
 
@@ -227,4 +244,22 @@ Returns a Client of a particular Island.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:221](https://github.com/clickup/rest-client/blob/master/src/abstract/Cluster.ts#L221)
+[src/abstract/Cluster.ts:266](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L266)
+
+___
+
+### rediscover
+
+▸ **rediscover**(): `Promise`<`void`\>
+
+Triggers shards rediscovery and finishes as soon as it's done. To be used
+in unit tests mostly, because in real life, it's enough to just modify the
+cluster configuration.
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Defined in
+
+[src/abstract/Cluster.ts:283](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L283)

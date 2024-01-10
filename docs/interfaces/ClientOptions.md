@@ -20,7 +20,7 @@ Name of the Client; used for logging.
 
 #### Defined in
 
-[src/abstract/Client.ts:15](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L15)
+[src/abstract/Client.ts:16](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L16)
 
 ___
 
@@ -32,7 +32,7 @@ Loggers to be called at different stages.
 
 #### Defined in
 
-[src/abstract/Client.ts:17](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L17)
+[src/abstract/Client.ts:18](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L18)
 
 ___
 
@@ -46,4 +46,4 @@ Batcher#batchDelayMs.
 
 #### Defined in
 
-[src/abstract/Client.ts:21](https://github.com/clickup/rest-client/blob/master/src/abstract/Client.ts#L21)
+[src/abstract/Client.ts:22](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L22)

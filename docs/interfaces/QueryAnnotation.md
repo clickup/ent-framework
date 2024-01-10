@@ -17,7 +17,7 @@ Trace ID of the series of the queries.
 
 #### Defined in
 
-[src/abstract/QueryAnnotation.ts:29](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L29)
+[src/abstract/QueryAnnotation.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L29)
 
 ___
 
@@ -30,7 +30,7 @@ for simplicity, but at this layer of abstractions, there are no Ents.
 
 #### Defined in
 
-[src/abstract/QueryAnnotation.ts:32](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L32)
+[src/abstract/QueryAnnotation.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L32)
 
 ___
 
@@ -44,7 +44,7 @@ enable detailed SQL logging as well.
 
 #### Defined in
 
-[src/abstract/QueryAnnotation.ts:36](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L36)
+[src/abstract/QueryAnnotation.ts:36](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L36)
 
 ___
 
@@ -56,7 +56,7 @@ Answers, why exactly this Client was selected to send the query to.
 
 #### Defined in
 
-[src/abstract/QueryAnnotation.ts:38](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L38)
+[src/abstract/QueryAnnotation.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L38)
 
 ___
 
@@ -68,4 +68,4 @@ In case it's a retry, the attempt number will be greater than 0.
 
 #### Defined in
 
-[src/abstract/QueryAnnotation.ts:40](https://github.com/clickup/rest-client/blob/master/src/abstract/QueryAnnotation.ts#L40)
+[src/abstract/QueryAnnotation.ts:40](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L40)

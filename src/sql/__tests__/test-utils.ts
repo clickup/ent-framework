@@ -170,7 +170,7 @@ export class ByteaBuffer {
   }
 
   static parse(str: string): Buffer {
-    return types.getTypeParser(types.builtins.BYTEA)(str);
+    return types.getTypeParser(types.builtins.BYTEA)(str) as Buffer;
   }
 }
 

@@ -7,7 +7,7 @@ assumptions:
 - The value is stable and does not change frequently.
 - The resolverFn can throw or take more time to resolve (e.g. outage). In
   that case, the cached value is still valid, unless a fresh value is
-  requested.
+  requested with waitRefresh().
 
 The implementation is as follows:
 - Once value is accessed, we schedule an endless loop of calling resolver to
@@ -29,6 +29,8 @@ The implementation is as follows:
 
 • **new CachedRefreshedValue**<`TValue`\>(`options`)
 
+Initializes the instance.
+
 #### Type parameters
 
 | Name |
@@ -43,7 +45,7 @@ The implementation is as follows:
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:52](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L52)
+[src/helpers/CachedRefreshedValue.ts:63](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L63)
 
 ## Properties
 
@@ -53,7 +55,7 @@ The implementation is as follows:
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:52](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L52)
+[src/helpers/CachedRefreshedValue.ts:63](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L63)
 
 ## Methods
 
@@ -69,7 +71,7 @@ Returns latest cached value.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:57](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L57)
+[src/helpers/CachedRefreshedValue.ts:76](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L76)
 
 ___
 
@@ -77,7 +79,8 @@ ___
 
 ▸ **waitRefresh**(): `Promise`<`void`\>
 
-Waits for the next successful cache refresh.
+Triggers the call to resolverFn() ASAP (i.e. sooner than the next interval
+specified in delayMs) and waits for the next successful cache refresh.
 
 #### Returns
 
@@ -85,7 +88,7 @@ Waits for the next successful cache refresh.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:65](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L65)
+[src/helpers/CachedRefreshedValue.ts:85](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L85)
 
 ___
 
@@ -102,4 +105,4 @@ result in an error.
 
 #### Defined in
 
-[src/helpers/CachedRefreshedValue.ts:82](https://github.com/clickup/rest-client/blob/master/src/helpers/CachedRefreshedValue.ts#L82)
+[src/helpers/CachedRefreshedValue.ts:104](https://github.com/clickup/ent-framework/blob/master/src/helpers/CachedRefreshedValue.ts#L104)

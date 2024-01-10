@@ -42,7 +42,7 @@ EntUser refers an EntOrg row).
 
 #### Defined in
 
-[src/ent/Inverse.ts:36](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L36)
+[src/ent/Inverse.ts:37](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L37)
 
 ## Properties
 
@@ -52,7 +52,7 @@ EntUser refers an EntOrg row).
 
 #### Defined in
 
-[src/ent/Inverse.ts:33](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L33)
+[src/ent/Inverse.ts:34](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L34)
 
 ___
 
@@ -62,7 +62,7 @@ ___
 
 #### Defined in
 
-[src/ent/Inverse.ts:34](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L34)
+[src/ent/Inverse.ts:35](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L35)
 
 ## Methods
 
@@ -87,7 +87,7 @@ Returns true if the Inverse row was actually inserted in the DB.
 
 #### Defined in
 
-[src/ent/Inverse.ts:63](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L63)
+[src/ent/Inverse.ts:64](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L64)
 
 ___
 
@@ -112,7 +112,7 @@ Runs after a row was updated in the main schema.
 
 #### Defined in
 
-[src/ent/Inverse.ts:87](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L87)
+[src/ent/Inverse.ts:88](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L88)
 
 ___
 
@@ -136,7 +136,7 @@ Runs after a row was deleted in the main schema.
 
 #### Defined in
 
-[src/ent/Inverse.ts:106](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L106)
+[src/ent/Inverse.ts:107](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L107)
 
 ___
 
@@ -160,4 +160,4 @@ rows is limited to not overload the database.
 
 #### Defined in
 
-[src/ent/Inverse.ts:129](https://github.com/clickup/rest-client/blob/master/src/ent/Inverse.ts#L129)
+[src/ent/Inverse.ts:130](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L130)

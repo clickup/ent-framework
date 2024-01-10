@@ -23,7 +23,7 @@ was manually added to the VC by the user, otherwise caching is a no-op.
 
 #### Defined in
 
-[src/ent/QueryCache.ts:35](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L35)
+[src/ent/QueryCache.ts:35](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L35)
 
 ## Properties
 
@@ -33,7 +33,7 @@ was manually added to the VC by the user, otherwise caching is a no-op.
 
 #### Defined in
 
-[src/ent/QueryCache.ts:29](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L29)
+[src/ent/QueryCache.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L29)
 
 ## Methods
 
@@ -60,7 +60,7 @@ have a risk of caching a transient SQL error).
 
 #### Defined in
 
-[src/ent/QueryCache.ts:56](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L56)
+[src/ent/QueryCache.ts:56](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L56)
 
 ___
 
@@ -84,7 +84,7 @@ Deletes cache slots or keys for an Ent.
 
 #### Defined in
 
-[src/ent/QueryCache.ts:91](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L91)
+[src/ent/QueryCache.ts:91](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L91)
 
 ___
 
@@ -116,7 +116,7 @@ case it's inflight already.
 
 #### Defined in
 
-[src/ent/QueryCache.ts:113](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L113)
+[src/ent/QueryCache.ts:113](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L113)
 
 ___
 
@@ -147,4 +147,4 @@ Read-through caching pattern.
 
 #### Defined in
 
-[src/ent/QueryCache.ts:129](https://github.com/clickup/rest-client/blob/master/src/ent/QueryCache.ts#L129)
+[src/ent/QueryCache.ts:129](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L129)
