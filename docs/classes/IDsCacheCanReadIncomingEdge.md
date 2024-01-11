@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / IDsCacheCanReadIncomingEdge
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / IDsCacheCanReadIncomingEdge
 
 # Class: IDsCacheCanReadIncomingEdge
 

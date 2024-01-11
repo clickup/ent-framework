@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerSelectBy
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerSelectBy
 
 # Class: SQLRunnerSelectBy<TTable, TUniqueKey\>
 

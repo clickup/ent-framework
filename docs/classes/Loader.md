@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Loader
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Loader
 
 # Class: Loader<TLoadArgs, TReturn\>
 

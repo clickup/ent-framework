@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Configuration
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Configuration
 
 # Class: Configuration<TTable\>
 

@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / VCFlavor
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / VCFlavor
 
 # Class: VCFlavor
 

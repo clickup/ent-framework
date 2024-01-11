@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerLoadBy
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerLoadBy
 
 # Class: SQLRunnerLoadBy<TTable, TUniqueKey\>
 

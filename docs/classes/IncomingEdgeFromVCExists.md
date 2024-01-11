@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / IncomingEdgeFromVCExists
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / IncomingEdgeFromVCExists
 
 # Class: IncomingEdgeFromVCExists<TEdgeTable\>
 

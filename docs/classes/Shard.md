@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Shard
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Shard
 
 # Class: Shard<TClient\>
 

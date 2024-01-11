@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Registry
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Registry
 
 # Class: Registry<TData, TObj\>
 

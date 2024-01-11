@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / QueryBase
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / QueryBase
 
 # Class: QueryBase<TTable, TInput, TOutput, TClient\>
 

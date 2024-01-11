@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / WeakTickerTarget
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / WeakTickerTarget
 
 # Interface: WeakTickerTarget
 

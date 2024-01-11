@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / CanReadOutgoingEdge
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / CanReadOutgoingEdge
 
 # Class: CanReadOutgoingEdge<TField\>
 

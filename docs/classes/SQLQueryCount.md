@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryCount
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryCount
 
 # Class: SQLQueryCount<TTable\>
 

@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerIDGen
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerIDGen
 
 # Class: SQLRunnerIDGen<TTable\>
 

@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Island
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Island
 
 # Class: Island<TClient\>
 

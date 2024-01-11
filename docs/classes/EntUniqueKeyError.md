@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntUniqueKeyError
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntUniqueKeyError
 
 # Class: EntUniqueKeyError
 

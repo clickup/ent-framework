@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ShardOptions
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ShardOptions
 
 # Interface: ShardOptions<TClient\>
 

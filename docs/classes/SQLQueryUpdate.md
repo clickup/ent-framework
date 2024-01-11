@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryUpdate
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryUpdate
 
 # Class: SQLQueryUpdate<TTable\>
 

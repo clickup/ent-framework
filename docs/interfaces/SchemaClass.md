@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SchemaClass
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SchemaClass
 
 # Interface: SchemaClass
 

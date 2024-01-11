@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryDelete
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryDelete
 
 # Class: SQLQueryDelete<TTable\>
 

@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Rule
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Rule
 
 # Class: Rule<TInput\>
 

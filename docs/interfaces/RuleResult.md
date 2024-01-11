@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / RuleResult
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / RuleResult
 
 # Interface: RuleResult
 

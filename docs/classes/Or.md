@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Or
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Or
 
 # Class: Or<TInput\>
 

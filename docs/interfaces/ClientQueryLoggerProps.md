@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ClientQueryLoggerProps
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ClientQueryLoggerProps
 
 # Interface: ClientQueryLoggerProps
 

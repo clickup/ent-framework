@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / QueryCache
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / QueryCache
 
 # Class: QueryCache
 

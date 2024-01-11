@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerUpsert
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerUpsert
 
 # Class: SQLRunnerUpsert<TTable\>
 

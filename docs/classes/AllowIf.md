@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / AllowIf
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / AllowIf
 
 # Class: AllowIf<TInput\>
 

@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / VCTrace
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / VCTrace
 
 # Class: VCTrace
 

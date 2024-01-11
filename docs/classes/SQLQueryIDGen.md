@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryIDGen
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryIDGen
 
 # Class: SQLQueryIDGen<TTable\>
 

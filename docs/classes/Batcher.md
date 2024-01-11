@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Batcher
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Batcher
 
 # Class: Batcher<TInput, TOutput\>
 

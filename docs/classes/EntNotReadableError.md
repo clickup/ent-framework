@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntNotReadableError
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntNotReadableError
 
 # Class: EntNotReadableError
 

@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / True
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / True
 
 # Class: True
 

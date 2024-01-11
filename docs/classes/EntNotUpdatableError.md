@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntNotUpdatableError
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntNotUpdatableError
 
 # Class: EntNotUpdatableError
 

@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / FuncToPredicate
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / FuncToPredicate
 
 # Class: FuncToPredicate<TInput\>
 

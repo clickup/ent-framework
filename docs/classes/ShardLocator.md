@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ShardLocator
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ShardLocator
 
 # Class: ShardLocator<TClient, TTable, TField\>
 

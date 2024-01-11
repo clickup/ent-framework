@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerUpdate
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerUpdate
 
 # Class: SQLRunnerUpdate<TTable\>
 

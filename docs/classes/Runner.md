@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Runner
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Runner
 
 # Class: Runner<TInput, TOutput\>
 

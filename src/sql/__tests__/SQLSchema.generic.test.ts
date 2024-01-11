@@ -418,7 +418,7 @@ test("upsert single", async () => {
     ...[schema.name, id1]
   );
   expect(rows).toMatchObject([
-    { id: id1, name: "a'b'c", created_at: origRow1[0].created_at },
+    { id: id1, name: "a'b'c", created_at: origRow1[0]["created_at"] },
     { id: id3, name: "zzz" },
   ]);
 });

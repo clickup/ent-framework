@@ -1,0 +1,10 @@
+version: "3.4"
+services:
+  ent-framework-postgres:
+    image: postgres:16
+    ports:
+      - "54832:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /tmp/postgresql
+      POSTGRES_INITDB_ARGS: "-c max_connections=1000  -c synchronous_commit=off"
