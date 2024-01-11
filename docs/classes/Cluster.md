@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Cluster
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Cluster
 
 # Class: Cluster<TClient, TNode\>
 

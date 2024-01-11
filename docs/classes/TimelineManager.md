@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / TimelineManager
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / TimelineManager
 
 # Class: TimelineManager
 

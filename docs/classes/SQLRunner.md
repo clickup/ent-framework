@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunner
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunner
 
 # Class: SQLRunner<TTable, TInput, TOutput\>
 

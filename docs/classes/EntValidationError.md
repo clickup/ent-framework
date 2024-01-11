@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntValidationError
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntValidationError
 
 # Class: EntValidationError
 

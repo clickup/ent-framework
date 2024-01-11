@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryLoadBy
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryLoadBy
 
 # Class: SQLQueryLoadBy<TTable, TUniqueKey\>
 

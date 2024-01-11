@@ -1,6 +1,6 @@
-[@time-loop/ent-framework](README.md) / Exports
+[@clickup/ent-framework](README.md) / Exports
 
-# @time-loop/ent-framework
+# @clickup/ent-framework
 
 ## Enumerations
 

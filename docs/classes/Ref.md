@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Ref
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Ref
 
 # Class: Ref<T\>
 

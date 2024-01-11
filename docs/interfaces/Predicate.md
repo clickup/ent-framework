@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Predicate
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Predicate
 
 # Interface: Predicate<TInput\>
 

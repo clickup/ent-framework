@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Query
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Query
 
 # Interface: Query<TOutput\>
 

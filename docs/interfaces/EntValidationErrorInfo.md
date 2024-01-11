@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntValidationErrorInfo
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntValidationErrorInfo
 
 # Interface: EntValidationErrorInfo
 

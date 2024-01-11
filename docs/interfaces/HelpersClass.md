@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / HelpersClass
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / HelpersClass
 
 # Interface: HelpersClass<TTable, TUniqueKey, TClient\>
 

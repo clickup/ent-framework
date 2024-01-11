@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / VCCaches
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / VCCaches
 
 # Class: VCCaches<TKey, TValue\>
 

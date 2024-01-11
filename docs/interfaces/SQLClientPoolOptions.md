@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLClientPoolOptions
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLClientPoolOptions
 
 # Interface: SQLClientPoolOptions
 

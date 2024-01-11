@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ShardError
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ShardError
 
 # Class: ShardError
 

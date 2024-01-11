@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ConfigClass
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ConfigClass
 
 # Interface: ConfigClass<TTable, TUniqueKey, TClient\>
 

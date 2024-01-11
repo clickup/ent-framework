@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / RuleDecision
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / RuleDecision
 
 # Enumeration: RuleDecision
 

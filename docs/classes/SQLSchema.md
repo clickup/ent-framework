@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLSchema
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLSchema
 
 # Class: SQLSchema<TTable, TUniqueKey\>
 

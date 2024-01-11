@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntNotInsertableError
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntNotInsertableError
 
 # Class: EntNotInsertableError
 

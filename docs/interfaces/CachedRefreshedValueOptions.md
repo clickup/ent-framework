@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / CachedRefreshedValueOptions
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / CachedRefreshedValueOptions
 
 # Interface: CachedRefreshedValueOptions<TValue\>
 

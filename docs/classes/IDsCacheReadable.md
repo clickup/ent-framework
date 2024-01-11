@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / IDsCacheReadable
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / IDsCacheReadable
 
 # Class: IDsCacheReadable
 

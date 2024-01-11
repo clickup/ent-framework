@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Loggers
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Loggers
 
 # Interface: Loggers
 

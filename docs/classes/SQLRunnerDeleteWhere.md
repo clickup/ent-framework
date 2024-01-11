@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerDeleteWhere
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLRunnerDeleteWhere
 
 # Class: SQLRunnerDeleteWhere<TTable\>
 

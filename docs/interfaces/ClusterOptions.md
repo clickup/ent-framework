@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ClusterOptions
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ClusterOptions
 
 # Interface: ClusterOptions<TClient, TNode\>
 

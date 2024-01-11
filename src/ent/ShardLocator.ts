@@ -265,10 +265,10 @@ export class ShardLocator<
     }
 
     // Explicit info about which Shard to use.
-    if (input.$shardOfID !== undefined) {
+    if (input["$shardOfID"] !== undefined) {
       return this.singleShardFromID(
         "$shardOfID",
-        input.$shardOfID?.toString(),
+        input["$shardOfID"]?.toString(),
         op
       );
     }

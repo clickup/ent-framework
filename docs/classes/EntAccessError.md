@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / EntAccessError
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntAccessError
 
 # Class: EntAccessError
 

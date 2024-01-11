@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLError
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLError
 
 # Class: SQLError
 

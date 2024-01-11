@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / DenyIf
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / DenyIf
 
 # Class: DenyIf<TInput\>
 

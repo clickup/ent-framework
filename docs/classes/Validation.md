@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Validation
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Validation
 
 # Class: Validation<TTable\>
 

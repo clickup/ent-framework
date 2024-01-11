@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / DefaultMap
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / DefaultMap
 
 # Class: DefaultMap<K, V\>
 

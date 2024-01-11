@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Schema
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Schema
 
 # Class: Schema<TTable, TUniqueKey\>
 

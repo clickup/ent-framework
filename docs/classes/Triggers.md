@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / Triggers
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Triggers
 
 # Class: Triggers<TTable\>
 

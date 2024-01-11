@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / ClientError
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ClientError
 
 # Class: ClientError
 

@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SwallowedErrorLoggerProps
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SwallowedErrorLoggerProps
 
 # Interface: SwallowedErrorLoggerProps
 

@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / FieldIs
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / FieldIs
 
 # Class: FieldIs<TField, TRow\>
 

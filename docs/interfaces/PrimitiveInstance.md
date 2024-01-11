@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / PrimitiveInstance
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / PrimitiveInstance
 
 # Interface: PrimitiveInstance<TTable\>
 

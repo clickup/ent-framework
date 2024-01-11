@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryExists
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLQueryExists
 
 # Class: SQLQueryExists<TTable\>
 

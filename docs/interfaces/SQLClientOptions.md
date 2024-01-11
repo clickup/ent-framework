@@ -1,4 +1,4 @@
-[@time-loop/ent-framework](../README.md) / [Exports](../modules.md) / SQLClientOptions
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SQLClientOptions
 
 # Interface: SQLClientOptions
 
