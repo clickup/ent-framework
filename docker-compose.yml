@@ -8,3 +8,8 @@ services:
       POSTGRES_PASSWORD: postgres
       PGDATA: /tmp/postgresql
       POSTGRES_INITDB_ARGS: "-c max_connections=1000  -c synchronous_commit=off"
+    healthcheck:
+      test: "pg_isready -U postgres"
+      interval: 1s
+      timeout: 20s
+      retries: 10

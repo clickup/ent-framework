@@ -13,7 +13,7 @@
     "build": "tsc",
     "dev": "tsc --watch --preserveWatchOutput",
     "lint": "eslint . --ext .ts --cache --cache-location dist/.eslintcache",
-    "test": "set -e; docker-compose up --quiet-pull -d; export PGHOST=127.0.0.1 PGPORT=54832 PGDATABASE=postgres PGUSER=postgres PGPASSWORD=postgres; bash ./internal/init-db.sh; jest",
+    "test": "set -e; bash internal/docker-compose-up.sh; export PGHOST=127.0.0.1 PGPORT=54832 PGDATABASE=postgres PGUSER=postgres PGPASSWORD=postgres; bash ./internal/init-db.sh; jest",
     "docs": "rm -rf docs && typedoc --plugin typedoc-plugin-markdown --plugin typedoc-plugin-merge-modules && sed -i '' -E 's#packages/[^/]+/##g' $(find docs -type f -name '*.md')",
     "clean": "rm -rf dist node_modules yarn.lock package-lock.json *.log",
     "copy-package-to-public-dir": "copy-package-to-public-dir.sh",
