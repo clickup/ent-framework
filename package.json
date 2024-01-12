@@ -17,6 +17,7 @@
     "docs": "rm -rf docs && typedoc --plugin typedoc-plugin-markdown --plugin typedoc-plugin-merge-modules && sed -i '' -E 's#packages/[^/]+/##g' $(find docs -type f -name '*.md')",
     "clean": "rm -rf dist node_modules yarn.lock package-lock.json *.log",
     "copy-package-to-public-dir": "copy-package-to-public-dir.sh",
+    "backport-package-from-public-dir": "backport-package-from-public-dir.sh",
     "deploy": "npm run build && npm run lint && npm run test && npm publish --access=public"
   },
   "dependencies": {
