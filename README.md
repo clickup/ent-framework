@@ -2,4 +2,4 @@
 
 See also [Full API documentation](https://github.com/clickup/ent-framework/blob/master/docs/modules.md).
 
-![example workflow](https://github.com/clickup/ent-framework/actions/workflows/ci.yml/badge.svg?branch=main)
+![CI run](https://github.com/clickup/ent-framework/actions/workflows/ci.yml/badge.svg?branch=main)

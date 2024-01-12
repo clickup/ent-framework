@@ -6,6 +6,7 @@ tsconfig.tsbuildinfo
 node_modules
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
 .DS_Store
 *.log
 *.tmp
