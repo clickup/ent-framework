@@ -1,6 +1,7 @@
 __tests__
 .npmrc
 tsconfig.tsbuildinfo
+.github
 
 node_modules
 package-lock.json
