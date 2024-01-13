@@ -1,21 +1,22 @@
-import { testCluster } from "../../sql/__tests__/test-utils";
-import { SQLSchema } from "../../sql/SQLSchema";
-import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
+import { testCluster } from "../../pg/__tests__/test-utils";
+import { PgSchema } from "../../pg/PgSchema";
+import { BaseEnt } from "../BaseEnt";
 import { True } from "../predicates/True";
 import { QueryCache } from "../QueryCache";
 import { AllowIf } from "../rules/AllowIf";
+import { GLOBAL_SHARD } from "../ShardAffinity";
 import { createVC } from "./test-utils";
 
 export class EntTestCompany extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'query-cache"company',
     {
       id: { type: String, autoInsert: "id_gen()" },
       name: { type: String },
     },
-    ["name"]
-  )
+    ["name"],
+  ),
 ) {
   static override configure() {
     return new this.Configuration({
@@ -36,7 +37,7 @@ test("simple deletion", async () => {
     EntTestCompany,
     "select",
     "key",
-    async () => "other"
+    async () => "other",
   );
   expect(res1).toEqual("res1");
 
@@ -46,7 +47,7 @@ test("simple deletion", async () => {
     EntTestCompany,
     "select",
     "key",
-    async () => "other"
+    async () => "other",
   );
   expect(res2).toEqual("other");
 });

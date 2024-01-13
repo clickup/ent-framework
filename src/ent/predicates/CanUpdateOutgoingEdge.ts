@@ -10,12 +10,14 @@ import { IDsCacheUpdatable } from "./Predicate";
 export class CanUpdateOutgoingEdge<TField extends string>
   implements Predicate<Record<TField, string | null>>
 {
-  readonly name = this.constructor.name + "(" + this.field + ")";
+  readonly name;
 
   constructor(
     public readonly field: TField,
-    public readonly toEntClass: EntClass
-  ) {}
+    public readonly toEntClass: EntClass,
+  ) {
+    this.name = this.constructor.name + "(" + this.field + ")";
+  }
 
   async check(vc: VC, row: Record<TField, string | null>): Promise<boolean> {
     const toID = row[this.field];
@@ -34,7 +36,7 @@ export class CanUpdateOutgoingEdge<TField extends string>
       vc,
       toEnt,
       {},
-      true /* privacyOnly */
+      true /* privacyOnly */,
     );
 
     // sill here and not thrown? save to the cache

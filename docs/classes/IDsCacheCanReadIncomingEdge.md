@@ -12,7 +12,11 @@
 
 ### constructor
 
-• **new IDsCacheCanReadIncomingEdge**()
+• **new IDsCacheCanReadIncomingEdge**(): [`IDsCacheCanReadIncomingEdge`](IDsCacheCanReadIncomingEdge.md)
+
+#### Returns
+
+[`IDsCacheCanReadIncomingEdge`](IDsCacheCanReadIncomingEdge.md)
 
 #### Inherited from
 

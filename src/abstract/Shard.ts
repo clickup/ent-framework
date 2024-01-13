@@ -1,4 +1,4 @@
-import { hasKey, maybeCall } from "../helpers/misc";
+import { hasKey, maybeCall } from "../internal/misc";
 import type { Client } from "./Client";
 import type { Query } from "./Query";
 import type { QueryAnnotation, WhyClient } from "./QueryAnnotation";
@@ -19,7 +19,7 @@ export const STALE_REPLICA = Symbol("STALE_REPLICA");
  */
 export interface ShardOptions<TClient extends Client> {
   locateClient: (
-    freshness: typeof MASTER | typeof STALE_REPLICA
+    freshness: typeof MASTER | typeof STALE_REPLICA,
   ) => Promise<TClient>;
   onRunError: (attempt: number, error: unknown) => Promise<"retry" | "throw">;
 }
@@ -32,7 +32,7 @@ export class Shard<TClient extends Client> {
 
   constructor(
     public readonly no: number,
-    public readonly options: ShardOptions<TClient>
+    public readonly options: ShardOptions<TClient>,
   ) {}
 
   /**
@@ -40,7 +40,7 @@ export class Shard<TClient extends Client> {
    * because the Shard may relocate to another Island during re-discovery.
    */
   async client(
-    timeline: Timeline | typeof MASTER | typeof STALE_REPLICA
+    timeline: Timeline | typeof MASTER | typeof STALE_REPLICA,
   ): Promise<TClient> {
     for (let attempt = 0; ; attempt++) {
       try {
@@ -64,7 +64,7 @@ export class Shard<TClient extends Client> {
     query: Query<TOutput>,
     annotation: QueryAnnotation,
     timeline: Timeline,
-    freshness: null | typeof MASTER | typeof STALE_REPLICA
+    freshness: null | typeof MASTER | typeof STALE_REPLICA,
   ): Promise<TOutput> {
     for (let attempt = 0; ; attempt++) {
       let client, whyClient, res;
@@ -72,7 +72,7 @@ export class Shard<TClient extends Client> {
         // Throws if e.g. we couldn't find an Island for this Shard.
         [client, whyClient] = await this.clientImpl(
           freshness ?? timeline,
-          query.IS_WRITE ? true : undefined
+          query.IS_WRITE ? true : undefined,
         );
         // Throws if e.g. the Shard was there by the moment we got its client
         // above, but it probably disappeared (during migration) and appeared on
@@ -102,7 +102,7 @@ export class Shard<TClient extends Client> {
       if (query.IS_WRITE && freshness !== STALE_REPLICA) {
         timeline.setPos(
           await client.timelineManager.currentPos(),
-          maybeCall(client.timelineManager.maxLagMs)
+          maybeCall(client.timelineManager.maxLagMs),
         );
       }
 
@@ -126,7 +126,7 @@ export class Shard<TClient extends Client> {
    */
   private async clientImpl(
     timeline: Timeline | typeof MASTER | typeof STALE_REPLICA,
-    isWrite: true | undefined
+    isWrite: true | undefined,
   ): Promise<[client: TClient, whyClient: WhyClient]> {
     if (isWrite) {
       return [await this.shardClient(MASTER), "master-bc-is-write"];
@@ -147,7 +147,7 @@ export class Shard<TClient extends Client> {
     }
 
     const isCaughtUp = timeline.isCaughtUp(
-      await replica.timelineManager.currentPos()
+      await replica.timelineManager.currentPos(),
     );
     return isCaughtUp
       ? [replica, isCaughtUp]
@@ -158,7 +158,7 @@ export class Shard<TClient extends Client> {
    * Returns a Shard-aware Client of a particular freshness.
    */
   private async shardClient(
-    freshness: typeof MASTER | typeof STALE_REPLICA
+    freshness: typeof MASTER | typeof STALE_REPLICA,
   ): Promise<TClient> {
     const client = await this.options.locateClient(freshness);
     let shardClient = this.shardClients.get(client);

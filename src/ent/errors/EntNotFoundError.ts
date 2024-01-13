@@ -1,4 +1,4 @@
-import { sanitizeIDForDebugPrinting } from "../../helpers/misc";
+import { sanitizeIDForDebugPrinting } from "../../internal/misc";
 import { EntAccessError } from "./EntAccessError";
 
 /**
@@ -8,7 +8,7 @@ export class EntNotFoundError extends EntAccessError {
   constructor(
     entName: string,
     public readonly where: Record<string, unknown>,
-    cause: unknown = null
+    cause: unknown = null,
   ) {
     super(entName, `${entName} not found: ${whereToText(where)}`, cause);
   }

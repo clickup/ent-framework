@@ -1,4 +1,4 @@
-import { localUniqueInt, nullthrows } from "../../helpers/misc";
+import { localUniqueInt, nullthrows } from "../../internal/misc";
 import type { Row, RowWithID, Table, Where } from "../../types";
 import { ID } from "../../types";
 import type { EntClass } from "../types";
@@ -24,23 +24,25 @@ export class IncomingEdgeFromVCExists<TEdgeTable extends Table>
   implements Predicate<RowWithID>
 {
   private readonly instanceID = localUniqueInt();
-  readonly name =
-    this.constructor.name +
-    "(" +
-    this.EntEdge.name +
-    "[" +
-    this.entEdgeVCField +
-    "=vc, " +
-    this.entEdgeFKField +
-    "=row.id]" +
-    ")";
+  readonly name;
 
   constructor(
     public readonly EntEdge: EntClass<TEdgeTable>,
     public readonly entEdgeVCField: keyof Row<TEdgeTable>,
     public readonly entEdgeFKField: keyof Row<TEdgeTable>,
-    public readonly entEdgeFilter?: (ent: Row<TEdgeTable>) => boolean
-  ) {}
+    public readonly entEdgeFilter?: (ent: Row<TEdgeTable>) => boolean,
+  ) {
+    this.name =
+      this.constructor.name +
+      "(" +
+      this.EntEdge.name +
+      "[" +
+      this.entEdgeVCField +
+      "=vc, " +
+      this.entEdgeFKField +
+      "=row.id]" +
+      ")";
+  }
 
   async check(vc: VC, row: RowWithID): Promise<boolean> {
     const cache = vc.cache(IDsCacheCanReadIncomingEdge);
@@ -66,7 +68,7 @@ export class IncomingEdgeFromVCExists<TEdgeTable extends Table>
       //    access the database anyway.
       const ents = await this.EntEdge.select(vc.toOmniDangerous(), where, 1);
       const filtered = ents.filter((ent) =>
-        this.entEdgeFilter!(ent as Row<TEdgeTable>)
+        this.entEdgeFilter!(ent as Row<TEdgeTable>),
       );
       allow = filtered.length > 0;
     } else {

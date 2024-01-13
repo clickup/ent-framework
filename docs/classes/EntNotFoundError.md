@@ -14,15 +14,19 @@ Error: non-existing ID in the database.
 
 ### constructor
 
-• **new EntNotFoundError**(`entName`, `where`, `cause?`)
+• **new EntNotFoundError**(`entName`, `where`, `cause?`): [`EntNotFoundError`](EntNotFoundError.md)
 
 #### Parameters
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
 | `entName` | `string` | `undefined` |
-| `where` | `Record`<`string`, `unknown`\> | `undefined` |
+| `where` | `Record`\<`string`, `unknown`\> | `undefined` |
 | `cause` | `unknown` | `null` |
+
+#### Returns
+
+[`EntNotFoundError`](EntNotFoundError.md)
 
 #### Overrides
 
@@ -64,7 +68,7 @@ ___
 
 ### where
 
-• `Readonly` **where**: `Record`<`string`, `unknown`\>
+• `Readonly` **where**: `Record`\<`string`, `unknown`\>
 
 #### Defined in
 

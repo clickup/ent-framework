@@ -18,20 +18,31 @@ export type TimelineCaughtUpReason =
 const SERIALIZE_EXPIRATION_GAP_MS = 600 * 1000;
 
 /**
- * Tracks replication timeline position at master per "user" and Ent.
+ * Tracks replication lag timeline position at master per "user" and Ent.
  * - serialization format: "pos:expiresAt"
  * - wipes expired records (expiration is calculated at assignment moment)
+ *
+ * How replication lag (timeline) tracking works: for each
+ * microshard+Ent+"user", we know the “last write-ahead log write position”
+ * which that user (typically, VC#principal) made recently. This info can be
+ * propagated through e.g. user's session and push notifications/subscriptions
+ * channels automatically (“serialized timeline” and “timelines merging”). So
+ * the next time the same user tries to read the data from the same Ent on the
+ * same microshard, Ent Framework makes a choice, whether the replica is “good
+ * enough” for this already; if not, it falls back to master read. I.e. the data
+ * is not granular to individual Ent ID, it’s granular to the
+ * user+Ent+microshard, and thus it is decoupled from IDs.
  */
 export class Timeline {
   constructor(
     private state:
       | "unknown"
-      | { readonly pos: bigint; readonly expiresAt: number } = "unknown"
+      | { readonly pos: bigint; readonly expiresAt: number } = "unknown",
   ) {}
 
   static deserialize(
     data: string | undefined,
-    prevTimeline: Timeline | null
+    prevTimeline: Timeline | null,
   ): Timeline {
     const parts = data ? data.split(SEP) : [];
     const pos = BigInt(parts[0] || "0");
@@ -47,12 +58,12 @@ export class Timeline {
     }
 
     return new this(
-      pos ? { pos, expiresAt: parseInt(parts[1] || "0") } : "unknown"
+      pos ? { pos, expiresAt: parseInt(parts[1] || "0") } : "unknown",
     );
   }
 
   static cloneMap(
-    timelines: ReadonlyMap<string, Timeline>
+    timelines: ReadonlyMap<string, Timeline>,
   ): Map<string, Timeline> {
     const copy = new Map<string, Timeline>();
     for (const [key, timeline] of timelines.entries()) {
@@ -84,10 +95,10 @@ export class Timeline {
     return this.state === "unknown"
       ? "replica-bc-master-state-unknown"
       : replicaPos >= this.state.pos
-      ? "replica-bc-caught-up"
-      : Date.now() >= this.state.expiresAt
-      ? "replica-bc-pos-expired"
-      : false;
+        ? "replica-bc-caught-up"
+        : Date.now() >= this.state.expiresAt
+          ? "replica-bc-pos-expired"
+          : false;
   }
 
   reset(): void {

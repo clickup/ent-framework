@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / FuncToPredicate
 
-# Class: FuncToPredicate<TInput\>
+# Class: FuncToPredicate\<TInput\>
 
 Sometimes, instead of passing a well-known predicate like OutgoingEdgePointsToVC
 or CanUpdateOutgoingEdge, we want to pass just a function which accepts a row
@@ -16,13 +16,13 @@ predicate.
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)<`TInput`\>
+- [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>
 
 ## Constructors
 
 ### constructor
 
-• **new FuncToPredicate**<`TInput`\>(`func`)
+• **new FuncToPredicate**\<`TInput`\>(`func`): [`FuncToPredicate`](FuncToPredicate.md)\<`TInput`\>
 
 #### Type parameters
 
@@ -34,7 +34,11 @@ predicate.
 
 | Name | Type |
 | :------ | :------ |
-| `func` | (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`<`boolean`\> |
+| `func` | (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`\<`boolean`\> |
+
+#### Returns
+
+[`FuncToPredicate`](FuncToPredicate.md)\<`TInput`\>
 
 #### Defined in
 
@@ -58,7 +62,7 @@ predicate.
 
 ### check
 
-▸ **check**(`vc`, `input`): `Promise`<`boolean`\>
+▸ **check**(`vc`, `input`): `Promise`\<`boolean`\>
 
 #### Parameters
 
@@ -69,7 +73,7 @@ predicate.
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Implementation of
 
@@ -77,4 +81,4 @@ predicate.
 
 #### Defined in
 
-[src/ent/predicates/Predicate.ts:34](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L34)
+[src/ent/predicates/Predicate.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L36)

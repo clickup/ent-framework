@@ -1,4 +1,4 @@
-import { WeakTicker } from "../helpers/WeakTicker";
+import { WeakTicker } from "../internal/WeakTicker";
 
 /**
  * Holds an auto-expiring map of VC caches.

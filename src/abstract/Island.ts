@@ -1,7 +1,7 @@
 import compact from "lodash/compact";
 import random from "lodash/random";
 import sortBy from "lodash/sortBy";
-import { mapJoin } from "../helpers/misc";
+import { mapJoin } from "../internal/misc";
 import type { Client } from "./Client";
 
 /**
@@ -55,10 +55,10 @@ export class Island<TClient extends Client> {
             });
             return null;
           }
-        })
+        }),
       ),
       ({ isMaster }) => (isMaster ? 0 : 1),
-      ({ nos }) => -1 * nos.length
+      ({ nos }) => -1 * nos.length,
     );
     if (res.length > 0) {
       return res[0].nos;
@@ -162,7 +162,7 @@ export class Island<TClient extends Client> {
     this.clients = sortBy(
       this.clients,
       (client) => (client.isMaster() ? 0 : 1),
-      (client) => (!client.isConnectionIssue() ? 0 : 1)
+      (client) => (!client.isConnectionIssue() ? 0 : 1),
     );
   }
 }

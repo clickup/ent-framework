@@ -57,40 +57,23 @@
 - [DenyIf](classes/DenyIf.md)
 - [Require](classes/Require.md)
 - [Rule](classes/Rule.md)
-- [CachedRefreshedValue](classes/CachedRefreshedValue.md)
-- [DefaultMap](classes/DefaultMap.md)
-- [Ref](classes/Ref.md)
-- [Registry](classes/Registry.md)
-- [WeakTicker](classes/WeakTicker.md)
-- [SQLClient](classes/SQLClient.md)
-- [SQLClientPool](classes/SQLClientPool.md)
-- [SQLError](classes/SQLError.md)
-- [SQLQueryCount](classes/SQLQueryCount.md)
-- [SQLRunnerCount](classes/SQLRunnerCount.md)
-- [SQLQueryDelete](classes/SQLQueryDelete.md)
-- [SQLRunnerDelete](classes/SQLRunnerDelete.md)
-- [SQLQueryDeleteWhere](classes/SQLQueryDeleteWhere.md)
-- [SQLRunnerDeleteWhere](classes/SQLRunnerDeleteWhere.md)
-- [SQLQueryExists](classes/SQLQueryExists.md)
-- [SQLRunnerExists](classes/SQLRunnerExists.md)
-- [SQLQueryIDGen](classes/SQLQueryIDGen.md)
-- [SQLRunnerIDGen](classes/SQLRunnerIDGen.md)
-- [SQLQueryInsert](classes/SQLQueryInsert.md)
-- [SQLRunnerInsert](classes/SQLRunnerInsert.md)
-- [SQLQueryLoad](classes/SQLQueryLoad.md)
-- [SQLRunnerLoad](classes/SQLRunnerLoad.md)
-- [SQLQueryLoadBy](classes/SQLQueryLoadBy.md)
-- [SQLRunnerLoadBy](classes/SQLRunnerLoadBy.md)
-- [SQLQuerySelect](classes/SQLQuerySelect.md)
-- [SQLRunnerSelect](classes/SQLRunnerSelect.md)
-- [SQLQuerySelectBy](classes/SQLQuerySelectBy.md)
-- [SQLRunnerSelectBy](classes/SQLRunnerSelectBy.md)
-- [SQLQueryUpdate](classes/SQLQueryUpdate.md)
-- [SQLRunnerUpdate](classes/SQLRunnerUpdate.md)
-- [SQLQueryUpsert](classes/SQLQueryUpsert.md)
-- [SQLRunnerUpsert](classes/SQLRunnerUpsert.md)
-- [SQLRunner](classes/SQLRunner.md)
-- [SQLSchema](classes/SQLSchema.md)
+- [PgClient](classes/PgClient.md)
+- [PgClientPool](classes/PgClientPool.md)
+- [PgError](classes/PgError.md)
+- [PgQueryCount](classes/PgQueryCount.md)
+- [PgQueryDelete](classes/PgQueryDelete.md)
+- [PgQueryDeleteWhere](classes/PgQueryDeleteWhere.md)
+- [PgQueryExists](classes/PgQueryExists.md)
+- [PgQueryIDGen](classes/PgQueryIDGen.md)
+- [PgQueryInsert](classes/PgQueryInsert.md)
+- [PgQueryLoad](classes/PgQueryLoad.md)
+- [PgQueryLoadBy](classes/PgQueryLoadBy.md)
+- [PgQuerySelect](classes/PgQuerySelect.md)
+- [PgQuerySelectBy](classes/PgQuerySelectBy.md)
+- [PgQueryUpdate](classes/PgQueryUpdate.md)
+- [PgQueryUpsert](classes/PgQueryUpsert.md)
+- [PgRunner](classes/PgRunner.md)
+- [PgSchema](classes/PgSchema.md)
 
 ## Interfaces
 
@@ -112,11 +95,9 @@
 - [PrimitiveInstance](interfaces/PrimitiveInstance.md)
 - [Predicate](interfaces/Predicate.md)
 - [RuleResult](interfaces/RuleResult.md)
-- [CachedRefreshedValueOptions](interfaces/CachedRefreshedValueOptions.md)
-- [WeakTickerTarget](interfaces/WeakTickerTarget.md)
-- [SQLClientOptions](interfaces/SQLClientOptions.md)
-- [SQLClientConn](interfaces/SQLClientConn.md)
-- [SQLClientPoolOptions](interfaces/SQLClientPoolOptions.md)
+- [PgClientOptions](interfaces/PgClientOptions.md)
+- [PgClientConn](interfaces/PgClientConn.md)
+- [PgClientPoolOptions](interfaces/PgClientPoolOptions.md)
 
 ## Type Aliases
 
@@ -147,7 +128,7 @@ ___
 
 ### WhyClient
 
-Ƭ **WhyClient**: `Exclude`<[`TimelineCaughtUpReason`](modules.md#timelinecaughtupreason), ``false``\> \| ``"replica-bc-stale-replica-freshness"`` \| ``"master-bc-is-write"`` \| ``"master-bc-master-freshness"`` \| ``"master-bc-no-replicas"`` \| ``"master-bc-replica-not-caught-up"``
+Ƭ **WhyClient**: `Exclude`\<[`TimelineCaughtUpReason`](modules.md#timelinecaughtupreason), ``false``\> \| ``"replica-bc-stale-replica-freshness"`` \| ``"master-bc-is-write"`` \| ``"master-bc-master-freshness"`` \| ``"master-bc-no-replicas"`` \| ``"master-bc-replica-not-caught-up"``
 
 A reason why master or replica was chosen to send the query too. The most
 noticeable ones are:
@@ -177,9 +158,33 @@ been made.
 
 ___
 
+### AnyClass
+
+Ƭ **AnyClass**: (...`args`: `never`[]) => `unknown`
+
+#### Type declaration
+
+• (`...args`): `unknown`
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `...args` | `never`[] |
+
+##### Returns
+
+`unknown`
+
+#### Defined in
+
+[src/ent/QueryCache.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L14)
+
+___
+
 ### ShardAffinity
 
-Ƭ **ShardAffinity**<`TField`, `TF`\>: typeof [`GLOBAL_SHARD`](modules.md#global_shard) \| `TField` extends typeof [`ID`](modules.md#id) ? readonly `TF`[] : readonly [`TF`, ...TF[]]
+Ƭ **ShardAffinity**\<`TField`, `TF`\>: typeof [`GLOBAL_SHARD`](modules.md#global_shard) \| `TField` extends typeof [`ID`](modules.md#id) ? readonly `TF`[] : readonly [`TF`, ...TF[]]
 
 Defines Ent Shard collocation to some Ent's field when this Ent is inserted.
 - The Shard can always be Shard 0 ("global Shard"), be inferred based on the
@@ -196,37 +201,17 @@ Defines Ent Shard collocation to some Ent's field when this Ent is inserted.
 | Name | Type |
 | :------ | :------ |
 | `TField` | extends `string` |
-| `TF` | `Exclude`<`TField`, typeof [`ID`](modules.md#id)\> |
+| `TF` | `Exclude`\<`TField`, typeof [`ID`](modules.md#id)\> |
 
 #### Defined in
 
-[src/ent/Configuration.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L29)
-
-___
-
-### AnyClass
-
-Ƭ **AnyClass**: (...`args`: `never`[]) => `unknown`
-
-#### Type declaration
-
-• (`...args`)
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `...args` | `never`[] |
-
-#### Defined in
-
-[src/ent/QueryCache.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L14)
+[src/ent/ShardAffinity.ts:19](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardAffinity.ts#L19)
 
 ___
 
 ### TriggerInsertInput
 
-Ƭ **TriggerInsertInput**<`TTable`\>: [`Flatten`](modules.md#flatten)<[`InsertInput`](modules.md#insertinput)<`TTable`\> & [`RowWithID`](modules.md#rowwithid)\>
+Ƭ **TriggerInsertInput**\<`TTable`\>: `Flatten`\<[`InsertInput`](modules.md#insertinput)\<`TTable`\> & [`RowWithID`](modules.md#rowwithid)\>
 
 Table -> trigger's before- and after-insert input. Below, we use InsertInput
 and not Row, because before and even after some INSERT, we may still not know
@@ -249,7 +234,7 @@ ___
 
 ### TriggerUpdateInput
 
-Ƭ **TriggerUpdateInput**<`TTable`\>: [`Flatten`](modules.md#flatten)<[`UpdateInput`](modules.md#updateinput)<`TTable`\>\>
+Ƭ **TriggerUpdateInput**\<`TTable`\>: `Flatten`\<[`UpdateInput`](modules.md#updateinput)\<`TTable`\>\>
 
 Table -> trigger's before-update input.
 
@@ -267,7 +252,7 @@ ___
 
 ### TriggerUpdateNewRow
 
-Ƭ **TriggerUpdateNewRow**<`TTable`\>: [`Flatten`](modules.md#flatten)<`Readonly`<[`Row`](modules.md#row)<`TTable`\> & { [K in keyof TTable & symbol]?: Value<TTable[K]\> }\>\>
+Ƭ **TriggerUpdateNewRow**\<`TTable`\>: `Flatten`\<`Readonly`\<[`Row`](modules.md#row)\<`TTable`\> & \{ [K in keyof TTable & symbol]?: Value\<TTable[K]\> }\>\>
 
 Table -> trigger's before- and after-update NEW row. Ephemeral (symbol)
 fields may or may not be passed depending on what the user passes to the
@@ -287,7 +272,7 @@ ___
 
 ### TriggerUpdateOrDeleteOldRow
 
-Ƭ **TriggerUpdateOrDeleteOldRow**<`TTable`\>: [`Flatten`](modules.md#flatten)<`Readonly`<[`Row`](modules.md#row)<`TTable`\> & `Record`<keyof `TTable` & `symbol`, `never`\>\>\>
+Ƭ **TriggerUpdateOrDeleteOldRow**\<`TTable`\>: `Flatten`\<`Readonly`\<[`Row`](modules.md#row)\<`TTable`\> & `Record`\<keyof `TTable` & `symbol`, `never`\>\>\>
 
 Table -> trigger's before- and after-update (or delete) OLD row. Ephemeral
 (symbol) fields are marked as always presented, but "never" typed, so they
@@ -308,28 +293,18 @@ ___
 
 ### InsertTrigger
 
-Ƭ **InsertTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `input`: [`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>  }) => `Promise`<`unknown`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) |
-
-#### Type declaration
-
-▸ (`vc`, `args`): `Promise`<`unknown`\>
+Ƭ **InsertTrigger**\<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: \{ `input`: [`TriggerInsertInput`](modules.md#triggerinsertinput)\<`TTable`\>  }) => `Promise`\<`unknown`\>
 
 Triggers could be used to simulate "transactional best-effort behavior" in a
-non-transactional combination of some services. Imagine we have an SQL
-database and a queue service; each time we change something in SQL, we want
-to schedule the ID to the queue. Queue service is faulty: if a queueing
-operation fails, we don't want the data to be stored to SQL DB afterwards.
-SQL operations are faulty too, but it's okay for us to have something added
-to the queue even if the corresponding SQL operation failed after it (a queue
-worker will just do a no-op since it anyway rechecks the source of truth in
-SQL DB). Queue service is like a write-ahead log for SQL DB which always has
-not-less records than SQL DB. In this case, we have the following set of
+non-transactional combination of some services. Imagine we have a relational
+database and a queue service; each time we change something in the query, we
+want to schedule the ID to the queue. Queue service is faulty: if a queueing
+operation fails, we don't want the data to be stored to the DB afterwards.
+Queries are faulty too, but it's okay for us to have something added to the
+queue even if the corresponding query failed after it (a queue worker will
+just do a no-op since it anyway rechecks the source of truth in relational
+DBs). Queue service is like a write-ahead log for DB which always has
+not-less records than the DB. In this case, we have the following set of
 triggers:
 
 1. beforeInsert: schedules ID to the queue (ID is known, see below why)
@@ -356,17 +331,27 @@ Naming convention for trigger arguments:
    from the database! What we do is just field by field application of input
    properties to oldRow.
 
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TTable` | extends [`Table`](modules.md#table) |
+
+#### Type declaration
+
+▸ (`vc`, `args`): `Promise`\<`unknown`\>
+
 ##### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](classes/VC.md) |
 | `args` | `Object` |
-| `args.input` | [`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\> |
+| `args.input` | [`TriggerInsertInput`](modules.md#triggerinsertinput)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<`unknown`\>
+`Promise`\<`unknown`\>
 
 #### Defined in
 
@@ -376,7 +361,7 @@ ___
 
 ### BeforeUpdateTrigger
 
-Ƭ **BeforeUpdateTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `newRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> ; `oldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> ; `input`: [`TriggerUpdateInput`](modules.md#triggerupdateinput)<`TTable`\>  }) => `Promise`<`unknown`\>
+Ƭ **BeforeUpdateTrigger**\<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: \{ `newRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)\<`TTable`\> ; `oldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\> ; `input`: [`TriggerUpdateInput`](modules.md#triggerupdateinput)\<`TTable`\>  }) => `Promise`\<`unknown`\>
 
 #### Type parameters
 
@@ -386,7 +371,7 @@ ___
 
 #### Type declaration
 
-▸ (`vc`, `args`): `Promise`<`unknown`\>
+▸ (`vc`, `args`): `Promise`\<`unknown`\>
 
 ##### Parameters
 
@@ -394,13 +379,13 @@ ___
 | :------ | :------ |
 | `vc` | [`VC`](classes/VC.md) |
 | `args` | `Object` |
-| `args.newRow` | [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> |
-| `args.oldRow` | [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> |
-| `args.input` | [`TriggerUpdateInput`](modules.md#triggerupdateinput)<`TTable`\> |
+| `args.newRow` | [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)\<`TTable`\> |
+| `args.oldRow` | [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\> |
+| `args.input` | [`TriggerUpdateInput`](modules.md#triggerupdateinput)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<`unknown`\>
+`Promise`\<`unknown`\>
 
 #### Defined in
 
@@ -410,7 +395,7 @@ ___
 
 ### AfterUpdateTrigger
 
-Ƭ **AfterUpdateTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `newRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> ; `oldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>  }) => `Promise`<`unknown`\>
+Ƭ **AfterUpdateTrigger**\<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: \{ `newRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)\<`TTable`\> ; `oldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\>  }) => `Promise`\<`unknown`\>
 
 #### Type parameters
 
@@ -420,7 +405,7 @@ ___
 
 #### Type declaration
 
-▸ (`vc`, `args`): `Promise`<`unknown`\>
+▸ (`vc`, `args`): `Promise`\<`unknown`\>
 
 ##### Parameters
 
@@ -428,12 +413,12 @@ ___
 | :------ | :------ |
 | `vc` | [`VC`](classes/VC.md) |
 | `args` | `Object` |
-| `args.newRow` | [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> |
-| `args.oldRow` | [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> |
+| `args.newRow` | [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)\<`TTable`\> |
+| `args.oldRow` | [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<`unknown`\>
+`Promise`\<`unknown`\>
 
 #### Defined in
 
@@ -443,7 +428,7 @@ ___
 
 ### DeleteTrigger
 
-Ƭ **DeleteTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `oldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>  }) => `Promise`<`unknown`\>
+Ƭ **DeleteTrigger**\<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: \{ `oldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\>  }) => `Promise`\<`unknown`\>
 
 #### Type parameters
 
@@ -453,7 +438,7 @@ ___
 
 #### Type declaration
 
-▸ (`vc`, `args`): `Promise`<`unknown`\>
+▸ (`vc`, `args`): `Promise`\<`unknown`\>
 
 ##### Parameters
 
@@ -461,11 +446,11 @@ ___
 | :------ | :------ |
 | `vc` | [`VC`](classes/VC.md) |
 | `args` | `Object` |
-| `args.oldRow` | [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> |
+| `args.oldRow` | [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<`unknown`\>
+`Promise`\<`unknown`\>
 
 #### Defined in
 
@@ -475,7 +460,7 @@ ___
 
 ### BeforeMutationTrigger
 
-Ƭ **BeforeMutationTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`<[`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>\> ; `input`: [`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>  } \| { `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> ; `input`: [`TriggerUpdateInput`](modules.md#triggerupdateinput)<`TTable`\>  } \| { `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> ; `input`: [`Writeable`](modules.md#writeable)<[`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>\>  }) => `Promise`<`unknown`\>
+Ƭ **BeforeMutationTrigger**\<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: \{ `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`\<[`TriggerInsertInput`](modules.md#triggerinsertinput)\<`TTable`\>\> ; `input`: [`TriggerInsertInput`](modules.md#triggerinsertinput)\<`TTable`\>  } \| \{ `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)\<`TTable`\> ; `input`: [`TriggerUpdateInput`](modules.md#triggerupdateinput)\<`TTable`\>  } \| \{ `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\> ; `input`: `Writeable`\<[`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\>\>  }) => `Promise`\<`unknown`\>
 
 #### Type parameters
 
@@ -485,18 +470,18 @@ ___
 
 #### Type declaration
 
-▸ (`vc`, `args`): `Promise`<`unknown`\>
+▸ (`vc`, `args`): `Promise`\<`unknown`\>
 
 ##### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](classes/VC.md) |
-| `args` | { `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`<[`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>\> ; `input`: [`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>  } \| { `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\> ; `input`: [`TriggerUpdateInput`](modules.md#triggerupdateinput)<`TTable`\>  } \| { `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\> ; `input`: [`Writeable`](modules.md#writeable)<[`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>\>  } |
+| `args` | \{ `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`\<[`TriggerInsertInput`](modules.md#triggerinsertinput)\<`TTable`\>\> ; `input`: [`TriggerInsertInput`](modules.md#triggerinsertinput)\<`TTable`\>  } \| \{ `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)\<`TTable`\> ; `input`: [`TriggerUpdateInput`](modules.md#triggerupdateinput)\<`TTable`\>  } \| \{ `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\> ; `input`: `Writeable`\<[`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\>\>  } |
 
 ##### Returns
 
-`Promise`<`unknown`\>
+`Promise`\<`unknown`\>
 
 #### Defined in
 
@@ -506,7 +491,7 @@ ___
 
 ### AfterMutationTrigger
 
-Ƭ **AfterMutationTrigger**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: { `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`<[`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>\>  } \| { `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\>  } \| { `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>  }) => `Promise`<`unknown`\>
+Ƭ **AfterMutationTrigger**\<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `args`: \{ `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`\<[`TriggerInsertInput`](modules.md#triggerinsertinput)\<`TTable`\>\>  } \| \{ `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)\<`TTable`\>  } \| \{ `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\>  }) => `Promise`\<`unknown`\>
 
 #### Type parameters
 
@@ -516,18 +501,18 @@ ___
 
 #### Type declaration
 
-▸ (`vc`, `args`): `Promise`<`unknown`\>
+▸ (`vc`, `args`): `Promise`\<`unknown`\>
 
 ##### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](classes/VC.md) |
-| `args` | { `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`<[`TriggerInsertInput`](modules.md#triggerinsertinput)<`TTable`\>\>  } \| { `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\>  } \| { `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)<`TTable`\>  } |
+| `args` | \{ `op`: ``"INSERT"`` ; `newOrOldRow`: `Readonly`\<[`TriggerInsertInput`](modules.md#triggerinsertinput)\<`TTable`\>\>  } \| \{ `op`: ``"UPDATE"`` ; `newOrOldRow`: [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)\<`TTable`\>  } \| \{ `op`: ``"DELETE"`` ; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](modules.md#triggerupdateordeleteoldrow)\<`TTable`\>  } |
 
 ##### Returns
 
-`Promise`<`unknown`\>
+`Promise`\<`unknown`\>
 
 #### Defined in
 
@@ -537,7 +522,7 @@ ___
 
 ### DepsBuilder
 
-Ƭ **DepsBuilder**<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `row`: [`Flatten`](modules.md#flatten)<`Readonly`<[`Row`](modules.md#row)<`TTable`\>\>\>) => `unknown`[] \| `Promise`<`unknown`[]\>
+Ƭ **DepsBuilder**\<`TTable`\>: (`vc`: [`VC`](classes/VC.md), `row`: `Flatten`\<`Readonly`\<[`Row`](modules.md#row)\<`TTable`\>\>\>) => `unknown`[] \| `Promise`\<`unknown`[]\>
 
 #### Type parameters
 
@@ -547,18 +532,18 @@ ___
 
 #### Type declaration
 
-▸ (`vc`, `row`): `unknown`[] \| `Promise`<`unknown`[]\>
+▸ (`vc`, `row`): `unknown`[] \| `Promise`\<`unknown`[]\>
 
 ##### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](classes/VC.md) |
-| `row` | [`Flatten`](modules.md#flatten)<`Readonly`<[`Row`](modules.md#row)<`TTable`\>\>\> |
+| `row` | `Flatten`\<`Readonly`\<[`Row`](modules.md#row)\<`TTable`\>\>\> |
 
 ##### Returns
 
-`unknown`[] \| `Promise`<`unknown`[]\>
+`unknown`[] \| `Promise`\<`unknown`[]\>
 
 #### Defined in
 
@@ -568,7 +553,7 @@ ___
 
 ### LoadRule
 
-Ƭ **LoadRule**<`TInput`\>: [`AllowIf`](classes/AllowIf.md)<`TInput`\> \| [`DenyIf`](classes/DenyIf.md)<`TInput`\>
+Ƭ **LoadRule**\<`TInput`\>: [`AllowIf`](classes/AllowIf.md)\<`TInput`\> \| [`DenyIf`](classes/DenyIf.md)\<`TInput`\>
 
 #### Type parameters
 
@@ -584,7 +569,7 @@ ___
 
 ### WriteRules
 
-Ƭ **WriteRules**<`TInput`\>: [] \| [[`Require`](classes/Require.md)<`TInput`\>, ...Require<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)<`TInput`\>, [`Require`](classes/Require.md)<`TInput`\>, ...Require<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`Require`](classes/Require.md)<`TInput`\>, ...Require<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`Require`](classes/Require.md)<`TInput`\>, ...Require<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`LoadRule`](modules.md#loadrule)<`TInput`\>, [`Require`](classes/Require.md)<`TInput`\>, ...Require<TInput\>[]]
+Ƭ **WriteRules**\<`TInput`\>: [] \| [[`Require`](classes/Require.md)\<`TInput`\>, ...Require\<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)\<`TInput`\>, [`Require`](classes/Require.md)\<`TInput`\>, ...Require\<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)\<`TInput`\>, [`LoadRule`](modules.md#loadrule)\<`TInput`\>, [`Require`](classes/Require.md)\<`TInput`\>, ...Require\<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)\<`TInput`\>, [`LoadRule`](modules.md#loadrule)\<`TInput`\>, [`LoadRule`](modules.md#loadrule)\<`TInput`\>, [`Require`](classes/Require.md)\<`TInput`\>, ...Require\<TInput\>[]] \| [[`LoadRule`](modules.md#loadrule)\<`TInput`\>, [`LoadRule`](modules.md#loadrule)\<`TInput`\>, [`LoadRule`](modules.md#loadrule)\<`TInput`\>, [`LoadRule`](modules.md#loadrule)\<`TInput`\>, [`Require`](classes/Require.md)\<`TInput`\>, ...Require\<TInput\>[]]
 
 For safety, we enforce all Require rules to be in the end of the
 insert/update/delete privacy list, and have at least one of them. In
@@ -606,7 +591,7 @@ ___
 
 ### ValidationRules
 
-Ƭ **ValidationRules**<`TTable`\>: `Object`
+Ƭ **ValidationRules**\<`TTable`\>: `Object`
 
 #### Type parameters
 
@@ -618,13 +603,13 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `tenantPrincipalField?` | [`InsertFieldsRequired`](modules.md#insertfieldsrequired)<`TTable`\> & `string` |
-| `inferPrincipal?` | (`vc`: [`VC`](classes/VC.md), `row`: [`Row`](modules.md#row)<`TTable`\>) => `Promise`<`string` \| ``null``\> |
-| `load` | [`Validation`](classes/Validation.md)<`TTable`\>[``"load"``] |
-| `insert` | [`Validation`](classes/Validation.md)<`TTable`\>[``"insert"``] |
-| `update?` | [`Validation`](classes/Validation.md)<`TTable`\>[``"update"``] |
-| `delete?` | [`Validation`](classes/Validation.md)<`TTable`\>[``"delete"``] |
-| `validate?` | [`Predicate`](interfaces/Predicate.md)<[`InsertInput`](modules.md#insertinput)<`TTable`\>\> & [`EntValidationErrorInfo`](interfaces/EntValidationErrorInfo.md)[] |
+| `tenantPrincipalField?` | [`InsertFieldsRequired`](modules.md#insertfieldsrequired)\<`TTable`\> & `string` |
+| `inferPrincipal?` | (`vc`: [`VC`](classes/VC.md), `row`: [`Row`](modules.md#row)\<`TTable`\>) => `Promise`\<`string` \| ``null``\> |
+| `load` | [`Validation`](classes/Validation.md)\<`TTable`\>[``"load"``] |
+| `insert` | [`Validation`](classes/Validation.md)\<`TTable`\>[``"insert"``] |
+| `update?` | [`Validation`](classes/Validation.md)\<`TTable`\>[``"update"``] |
+| `delete?` | [`Validation`](classes/Validation.md)\<`TTable`\>[``"delete"``] |
+| `validate?` | [`Predicate`](interfaces/Predicate.md)\<[`InsertInput`](modules.md#insertinput)\<`TTable`\>\> & [`EntValidationErrorInfo`](interfaces/EntValidationErrorInfo.md)[] |
 
 #### Defined in
 
@@ -634,14 +619,14 @@ ___
 
 ### PrimitiveClass
 
-Ƭ **PrimitiveClass**<`TTable`, `TUniqueKey`, `TClient`\>: [`OmitNew`](modules.md#omitnew)<[`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>\> & () => [`PrimitiveInstance`](interfaces/PrimitiveInstance.md)<`TTable`\>
+Ƭ **PrimitiveClass**\<`TTable`, `TUniqueKey`, `TClient`\>: `OmitNew`\<[`ConfigClass`](interfaces/ConfigClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>\> & () => [`PrimitiveInstance`](interfaces/PrimitiveInstance.md)\<`TTable`\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)\<`TTable`\> |
 | `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Defined in
@@ -652,44 +637,44 @@ ___
 
 ### EntClass
 
-Ƭ **EntClass**<`TTable`\>: `Object`
+Ƭ **EntClass**\<`TTable`\>: `Object`
+
+A very shallow interface of Ent class (as a collection of static methods).
+Used in some places where we need the very minimum from the Ent.
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TTable` | extends [`Table`](modules.md#table) = [`DesperateAny`](modules.md#desperateany) |
+| `TTable` | extends [`Table`](modules.md#table) = `DesperateAny` |
 
 #### Call signature
 
-• **new EntClass**(): [`Ent`](modules.md#ent)<`TTable`\>
-
-A very shallow interface of Ent class (as a collection of static methods).
-Used in some places where we need the very minimum from the Ent.
+• **new EntClass**(): [`Ent`](modules.md#ent)\<`TTable`\>
 
 ##### Returns
 
-[`Ent`](modules.md#ent)<`TTable`\>
+[`Ent`](modules.md#ent)\<`TTable`\>
 
 #### Type declaration
 
 | Name | Type |
 | :------ | :------ |
-| `SCHEMA` | [`Schema`](classes/Schema.md)<`TTable`\> |
-| `VALIDATION` | [`Validation`](classes/Validation.md)<`TTable`\> |
-| `SHARD_LOCATOR` | [`ShardLocator`](classes/ShardLocator.md)<[`Client`](classes/Client.md), `TTable`, `string`\> |
+| `SCHEMA` | [`Schema`](classes/Schema.md)\<`TTable`\> |
+| `VALIDATION` | [`Validation`](classes/Validation.md)\<`TTable`\> |
+| `SHARD_LOCATOR` | [`ShardLocator`](classes/ShardLocator.md)\<[`Client`](classes/Client.md), `TTable`, `string`\> |
 | `name` | `string` |
-| `loadX` | (`vc`: [`VC`](classes/VC.md), `id`: `string`) => `Promise`<[`Ent`](modules.md#ent)<`TTable`\>\> |
-| `loadNullable` | (`vc`: [`VC`](classes/VC.md), `id`: `string`) => `Promise`<``null`` \| [`Ent`](modules.md#ent)<`TTable`\>\> |
-| `loadIfReadableNullable` | (`vc`: [`VC`](classes/VC.md), `id`: `string`) => `Promise`<``null`` \| [`Ent`](modules.md#ent)<`TTable`\>\> |
-| `count` | (`vc`: [`VC`](classes/VC.md), `where`: [`CountInput`](modules.md#countinput)<`TTable`\>) => `Promise`<`number`\> |
-| `exists` | (`vc`: [`VC`](classes/VC.md), `where`: [`ExistsInput`](modules.md#existsinput)<`TTable`\>) => `Promise`<`boolean`\> |
-| `select` | (`vc`: [`VC`](classes/VC.md), `where`: [`Where`](modules.md#where)<`TTable`\>, `limit`: `number`, `order?`: [`Order`](modules.md#order)<`TTable`\>) => `Promise`<[`Ent`](modules.md#ent)<`TTable`\>[]\> |
-| `selectChunked` | (`vc`: [`VC`](classes/VC.md), `where`: [`Where`](modules.md#where)<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom?`: {}) => `AsyncIterableIterator`<[`Ent`](modules.md#ent)<`TTable`\>[]\> |
-| `loadByX` | (`vc`: [`VC`](classes/VC.md), `keys`: { [K in string]: Value<TTable[K]\> }) => `Promise`<[`Ent`](modules.md#ent)<`TTable`\>\> |
-| `loadByNullable` | (`vc`: [`VC`](classes/VC.md), `input`: { [K in string]: Value<TTable[K]\> }) => `Promise`<``null`` \| [`Ent`](modules.md#ent)<`TTable`\>\> |
-| `insert` | (`vc`: [`VC`](classes/VC.md), `input`: [`InsertInput`](modules.md#insertinput)<`TTable`\>) => `Promise`<`string`\> |
-| `upsert` | (`vc`: [`VC`](classes/VC.md), `input`: [`InsertInput`](modules.md#insertinput)<`TTable`\>) => `Promise`<`string`\> |
+| `loadX` | (`vc`: [`VC`](classes/VC.md), `id`: `string`) => `Promise`\<[`Ent`](modules.md#ent)\<`TTable`\>\> |
+| `loadNullable` | (`vc`: [`VC`](classes/VC.md), `id`: `string`) => `Promise`\<``null`` \| [`Ent`](modules.md#ent)\<`TTable`\>\> |
+| `loadIfReadableNullable` | (`vc`: [`VC`](classes/VC.md), `id`: `string`) => `Promise`\<``null`` \| [`Ent`](modules.md#ent)\<`TTable`\>\> |
+| `count` | (`vc`: [`VC`](classes/VC.md), `where`: [`CountInput`](modules.md#countinput)\<`TTable`\>) => `Promise`\<`number`\> |
+| `exists` | (`vc`: [`VC`](classes/VC.md), `where`: [`ExistsInput`](modules.md#existsinput)\<`TTable`\>) => `Promise`\<`boolean`\> |
+| `select` | (`vc`: [`VC`](classes/VC.md), `where`: [`Where`](modules.md#where)\<`TTable`\>, `limit`: `number`, `order?`: [`Order`](modules.md#order)\<`TTable`\>) => `Promise`\<[`Ent`](modules.md#ent)\<`TTable`\>[]\> |
+| `selectChunked` | (`vc`: [`VC`](classes/VC.md), `where`: [`Where`](modules.md#where)\<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom?`: {}) => `AsyncIterableIterator`\<[`Ent`](modules.md#ent)\<`TTable`\>[]\> |
+| `loadByX` | (`vc`: [`VC`](classes/VC.md), `keys`: \{ [K in string]: Value\<TTable[K]\> }) => `Promise`\<[`Ent`](modules.md#ent)\<`TTable`\>\> |
+| `loadByNullable` | (`vc`: [`VC`](classes/VC.md), `input`: \{ [K in string]: Value\<TTable[K]\> }) => `Promise`\<``null`` \| [`Ent`](modules.md#ent)\<`TTable`\>\> |
+| `insert` | (`vc`: [`VC`](classes/VC.md), `input`: [`InsertInput`](modules.md#insertinput)\<`TTable`\>) => `Promise`\<`string`\> |
+| `upsert` | (`vc`: [`VC`](classes/VC.md), `input`: [`InsertInput`](modules.md#insertinput)\<`TTable`\>) => `Promise`\<`string`\> |
 
 #### Defined in
 
@@ -699,7 +684,7 @@ ___
 
 ### Ent
 
-Ƭ **Ent**<`TTable`\>: `Object`
+Ƭ **Ent**\<`TTable`\>: `Object`
 
 A very shallow interface of one Ent.
 
@@ -715,8 +700,8 @@ A very shallow interface of one Ent.
 | :------ | :------ |
 | `id` | `string` |
 | `vc` | [`VC`](classes/VC.md) |
-| `deleteOriginal` | () => `Promise`<`boolean`\> |
-| `updateOriginal` | (`input`: [`UpdateOriginalInput`](modules.md#updateoriginalinput)<`TTable`\>) => `Promise`<`boolean`\> |
+| `deleteOriginal` | () => `Promise`\<`boolean`\> |
+| `updateOriginal` | (`input`: [`UpdateOriginalInput`](modules.md#updateoriginalinput)\<`TTable`\>) => `Promise`\<`boolean`\> |
 
 #### Defined in
 
@@ -726,7 +711,7 @@ ___
 
 ### UpdateOriginalInput
 
-Ƭ **UpdateOriginalInput**<`TTable`\>: { [K in UpdateField<TTable\>]?: Value<TTable[K]\> } & { `$literal?`: [`Literal`](modules.md#literal) ; `$cas?`: ``"skip-if-someone-else-changed-updating-ent-props"`` \| `ReadonlyArray`<[`UpdateField`](modules.md#updatefield)<`TTable`\>\> \| [`UpdateInput`](modules.md#updateinput)<`TTable`\>[``"$cas"``]  }
+Ƭ **UpdateOriginalInput**\<`TTable`\>: \{ [K in UpdateField\<TTable\>]?: Value\<TTable[K]\> } & \{ `$literal?`: [`Literal`](modules.md#literal) ; `$cas?`: ``"skip-if-someone-else-changed-updating-ent-props"`` \| `ReadonlyArray`\<[`UpdateField`](modules.md#updatefield)\<`TTable`\>\> \| [`UpdateInput`](modules.md#updateinput)\<`TTable`\>[``"$cas"``]  }
 
 The input of updateOriginal() method. It supports some additional syntax
 sugar for $cas property, so to work-around TS weakness of Omit<> & type
@@ -744,154 +729,9 @@ inference, we redefine this type from scratch.
 
 ___
 
-### DesperateAny
+### PgClientPoolConn
 
-Ƭ **DesperateAny**: `any`
-
-In some cases (e.g. when actively working with callbacks), TS is still weak
-enough, so we are not always able to use generics/unknown/never types.
-
-#### Defined in
-
-[src/helpers/misc.ts:10](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L10)
-
-___
-
-### OmitNew
-
-Ƭ **OmitNew**<`T`\>: `Pick`<`T`, keyof `T`\>
-
-Removes constructor signature from a type.
-https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `T` | extends (...`args`: `never`[]) => `unknown` |
-
-#### Defined in
-
-[src/helpers/misc.ts:16](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L16)
-
-___
-
-### AddNew
-
-Ƭ **AddNew**<`TClass`, `TRet`\>: [`OmitNew`](modules.md#omitnew)<`TClass`\> & () => `InstanceType`<`TClass`\> & `TRet`
-
-Adds a type alternative to constructor signature's return value. This is
-useful when we e.g. turn an instance of some Ent class into an Instance & Row
-type where Row is dynamically inferred from the schema.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TClass` | extends (...`args`: `never`[]) => `unknown` |
-| `TRet` | `TRet` |
-
-#### Defined in
-
-[src/helpers/misc.ts:26](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L26)
-
-___
-
-### Flatten
-
-Ƭ **Flatten**<`T`\>: {} & { [P in keyof T]: T[P] }
-
-Flattens the interface to make it more readable in IntelliSense. Can be used
-when someone modifies (picks, omits, etc.) a huge type.
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T` |
-
-#### Defined in
-
-[src/helpers/misc.ts:35](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L35)
-
-___
-
-### Writeable
-
-Ƭ **Writeable**<`T`\>: { -readonly [P in keyof T]: T[P] }
-
-Cancels "readonly" specifier on object's properties.
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T` |
-
-#### Defined in
-
-[src/helpers/misc.ts:40](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L40)
-
-___
-
-### TuplePrefixes
-
-Ƭ **TuplePrefixes**<`T`\>: `T` extends [`unknown`] ? [] : `T` extends [infer First, ...(infer Rest)] ? [`First`, ...TuplePrefixes<Rest\>] \| [`First`] : []
-
-Returns a union type of all tuple strict prefixes:
-["a", "b", "c"] -> ["a", "b"] | ["a"]
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `T` | extends readonly `unknown`[] |
-
-#### Defined in
-
-[src/helpers/misc.ts:46](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L46)
-
-___
-
-### PickPartial
-
-Ƭ **PickPartial**<`T`\>: { [K in keyof T as undefined extends T[K] ? K : never]: T[K] }
-
-Picks only partial (optional) keys of an object.
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T` |
-
-#### Defined in
-
-[src/helpers/misc.ts:55](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L55)
-
-___
-
-### MaybeCallable
-
-Ƭ **MaybeCallable**<`T`\>: `T` \| () => `T`
-
-Denotes an option which can be dynamically configured at runtime.
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T` |
-
-#### Defined in
-
-[src/helpers/misc.ts:62](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L62)
-
-___
-
-### SQLClientPoolConn
-
-Ƭ **SQLClientPoolConn**: [`SQLClientConn`](interfaces/SQLClientConn.md) & { `processID?`: `number` \| ``null`` ; `closeAt?`: `number`  }
+Ƭ **PgClientPoolConn**: [`PgClientConn`](interfaces/PgClientConn.md) & \{ `processID?`: `number` \| ``null`` ; `closeAt?`: `number`  }
 
 Our extension to Pool connection which adds a couple props to the connection
 in on("connect") handler (persistent for the same connection objects, i.e.
@@ -899,20 +739,20 @@ across queries in the same connection).
 
 #### Defined in
 
-[src/sql/SQLClientPool.ts:28](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClientPool.ts#L28)
+[src/pg/PgClientPool.ts:28](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L28)
 
 ___
 
 ### SelectInputCustom
 
-Ƭ **SelectInputCustom**: { `ctes?`: [`Literal`](modules.md#literal)[] ; `joins?`: [`Literal`](modules.md#literal)[] ; `from?`: [`Literal`](modules.md#literal) ; `hints?`: `Record`<`string`, `string`\>  } \| `undefined`
+Ƭ **SelectInputCustom**: \{ `ctes?`: [`Literal`](modules.md#literal)[] ; `joins?`: [`Literal`](modules.md#literal)[] ; `from?`: [`Literal`](modules.md#literal) ; `hints?`: `Record`\<`string`, `string`\>  } \| `undefined`
 
 This is mostly to do hacks in PostgreSQL queries. Not even exposed by Ent
 framework, but can be used by PG-dependent code.
 
 #### Defined in
 
-[src/sql/SQLQuerySelect.ts:32](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLQuerySelect.ts#L32)
+[src/pg/PgQuerySelect.ts:34](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQuerySelect.ts#L34)
 
 ___
 
@@ -926,7 +766,7 @@ which we don't want to do.
 
 #### Defined in
 
-[src/types.ts:11](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L11)
+[src/types.ts:14](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L14)
 
 ___
 
@@ -944,19 +784,19 @@ ___
 
 #### Defined in
 
-[src/types.ts:30](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L30)
+[src/types.ts:33](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L33)
 
 ___
 
 ### SpecType
 
-Ƭ **SpecType**: typeof `Boolean` \| typeof `Date` \| typeof [`ID`](modules.md#id) \| typeof `Number` \| typeof `String` \| { `dbValueToJs`: (`dbValue`: [`DesperateAny`](modules.md#desperateany)) => `unknown` ; `stringify`: (`jsValue`: [`DesperateAny`](modules.md#desperateany)) => `string` ; `parse`: (`str`: `string`) => `unknown`  }
+Ƭ **SpecType**: typeof `Boolean` \| typeof `Date` \| typeof [`ID`](modules.md#id) \| typeof `Number` \| typeof `String` \| \{ `dbValueToJs`: (`dbValue`: `DesperateAny`) => `unknown` ; `stringify`: (`jsValue`: `DesperateAny`) => `string` ; `parse`: (`str`: `string`) => `unknown`  }
 
 Spec (metadata) of some field.
 
 #### Defined in
 
-[src/types.ts:37](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L37)
+[src/types.ts:40](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L40)
 
 ___
 
@@ -977,7 +817,7 @@ ___
 
 #### Defined in
 
-[src/types.ts:75](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L75)
+[src/types.ts:78](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L78)
 
 ___
 
@@ -993,13 +833,13 @@ ___
 
 #### Defined in
 
-[src/types.ts:85](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L85)
+[src/types.ts:88](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L88)
 
 ___
 
 ### Field
 
-Ƭ **Field**<`TTable`\>: keyof `TTable` & `string`
+Ƭ **Field**\<`TTable`\>: keyof `TTable` & `string`
 
 A database table's field (no symbols). In regards to some table structure,
 there can be 3 options:
@@ -1018,13 +858,13 @@ fields.
 
 #### Defined in
 
-[src/types.ts:99](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L99)
+[src/types.ts:102](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L102)
 
 ___
 
 ### FieldAliased
 
-Ƭ **FieldAliased**<`TTable`\>: [`Field`](modules.md#field)<`TTable`\> \| { `field`: [`Field`](modules.md#field)<`TTable`\> ; `alias`: `string`  }
+Ƭ **FieldAliased**\<`TTable`\>: [`Field`](modules.md#field)\<`TTable`\> \| \{ `field`: [`Field`](modules.md#field)\<`TTable`\> ; `alias`: `string`  }
 
 Same as Field, but may optionally hold information about of "alias value
 source" for a field name (e.g. `{ field: "abc", alias: "$cas.abc" }`).
@@ -1037,13 +877,13 @@ source" for a field name (e.g. `{ field: "abc", alias: "$cas.abc" }`).
 
 #### Defined in
 
-[src/types.ts:105](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L105)
+[src/types.ts:108](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L108)
 
 ___
 
 ### FieldOfPotentialUniqueKey
 
-Ƭ **FieldOfPotentialUniqueKey**<`TTable`\>: { [K in Field<TTable\>]: TTable[K] extends Object ? K : never }[[`Field`](modules.md#field)<`TTable`\>]
+Ƭ **FieldOfPotentialUniqueKey**\<`TTable`\>: \{ [K in Field\<TTable\>]: TTable[K] extends Object ? K : never }[[`Field`](modules.md#field)\<`TTable`\>]
 
 (Table) -> "field1" | "field2" | ... where the union contains only fields
 which can potentially be used as a part of unique key.
@@ -1056,13 +896,13 @@ which can potentially be used as a part of unique key.
 
 #### Defined in
 
-[src/types.ts:113](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L113)
+[src/types.ts:116](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L116)
 
 ___
 
 ### FieldOfIDType
 
-Ƭ **FieldOfIDType**<`TTable`\>: { [K in Field<TTable\>]: K extends string ? TTable[K] extends Object ? K : never : never }[[`Field`](modules.md#field)<`TTable`\>]
+Ƭ **FieldOfIDType**\<`TTable`\>: \{ [K in Field\<TTable\>]: K extends string ? TTable[K] extends Object ? K : never : never }[[`Field`](modules.md#field)\<`TTable`\>]
 
 Table -> "user_id" | "some_id" | ...
 
@@ -1074,13 +914,13 @@ Table -> "user_id" | "some_id" | ...
 
 #### Defined in
 
-[src/types.ts:125](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L125)
+[src/types.ts:128](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L128)
 
 ___
 
 ### FieldOfIDTypeRequired
 
-Ƭ **FieldOfIDTypeRequired**<`TTable`\>: [`InsertFieldsRequired`](modules.md#insertfieldsrequired)<`TTable`\> & [`FieldOfIDType`](modules.md#fieldofidtype)<`TTable`\>
+Ƭ **FieldOfIDTypeRequired**\<`TTable`\>: [`InsertFieldsRequired`](modules.md#insertfieldsrequired)\<`TTable`\> & [`FieldOfIDType`](modules.md#fieldofidtype)\<`TTable`\>
 
 Table -> "user_id" | "some_id" | ...
 
@@ -1092,13 +932,13 @@ Table -> "user_id" | "some_id" | ...
 
 #### Defined in
 
-[src/types.ts:136](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L136)
+[src/types.ts:139](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L139)
 
 ___
 
 ### ValueRequired
 
-Ƭ **ValueRequired**<`TSpec`\>: `TSpec`[``"type"``] extends typeof `Number` ? `number` : `TSpec`[``"type"``] extends typeof `String` ? `string` : `TSpec`[``"type"``] extends typeof `Boolean` ? `boolean` : `TSpec`[``"type"``] extends typeof [`ID`](modules.md#id) ? `string` : `TSpec`[``"type"``] extends typeof `Date` ? `Date` : `TSpec`[``"type"``] extends { `dbValueToJs`: (`dbValue`: `never`) => infer TJSValue  } ? `TSpec`[``"type"``] extends { `stringify`: (`jsValue`: `TJSValue`) => `string` ; `parse`: (`str`: `string`) => `TJSValue`  } ? `TJSValue` : `never` : `never`
+Ƭ **ValueRequired**\<`TSpec`\>: `TSpec`[``"type"``] extends typeof `Number` ? `number` : `TSpec`[``"type"``] extends typeof `String` ? `string` : `TSpec`[``"type"``] extends typeof `Boolean` ? `boolean` : `TSpec`[``"type"``] extends typeof [`ID`](modules.md#id) ? `string` : `TSpec`[``"type"``] extends typeof `Date` ? `Date` : `TSpec`[``"type"``] extends \{ `dbValueToJs`: (`dbValue`: `never`) => infer TJSValue  } ? `TSpec`[``"type"``] extends \{ `stringify`: (`jsValue`: `TJSValue`) => `string` ; `parse`: (`str`: `string`) => `TJSValue`  } ? `TJSValue` : `never` : `never`
 
 SpecType -> Value deduction (always deduces non-nullable type).
 
@@ -1110,13 +950,13 @@ SpecType -> Value deduction (always deduces non-nullable type).
 
 #### Defined in
 
-[src/types.ts:142](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L142)
+[src/types.ts:145](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L145)
 
 ___
 
 ### Value
 
-Ƭ **Value**<`TSpec`\>: `TSpec` extends { `allowNull`: ``true``  } ? [`ValueRequired`](modules.md#valuerequired)<`TSpec`\> \| ``null`` : [`ValueRequired`](modules.md#valuerequired)<`TSpec`\>
+Ƭ **Value**\<`TSpec`\>: `TSpec` extends \{ `allowNull`: ``true``  } ? [`ValueRequired`](modules.md#valuerequired)\<`TSpec`\> \| ``null`` : [`ValueRequired`](modules.md#valuerequired)\<`TSpec`\>
 
 Spec -> nullable Value or non-nullable Value.
 
@@ -1128,13 +968,13 @@ Spec -> nullable Value or non-nullable Value.
 
 #### Defined in
 
-[src/types.ts:167](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L167)
+[src/types.ts:170](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L170)
 
 ___
 
 ### Row
 
-Ƭ **Row**<`TTable`\>: [`RowWithID`](modules.md#rowwithid) & { [K in Field<TTable\>]: Value<TTable[K]\> }
+Ƭ **Row**\<`TTable`\>: [`RowWithID`](modules.md#rowwithid) & \{ [K in Field\<TTable\>]: Value\<TTable[K]\> }
 
 Table -> Row deduction (no symbols).
 
@@ -1146,13 +986,13 @@ Table -> Row deduction (no symbols).
 
 #### Defined in
 
-[src/types.ts:174](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L174)
+[src/types.ts:177](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L177)
 
 ___
 
 ### InsertFieldsRequired
 
-Ƭ **InsertFieldsRequired**<`TTable`\>: { [K in keyof TTable]: TTable[K] extends Object ? never : TTable[K] extends Object ? never : K }[keyof `TTable`]
+Ƭ **InsertFieldsRequired**\<`TTable`\>: \{ [K in keyof TTable]: TTable[K] extends Object ? never : TTable[K] extends Object ? never : K }[keyof `TTable`]
 
 Insert: Table -> "field1" | "field2" |  ... deduction (required).
 
@@ -1164,13 +1004,13 @@ Insert: Table -> "field1" | "field2" |  ... deduction (required).
 
 #### Defined in
 
-[src/types.ts:181](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L181)
+[src/types.ts:184](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L184)
 
 ___
 
 ### InsertFieldsOptional
 
-Ƭ **InsertFieldsOptional**<`TTable`\>: { [K in keyof TTable]: TTable[K] extends Object ? K : TTable[K] extends Object ? K : never }[keyof `TTable`]
+Ƭ **InsertFieldsOptional**\<`TTable`\>: \{ [K in keyof TTable]: TTable[K] extends Object ? K : TTable[K] extends Object ? K : never }[keyof `TTable`]
 
 Insert: Table -> "created_at" | "field2" |  ... deduction (optional fields).
 
@@ -1182,13 +1022,13 @@ Insert: Table -> "created_at" | "field2" |  ... deduction (optional fields).
 
 #### Defined in
 
-[src/types.ts:192](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L192)
+[src/types.ts:195](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L195)
 
 ___
 
 ### InsertInput
 
-Ƭ **InsertInput**<`TTable`\>: { [K in InsertFieldsRequired<TTable\>]: Value<TTable[K]\> } & { [K in InsertFieldsOptional<TTable\>]?: Value<TTable[K]\> }
+Ƭ **InsertInput**\<`TTable`\>: \{ [K in InsertFieldsRequired\<TTable\>]: Value\<TTable[K]\> } & \{ [K in InsertFieldsOptional\<TTable\>]?: Value\<TTable[K]\> }
 
 Insert: Table -> { field: string, updated_at?: Date, created_at?: Date... }.
 Excludes id Spec entirely and makes autoInsert/autoUpdate Specs optional.
@@ -1201,13 +1041,13 @@ Excludes id Spec entirely and makes autoInsert/autoUpdate Specs optional.
 
 #### Defined in
 
-[src/types.ts:204](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L204)
+[src/types.ts:207](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L207)
 
 ___
 
 ### UpdateField
 
-Ƭ **UpdateField**<`TTable`\>: `Exclude`<keyof `TTable`, keyof [`RowWithID`](modules.md#rowwithid)\>
+Ƭ **UpdateField**\<`TTable`\>: `Exclude`\<keyof `TTable`, keyof [`RowWithID`](modules.md#rowwithid)\>
 
 Update: Table -> "field1" | "created_at" | "updated_at" | ... deduction.
 
@@ -1219,13 +1059,13 @@ Update: Table -> "field1" | "created_at" | "updated_at" | ... deduction.
 
 #### Defined in
 
-[src/types.ts:213](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L213)
+[src/types.ts:216](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L216)
 
 ___
 
 ### UpdateInput
 
-Ƭ **UpdateInput**<`TTable`\>: { [K in UpdateField<TTable\>]?: Value<TTable[K]\> } & { `$literal?`: [`Literal`](modules.md#literal) ; `$cas?`: { [K in UpdateField<TTable\>]?: Value<TTable[K]\> }  }
+Ƭ **UpdateInput**\<`TTable`\>: \{ [K in UpdateField\<TTable\>]?: Value\<TTable[K]\> } & \{ `$literal?`: [`Literal`](modules.md#literal) ; `$cas?`: \{ [K in UpdateField\<TTable\>]?: Value\<TTable[K]\> }  }
 
 Update: Table -> { field?: string, created_at?: Date, updated_at?: Date }.
 - Excludes id Spec entirely and makes all fields optional.
@@ -1242,13 +1082,13 @@ Update: Table -> { field?: string, created_at?: Date, updated_at?: Date }.
 
 #### Defined in
 
-[src/types.ts:226](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L226)
+[src/types.ts:229](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L229)
 
 ___
 
 ### UniqueKey
 
-Ƭ **UniqueKey**<`TTable`\>: [] \| [[`FieldOfPotentialUniqueKey`](modules.md#fieldofpotentialuniquekey)<`TTable`\>, ...FieldOfPotentialUniqueKey<TTable\>[]]
+Ƭ **UniqueKey**\<`TTable`\>: [] \| [[`FieldOfPotentialUniqueKey`](modules.md#fieldofpotentialuniquekey)\<`TTable`\>, ...FieldOfPotentialUniqueKey\<TTable\>[]]
 
 Table -> ["field1", "field2", ...], list of fields allowed to compose an
 unique key on the table; fields must be allowed in insert/upsert.
@@ -1261,13 +1101,13 @@ unique key on the table; fields must be allowed in insert/upsert.
 
 #### Defined in
 
-[src/types.ts:237](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L237)
+[src/types.ts:240](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L240)
 
 ___
 
 ### LoadByInput
 
-Ƭ **LoadByInput**<`TTable`, `TUniqueKey`\>: `TUniqueKey` extends [] ? `never` : { [K in TUniqueKey[number]]: Value<TTable[K]\> }
+Ƭ **LoadByInput**\<`TTable`, `TUniqueKey`\>: `TUniqueKey` extends [] ? `never` : \{ [K in TUniqueKey[number]]: Value\<TTable[K]\> }
 
 (Table, UniqueKey) -> { field1: number, field2: number, field3: number }.
 loadBy operation is allowed for exact unique key attributes only.
@@ -1277,17 +1117,17 @@ loadBy operation is allowed for exact unique key attributes only.
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)\<`TTable`\> |
 
 #### Defined in
 
-[src/types.ts:248](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L248)
+[src/types.ts:251](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L251)
 
 ___
 
 ### SelectByInput
 
-Ƭ **SelectByInput**<`TTable`, `TUniqueKey`\>: [`LoadByInput`](modules.md#loadbyinput)<`TTable`, [`TuplePrefixes`](modules.md#tupleprefixes)<`TUniqueKey`\>\>
+Ƭ **SelectByInput**\<`TTable`, `TUniqueKey`\>: [`LoadByInput`](modules.md#loadbyinput)\<`TTable`, `TuplePrefixes`\<`TUniqueKey`\>\>
 
 (Table, UniqueKey) -> { field1: number [, field2: number [, ...] ] }.
 selectBy operation is allowed for unique key PREFIX attributes only.
@@ -1297,17 +1137,17 @@ selectBy operation is allowed for unique key PREFIX attributes only.
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)\<`TTable`\> |
 
 #### Defined in
 
-[src/types.ts:259](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L259)
+[src/types.ts:262](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L262)
 
 ___
 
 ### Where
 
-Ƭ **Where**<`TTable`\>: { `$and?`: `ReadonlyArray`<[`Where`](modules.md#where)<`TTable`\>\> ; `$or?`: `ReadonlyArray`<[`Where`](modules.md#where)<`TTable`\>\> ; `$not?`: [`Where`](modules.md#where)<`TTable`\> ; `$literal?`: [`Literal`](modules.md#literal) ; `$shardOfID?`: `string`  } & { `id?`: `TTable` extends { `id`: `unknown`  } ? `unknown` : `string` \| `string`[]  } & { [K in Field<TTable\>]?: Value<TTable[K]\> \| ReadonlyArray<Value<TTable[K]\>\> \| Object \| Object \| Object \| Object \| Object \| Object \| Object }
+Ƭ **Where**\<`TTable`\>: \{ `$and?`: `ReadonlyArray`\<[`Where`](modules.md#where)\<`TTable`\>\> ; `$or?`: `ReadonlyArray`\<[`Where`](modules.md#where)\<`TTable`\>\> ; `$not?`: [`Where`](modules.md#where)\<`TTable`\> ; `$literal?`: [`Literal`](modules.md#literal) ; `$shardOfID?`: `string`  } & \{ `id?`: `TTable` extends \{ `id`: `unknown`  } ? `unknown` : `string` \| `string`[]  } & \{ [K in Field\<TTable\>]?: Value\<TTable[K]\> \| ReadonlyArray\<Value\<TTable[K]\>\> \| Object \| Object \| Object \| Object \| Object \| Object \| Object }
 
 Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
@@ -1319,13 +1159,13 @@ Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
 #### Defined in
 
-[src/types.ts:267](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L267)
+[src/types.ts:270](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L270)
 
 ___
 
 ### Order
 
-Ƭ **Order**<`TTable`\>: `ReadonlyArray`<{ [K in Field<TTable\>]?: string } & { `$literal?`: [`Literal`](modules.md#literal)  }\>
+Ƭ **Order**\<`TTable`\>: `ReadonlyArray`\<\{ [K in Field\<TTable\>]?: string } & \{ `$literal?`: [`Literal`](modules.md#literal)  }\>
 
 Table -> [["f1", "ASC"], ["f2", "DESC"]] or [ [{[$literal]: ["a=?", 10]},
 "ASC"], ["b", "DESC"] ]
@@ -1338,13 +1178,13 @@ Table -> [["f1", "ASC"], ["f2", "DESC"]] or [ [{[$literal]: ["a=?", 10]},
 
 #### Defined in
 
-[src/types.ts:301](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L301)
+[src/types.ts:304](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L304)
 
 ___
 
 ### SelectInput
 
-Ƭ **SelectInput**<`TTable`\>: `Object`
+Ƭ **SelectInput**\<`TTable`\>: `Object`
 
 Table -> { where: ..., order?: ..., ... }
 
@@ -1358,20 +1198,20 @@ Table -> { where: ..., order?: ..., ... }
 
 | Name | Type |
 | :------ | :------ |
-| `where` | [`Where`](modules.md#where)<`TTable`\> |
-| `order?` | [`Order`](modules.md#order)<`TTable`\> |
+| `where` | [`Where`](modules.md#where)\<`TTable`\> |
+| `order?` | [`Order`](modules.md#order)\<`TTable`\> |
 | `custom?` | {} |
 | `limit` | `number` |
 
 #### Defined in
 
-[src/types.ts:308](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L308)
+[src/types.ts:311](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L311)
 
 ___
 
 ### CountInput
 
-Ƭ **CountInput**<`TTable`\>: [`Where`](modules.md#where)<`TTable`\>
+Ƭ **CountInput**\<`TTable`\>: [`Where`](modules.md#where)\<`TTable`\>
 
 Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
@@ -1383,13 +1223,13 @@ Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
 #### Defined in
 
-[src/types.ts:318](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L318)
+[src/types.ts:321](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L321)
 
 ___
 
 ### ExistsInput
 
-Ƭ **ExistsInput**<`TTable`\>: [`Where`](modules.md#where)<`TTable`\>
+Ƭ **ExistsInput**\<`TTable`\>: [`Where`](modules.md#where)\<`TTable`\>
 
 Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
@@ -1401,13 +1241,13 @@ Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
 #### Defined in
 
-[src/types.ts:323](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L323)
+[src/types.ts:326](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L326)
 
 ___
 
 ### DeleteWhereInput
 
-Ƭ **DeleteWhereInput**<`TTable`\>: { `id`: `string`[]  } & `Omit`<[`Where`](modules.md#where)<`TTable`\>, typeof [`ID`](modules.md#id)\>
+Ƭ **DeleteWhereInput**\<`TTable`\>: \{ `id`: `string`[]  } & `Omit`\<[`Where`](modules.md#where)\<`TTable`\>, typeof [`ID`](modules.md#id)\>
 
 Table -> { id: ["1", "2", "3"], ... }
 
@@ -1419,7 +1259,7 @@ Table -> { id: ["1", "2", "3"], ... }
 
 #### Defined in
 
-[src/types.ts:328](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L328)
+[src/types.ts:331](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L331)
 
 ## Variables
 
@@ -1455,7 +1295,7 @@ The table is located in the global Shard (0).
 
 #### Defined in
 
-[src/ent/Configuration.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L16)
+[src/ent/ShardAffinity.ts:6](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardAffinity.ts#L6)
 
 ___
 
@@ -1491,15 +1331,18 @@ ___
 
 • `Const` **ID**: ``"id"``
 
+Primary key field's name is currently hardcoded for simplicity. It's a
+convention to have it named as "id".
+
 #### Defined in
 
-[src/types.ts:4](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L4)
+[src/types.ts:7](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L7)
 
 ## Functions
 
 ### BaseEnt
 
-▸ **BaseEnt**<`TTable`, `TUniqueKey`, `TClient`\>(`cluster`, `schema`): [`HelpersClass`](interfaces/HelpersClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
+▸ **BaseEnt**\<`TTable`, `TUniqueKey`, `TClient`\>(`cluster`, `schema`): [`HelpersClass`](interfaces/HelpersClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
 
 This is a helper function to create new Ent classes. Run once per each
 Ent+Cluster on app boot. See examples in __tests__/TestObjects.ts and
@@ -1523,29 +1366,29 @@ to debug and develop.
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)\<`TTable`\> |
 | `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `cluster` | [`Cluster`](classes/Cluster.md)<`TClient`, `any`\> |
-| `schema` | [`Schema`](classes/Schema.md)<`TTable`, `TUniqueKey`\> |
+| `cluster` | [`Cluster`](classes/Cluster.md)\<`TClient`, `any`\> |
+| `schema` | [`Schema`](classes/Schema.md)\<`TTable`, `TUniqueKey`\> |
 
 #### Returns
 
-[`HelpersClass`](interfaces/HelpersClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
+[`HelpersClass`](interfaces/HelpersClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
 
 #### Defined in
 
-[src/ent/BaseEnt.ts:32](https://github.com/clickup/ent-framework/blob/master/src/ent/BaseEnt.ts#L32)
+[src/ent/BaseEnt.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/BaseEnt.ts#L29)
 
 ___
 
 ### buildUpdateNewRow
 
-▸ **buildUpdateNewRow**<`TTable`\>(`oldRow`, `input`): [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\>
+▸ **buildUpdateNewRow**\<`TTable`\>(`oldRow`, `input`): [`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)\<`TTable`\>
 
 Simulates an update for a row, as if it's applied to the Ent.
 
@@ -1559,12 +1402,12 @@ Simulates an update for a row, as if it's applied to the Ent.
 
 | Name | Type |
 | :------ | :------ |
-| `oldRow` | [`Row`](modules.md#row)<`TTable`\> |
-| `input` | [`UpdateInput`](modules.md#updateinput)<`TTable`\> |
+| `oldRow` | [`Row`](modules.md#row)\<`TTable`\> |
+| `input` | [`UpdateInput`](modules.md#updateinput)\<`TTable`\> |
 
 #### Returns
 
-[`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)<`TTable`\>
+[`TriggerUpdateNewRow`](modules.md#triggerupdatenewrow)\<`TTable`\>
 
 #### Defined in
 
@@ -1574,7 +1417,7 @@ ___
 
 ### CacheMixin
 
-▸ **CacheMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
+▸ **CacheMixin**\<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`PrimitiveClass`](modules.md#primitiveclass)\<`TTable`, `TUniqueKey`, `TClient`\>
 
 Modifies the passed class adding VC-stored cache layer to it.
 
@@ -1583,18 +1426,18 @@ Modifies the passed class adding VC-stored cache layer to it.
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)\<`TTable`\> |
 | `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `Base` | [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\> |
+| `Base` | [`PrimitiveClass`](modules.md#primitiveclass)\<`TTable`, `TUniqueKey`, `TClient`\> |
 
 #### Returns
 
-[`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
+[`PrimitiveClass`](modules.md#primitiveclass)\<`TTable`, `TUniqueKey`, `TClient`\>
 
 #### Defined in
 
@@ -1604,7 +1447,7 @@ ___
 
 ### ConfigMixin
 
-▸ **ConfigMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`, `cluster`, `schema`): [`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
+▸ **ConfigMixin**\<`TTable`, `TUniqueKey`, `TClient`\>(`Base`, `cluster`, `schema`): [`ConfigClass`](interfaces/ConfigClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
 
 Modifies the passed class adding support for Ent configuration (such as:
 Cluster, table schema, privacy rules, triggers etc.).
@@ -1614,7 +1457,7 @@ Cluster, table schema, privacy rules, triggers etc.).
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)\<`TTable`\> |
 | `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Parameters
@@ -1622,12 +1465,12 @@ Cluster, table schema, privacy rules, triggers etc.).
 | Name | Type |
 | :------ | :------ |
 | `Base` | () => {} |
-| `cluster` | [`Cluster`](classes/Cluster.md)<`TClient`, `any`\> |
-| `schema` | [`Schema`](classes/Schema.md)<`TTable`, `TUniqueKey`\> |
+| `cluster` | [`Cluster`](classes/Cluster.md)\<`TClient`, `any`\> |
+| `schema` | [`Schema`](classes/Schema.md)\<`TTable`, `TUniqueKey`\> |
 
 #### Returns
 
-[`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
+[`ConfigClass`](interfaces/ConfigClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
 
 #### Defined in
 
@@ -1637,7 +1480,7 @@ ___
 
 ### HelpersMixin
 
-▸ **HelpersMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`HelpersClass`](interfaces/HelpersClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
+▸ **HelpersMixin**\<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`HelpersClass`](interfaces/HelpersClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
 
 Modifies the passed class adding convenience methods (like loadX() which
 throws when an Ent can't be loaded instead of returning null as it's done in
@@ -1648,18 +1491,18 @@ the primitive operations).
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)\<`TTable`\> |
 | `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `Base` | [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\> |
+| `Base` | [`PrimitiveClass`](modules.md#primitiveclass)\<`TTable`, `TUniqueKey`, `TClient`\> |
 
 #### Returns
 
-[`HelpersClass`](interfaces/HelpersClass.md)<`TTable`, `TUniqueKey`, `TClient`\>
+[`HelpersClass`](interfaces/HelpersClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
 
 #### Defined in
 
@@ -1669,7 +1512,7 @@ ___
 
 ### PrimitiveMixin
 
-▸ **PrimitiveMixin**<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
+▸ **PrimitiveMixin**\<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`PrimitiveClass`](modules.md#primitiveclass)\<`TTable`, `TUniqueKey`, `TClient`\>
 
 Modifies the passed class adding support for the minimal number of basic Ent
 operations. Internally, uses Schema abstractions to run them.
@@ -1679,18 +1522,18 @@ operations. Internally, uses Schema abstractions to run them.
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](modules.md#uniquekey)\<`TTable`\> |
 | `TClient` | extends [`Client`](classes/Client.md) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `Base` | [`ConfigClass`](interfaces/ConfigClass.md)<`TTable`, `TUniqueKey`, `TClient`\> |
+| `Base` | [`ConfigClass`](interfaces/ConfigClass.md)\<`TTable`, `TUniqueKey`, `TClient`\> |
 
 #### Returns
 
-[`PrimitiveClass`](modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>
+[`PrimitiveClass`](modules.md#primitiveclass)\<`TTable`, `TUniqueKey`, `TClient`\>
 
 #### Defined in
 
@@ -1700,7 +1543,7 @@ ___
 
 ### evaluate
 
-▸ **evaluate**<`TInput`\>(`vc`, `input`, `rules`, `fashion`): `Promise`<{ `allow`: `boolean` ; `results`: [`RuleResult`](interfaces/RuleResult.md)[] ; `cause`: `string`  }\>
+▸ **evaluate**\<`TInput`\>(`vc`, `input`, `rules`, `fashion`): `Promise`\<\{ `allow`: `boolean` ; `results`: [`RuleResult`](interfaces/RuleResult.md)[] ; `cause`: `string`  }\>
 
 This is a hearth of permissions checking, a machine which evaluates the rules
 chain from top to bottom (one after another) and makes the decision based on
@@ -1758,482 +1601,16 @@ Example of a chain:
 | :------ | :------ |
 | `vc` | [`VC`](classes/VC.md) |
 | `input` | `TInput` |
-| `rules` | [`Rule`](classes/Rule.md)<`TInput`\>[] |
+| `rules` | [`Rule`](classes/Rule.md)\<`TInput`\>[] |
 | `fashion` | ``"parallel"`` \| ``"sequential"`` |
 
 #### Returns
 
-`Promise`<{ `allow`: `boolean` ; `results`: [`RuleResult`](interfaces/RuleResult.md)[] ; `cause`: `string`  }\>
+`Promise`\<\{ `allow`: `boolean` ; `results`: [`RuleResult`](interfaces/RuleResult.md)[] ; `cause`: `string`  }\>
 
 #### Defined in
 
 [src/ent/rules/evaluate.ts:52](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/evaluate.ts#L52)
-
-___
-
-### deepEqual
-
-▸ **deepEqual**(`a`, `b`): `boolean`
-
-Deep compares a and b ignoring the order of keys in objects and keys with
-undefined values.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `a` | `unknown` |
-| `b` | `unknown` |
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[src/helpers/deepEqual.ts:36](https://github.com/clickup/ent-framework/blob/master/src/helpers/deepEqual.ts#L36)
-
-___
-
-### join
-
-▸ **join**<`TList`\>(`promises`): `Promise`<{ -readonly [P in keyof TList]: Awaited<TList[P]\> }\>
-
-Turns a list of Promises to a list of Promise resolution results.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TList` | extends readonly `unknown`[] |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `promises` | `TList` |
-
-#### Returns
-
-`Promise`<{ -readonly [P in keyof TList]: Awaited<TList[P]\> }\>
-
-#### Defined in
-
-[src/helpers/misc.ts:67](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L67)
-
-▸ **join**<`TRec`\>(`promises`): `Promise`<{ -readonly [K in keyof TRec]: Awaited<TRec[K]\> }\>
-
-Turns an object where some values are Promises to an object with values as
-Promise resolution results.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TRec` | extends `Readonly`<`Record`<`string`, `unknown`\>\> |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `promises` | `TRec` |
-
-#### Returns
-
-`Promise`<{ -readonly [K in keyof TRec]: Awaited<TRec[K]\> }\>
-
-#### Defined in
-
-[src/helpers/misc.ts:75](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L75)
-
-___
-
-### mapJoin
-
-▸ **mapJoin**<`TElem`, `TRet`\>(`arr`, `func`): `Promise`<`TRet`[]\>
-
-A shortcut for `await join(arr.map(async ...))`.
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `TElem` |
-| `TRet` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `arr` | readonly `TElem`[] \| `Promise`<readonly `TElem`[]\> |
-| `func` | (`e`: `TElem`, `idx`: `number`) => `TRet` \| `PromiseLike`<`TRet`\> |
-
-#### Returns
-
-`Promise`<`TRet`[]\>
-
-#### Defined in
-
-[src/helpers/misc.ts:146](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L146)
-
-___
-
-### copyStack
-
-▸ **copyStack**<`TError`, `TFrom`\>(`toErr`, `fromErr`): `TError`
-
-Copies a stack-trace from fromErr error into toErr object. Useful for
-lightweight exceptions wrapping.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TError` | extends `Error` |
-| `TFrom` | extends `undefined` \| ``null`` \| { `stack?`: `unknown` ; `message?`: `unknown`  } |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `toErr` | `TError` |
-| `fromErr` | `TFrom` |
-
-#### Returns
-
-`TError`
-
-#### Defined in
-
-[src/helpers/misc.ts:157](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L157)
-
-___
-
-### minifyStack
-
-▸ **minifyStack**(`stack`, `framesToPop`): `string`
-
-Tries to minify a stacktrace by removing common parts of the paths. See unit
-test with snapshot for examples.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `stack` | `string` |
-| `framesToPop` | `number` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/helpers/misc.ts:187](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L187)
-
-___
-
-### localUniqueInt
-
-▸ **localUniqueInt**(): `number`
-
-A simple sequence generator which never returns the same value twice within
-the same process. It's NOT random, NOT for cryptography, NOT stored (so
-starts from scratch on a process restart) and is NOT shared with other
-processes.
-
-#### Returns
-
-`number`
-
-#### Defined in
-
-[src/helpers/misc.ts:208](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L208)
-
-___
-
-### stringHash
-
-▸ **stringHash**(`s`): `string`
-
-The quickest string hasher. Don't use for crypto purposes!
-https://medium.com/@chris_72272/what-is-the-fastest-node-js-hashing-algorithm-c15c1a0e164e
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `s` | `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/helpers/misc.ts:218](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L218)
-
-___
-
-### objectHash
-
-▸ **objectHash**(`obj`): `Buffer`
-
-Used to calculate stable hashes of e.g. unique keys.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `obj` | `object` |
-
-#### Returns
-
-`Buffer`
-
-#### Defined in
-
-[src/helpers/misc.ts:225](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L225)
-
-___
-
-### jsonHash
-
-▸ **jsonHash**(`obj`): `string`
-
-Similar to objectHash(), but uses JSON.stringify() under the hood, assuming
-that it's faster than objectHash(). Also, doesn't throw when the object
-contains bigint values (as opposed to JSON.stringify()).
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `obj` | `unknown` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/helpers/misc.ts:237](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L237)
-
-___
-
-### indent
-
-▸ **indent**(`message`): `string`
-
-Indents each line of the text with 2 spaces.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `message` | `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/helpers/misc.ts:248](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L248)
-
-___
-
-### inspectCompact
-
-▸ **inspectCompact**(`obj`): `string`
-
-A shorthand for inspect() in compact/no-break mode.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `obj` | `unknown` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/helpers/misc.ts:255](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L255)
-
-___
-
-### sanitizeIDForDebugPrinting
-
-▸ **sanitizeIDForDebugPrinting**(`idIn`): `string`
-
-Prepares something which is claimed to be an ID for debug printing in e.g.
-exception messages. We replace all non-ASCII characters to their \u
-representations.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `idIn` | `unknown` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/helpers/misc.ts:267](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L267)
-
-___
-
-### nullthrows
-
-▸ **nullthrows**<`T`\>(`x?`, `message?`): `T`
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `x?` | ``null`` \| `T` |
-| `message?` | `string` \| `Error` \| () => `string` \| `Error` |
-
-#### Returns
-
-`T`
-
-#### Defined in
-
-[src/helpers/misc.ts:280](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L280)
-
-___
-
-### runInVoid
-
-▸ **runInVoid**(`funcOrPromise`): `void`
-
-Two modes:
-1. If an async (or sync) function is passed, spawns it in background and
-   doesn't await for its termination.
-2. If a Promise is passed, lets it continue executing, doesn't await on it.
-
-Useful when we want to launch a function "in the air", "hanging in nowhere",
-and make no-misused-promises and no-floating-promises rules happy with it. An
-example is some legacy callback-based API (e.g. chrome extension API) where
-we want to pass an async function.
-
-It's like an analog of "async on intent" comment in the code.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `funcOrPromise` | `void` \| `Promise`<`unknown`\> \| () => `void` \| `Promise`<`unknown`\> |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/helpers/misc.ts:313](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L313)
-
-___
-
-### hasKey
-
-▸ **hasKey**<`K`\>(`k`, `o`): o is { [\_ in string \| symbol]: any }
-
-A typesafe-way to invariant the object's key presence and being
-non-undefined. It is not always working for union types: sometimes it asserts
-the value of the key to be "any". It also doesn't remove "undefined" from the
-type of the value.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `K` | extends `string` \| `symbol` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `k` | `K` |
-| `o` | `unknown` |
-
-#### Returns
-
-o is { [\_ in string \| symbol]: any }
-
-#### Defined in
-
-[src/helpers/misc.ts:330](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L330)
-
-___
-
-### entries
-
-▸ **entries**<`K`, `V`\>(`obj`): [`K`, `V`][]
-
-Same as Object.entries(), but returns strongly-typed entries.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `K` | extends `string` |
-| `V` | `V` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `obj` | `Partial`<`Record`<`K`, `V`\>\> |
-
-#### Returns
-
-[`K`, `V`][]
-
-#### Defined in
-
-[src/helpers/misc.ts:345](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L345)
-
-___
-
-### maybeCall
-
-▸ **maybeCall**<`T`\>(`valueOrFn`): `T`
-
-If the passed value is a function, calls it; otherwise, returns it intact.
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `T` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `valueOrFn` | [`MaybeCallable`](modules.md#maybecallable)<`T`\> |
-
-#### Returns
-
-`T`
-
-#### Defined in
-
-[src/helpers/misc.ts:354](https://github.com/clickup/ent-framework/blob/master/src/helpers/misc.ts#L354)
 
 ___
 
@@ -2256,7 +1633,44 @@ THis function checks that a string can be passed to PG as a bigint.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:620](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L620)
+[src/helpers/isBigintStr.ts:8](https://github.com/clickup/ent-framework/blob/master/src/helpers/isBigintStr.ts#L8)
+
+___
+
+### default
+
+▸ **default**(): `AsyncGenerator`\<`unknown`\>
+
+#### Returns
+
+`AsyncGenerator`\<`unknown`\>
+
+#### Defined in
+
+[src/pg/__benchmarks__/batched-inserts.benchmark.ts:29](https://github.com/clickup/ent-framework/blob/master/src/pg/__benchmarks__/batched-inserts.benchmark.ts#L29)
+
+___
+
+### buildShape
+
+▸ **buildShape**(`sql`): `string`
+
+Extracts a "shape" from some commonly built SQL queries. This function may be
+used from the outside for logging/debugging, so it's here, not in __tests__.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `sql` | `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/pg/helpers/buildShape.ts:52](https://github.com/clickup/ent-framework/blob/master/src/pg/helpers/buildShape.ts#L52)
 
 ___
 
@@ -2278,229 +1692,7 @@ Optionally encloses a PG identifier (like table name) in "".
 
 #### Defined in
 
-[src/sql/SQLClient.ts:630](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L630)
-
-___
-
-### escapeAny
-
-▸ **escapeAny**(`v`): `string`
-
-Tries its best to escape the value according to its type.
-
-Try to not use this function; although it protects against SQL injections,
-it's not aware of the actual field type, so it e.g. cannot prevent a bigint
-overflow SQL error.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `v` | `unknown` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/sql/SQLClient.ts:643](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L643)
-
-___
-
-### escapeID
-
-▸ **escapeID**(`v`): `string`
-
-Escapes a value implying that it's a PG ID (which is a bigint). This should
-be a preferred way of escaping when we know that the value is a bigint.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `v` | `undefined` \| ``null`` \| `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/sql/SQLClient.ts:661](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L661)
-
-___
-
-### escapeString
-
-▸ **escapeString**(`v`): `string`
-
-Escapes a string as PG string literal.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `v` | `undefined` \| ``null`` \| `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/sql/SQLClient.ts:677](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L677)
-
-___
-
-### escapeArray
-
-▸ **escapeArray**(`obj`): `string`
-
-Escapes an array of strings.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `obj` | `undefined` \| ``null`` \| (``null`` \| `string`)[] |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/sql/SQLClient.ts:688](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L688)
-
-___
-
-### escapeDate
-
-▸ **escapeDate**(`v`, `field?`): `string`
-
-Escapes a date as PG string literal.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `v` | `undefined` \| ``null`` \| `Date` |
-| `field?` | `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/sql/SQLClient.ts:709](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L709)
-
-___
-
-### escapeBoolean
-
-▸ **escapeBoolean**(`v`): `string`
-
-Escapes a boolean as PG string literal.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `v` | `undefined` \| ``null`` \| `boolean` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/sql/SQLClient.ts:720](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L720)
-
-___
-
-### escapeComposite
-
-▸ **escapeComposite**(`v`): `string`
-
-PostgreSQL doesn't allow comparison like `WHERE (a, b) = '(1,2)'` - it throws
-"Input of anonymous composite types is not implemented" error. So to compare,
-we have to convert the stringified row representation to ROW() notation
-manually: `WHERE (a, b) = ROW('1', '2')`
-
-Notice that we don't work with ROWs consisting of 1 element; instead, we
-treat them as the element itself. I.e. instead of emitting "(123)" or
-"ROW(123)", we always emit just "123".
-
-- "1" => "1"
-- "(1)" => "1"
-- "(1,2)" => "ROW('1','2')"
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `v` | `undefined` \| ``null`` \| `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/sql/SQLClient.ts:738](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L738)
-
-___
-
-### escapeIdentComposite
-
-▸ **escapeIdentComposite**(`fields`, `table?`): `string`
-
-A pair for escapeComposite(), but works with a list of identifiers (e.g. list
-of unique key fields), not with values.
-
-- fields=["some_id"], table="tbl"  => "tbl.some_id"
-- fields=["f1", "f2"], table="tbl" => "(tbl.f1,tbl.f2)"
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `fields` | readonly `string`[] |
-| `table?` | `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/sql/SQLClient.ts:756](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L756)
-
-___
-
-### escapeStringify
-
-▸ **escapeStringify**(`v`, `stringify`): `string`
-
-A helper method which additionally calls to a stringify() function before
-escaping the value as string.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `v` | `unknown` |
-| `stringify` | (`v`: `unknown`) => `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/sql/SQLClient.ts:770](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L770)
+[src/pg/helpers/escapeIdent.ts:4](https://github.com/clickup/ent-framework/blob/master/src/pg/helpers/escapeIdent.ts#L4)
 
 ___
 
@@ -2528,66 +1720,4 @@ placeholder for the replacing value.
 
 #### Defined in
 
-[src/sql/SQLClient.ts:786](https://github.com/clickup/ent-framework/blob/master/src/sql/SQLClient.ts#L786)
-
-___
-
-### default
-
-▸ **default**(): `AsyncGenerator`<`unknown`\>
-
-#### Returns
-
-`AsyncGenerator`<`unknown`\>
-
-#### Defined in
-
-[src/sql/__benchmarks__/batched-inserts.benchmark.ts:29](https://github.com/clickup/ent-framework/blob/master/src/sql/__benchmarks__/batched-inserts.benchmark.ts#L29)
-
-___
-
-### buildShape
-
-▸ **buildShape**(`sql`): `string`
-
-Extracts a "shape" from some commonly built SQL queries. This function may be
-used from the outside for logging/debugging, so it's here, not in __tests__.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `sql` | `string` |
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[src/sql/helpers/buildShape.ts:52](https://github.com/clickup/ent-framework/blob/master/src/sql/helpers/buildShape.ts#L52)
-
-___
-
-### parseCompositeRow
-
-▸ **parseCompositeRow**(`str`): (`string` \| ``null``)[]
-
-Parses composite row input into parts. See references at:
-- https://www.postgresql.org/docs/current/rowtypes.html
-- https://github.com/DmitryKoterov/db_type/blob/master/lib/DB/Type/Pgsql/Row.php
-- unit tests of this function
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `str` | `string` |
-
-#### Returns
-
-(`string` \| ``null``)[]
-
-#### Defined in
-
-[src/sql/helpers/parseCompositeRow.ts:7](https://github.com/clickup/ent-framework/blob/master/src/sql/helpers/parseCompositeRow.ts#L7)
+[src/pg/helpers/escapeLiteral.ts:15](https://github.com/clickup/ent-framework/blob/master/src/pg/helpers/escapeLiteral.ts#L15)

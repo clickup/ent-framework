@@ -3,9 +3,13 @@ import { Memoize } from "fast-typescript-memoize";
 import defaults from "lodash/defaults";
 import random from "lodash/random";
 import pTimeout from "p-timeout";
-import { CachedRefreshedValue } from "../helpers/CachedRefreshedValue";
-import { DefaultMap } from "../helpers/DefaultMap";
-import type { DesperateAny, MaybeCallable, PickPartial } from "../helpers/misc";
+import { CachedRefreshedValue } from "../internal/CachedRefreshedValue";
+import { DefaultMap } from "../internal/DefaultMap";
+import type {
+  DesperateAny,
+  MaybeCallable,
+  PickPartial,
+} from "../internal/misc";
 import {
   nullthrows,
   mapJoin,
@@ -13,8 +17,8 @@ import {
   objectHash,
   maybeCall,
   jsonHash,
-} from "../helpers/misc";
-import { Registry } from "../helpers/Registry";
+} from "../internal/misc";
+import { Registry } from "../internal/Registry";
 import type { Client } from "./Client";
 import { ClientError } from "./ClientError";
 import { Island } from "./Island";
@@ -131,7 +135,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
             where: `${this.constructor.name}.clientRegistry`,
             error,
             elapsed: performance.now() - startTime,
-          })
+          }),
         );
       },
     });
@@ -144,8 +148,8 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
     const [client] = this.clientRegistry.getOrCreate(
       nullthrows(
         maybeCall(options.islands).find(({ nodes }) => nodes.length > 0),
-        "The Cluster must have Islands with nodes"
-      ).nodes[0]
+        "The Cluster must have Islands with nodes",
+      ).nodes[0],
     );
     this.shardNoByID = client.shardNoByID.bind(client);
     this.loggers = client.options.loggers;
@@ -265,12 +269,12 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
    */
   async islandClient(
     islandNo: number,
-    freshness: typeof MASTER | typeof STALE_REPLICA
+    freshness: typeof MASTER | typeof STALE_REPLICA,
   ): Promise<TClient> {
     const { islandsMap } = await this.discoverShardsCache.cached();
     const island = nullthrows(
       islandsMap.get(islandNo),
-      () => `Unknown island ${islandNo}`
+      () => `Unknown island ${islandNo}`,
     );
     return freshness === MASTER ? island.master() : island.replica();
   }
@@ -306,7 +310,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
           // passed to us by a user in some URL or something else.
           throw new ShardError(
             `Shard ${shardNo} is not discoverable (no such Shard in the Cluster? some Islands are down? connections limit?)`,
-            masterNames
+            masterNames,
           );
         } else {
           return this.islandClient(islandNo, freshness);
@@ -327,13 +331,13 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
             this.discoverShardsCache.waitRefresh(),
             // Timeout = delay between fetches + warning timeout for a fetch.
             maybeCall(this.options.shardsDiscoverIntervalMs) * 2,
-            "Timed out while waiting for shards discovery."
+            "Timed out while waiting for shards discovery.",
           ).catch((error) =>
             this.loggers.swallowedErrorLogger({
               where: `${this.constructor.name}.shardByNo: waitRefresh`,
               error,
               elapsed: performance.now() - startTime,
-            })
+            }),
           );
           return "retry";
         }
@@ -367,7 +371,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
    * cached by the caller code.
    */
   private async discoverShardsExpensive(
-    retriesLeft = maybeCall(this.options.shardsDiscoverErrorRetryCount)
+    retriesLeft = maybeCall(this.options.shardsDiscoverErrorRetryCount),
   ): Promise<DiscoveredShards<TClient>> {
     const seenKeys = new Set<string>();
     const islandsMap = new Map<number, Island<TClient>>(
@@ -384,7 +388,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
         });
         seenKeys.add(key);
         return [no, island as Island<TClient>];
-      })
+      }),
     );
 
     try {
@@ -403,7 +407,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
                 `(${otherIslandNo})` +
                 " and " +
                 island.master().options.name +
-                `(${islandNo})`
+                `(${islandNo})`,
             );
           }
 

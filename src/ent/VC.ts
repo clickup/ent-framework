@@ -9,7 +9,7 @@ import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import type { Shard } from "../abstract/Shard";
 import { MASTER, STALE_REPLICA } from "../abstract/Shard";
 import { Timeline } from "../abstract/Timeline";
-import { minifyStack } from "../helpers/misc";
+import { minifyStack } from "../internal/misc";
 import { VCCaches } from "./VCCaches";
 import type { VCFlavor } from "./VCFlavor";
 import { VCWithStacks } from "./VCFlavor";
@@ -82,7 +82,7 @@ export class VC {
       new Map(),
       { heartbeat: async () => {}, delay },
       true,
-      cachesExpirationMs ?? 0
+      cachesExpirationMs ?? 0,
     );
   }
 
@@ -108,7 +108,7 @@ export class VC {
   // The actual implementation of the above overloads.
   cache<TInstance>(
     ClassOrTag: { new (vc: VC): TInstance } | symbol,
-    creator?: (vc: VC) => TInstance
+    creator?: (vc: VC) => TInstance,
   ): TInstance {
     this.caches ??= new VCCaches(this.cachesExpirationMs);
 
@@ -201,7 +201,7 @@ export class VC {
           const oldTimeline = this.timelines.get(key) ?? null;
           this.timelines.set(
             key,
-            Timeline.deserialize(timelineStr, oldTimeline)
+            Timeline.deserialize(timelineStr, oldTimeline),
           );
           deserialized = true;
         }
@@ -223,7 +223,7 @@ export class VC {
       this.flavors,
       this.heartbeater,
       this.isRoot,
-      this.cachesExpirationMs
+      this.cachesExpirationMs,
     );
   }
 
@@ -244,7 +244,7 @@ export class VC {
       this.flavors,
       this.heartbeater,
       this.isRoot,
-      this.cachesExpirationMs
+      this.cachesExpirationMs,
     );
   }
 
@@ -271,7 +271,7 @@ export class VC {
       this.flavors,
       this.heartbeater,
       this.isRoot,
-      this.cachesExpirationMs
+      this.cachesExpirationMs,
     );
   }
 
@@ -294,7 +294,7 @@ export class VC {
       this.flavors,
       this.heartbeater,
       this.isRoot,
-      this.cachesExpirationMs
+      this.cachesExpirationMs,
     );
   }
 
@@ -320,7 +320,7 @@ export class VC {
               ? [
                   ...pairs,
                   ...[...this.flavors].filter(([cons]) =>
-                    pairs.every(([newCons]) => cons !== newCons)
+                    pairs.every(([newCons]) => cons !== newCons),
                   ),
                 ]
               : [
@@ -328,11 +328,11 @@ export class VC {
                   // Keys in pairs override the previous flavors, do we don't
                   // need to filter here as above (performance).
                   ...pairs,
-                ]
+                ],
           ),
           this.heartbeater,
           this.isRoot,
-          this.cachesExpirationMs
+          this.cachesExpirationMs,
         )
       : this;
   }
@@ -349,7 +349,7 @@ export class VC {
       this.flavors,
       this.heartbeater,
       this.isRoot,
-      this.cachesExpirationMs
+      this.cachesExpirationMs,
     );
   }
 
@@ -365,7 +365,7 @@ export class VC {
       this.flavors,
       heartbeater,
       this.isRoot,
-      this.cachesExpirationMs
+      this.cachesExpirationMs,
     );
   }
 
@@ -385,7 +385,7 @@ export class VC {
       this.flavors,
       this.heartbeater,
       this.isRoot,
-      this.cachesExpirationMs
+      this.cachesExpirationMs,
     );
   }
 
@@ -402,7 +402,7 @@ export class VC {
       this.flavors,
       this.heartbeater,
       this.isRoot,
-      this.cachesExpirationMs
+      this.cachesExpirationMs,
     );
   }
   /**
@@ -430,7 +430,7 @@ export class VC {
    * Returns VC's flavor of the particular type.
    */
   flavor<TFlavor extends VCFlavor>(
-    flavor: new (...args: never[]) => TFlavor
+    flavor: new (...args: never[]) => TFlavor,
   ): TFlavor | null {
     return (this.flavors.get(flavor) as TFlavor | undefined) ?? null;
   }
@@ -449,8 +449,8 @@ export class VC {
       (this.freshness === MASTER
         ? ":master"
         : this.freshness === STALE_REPLICA
-        ? ":stale_replica"
-        : "")
+          ? ":stale_replica"
+          : "")
     );
   }
 
@@ -521,7 +521,7 @@ export class VC {
       this.flavors,
       this.heartbeater,
       newIsRoot,
-      this.cachesExpirationMs
+      this.cachesExpirationMs,
     );
   }
 
@@ -557,6 +557,6 @@ export class VC {
     private isRoot: boolean,
     /** If nonzero, VC#cache() will return the values which will be auto-removed
      * when VC#cache() hasn't been called for more than this time. */
-    private cachesExpirationMs: number
+    private cachesExpirationMs: number,
   ) {}
 }

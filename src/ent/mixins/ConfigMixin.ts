@@ -2,12 +2,12 @@ import compact from "lodash/compact";
 import type { Client } from "../../abstract/Client";
 import type { Cluster } from "../../abstract/Cluster";
 import type { Schema } from "../../abstract/Schema";
-import { entries } from "../../helpers/misc";
+import { entries } from "../../internal/misc";
 import type { FieldOfIDType, Table, UniqueKey } from "../../types";
 import { ID } from "../../types";
-import type { ShardAffinity } from "../Configuration";
-import { Configuration, GLOBAL_SHARD } from "../Configuration";
+import { Configuration } from "../Configuration";
 import { Inverse } from "../Inverse";
+import { GLOBAL_SHARD, type ShardAffinity } from "../ShardAffinity";
 import { ShardLocator } from "../ShardLocator";
 import { Triggers } from "../Triggers";
 import { Validation } from "../Validation";
@@ -17,7 +17,7 @@ export interface ConfigInstance {}
 export interface ConfigClass<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
-  TClient extends Client
+  TClient extends Client,
 > {
   /**
    * Some Ent parameters need to be configured lazily, on the 1st access,
@@ -34,7 +34,7 @@ export interface ConfigClass<
    * a function, but having a class is a little more natural.
    */
   readonly Configuration: new (
-    cfg: Configuration<TTable>
+    cfg: Configuration<TTable>,
   ) => Configuration<TTable>;
 
   /**
@@ -86,15 +86,15 @@ export interface ConfigClass<
 export function ConfigMixin<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
-  TClient extends Client
+  TClient extends Client,
 >(
   Base: new () => {},
   cluster: Cluster<TClient>,
-  schema: Schema<TTable, TUniqueKey>
+  schema: Schema<TTable, TUniqueKey>,
 ): ConfigClass<TTable, TUniqueKey, TClient> {
   class ConfigMixin extends Base {
     static Configuration: new (
-      c: Configuration<TTable>
+      c: Configuration<TTable>,
     ) => Configuration<TTable> = Configuration;
 
     static readonly CLUSTER = cluster;
@@ -150,20 +150,20 @@ export function ConfigMixin<
         value: new Triggers(
           cfg.beforeInsert ?? [],
           (cfg.beforeUpdate ?? []).map((trigger) =>
-            trigger instanceof Array ? trigger : [null, trigger]
+            trigger instanceof Array ? trigger : [null, trigger],
           ),
           cfg.beforeDelete ?? [],
           (cfg.beforeMutation ?? []).map((trigger) =>
-            trigger instanceof Array ? trigger : [null, trigger]
+            trigger instanceof Array ? trigger : [null, trigger],
           ),
           cfg.afterInsert ?? [],
           (cfg.afterUpdate ?? []).map((trigger) =>
-            trigger instanceof Array ? trigger : [null, trigger]
+            trigger instanceof Array ? trigger : [null, trigger],
           ),
           cfg.afterDelete ?? [],
           (cfg.afterMutation ?? []).map((trigger) =>
-            trigger instanceof Array ? trigger : [null, trigger]
-          )
+            trigger instanceof Array ? trigger : [null, trigger],
+          ),
         ),
         writable: false,
       });
@@ -177,7 +177,7 @@ export function ConfigMixin<
           entries(cfg.inverses ?? {}).map(([field, { name, type }]) => {
             if (this.SHARD_AFFINITY === GLOBAL_SHARD) {
               throw Error(
-                `It's useless to define a ${field} inverse for GLOBAL_SHARD schemas; use just a DB index`
+                `It's useless to define a ${field} inverse for GLOBAL_SHARD schemas; use just a DB index`,
               );
             }
 
@@ -188,7 +188,7 @@ export function ConfigMixin<
               spec.autoUpdate
             ) {
               throw Error(
-                `To have inverse specified, the '${field}' must be of type ${ID} and have no autoInsert/autoUpdate`
+                `To have inverse specified, the '${field}' must be of type ${ID} and have no autoInsert/autoUpdate`,
               );
             }
 
@@ -200,7 +200,7 @@ export function ConfigMixin<
               name,
               type,
             });
-          })
+          }),
         ),
         writable: false,
       });

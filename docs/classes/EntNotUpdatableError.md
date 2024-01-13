@@ -14,7 +14,7 @@ Error: thrown when an Ent cannot be updated or deleted due to privacy reasons.
 
 ### constructor
 
-• **new EntNotUpdatableError**(`entName`, `vc`, `row`, `cause?`)
+• **new EntNotUpdatableError**(`entName`, `vc`, `row`, `cause?`): [`EntNotUpdatableError`](EntNotUpdatableError.md)
 
 #### Parameters
 
@@ -24,6 +24,10 @@ Error: thrown when an Ent cannot be updated or deleted due to privacy reasons.
 | `vc` | `string` | `undefined` |
 | `row` | [`RowWithID`](../modules.md#rowwithid) | `undefined` |
 | `cause` | `unknown` | `null` |
+
+#### Returns
+
+[`EntNotUpdatableError`](EntNotUpdatableError.md)
 
 #### Overrides
 

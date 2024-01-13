@@ -14,7 +14,7 @@ Error: thrown when an Ent cannot be inserted due to privacy reasons.
 
 ### constructor
 
-• **new EntNotInsertableError**(`entName`, `vc`, `row`, `cause?`)
+• **new EntNotInsertableError**(`entName`, `vc`, `row`, `cause?`): [`EntNotInsertableError`](EntNotInsertableError.md)
 
 #### Parameters
 
@@ -24,6 +24,10 @@ Error: thrown when an Ent cannot be inserted due to privacy reasons.
 | `vc` | `string` | `undefined` |
 | `row` | `object` | `undefined` |
 | `cause` | `unknown` | `null` |
+
+#### Returns
+
+[`EntNotInsertableError`](EntNotInsertableError.md)
 
 #### Overrides
 

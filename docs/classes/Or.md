@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Or
 
-# Class: Or<TInput\>
+# Class: Or\<TInput\>
 
 Checks that at least one of the children predicates succeed.
 
@@ -12,13 +12,13 @@ Checks that at least one of the children predicates succeed.
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)<`TInput`\>
+- [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>
 
 ## Constructors
 
 ### constructor
 
-• **new Or**<`TInput`\>(`...predicates`)
+• **new Or**\<`TInput`\>(`...predicates`): [`Or`](Or.md)\<`TInput`\>
 
 #### Type parameters
 
@@ -30,7 +30,11 @@ Checks that at least one of the children predicates succeed.
 
 | Name | Type |
 | :------ | :------ |
-| `...predicates` | readonly ([`Predicate`](../interfaces/Predicate.md)<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`<`boolean`\>)[] |
+| `...predicates` | readonly ([`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`\<`boolean`\>)[] |
+
+#### Returns
+
+[`Or`](Or.md)\<`TInput`\>
 
 #### Defined in
 
@@ -54,7 +58,7 @@ ___
 
 ### predicates
 
-• `Readonly` **predicates**: readonly [`Predicate`](../interfaces/Predicate.md)<`TInput`\>[]
+• `Readonly` **predicates**: readonly [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>[]
 
 #### Defined in
 
@@ -64,7 +68,7 @@ ___
 
 ### check
 
-▸ **check**(`vc`, `input`): `Promise`<`boolean`\>
+▸ **check**(`vc`, `input`): `Promise`\<`boolean`\>
 
 #### Parameters
 
@@ -75,7 +79,7 @@ ___
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Implementation of
 

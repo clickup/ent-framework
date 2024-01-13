@@ -5,8 +5,8 @@ import flatten from "lodash/flatten";
 import sum from "lodash/sum";
 import type { Client } from "../../abstract/Client";
 import { ClientError } from "../../abstract/ClientError";
-import type { OmitNew } from "../../helpers/misc";
-import { hasKey, join, mapJoin } from "../../helpers/misc";
+import type { OmitNew } from "../../internal/misc";
+import { hasKey, join, mapJoin } from "../../internal/misc";
 import type {
   CountInput,
   ExistsInput,
@@ -67,7 +67,7 @@ export interface PrimitiveInstance<TTable extends Table>
 export type PrimitiveClass<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
-  TClient extends Client
+  TClient extends Client,
 > = OmitNew<ConfigClass<TTable, TUniqueKey, TClient>> & {
   /**
    * Runs INSERT mutation for the Ent.
@@ -80,14 +80,14 @@ export type PrimitiveClass<
    */
   insertIfNotExists: (
     vc: VC,
-    input: InsertInput<TTable>
+    input: InsertInput<TTable>,
   ) => Promise<string | null>;
 
   /**
    * Inserts an Ent or updates an existing one if unique key matches.
-   * - Don't use upsert() too often, because upsert may still delete IDs even
-   *   if the object was updated, not inserted (there is no good ways to solve
-   *   this in some DB engines like SQL so far).
+   * - Don't use upsert() too often, because upsert may still delete IDs even if
+   *   the object was updated, not inserted (there is no good ways to solve this
+   *   in some DB engines like relational DBs so far).
    * - Upsert can't work if some triggers are defined for the Ent, because we
    *   don't know Ent ID in advance (whether the upsert succeeds or skips on
    *   duplication).
@@ -101,7 +101,7 @@ export type PrimitiveClass<
   loadNullable: <TEnt extends PrimitiveInstance<TTable>>(
     this: new () => TEnt,
     vc: VC,
-    id: string
+    id: string,
   ) => Promise<TEnt | null>;
 
   /**
@@ -113,7 +113,7 @@ export type PrimitiveClass<
   loadByNullable: <TEnt extends PrimitiveInstance<TTable>>(
     this: new () => TEnt,
     vc: VC,
-    input: LoadByInput<TTable, TUniqueKey>
+    input: LoadByInput<TTable, TUniqueKey>,
   ) => Promise<TEnt | null>;
 
   /**
@@ -125,7 +125,7 @@ export type PrimitiveClass<
   selectBy: <TEnt extends PrimitiveInstance<TTable>>(
     this: new () => TEnt,
     vc: VC,
-    input: SelectByInput<TTable, TUniqueKey>
+    input: SelectByInput<TTable, TUniqueKey>,
   ) => Promise<TEnt[]>;
 
   /**
@@ -143,7 +143,7 @@ export type PrimitiveClass<
     where: Where<TTable>,
     limit: number,
     order?: Order<TTable>,
-    custom?: {}
+    custom?: {},
   ) => Promise<TEnt[]>;
 
   /**
@@ -161,7 +161,7 @@ export type PrimitiveClass<
     where: Where<TTable>,
     chunkSize: number,
     limit: number,
-    custom?: {}
+    custom?: {},
   ) => AsyncIterableIterator<TEnt[]>;
 
   /**
@@ -196,9 +196,9 @@ export type PrimitiveClass<
 export function PrimitiveMixin<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
-  TClient extends Client
+  TClient extends Client,
 >(
-  Base: ConfigClass<TTable, TUniqueKey, TClient>
+  Base: ConfigClass<TTable, TUniqueKey, TClient>,
 ): PrimitiveClass<TTable, TUniqueKey, TClient> {
   class PrimitiveMixin extends Base {
     override ["constructor"]!: typeof PrimitiveMixin;
@@ -214,12 +214,12 @@ export function PrimitiveMixin<
 
     static async insertIfNotExists(
       vc: VC,
-      input: InsertInput<TTable>
+      input: InsertInput<TTable>,
     ): Promise<string | null> {
       const [shard] = await join([
         this.SHARD_LOCATOR.singleShardForInsert(
           input,
-          "insert" // falls back to random Shard
+          "insert", // falls back to random Shard
         ),
         vc.heartbeater.heartbeat(),
       ]);
@@ -239,7 +239,7 @@ export function PrimitiveMixin<
                 this.SCHEMA.idGen(),
                 vc.toAnnotation(),
                 vc.timeline(shard, this.SCHEMA.name),
-                vc.freshness
+                vc.freshness,
               ),
               true,
             ];
@@ -274,7 +274,7 @@ export function PrimitiveMixin<
             }
           });
 
-          // Insert the actual Ent. On SQL error, we'll get an exception, and on
+          // Insert the actual Ent. On DB error, we'll get an exception, and on
           // a duplicate key violation (which is a business logic condition),
           // we'll get a null returned.
           return await this.TRIGGERS.wrapInsert(
@@ -288,7 +288,7 @@ export function PrimitiveMixin<
                   this.SCHEMA.insert(input),
                   vc.toAnnotation(),
                   vc.timeline(shard, this.SCHEMA.name),
-                  vc.freshness
+                  vc.freshness,
                 );
                 isInserted = !!id;
                 return id;
@@ -305,7 +305,7 @@ export function PrimitiveMixin<
               }
             },
             vc,
-            { ...input, [ID]: id2 }
+            { ...input, [ID]: id2 },
           );
         } catch (e: unknown) {
           lastError = e;
@@ -341,7 +341,7 @@ export function PrimitiveMixin<
                   });
                   await inverse.afterDelete(vc, id1, id2).catch(() => {});
                 }
-              }
+              },
             );
           }
         }
@@ -351,7 +351,7 @@ export function PrimitiveMixin<
           this.SCHEMA.insert(input),
           vc.toAnnotation(),
           vc.timeline(shard, this.SCHEMA.name),
-          vc.freshness
+          vc.freshness,
         );
       }
     }
@@ -360,7 +360,7 @@ export function PrimitiveMixin<
       const [shard] = await join([
         this.SHARD_LOCATOR.singleShardForInsert(
           input,
-          "upsert" // does not fallback to random Shard
+          "upsert", // does not fallback to random Shard
         ),
         vc.heartbeater.heartbeat(),
       ]);
@@ -373,7 +373,7 @@ export function PrimitiveMixin<
           this.name,
           vc.toString(),
           input,
-          "upsert cannot work with triggers defined since it doesn't know whether the row was inserted or updated in the database"
+          "upsert cannot work with triggers defined since it doesn't know whether the row was inserted or updated in the database",
         );
       }
 
@@ -382,7 +382,7 @@ export function PrimitiveMixin<
           this.name,
           vc.toString(),
           input,
-          "upsert cannot work with inverses since it doesn't know the old values of fields in the database"
+          "upsert cannot work with inverses since it doesn't know the old values of fields in the database",
         );
       }
 
@@ -395,7 +395,7 @@ export function PrimitiveMixin<
         query,
         vc.toAnnotation(),
         vc.timeline(shard, this.SCHEMA.name),
-        vc.freshness
+        vc.freshness,
       );
       vc.cache(IDsCacheUpdatable).add(id);
       return id;
@@ -403,7 +403,7 @@ export function PrimitiveMixin<
 
     static async loadNullable(
       vc: VC,
-      id: string
+      id: string,
     ): Promise<PrimitiveInstance<TTable> | null> {
       const [shard] = await join([
         this.SHARD_LOCATOR.singleShardFromID(ID, id, "loadNullable"),
@@ -418,14 +418,14 @@ export function PrimitiveMixin<
         query,
         vc.toAnnotation(),
         vc.timeline(shard, this.SCHEMA.name),
-        vc.freshness
+        vc.freshness,
       );
       return row ? this.createEnt(vc, row) : null;
     }
 
     static async loadByNullable(
       vc: VC,
-      input: LoadByInput<TTable, TUniqueKey>
+      input: LoadByInput<TTable, TUniqueKey>,
     ): Promise<PrimitiveInstance<TTable> | null> {
       const [shards] = await join([
         this.SHARD_LOCATOR.multiShardsFromInput(vc, input, "loadBy"),
@@ -438,9 +438,9 @@ export function PrimitiveMixin<
             this.SCHEMA.loadBy(input),
             vc.toAnnotation(),
             vc.timeline(shard, this.SCHEMA.name),
-            vc.freshness
-          )
-        )
+            vc.freshness,
+          ),
+        ),
       );
       const row = first(rows);
       return row ? this.createEnt(vc, row) : null;
@@ -448,7 +448,7 @@ export function PrimitiveMixin<
 
     static async selectBy(
       vc: VC,
-      input: SelectByInput<TTable, TUniqueKey>
+      input: SelectByInput<TTable, TUniqueKey>,
     ): Promise<Array<PrimitiveInstance<TTable>>> {
       const [shards] = await join([
         this.SHARD_LOCATOR.multiShardsFromInput(vc, input, "selectBy"),
@@ -460,7 +460,7 @@ export function PrimitiveMixin<
           this.SCHEMA.selectBy(input),
           vc.toAnnotation(),
           vc.timeline(shard, this.SCHEMA.name),
-          vc.freshness
+          vc.freshness,
         );
         return mapJoin(rows, async (row) => this.createEnt(vc, row));
       });
@@ -473,7 +473,7 @@ export function PrimitiveMixin<
       where: Where<TTable>,
       limit: number,
       order?: Order<TTable>,
-      custom?: {}
+      custom?: {},
     ): Promise<Array<PrimitiveInstance<TTable>>> {
       const [shards] = await join([
         this.SHARD_LOCATOR.multiShardsFromInput(vc, where, "select"),
@@ -485,7 +485,7 @@ export function PrimitiveMixin<
           this.SCHEMA.select({ where, limit, order, custom }),
           vc.toAnnotation(),
           vc.timeline(shard, this.SCHEMA.name),
-          vc.freshness
+          vc.freshness,
         );
         return mapJoin(rows, async (row) => this.createEnt(vc, row));
       });
@@ -498,7 +498,7 @@ export function PrimitiveMixin<
       where: Where<TTable>,
       chunkSize: number,
       limit: number,
-      custom?: {}
+      custom?: {},
     ): AsyncGenerator<Array<PrimitiveInstance<TTable>>, void, unknown> {
       const [shards] = await join([
         this.SHARD_LOCATOR.multiShardsFromInput(vc, where, "selectChunked"),
@@ -532,12 +532,12 @@ export function PrimitiveMixin<
           }),
           vc.toAnnotation(),
           vc.timeline(shard, this.SCHEMA.name),
-          vc.freshness
+          vc.freshness,
         );
 
         if (rows.length > 0) {
           const chunk = await mapJoin(rows, async (row) =>
-            this.createEnt(vc, row)
+            this.createEnt(vc, row),
           );
           yield chunk;
           lastSeenID = chunk[chunk.length - 1][ID];
@@ -562,8 +562,8 @@ export function PrimitiveMixin<
           this.SCHEMA.count(where),
           vc.toAnnotation(),
           vc.timeline(shard, this.SCHEMA.name),
-          vc.freshness
-        )
+          vc.freshness,
+        ),
       );
 
       return sum(counts);
@@ -580,15 +580,15 @@ export function PrimitiveMixin<
           this.SCHEMA.exists(where),
           vc.toAnnotation(),
           vc.timeline(shard, this.SCHEMA.name),
-          vc.freshness
-        )
+          vc.freshness,
+        ),
       );
 
       return exists.some((v) => v);
     }
 
     async updateOriginal(
-      inputIn: UpdateOriginalInput<TTable>
+      inputIn: UpdateOriginalInput<TTable>,
     ): Promise<boolean> {
       const cas = inputIn.$cas;
       const input = (
@@ -599,7 +599,7 @@ export function PrimitiveMixin<
               $cas: Object.fromEntries(
                 (cas instanceof Array ? cas : Object.keys(inputIn))
                   .filter((k) => !!this.constructor.SCHEMA.table[k])
-                  .map((k) => [k, this[k as keyof this] ?? null])
+                  .map((k) => [k, this[k as keyof this] ?? null]),
               ),
             }
           : inputIn
@@ -609,7 +609,7 @@ export function PrimitiveMixin<
         this.constructor.SHARD_LOCATOR.singleShardFromID(
           ID,
           this[ID],
-          "updateOriginal"
+          "updateOriginal",
         ),
         this.vc.heartbeater.heartbeat(),
       ]);
@@ -618,7 +618,7 @@ export function PrimitiveMixin<
         await this.constructor.VALIDATION.validateUpdate(
           this.vc,
           this as Row<TTable>,
-          input
+          input,
         );
       }
 
@@ -632,7 +632,7 @@ export function PrimitiveMixin<
             this.constructor.SCHEMA.update(this[ID], input),
             this.vc.toAnnotation(),
             this.vc.timeline(shard, this.constructor.SCHEMA.name),
-            this.vc.freshness
+            this.vc.freshness,
           );
 
           if (updated) {
@@ -648,8 +648,8 @@ export function PrimitiveMixin<
                   this[ID],
                   (this as unknown as Record<string, string | null>)[
                     inverse.id2Field
-                  ]
-                )
+                  ],
+                ),
             );
           }
 
@@ -657,7 +657,7 @@ export function PrimitiveMixin<
         },
         this.vc,
         this as TriggerUpdateOrDeleteOldRow<TTable>,
-        input
+        input,
       );
     }
 
@@ -666,7 +666,7 @@ export function PrimitiveMixin<
         this.constructor.SHARD_LOCATOR.singleShardFromID(
           ID,
           this[ID],
-          "deleteOriginal"
+          "deleteOriginal",
         ),
         this.vc.heartbeater.heartbeat(),
       ]);
@@ -674,7 +674,7 @@ export function PrimitiveMixin<
       if (!this.vc.isOmni()) {
         await this.constructor.VALIDATION.validateDelete(
           this.vc,
-          this as Row<TTable>
+          this as Row<TTable>,
         );
       }
 
@@ -688,7 +688,7 @@ export function PrimitiveMixin<
             this.constructor.SCHEMA.delete(this[ID]),
             this.vc.toAnnotation(),
             this.vc.timeline(shard, this.constructor.SCHEMA.name),
-            this.vc.freshness
+            this.vc.freshness,
           );
 
           if (deleted) {
@@ -699,15 +699,15 @@ export function PrimitiveMixin<
                 (this as unknown as Record<string, string | null>)[
                   inverse.id2Field
                 ],
-                this[ID]
-              )
+                this[ID],
+              ),
             );
           }
 
           return deleted;
         },
         this.vc,
-        this as TriggerUpdateOrDeleteOldRow<TTable>
+        this as TriggerUpdateOrDeleteOldRow<TTable>,
       );
     }
 
@@ -718,7 +718,7 @@ export function PrimitiveMixin<
      */
     private static async createEnt(
       vc: VC,
-      row: Row<TTable>
+      row: Row<TTable>,
     ): Promise<PrimitiveInstance<TTable>> {
       // If we've already created an Ent for this exact (row, VC, EntClass),
       // return it. This covers a very frequent case when the same Ent is loaded
@@ -752,7 +752,7 @@ export function PrimitiveMixin<
           }
 
           return ent;
-        }
+        },
       );
       const ent = await creator(vc, this);
 

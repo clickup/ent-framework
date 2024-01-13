@@ -43,7 +43,7 @@ test("root flag of the VC is changed", () => {
   const vc2root = vc1root.toOmniDangerous();
   expect((vc2root as any).isRoot).toBeTruthy();
   expect(
-    (vc2root as any).timelines === (vc1root as any).timelines
+    (vc2root as any).timelines === (vc1root as any).timelines,
   ).toBeTruthy();
 
   const vc3 = vc1root.toLowerInternal("42");
@@ -68,9 +68,9 @@ test("VC flavor prepend and append", () => {
   const vc2 = vc.withFlavor(new VCTest2("t2"));
   expect(vc2.toString()).toEqual("vc:guest(VCTest1:some,VCTest2:t2)");
   expect(vc2.withFlavor(new VCTest2("tNew")).toString()).toEqual(
-    "vc:guest(VCTest1:some,VCTest2:tNew)"
+    "vc:guest(VCTest1:some,VCTest2:tNew)",
   );
   expect(vc2.withFlavor("prepend", new VCTest2("tNew")).toString()).toEqual(
-    "vc:guest(VCTest2:tNew,VCTest1:some)"
+    "vc:guest(VCTest2:tNew,VCTest1:some)",
   );
 });

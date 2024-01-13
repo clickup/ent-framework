@@ -18,12 +18,14 @@ import { IDsCacheReadable } from "./Predicate";
 export class CanReadOutgoingEdge<TField extends string>
   implements Predicate<Record<TField, string | null>>
 {
-  readonly name = this.constructor.name + "(" + this.field + ")";
+  readonly name;
 
   constructor(
     public readonly field: TField,
-    public readonly toEntClass: EntClass
-  ) {}
+    public readonly toEntClass: EntClass,
+  ) {
+    this.name = this.constructor.name + "(" + this.field + ")";
+  }
 
   async check(vc: VC, row: Record<TField, string | null>): Promise<boolean> {
     const toID = row[this.field];

@@ -1,12 +1,12 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / QueryBase
 
-# Class: QueryBase<TTable, TInput, TOutput, TClient\>
+# Class: QueryBase\<TTable, TInput, TOutput, TClient\>
 
 A convenient base class for most (but not all) of the queries, where the
 Runner instance is the same for different query input shapes. If the query
-doesn't fit the QueryBase framework (like SQLQueryUpdate for instance where
-we have separate Runner instances for separate set of updated fields), a
-Query is used directly instead.
+doesn't fit the QueryBase framework (like PgQueryUpdate for instance where we
+have separate Runner instances for separate set of updated fields), a Query
+is used directly instead.
 
 ## Type parameters
 
@@ -21,35 +21,35 @@ Query is used directly instead.
 
 - **`QueryBase`**
 
-  ↳ [`SQLQueryCount`](SQLQueryCount.md)
+  ↳ [`PgQueryCount`](PgQueryCount.md)
 
-  ↳ [`SQLQueryDelete`](SQLQueryDelete.md)
+  ↳ [`PgQueryDelete`](PgQueryDelete.md)
 
-  ↳ [`SQLQueryDeleteWhere`](SQLQueryDeleteWhere.md)
+  ↳ [`PgQueryDeleteWhere`](PgQueryDeleteWhere.md)
 
-  ↳ [`SQLQueryExists`](SQLQueryExists.md)
+  ↳ [`PgQueryExists`](PgQueryExists.md)
 
-  ↳ [`SQLQueryIDGen`](SQLQueryIDGen.md)
+  ↳ [`PgQueryIDGen`](PgQueryIDGen.md)
 
-  ↳ [`SQLQueryInsert`](SQLQueryInsert.md)
+  ↳ [`PgQueryInsert`](PgQueryInsert.md)
 
-  ↳ [`SQLQueryLoad`](SQLQueryLoad.md)
+  ↳ [`PgQueryLoad`](PgQueryLoad.md)
 
-  ↳ [`SQLQueryLoadBy`](SQLQueryLoadBy.md)
+  ↳ [`PgQueryLoadBy`](PgQueryLoadBy.md)
 
-  ↳ [`SQLQuerySelect`](SQLQuerySelect.md)
+  ↳ [`PgQuerySelect`](PgQuerySelect.md)
 
-  ↳ [`SQLQueryUpsert`](SQLQueryUpsert.md)
+  ↳ [`PgQueryUpsert`](PgQueryUpsert.md)
 
 ## Implements
 
-- [`Query`](../interfaces/Query.md)<`TOutput`\>
+- [`Query`](../interfaces/Query.md)\<`TOutput`\>
 
 ## Constructors
 
 ### constructor
 
-• **new QueryBase**<`TTable`, `TInput`, `TOutput`, `TClient`\>(`schema`, `input`)
+• **new QueryBase**\<`TTable`, `TInput`, `TOutput`, `TClient`\>(`schema`, `input`): [`QueryBase`](QueryBase.md)\<`TTable`, `TInput`, `TOutput`, `TClient`\>
 
 #### Type parameters
 
@@ -64,53 +64,26 @@ Query is used directly instead.
 
 | Name | Type |
 | :------ | :------ |
-| `schema` | [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\> |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\> |
 | `input` | `TInput` |
 
-#### Defined in
+#### Returns
 
-[src/abstract/QueryBase.ts:27](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L27)
-
-## Properties
-
-### RUNNER\_CLASS
-
-• `Protected` `Readonly` `Abstract` **RUNNER\_CLASS**: `Object`
-
-#### Call signature
-
-• **new RUNNER_CLASS**(`schema`, `client`): [`Runner`](Runner.md)<`TInput`, `TOutput`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `schema` | [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\> |
-| `client` | `TClient` |
-
-##### Returns
-
-[`Runner`](Runner.md)<`TInput`, `TOutput`\>
-
-#### Type declaration
-
-| Name | Type |
-| :------ | :------ |
-| `IS_WRITE` | `boolean` |
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:22](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L22)
-
-___
-
-### schema
-
-• `Readonly` **schema**: [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\>
+[`QueryBase`](QueryBase.md)\<`TTable`, `TInput`, `TOutput`, `TClient`\>
 
 #### Defined in
 
 [src/abstract/QueryBase.ts:28](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L28)
+
+## Properties
+
+### schema
+
+• `Readonly` **schema**: [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\>
+
+#### Defined in
+
+[src/abstract/QueryBase.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L29)
 
 ___
 
@@ -120,7 +93,7 @@ ___
 
 #### Defined in
 
-[src/abstract/QueryBase.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L29)
+[src/abstract/QueryBase.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L30)
 
 ## Accessors
 
@@ -138,13 +111,13 @@ ___
 
 #### Defined in
 
-[src/abstract/QueryBase.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L32)
+[src/abstract/QueryBase.ts:33](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L33)
 
 ## Methods
 
 ### run
 
-▸ **run**(`client`, `annotation`): `Promise`<`TOutput`\>
+▸ **run**(`client`, `annotation`): `Promise`\<`TOutput`\>
 
 #### Parameters
 
@@ -155,7 +128,7 @@ ___
 
 #### Returns
 
-`Promise`<`TOutput`\>
+`Promise`\<`TOutput`\>
 
 #### Implementation of
 
@@ -163,4 +136,4 @@ ___
 
 #### Defined in
 
-[src/abstract/QueryBase.ts:36](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L36)
+[src/abstract/QueryBase.ts:37](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L37)

@@ -1,23 +1,27 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ConfigClass
 
-# Interface: ConfigClass<TTable, TUniqueKey, TClient\>
+# Interface: ConfigClass\<TTable, TUniqueKey, TClient\>
 
 ## Type parameters
 
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
 | `TClient` | extends [`Client`](../classes/Client.md) |
 
 ## Constructors
 
 ### constructor
 
-• **new ConfigClass**()
+• **new ConfigClass**(): [`ConfigInstance`](ConfigInstance.md)
 
 TS requires us to have a public constructor to infer instance types in
 various places. We make this constructor throw if it's called.
+
+#### Returns
+
+[`ConfigInstance`](ConfigInstance.md)
 
 #### Defined in
 
@@ -27,11 +31,15 @@ various places. We make this constructor throw if it's called.
 
 ### Configuration
 
-• `Readonly` **Configuration**: (`cfg`: [`Configuration`](../classes/Configuration.md)<`TTable`\>) => [`Configuration`](../classes/Configuration.md)<`TTable`\>
+• `Readonly` **Configuration**: (`cfg`: [`Configuration`](../classes/Configuration.md)\<`TTable`\>) => [`Configuration`](../classes/Configuration.md)\<`TTable`\>
+
+A helper class to work-around TS weakness in return value type inference:
+https://github.com/Microsoft/TypeScript/issues/31273. It could've been just
+a function, but having a class is a little more natural.
 
 #### Type declaration
 
-• **new Configuration**(`cfg`)
+• **new Configuration**(`cfg`): [`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
 A helper class to work-around TS weakness in return value type inference:
 https://github.com/Microsoft/TypeScript/issues/31273. It could've been just
@@ -41,7 +49,11 @@ a function, but having a class is a little more natural.
 
 | Name | Type |
 | :------ | :------ |
-| `cfg` | [`Configuration`](../classes/Configuration.md)<`TTable`\> |
+| `cfg` | [`Configuration`](../classes/Configuration.md)\<`TTable`\> |
+
+##### Returns
+
+[`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
 #### Defined in
 
@@ -51,7 +63,7 @@ ___
 
 ### CLUSTER
 
-• `Readonly` **CLUSTER**: [`Cluster`](../classes/Cluster.md)<`TClient`, `any`\>
+• `Readonly` **CLUSTER**: [`Cluster`](../classes/Cluster.md)\<`TClient`, `any`\>
 
 A Cluster where this Ent lives.
 
@@ -63,7 +75,7 @@ ___
 
 ### SCHEMA
 
-• `Readonly` **SCHEMA**: [`Schema`](../classes/Schema.md)<`TTable`, `TUniqueKey`\>
+• `Readonly` **SCHEMA**: [`Schema`](../classes/Schema.md)\<`TTable`, `TUniqueKey`\>
 
 A schema which represents this Ent.
 
@@ -75,7 +87,7 @@ ___
 
 ### SHARD\_AFFINITY
 
-• `Readonly` **SHARD\_AFFINITY**: [`ShardAffinity`](../modules.md#shardaffinity)<[`FieldOfIDType`](../modules.md#fieldofidtype)<`TTable`\>\>
+• `Readonly` **SHARD\_AFFINITY**: [`ShardAffinity`](../modules.md#shardaffinity)\<[`FieldOfIDType`](../modules.md#fieldofidtype)\<`TTable`\>\>
 
 Defines how to find the right Shard during Ent insertion.
 
@@ -87,7 +99,7 @@ ___
 
 ### SHARD\_LOCATOR
 
-• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)<`TClient`, `TTable`, [`FieldOfIDType`](../modules.md#fieldofidtype)<`TTable`\>\>
+• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)\<`TClient`, `TTable`, [`FieldOfIDType`](../modules.md#fieldofidtype)\<`TTable`\>\>
 
 Shard locator for this Ent, responsible for resolving IDs into Shard objects.
 
@@ -99,7 +111,7 @@ ___
 
 ### VALIDATION
 
-• `Readonly` **VALIDATION**: [`Validation`](../classes/Validation.md)<`TTable`\>
+• `Readonly` **VALIDATION**: [`Validation`](../classes/Validation.md)\<`TTable`\>
 
 Privacy rules for this Ent class.
 
@@ -111,7 +123,7 @@ ___
 
 ### TRIGGERS
 
-• `Readonly` **TRIGGERS**: [`Triggers`](../classes/Triggers.md)<`TTable`\>
+• `Readonly` **TRIGGERS**: [`Triggers`](../classes/Triggers.md)\<`TTable`\>
 
 Triggers for this Ent class.
 
@@ -123,7 +135,7 @@ ___
 
 ### INVERSES
 
-• `Readonly` **INVERSES**: [`Inverse`](../classes/Inverse.md)<`TClient`, `TTable`\>[]
+• `Readonly` **INVERSES**: [`Inverse`](../classes/Inverse.md)\<`TClient`, `TTable`\>[]
 
 Inverse assoc managers for fields.
 
@@ -135,7 +147,7 @@ Inverse assoc managers for fields.
 
 ### configure
 
-▸ **configure**(): [`Configuration`](../classes/Configuration.md)<`TTable`\>
+▸ **configure**(): [`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
 Some Ent parameters need to be configured lazily, on the 1st access,
 because there could be cyclic references between Ent classes (e.g. in their
@@ -145,7 +157,7 @@ abstract methods in TS yet, so making it non-abstract.
 
 #### Returns
 
-[`Configuration`](../classes/Configuration.md)<`TTable`\>
+[`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
 #### Defined in
 

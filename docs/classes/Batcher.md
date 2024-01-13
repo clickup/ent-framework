@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Batcher
 
-# Class: Batcher<TInput, TOutput\>
+# Class: Batcher\<TInput, TOutput\>
 
 Batcher is similar to DataLoader, but with a few important differences:
 1. It's strongly typed not only for the output, but for input too. And input
@@ -21,7 +21,7 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 ### constructor
 
-• **new Batcher**<`TInput`, `TOutput`\>(`runner`, `batchDelayMs`)
+• **new Batcher**\<`TInput`, `TOutput`\>(`runner`, `batchDelayMs`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
 #### Type parameters
 
@@ -34,8 +34,12 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 | Name | Type |
 | :------ | :------ |
-| `runner` | [`Runner`](Runner.md)<`TInput`, `TOutput`\> |
-| `batchDelayMs` | [`MaybeCallable`](../modules.md#maybecallable)<`number`\> |
+| `runner` | [`Runner`](Runner.md)\<`TInput`, `TOutput`\> |
+| `batchDelayMs` | `MaybeCallable`\<`number`\> |
+
+#### Returns
+
+[`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
 #### Defined in
 
@@ -45,11 +49,11 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 ### flushQueue
 
-▸ `Protected` **flushQueue**(): `Promise`<`void`\>
+▸ **flushQueue**(): `Promise`\<`void`\>
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 #### Defined in
 
@@ -59,7 +63,7 @@ ___
 
 ### run
 
-▸ **run**(`input`, `annotation`): `Promise`<`TOutput`\>
+▸ **run**(`input`, `annotation`): `Promise`\<`TOutput`\>
 
 #### Parameters
 
@@ -70,7 +74,7 @@ ___
 
 #### Returns
 
-`Promise`<`TOutput`\>
+`Promise`\<`TOutput`\>
 
 #### Defined in
 

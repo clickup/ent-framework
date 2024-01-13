@@ -1,17 +1,15 @@
 import { inspect } from "util";
-import {
-  recreateTestTables,
-  testCluster,
-} from "../../sql/__tests__/test-utils";
-import { SQLSchema } from "../../sql/SQLSchema";
+import { recreateTestTables, testCluster } from "../../pg/__tests__/test-utils";
+import { PgSchema } from "../../pg/PgSchema";
 import { ID } from "../../types";
-import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
+import { BaseEnt } from "../BaseEnt";
 import { CanReadOutgoingEdge } from "../predicates/CanReadOutgoingEdge";
 import { CanUpdateOutgoingEdge } from "../predicates/CanUpdateOutgoingEdge";
 import { OutgoingEdgePointsToVC } from "../predicates/OutgoingEdgePointsToVC";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
+import { GLOBAL_SHARD } from "../ShardAffinity";
 import type { VC } from "../VC";
 import { createVC, expectToMatchSnapshot } from "./test-utils";
 
@@ -23,7 +21,7 @@ const $EPHEMERAL2 = Symbol("$EPHEMERAL2");
  */
 export class EntTestUser extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.triggers"user',
     {
       id: { type: ID, autoInsert: "id_gen()" },
@@ -33,8 +31,8 @@ export class EntTestUser extends BaseEnt(
       created_at: { type: Date, autoInsert: "now()" },
       updated_at: { type: Date, autoUpdate: "now()" },
     },
-    ["name"]
-  )
+    ["name"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -69,7 +67,7 @@ export class EntTestUser extends BaseEnt(
  */
 export class EntTestHeadline extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.triggers"headline',
     {
       id: { type: ID, autoInsert: "id_gen()" },
@@ -79,8 +77,8 @@ export class EntTestHeadline extends BaseEnt(
       [$EPHEMERAL]: { type: String, allowNull: true }, // required, but nullable
       [$EPHEMERAL2]: { type: Number, autoInsert: "NULL" }, // optional (can be skipped), but if present, must be non-nullable
     },
-    []
-  )
+    [],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -272,14 +270,14 @@ export class EntTestHeadline extends BaseEnt(
  */
 export class EntTestCountry extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.triggers"country',
     {
       id: { type: String, autoInsert: "id_gen()" },
       name: { type: String, allowNull: true, autoInsert: "NULL" },
     },
-    ["name"]
-  )
+    ["name"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -386,7 +384,7 @@ test("triggers", async () => {
   });
   expectToMatchSnapshot(
     inspect(EntTestHeadline.TRIGGER_CALLS),
-    "0: insert happened"
+    "0: insert happened",
   );
 
   EntTestHeadline.TRIGGER_CALLS.splice(0);
@@ -397,11 +395,11 @@ test("triggers", async () => {
     [$EPHEMERAL2]: 42,
   });
   expect(headline.headline).toEqual(
-    "abc added-by-beforeInsert1 added-by-beforeInsert2"
+    "abc added-by-beforeInsert1 added-by-beforeInsert2",
   );
   expectToMatchSnapshot(
     inspect(EntTestHeadline.TRIGGER_CALLS),
-    "1: insert happened"
+    "1: insert happened",
   );
 
   EntTestHeadline.TRIGGER_CALLS.splice(0);
@@ -413,7 +411,7 @@ test("triggers", async () => {
   expect(headline2.headline).toEqual("xyz-updated added-by-beforeUpdate");
   expectToMatchSnapshot(
     inspect(EntTestHeadline.TRIGGER_CALLS),
-    "2: update happened"
+    "2: update happened",
   );
 
   EntTestHeadline.TRIGGER_CALLS.splice(0);
@@ -421,11 +419,11 @@ test("triggers", async () => {
     [$EPHEMERAL]: "eph3",
   });
   expect(headline3.headline).toEqual(
-    "abc added-by-beforeInsert1 added-by-beforeInsert2 added-by-beforeUpdate"
+    "abc added-by-beforeInsert1 added-by-beforeInsert2 added-by-beforeUpdate",
   );
   expectToMatchSnapshot(
     inspect(EntTestHeadline.TRIGGER_CALLS),
-    "3: noop-update happened"
+    "3: noop-update happened",
   );
 
   EntTestHeadline.TRIGGER_CALLS.splice(0);
@@ -434,7 +432,7 @@ test("triggers", async () => {
   });
   expectToMatchSnapshot(
     inspect(EntTestHeadline.TRIGGER_CALLS),
-    "4: updateChanged happened"
+    "4: updateChanged happened",
   );
 
   EntTestHeadline.TRIGGER_CALLS.splice(0);
@@ -442,7 +440,7 @@ test("triggers", async () => {
   expect(await EntTestHeadline.loadNullable(vc, headline.id)).toBeNull();
   expectToMatchSnapshot(
     inspect(EntTestHeadline.TRIGGER_CALLS),
-    "5: delete happened"
+    "5: delete happened",
   );
 });
 
@@ -453,14 +451,14 @@ test("skip after triggers if operation soft fails", async () => {
   const abc = await EntTestCountry.insertReturning(vc, { name: "abc" });
   expectToMatchSnapshot(
     inspect(EntTestCountry.TRIGGER_CALLS),
-    "1: insert happened"
+    "1: insert happened",
   );
 
   EntTestCountry.TRIGGER_CALLS.splice(0);
   await EntTestCountry.insertIfNotExists(vc, { name: "abc" });
   expectToMatchSnapshot(
     inspect(EntTestCountry.TRIGGER_CALLS),
-    "2: insert soft-failed on unique key conflict"
+    "2: insert soft-failed on unique key conflict",
   );
 
   await abc.deleteOriginal();
@@ -469,14 +467,14 @@ test("skip after triggers if operation soft fails", async () => {
   await abc.updateOriginal({ name: "zzz" });
   expectToMatchSnapshot(
     inspect(EntTestCountry.TRIGGER_CALLS),
-    "3: update soft-failed on non-existing row"
+    "3: update soft-failed on non-existing row",
   );
 
   EntTestCountry.TRIGGER_CALLS.splice(0);
   await abc.deleteOriginal();
   expectToMatchSnapshot(
     inspect(EntTestCountry.TRIGGER_CALLS),
-    "4: delete soft-failed on non-existing row"
+    "4: delete soft-failed on non-existing row",
   );
 });
 
@@ -487,14 +485,14 @@ test("inserting Ents with custom IDs when they have beforeInsert triggers", asyn
   await ent.deleteOriginal();
   const newEnt = await EntTestCountry.insertReturning(
     vc.toOmniDangerous(),
-    ent
+    ent,
   );
   expect(newEnt.id).toEqual(ent.id);
 });
 
 function expectRequired<T>(
   _value: T,
-  _flag: [T] extends [never] ? "no" : undefined extends T ? "no" : "yes"
+  _flag: [T] extends [never] ? "no" : undefined extends T ? "no" : "yes",
 ): true {
   return true;
 }

@@ -8,12 +8,13 @@
 
 • `Optional` **clientQueryLogger**: (`props`: [`ClientQueryLoggerProps`](ClientQueryLoggerProps.md)) => `void`
 
+Logs actual queries to the database (after batching).
+
 #### Type declaration
 
 ▸ (`props`): `void`
 
-Logs actual queries to the database (e.g. raw SQL queries, after
-batching).
+Logs actual queries to the database (after batching).
 
 ##### Parameters
 
@@ -27,13 +28,15 @@ batching).
 
 #### Defined in
 
-[src/abstract/Loggers.ts:6](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L6)
+[src/abstract/Loggers.ts:5](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L5)
 
 ___
 
 ### swallowedErrorLogger
 
 • **swallowedErrorLogger**: (`props`: [`SwallowedErrorLoggerProps`](SwallowedErrorLoggerProps.md)) => `void`
+
+Logs errors which did not throw through (typically recoverable).
 
 #### Type declaration
 
@@ -53,4 +56,4 @@ Logs errors which did not throw through (typically recoverable).
 
 #### Defined in
 
-[src/abstract/Loggers.ts:8](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L8)
+[src/abstract/Loggers.ts:7](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L7)

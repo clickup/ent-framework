@@ -6,21 +6,24 @@ import type { Predicate } from "./Predicate";
  * Checks that the validator function returns true for the value in some field.
  */
 export class FieldIs<
-  TField extends string,
-  TRow extends Partial<Record<TField, unknown>>
-> implements Predicate<TRow>, EntValidationErrorInfo
+    TField extends string,
+    TRow extends Partial<Record<TField, unknown>>,
+  >
+  implements Predicate<TRow>, EntValidationErrorInfo
 {
-  readonly name = this.constructor.name + "(" + this.field + ")";
+  readonly name;
 
   constructor(
     public readonly field: TField,
     public readonly validator: (
       fieldValue: TRow[TField],
       row: TRow,
-      vc: VC
+      vc: VC,
     ) => boolean | Promise<boolean>,
-    public readonly message: string
-  ) {}
+    public readonly message: string,
+  ) {
+    this.name = this.constructor.name + "(" + this.field + ")";
+  }
 
   async check(vc: VC, row: TRow): Promise<boolean> {
     const fieldValue = row[this.field];

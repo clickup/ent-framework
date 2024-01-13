@@ -34,7 +34,7 @@ test("0000: load succeeds when first rule allows", async () => {
     { id: "123", tenant_id: "42" },
     "validateLoad",
     undefined,
-    vc.toLowerInternal("42")
+    vc.toLowerInternal("42"),
   );
 });
 
@@ -52,7 +52,7 @@ test("0010: load succeeds when any rule allows", async () => {
       ],
       insert: [],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -67,7 +67,7 @@ test("0020: load fails when first rule throws", async () => {
       ],
       insert: [],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -88,7 +88,7 @@ test("0030: insert succeeds when all require allow", async () => {
     { id: "123", tenant_id: "42" },
     "validateInsert",
     undefined,
-    vc.toLowerInternal("42")
+    vc.toLowerInternal("42"),
   );
 });
 
@@ -106,7 +106,7 @@ test("0040: insert fails when any require denies", async () => {
         }),
       ],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -128,7 +128,7 @@ test("0041: update fails when any require denies", async () => {
     { id: "123", tenant_id: "42" },
     "validateUpdate",
     undefined,
-    vc.toLowerInternal("42")
+    vc.toLowerInternal("42"),
   );
 });
 
@@ -150,7 +150,7 @@ test("0042: delete fails when any require denies", async () => {
     { id: "123", tenant_id: "42" },
     "validateDelete",
     undefined,
-    vc.toLowerInternal("42")
+    vc.toLowerInternal("42"),
   );
 });
 
@@ -167,7 +167,7 @@ test("0043: update fails when user errors", async () => {
     }),
     { id: "123", tenant_id: "42" },
     "validateUpdate",
-    { tenant_id: "42" }
+    { tenant_id: "42" },
   );
 });
 
@@ -181,7 +181,7 @@ test("0044: update succeeds user validation when field untouched", async () => {
     }),
     { id: "123", tenant_id: "42" },
     "validateUpdate",
-    { tenant_id: "101" }
+    { tenant_id: "101" },
   );
 });
 
@@ -199,7 +199,7 @@ test("0050: insert fails when any require throws", async () => {
         }),
       ],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -216,8 +216,8 @@ test("0060: load succeeds when any rule allows even if another rule throws EntNo
               "other_table",
               vc.toString(),
               { id: "987" },
-              "ent access error"
-            )
+              "ent access error",
+            ),
           );
         }),
         new AllowIf(async function Second(_vc, _row) {
@@ -226,7 +226,7 @@ test("0060: load succeeds when any rule allows even if another rule throws EntNo
       ],
       insert: [],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -245,7 +245,7 @@ test("0070: load fails when any rule allows but another rule throws any wild exc
       ],
       insert: [],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -257,7 +257,7 @@ test("0080: validations fail when no rules defined", async () => {
       insert: [],
     }),
     { id: "123", tenant_id: "42" },
-    "validateLoad"
+    "validateLoad",
   );
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -265,7 +265,7 @@ test("0080: validations fail when no rules defined", async () => {
       insert: [],
     }),
     { id: "123", tenant_id: "42" },
-    "validateInsert"
+    "validateInsert",
   );
 });
 
@@ -280,7 +280,7 @@ test("0090: load fails with nice error message if only one rule", async () => {
       ],
       insert: [],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -291,7 +291,7 @@ test("0090: load fails with nice error message if only one rule", async () => {
       ],
       insert: [],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -306,7 +306,7 @@ test("0100: insert fails with nice error message if only one rule", async () => 
         }),
       ],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
@@ -317,7 +317,7 @@ test("0100: insert fails with nice error message if only one rule", async () => 
         }),
       ],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -333,7 +333,7 @@ test("0110: insert succeeds when DenyIf rule evaluates", async () => {
         new Require(new True()),
       ],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -349,14 +349,14 @@ test("0120: load fails when DenyIf rule throws", async () => {
               "other_table",
               vc.toString(),
               { id: "987" },
-              "ent access error"
-            )
+              "ent access error",
+            ),
           );
         }),
       ],
       insert: [],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -372,35 +372,35 @@ test("0130: fail when tenant user id mismatches", async () => {
     { id: "123", tenant_id: "42" },
     "validateLoad",
     undefined,
-    vc.toLowerInternal("999")
+    vc.toLowerInternal("999"),
   );
   await tester.matchSnapshot(
     validation,
     { id: "123", tenant_id: "42" },
     "validateInsert",
     undefined,
-    vc.toLowerInternal("999")
+    vc.toLowerInternal("999"),
   );
   await tester.matchSnapshot(
     validation,
     { id: "123" } as Row<typeof companyTable>,
     "validateInsert",
     undefined,
-    vc.toLowerInternal("999")
+    vc.toLowerInternal("999"),
   );
   await tester.matchSnapshot(
     validation,
     { id: "123", tenant_id: "42" },
     "validateUpdate",
     undefined,
-    vc.toLowerInternal("999")
+    vc.toLowerInternal("999"),
   );
   await tester.matchSnapshot(
     validation,
     { id: "123", tenant_id: "42" },
     "validateDelete",
     undefined,
-    vc.toLowerInternal("999")
+    vc.toLowerInternal("999"),
   );
 });
 
@@ -419,18 +419,18 @@ test("0140: load succeeds when some of Or predicates succeed", async () => {
                   "other_table",
                   vc.toString(),
                   { id: "987" },
-                  "ent access error"
-                )
+                  "ent access error",
+                ),
               );
             },
             async function Second(_vc, _row) {
               return tester.respond("Second", true);
-            }
-          )
+            },
+          ),
         ),
       ],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -449,18 +449,18 @@ test("0150: load fails with nice error when all of Or predicates fail", async ()
                   "other_table",
                   vc.toString(),
                   { id: "987" },
-                  { myKey: "ent access error" }
-                )
+                  { myKey: "ent access error" },
+                ),
               );
             },
             async function Second(_vc, _row) {
               return tester.respond("Second", false);
-            }
-          )
+            },
+          ),
         ),
       ],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });
 
@@ -477,11 +477,11 @@ test("0160: load crashes when some predicates fail with a wild error", async () 
             },
             async function Second(_vc, _row) {
               return tester.respond("Second", true);
-            }
-          )
+            },
+          ),
         ),
       ],
     }),
-    { id: "123", tenant_id: "42" }
+    { id: "123", tenant_id: "42" },
   );
 });

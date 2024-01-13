@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Loader
 
-# Class: Loader<TLoadArgs, TReturn\>
+# Class: Loader\<TLoadArgs, TReturn\>
 
 Loader allows to batch single-item requests into batches. It uses a different
 architecture than Facebook's DataLoader:
@@ -36,7 +36,7 @@ specific and Loader is completely abstract).
 
 ### constructor
 
-• **new Loader**<`TLoadArgs`, `TReturn`\>(`handlerCreator`)
+• **new Loader**\<`TLoadArgs`, `TReturn`\>(`handlerCreator`): [`Loader`](Loader.md)\<`TLoadArgs`, `TReturn`\>
 
 #### Type parameters
 
@@ -49,7 +49,11 @@ specific and Loader is completely abstract).
 
 | Name | Type |
 | :------ | :------ |
-| `handlerCreator` | () => [`Handler`](../interfaces/Handler.md)<`TLoadArgs`, `TReturn`\> |
+| `handlerCreator` | () => [`Handler`](../interfaces/Handler.md)\<`TLoadArgs`, `TReturn`\> |
+
+#### Returns
+
+[`Loader`](Loader.md)\<`TLoadArgs`, `TReturn`\>
 
 #### Defined in
 
@@ -59,7 +63,7 @@ specific and Loader is completely abstract).
 
 ### load
 
-▸ **load**(`...args`): `Promise`<`TReturn`\>
+▸ **load**(`...args`): `Promise`\<`TReturn`\>
 
 #### Parameters
 
@@ -69,7 +73,7 @@ specific and Loader is completely abstract).
 
 #### Returns
 
-`Promise`<`TReturn`\>
+`Promise`\<`TReturn`\>
 
 #### Defined in
 

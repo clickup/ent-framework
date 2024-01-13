@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ShardOptions
 
-# Interface: ShardOptions<TClient\>
+# Interface: ShardOptions\<TClient\>
 
 Options passed to Shard constructor.
 
@@ -14,11 +14,11 @@ Options passed to Shard constructor.
 
 ### locateClient
 
-• **locateClient**: (`freshness`: typeof [`MASTER`](../modules.md#master) \| typeof [`STALE_REPLICA`](../modules.md#stale_replica)) => `Promise`<`TClient`\>
+• **locateClient**: (`freshness`: typeof [`MASTER`](../modules.md#master) \| typeof [`STALE_REPLICA`](../modules.md#stale_replica)) => `Promise`\<`TClient`\>
 
 #### Type declaration
 
-▸ (`freshness`): `Promise`<`TClient`\>
+▸ (`freshness`): `Promise`\<`TClient`\>
 
 ##### Parameters
 
@@ -28,7 +28,7 @@ Options passed to Shard constructor.
 
 ##### Returns
 
-`Promise`<`TClient`\>
+`Promise`\<`TClient`\>
 
 #### Defined in
 
@@ -38,11 +38,11 @@ ___
 
 ### onRunError
 
-• **onRunError**: (`attempt`: `number`, `error`: `unknown`) => `Promise`<``"retry"`` \| ``"throw"``\>
+• **onRunError**: (`attempt`: `number`, `error`: `unknown`) => `Promise`\<``"retry"`` \| ``"throw"``\>
 
 #### Type declaration
 
-▸ (`attempt`, `error`): `Promise`<``"retry"`` \| ``"throw"``\>
+▸ (`attempt`, `error`): `Promise`\<``"retry"`` \| ``"throw"``\>
 
 ##### Parameters
 
@@ -53,7 +53,7 @@ ___
 
 ##### Returns
 
-`Promise`<``"retry"`` \| ``"throw"``\>
+`Promise`\<``"retry"`` \| ``"throw"``\>
 
 #### Defined in
 

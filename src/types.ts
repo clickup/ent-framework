@@ -1,6 +1,9 @@
-import type { DesperateAny, TuplePrefixes } from "./helpers/misc";
+import type { DesperateAny, TuplePrefixes } from "./internal/misc";
 
-// Primary key field's name is currently hardcoded for simplicity.
+/**
+ * Primary key field's name is currently hardcoded for simplicity. It's a
+ * convention to have it named as "id".
+ */
 export const ID = "id";
 
 /**
@@ -143,23 +146,23 @@ export type ValueRequired<TSpec extends Spec> =
   TSpec["type"] extends typeof Number
     ? number
     : TSpec["type"] extends typeof String
-    ? string
-    : TSpec["type"] extends typeof Boolean
-    ? boolean
-    : TSpec["type"] extends typeof ID
-    ? string
-    : TSpec["type"] extends typeof Date
-    ? Date
-    : TSpec["type"] extends {
-        dbValueToJs: (dbValue: never) => infer TJSValue;
-      }
-    ? TSpec["type"] extends {
-        stringify: (jsValue: TJSValue) => string;
-        parse: (str: string) => TJSValue;
-      }
-      ? TJSValue
-      : never
-    : never;
+      ? string
+      : TSpec["type"] extends typeof Boolean
+        ? boolean
+        : TSpec["type"] extends typeof ID
+          ? string
+          : TSpec["type"] extends typeof Date
+            ? Date
+            : TSpec["type"] extends {
+                  dbValueToJs: (dbValue: never) => infer TJSValue;
+                }
+              ? TSpec["type"] extends {
+                  stringify: (jsValue: TJSValue) => string;
+                  parse: (str: string) => TJSValue;
+                }
+                ? TJSValue
+                : never
+              : never;
 
 /**
  * Spec -> nullable Value or non-nullable Value.
@@ -182,8 +185,8 @@ export type InsertFieldsRequired<TTable extends Table> = {
   [K in keyof TTable]: TTable[K] extends { autoInsert: unknown }
     ? never
     : TTable[K] extends { autoUpdate: unknown }
-    ? never
-    : K;
+      ? never
+      : K;
 }[keyof TTable];
 
 /**
@@ -193,8 +196,8 @@ export type InsertFieldsOptional<TTable extends Table> = {
   [K in keyof TTable]: TTable[K] extends { autoInsert: unknown }
     ? K
     : TTable[K] extends { autoUpdate: unknown }
-    ? K
-    : never;
+      ? K
+      : never;
 }[keyof TTable];
 
 /**
@@ -238,7 +241,7 @@ export type UniqueKey<TTable extends Table> =
   | []
   | [
       FieldOfPotentialUniqueKey<TTable>,
-      ...Array<FieldOfPotentialUniqueKey<TTable>>
+      ...Array<FieldOfPotentialUniqueKey<TTable>>,
     ];
 
 /**
@@ -247,7 +250,7 @@ export type UniqueKey<TTable extends Table> =
  */
 export type LoadByInput<
   TTable extends Table,
-  TUniqueKey extends UniqueKey<TTable>
+  TUniqueKey extends UniqueKey<TTable>,
 > = TUniqueKey extends []
   ? never
   : { [K in TUniqueKey[number]]: Value<TTable[K]> };
@@ -258,7 +261,7 @@ export type LoadByInput<
  */
 export type SelectByInput<
   TTable extends Table,
-  TUniqueKey extends UniqueKey<TTable>
+  TUniqueKey extends UniqueKey<TTable>,
 > = LoadByInput<TTable, TuplePrefixes<TUniqueKey>>;
 
 /**

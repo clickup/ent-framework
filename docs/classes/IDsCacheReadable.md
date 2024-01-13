@@ -12,7 +12,11 @@
 
 ### constructor
 
-• **new IDsCacheReadable**()
+• **new IDsCacheReadable**(): [`IDsCacheReadable`](IDsCacheReadable.md)
+
+#### Returns
+
+[`IDsCacheReadable`](IDsCacheReadable.md)
 
 #### Inherited from
 

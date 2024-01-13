@@ -15,7 +15,7 @@ shard to work with (e.g. a null ID or a missing field or something else).
 
 ### constructor
 
-• **new ShardError**(`message`, `where?`)
+• **new ShardError**(`message`, `where?`): [`ShardError`](ShardError.md)
 
 #### Parameters
 
@@ -23,6 +23,10 @@ shard to work with (e.g. a null ID or a missing field or something else).
 | :------ | :------ |
 | `message` | `string` |
 | `where?` | `string` |
+
+#### Returns
+
+[`ShardError`](ShardError.md)
 
 #### Overrides
 

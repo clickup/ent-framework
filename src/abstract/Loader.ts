@@ -57,7 +57,7 @@ export class Loader<TLoadArgs extends unknown[], TReturn> {
           ]);
           this.session = this.session === session ? null : this.session;
           resolve(session.handler.onFlush(session.collected));
-        })
+        }),
       ),
     });
 

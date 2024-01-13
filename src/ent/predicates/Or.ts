@@ -1,4 +1,4 @@
-import { mapJoin } from "../../helpers/misc";
+import { mapJoin } from "../../internal/misc";
 import { EntAccessError } from "../errors/EntAccessError";
 import type { VC } from "../VC";
 import type { Predicate } from "./Predicate";
@@ -19,7 +19,7 @@ export class Or<TInput> implements Predicate<TInput> {
     this.predicates = predicates.map((predicate) =>
       predicate instanceof Function
         ? new FuncToPredicate<TInput>(predicate)
-        : predicate
+        : predicate,
     );
   }
 
@@ -51,9 +51,9 @@ export class Or<TInput> implements Predicate<TInput> {
         .map(
           ({ predicate, res }) =>
             `${predicate.name}: ` +
-            (typeof res === "boolean" ? res : res.message)
+            (typeof res === "boolean" ? res : res.message),
         )
-        .join("\n")
+        .join("\n"),
     );
   }
 }

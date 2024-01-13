@@ -1,0 +1,864 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`delete batched 1`] = `
+"
+DELETE FROM "pg-schema.generic""table" WHERE (id=ANY('{<id>,<id>,42}') OR id IS NULL) RETURNING id
+----
+DELETE FROM "pg-schema.generic""table" WHERE (id=ANY('?') OR id IS NULL) RETURNING id
+"
+`;
+
+exports[`delete single 1`] = `
+"
+DELETE FROM "pg-schema.generic""table" WHERE id='<id>' RETURNING id
+----
+DELETE FROM "pg-schema.generic""table" WHERE id='?' RETURNING id
+
+DELETE FROM "pg-schema.generic""table" WHERE id='42' RETURNING id
+----
+DELETE FROM "pg-schema.generic""table" WHERE id='?' RETURNING id
+
+DELETE FROM "pg-schema.generic""table" WHERE id IS NULL RETURNING id
+----
+DELETE FROM "pg-schema.generic""table" WHERE id IS NULL RETURNING id
+"
+`;
+
+exports[`delete where 1`] = `
+"
+DELETE FROM "pg-schema.generic""table" WHERE id=ANY('{<id>,<id>}') AND (1=1) RETURNING id
+----
+DELETE FROM "pg-schema.generic""table" WHERE id=ANY('?') AND (?=?) RETURNING id
+"
+`;
+
+exports[`idGen batched 1`] = `
+"
+SELECT id_gen() AS k*, id_gen() AS k*
+----
+SELECT id_gen() AS k*, id_gen() AS k*
+"
+`;
+
+exports[`idGen single 1`] = `
+"
+SELECT id_gen()
+----
+SELECT id_gen()
+
+SELECT id_gen()
+----
+SELECT id_gen()
+"
+`;
+
+exports[`insert batched 1`] = `
+"
+SELECT id_gen()
+----
+SELECT id_gen()
+
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '<key>'),
+  ('a', 'u', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '<id>', '<key>'),
+  ('a', 'u_dup', false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'),
+  ('z''b''c', NULL, true, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'))
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+----
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '?'),
+  ('?', '?', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, '?', '?'),
+  ('?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '?'),
+  ('?', NULL, true, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '?'))
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET ?
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+"
+`;
+
+exports[`insert de-batches pg error 1`] = `
+"
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '<key>'),
+  ('other', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '0', id_gen(), '<key>'),
+  ('some', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'))
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+----
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '?'),
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '?', id_gen(), '?'),
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '?'))
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET ?
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('some', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
+
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('other', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '0', id_gen()) ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), '?', id_gen()) ON CONFLICT DO NOTHING RETURNING id
+"
+`;
+
+exports[`insert is never dedupped 1`] = `
+"
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '<key>'),
+  ('aaa', 'uuu', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'),
+  ('aaa', 'uuu', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'))
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+----
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '?'),
+  ('?', '?', NULL, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '?'), ...)
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET ?
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+"
+`;
+
+exports[`insert pre-generated id with uniq key violation 1`] = `
+"
+SELECT id_gen()
+----
+SELECT id_gen()
+
+SELECT id_gen()
+----
+SELECT id_gen()
+
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '<key>'),
+  ('some', 'aaa', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '<id>', '<key>'),
+  ('some', 'aaa', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '<id>', '<key>'))
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+----
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '?'),
+  ('?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL, '?', '?'), ...)
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET ?
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+"
+`;
+
+exports[`insert single 1`] = `
+"
+SELECT id_gen()
+----
+SELECT id_gen()
+
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('a''b''c', 'aaa', true, '{"a":10,"b":{"c":20}}', '{"a":42}', '{"a":42}', 'encrypted:ufyu', now(), now(), NULL, '<id>') ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', '?', true, '?', '?', '?', '?', now(), now(), NULL, '?') ON CONFLICT DO NOTHING RETURNING id
+
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('a''b''c', 'aaa_dup', false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
+"
+`;
+
+exports[`load batched 1`] = `
+"
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE id=ANY('{<id>,<id>}')
+----
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE id=ANY('?')
+"
+`;
+
+exports[`loadBy batched one column 1`] = `
+"
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name=ANY('{"a\\\\a","b\\\\nb","no value"}')
+----
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name=ANY('?')
+"
+`;
+
+exports[`loadBy batched two columns 1`] = `
+"
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col"
+  WHERE (name, url_name) IN(VALUES
+  ((NULL::"pg-schema.generic""table_2col").name, (NULL::"pg-schema.generic""table_2col").url_name),
+  ('z', 'z1'),
+  ('z', 'z,2'),
+  ('b', 'no\\value'),
+  ('b', 'b{1}'),
+  ('c', 'NuLL'),
+  ('c', ''))
+----
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col"
+  WHERE (name, url_name) IN(VALUES
+  ((NULL::"pg-schema.generic""table_2col").name, (NULL::"pg-schema.generic""table_2col").url_name),
+  ('?', '?'), ...)
+"
+`;
+
+exports[`loadBy batched with two columns nullable unique key 1`] = `
+"
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col_nullable_unique_key"
+  WHERE (name='z'
+    AND url_name=ANY('{z1,z2}'))
+    OR (name='no'
+    AND url_name='Null')
+    OR (name='b'
+    AND url_name IS NULL)
+    OR (name='c'
+    AND (url_name='c2'
+    OR url_name IS NULL))
+----
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col_nullable_unique_key"
+  WHERE (name='?'
+    AND url_name=ANY('?'))
+    OR (name='?'
+    AND url_name='?')
+    OR (name='?'
+    AND url_name IS NULL)
+    OR (name='?'
+    AND (url_name='?'
+    OR url_name IS NULL))
+"
+`;
+
+exports[`loadBy single one column 1`] = `
+"
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name='b'
+----
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name='?'
+"
+`;
+
+exports[`loadBy single two columns 1`] = `
+"
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col"
+  WHERE (name='b'
+    AND url_name='bbb')
+----
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col"
+  WHERE (name='?'
+    AND url_name='?')
+"
+`;
+
+exports[`loadBy single two columns with nullable unique key 1`] = `
+"
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col_nullable_unique_key"
+  WHERE (name='b'
+    AND url_name IS NULL)
+----
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col_nullable_unique_key"
+  WHERE (name='?'
+    AND url_name IS NULL)
+
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col_nullable_unique_key"
+  WHERE (name IS NULL
+    AND url_name='a')
+----
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col_nullable_unique_key"
+  WHERE (name IS NULL
+    AND url_name='?')
+
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col_nullable_unique_key"
+  WHERE (name IS NULL
+    AND url_name IS NULL)
+----
+SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table_2col_nullable_unique_key"
+  WHERE (name IS NULL
+    AND url_name IS NULL)
+"
+`;
+
+exports[`select and count batched 1`] = `
+"
+(SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name=ANY('{"a
+a","a\\\\a"}')
+    AND some_flag=true
+    AND (name=ANY('{"a
+a","a\\\\a"}')
+    AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('kk')
+    AND url_name IS NOT NULL)
+    AND true/*empty_NOT_IN*/
+    AND ('5' > '2')
+    AND (name>='a'
+    AND name<='z'))
+    AND (name='a
+a'
+    OR name='a\\a'
+    OR false/*empty_ANY*/
+    OR (url_name='zzz'
+    OR url_name IS NULL))
+    AND NOT (name='zz'
+    AND (5 < '2'))
+    ORDER BY name ASC, url_name DESC, 1=2
+  LIMIT 10)
+  UNION ALL
+(SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name='b'
+  LIMIT 10)
+----
+(SELECT '?' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name=ANY('?')
+    AND some_flag=true
+    AND (name=ANY('?')
+    AND name<>'?'
+    AND name IS DISTINCT FROM '?'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('?')
+    AND url_name IS NOT NULL)
+    AND true
+    AND ('?' > '?')
+    AND (name>='?'
+    AND name<='?'))
+    AND (name='?'
+    OR name='?'
+    OR false
+    OR (url_name='?'
+    OR url_name IS NULL))
+    AND NOT (name='?'
+    AND (? < '?'))
+    ORDER BY name ASC, url_name DESC, ?=?
+  LIMIT ?)
+  UNION ALL
+(SELECT '?' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name='?'
+  LIMIT ?)
+
+SELECT COUNT(1) AS count FROM "pg-schema.generic""table"
+  WHERE name=ANY('{"a
+a","a\\\\a"}')
+    AND some_flag=true
+    AND (name=ANY('{"a
+a","a\\\\a"}')
+    AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('kk')
+    AND url_name IS NOT NULL)
+    AND true/*empty_NOT_IN*/
+    AND ('5' > '2')
+    AND (name>='a'
+    AND name<='z'))
+    AND (name='a
+a'
+    OR name='a\\a'
+    OR false/*empty_ANY*/
+    OR (url_name='zzz'
+    OR url_name IS NULL))
+    AND NOT (name='zz'
+    AND (5 < '2'))
+  UNION ALL
+SELECT COUNT(1) AS count FROM "pg-schema.generic""table"
+  WHERE name=ANY('{"a
+a","a\\\\a"}')
+    AND some_flag=true
+    AND url_name='a1'
+    AND (name=ANY('{"a
+a","a\\\\a"}')
+    AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('kk')
+    AND url_name IS NOT NULL)
+    AND true/*empty_NOT_IN*/
+    AND ('5' > '2')
+    AND (name>='a'
+    AND name<='z'))
+    AND (name='a
+a'
+    OR name='a\\a'
+    OR false/*empty_ANY*/
+    OR (url_name='zzz'
+    OR url_name IS NULL))
+    AND NOT (name='zz'
+    AND (5 < '2'))
+  UNION ALL
+SELECT COUNT(1) AS count FROM "pg-schema.generic""table"
+  WHERE name='b'
+----
+SELECT COUNT(?) AS count FROM "pg-schema.generic""table"
+  WHERE name=ANY('?')
+    AND some_flag=true
+    AND (name=ANY('?')
+    AND name<>'?'
+    AND name IS DISTINCT FROM '?'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('?')
+    AND url_name IS NOT NULL)
+    AND true
+    AND ('?' > '?')
+    AND (name>='?'
+    AND name<='?'))
+    AND (name='?'
+    OR name='?'
+    OR false
+    OR (url_name='?'
+    OR url_name IS NULL))
+    AND NOT (name='?'
+    AND (? < '?'))
+  UNION ALL
+SELECT COUNT(?) AS count FROM "pg-schema.generic""table"
+  WHERE name=ANY('?')
+    AND some_flag=true
+    AND url_name='?'
+    AND (name=ANY('?')
+    AND name<>'?'
+    AND name IS DISTINCT FROM '?'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('?')
+    AND url_name IS NOT NULL)
+    AND true
+    AND ('?' > '?')
+    AND (name>='?'
+    AND name<='?'))
+    AND (name='?'
+    OR name='?'
+    OR false
+    OR (url_name='?'
+    OR url_name IS NULL))
+    AND NOT (name='?'
+    AND (? < '?'))
+  UNION ALL
+SELECT COUNT(?) AS count FROM "pg-schema.generic""table"
+  WHERE name='?'
+
+SELECT COUNT(1) AS count FROM "pg-schema.generic""table"
+  WHERE name=ANY('{"a
+a","a\\\\a"}')
+    AND some_flag=true
+    AND (name=ANY('{"a
+a","a\\\\a"}')
+    AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('kk')
+    AND url_name IS NOT NULL)
+    AND true/*empty_NOT_IN*/
+    AND ('5' > '2')
+    AND (name>='a'
+    AND name<='z'))
+    AND (name='a
+a'
+    OR name='a\\a'
+    OR false/*empty_ANY*/
+    OR (url_name='zzz'
+    OR url_name IS NULL))
+    AND NOT (name='zz'
+    AND (5 < '2'))
+----
+SELECT COUNT(?) AS count FROM "pg-schema.generic""table"
+  WHERE name=ANY('?')
+    AND some_flag=true
+    AND (name=ANY('?')
+    AND name<>'?'
+    AND name IS DISTINCT FROM '?'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('?')
+    AND url_name IS NOT NULL)
+    AND true
+    AND ('?' > '?')
+    AND (name>='?'
+    AND name<='?'))
+    AND (name='?'
+    OR name='?'
+    OR false
+    OR (url_name='?'
+    OR url_name IS NULL))
+    AND NOT (name='?'
+    AND (? < '?'))
+
+SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
+  WHERE name=ANY('{"a
+a","a\\\\a"}')
+    AND some_flag=true
+    AND (name=ANY('{"a
+a","a\\\\a"}')
+    AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('kk')
+    AND url_name IS NOT NULL)
+    AND true/*empty_NOT_IN*/
+    AND ('5' > '2')
+    AND (name>='a'
+    AND name<='z'))
+    AND (name='a
+a'
+    OR name='a\\a'
+    OR false/*empty_ANY*/
+    OR (url_name='zzz'
+    OR url_name IS NULL))
+    AND NOT (name='zz'
+    AND (5 < '2')))
+  UNION ALL
+SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
+  WHERE name=ANY('{"a
+a","a\\\\a"}')
+    AND some_flag=true
+    AND url_name='a1'
+    AND (name=ANY('{"a
+a","a\\\\a"}')
+    AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('kk')
+    AND url_name IS NOT NULL)
+    AND true/*empty_NOT_IN*/
+    AND ('5' > '2')
+    AND (name>='a'
+    AND name<='z'))
+    AND (name='a
+a'
+    OR name='a\\a'
+    OR false/*empty_ANY*/
+    OR (url_name='zzz'
+    OR url_name IS NULL))
+    AND NOT (name='zz'
+    AND (5 < '2')))
+  UNION ALL
+SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
+  WHERE name='b')
+----
+SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
+  WHERE name=ANY('?')
+    AND some_flag=true
+    AND (name=ANY('?')
+    AND name<>'?'
+    AND name IS DISTINCT FROM '?'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('?')
+    AND url_name IS NOT NULL)
+    AND true
+    AND ('?' > '?')
+    AND (name>='?'
+    AND name<='?'))
+    AND (name='?'
+    OR name='?'
+    OR false
+    OR (url_name='?'
+    OR url_name IS NULL))
+    AND NOT (name='?'
+    AND (? < '?')))
+  UNION ALL
+SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
+  WHERE name=ANY('?')
+    AND some_flag=true
+    AND url_name='?'
+    AND (name=ANY('?')
+    AND name<>'?'
+    AND name IS DISTINCT FROM '?'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('?')
+    AND url_name IS NOT NULL)
+    AND true
+    AND ('?' > '?')
+    AND (name>='?'
+    AND name<='?'))
+    AND (name='?'
+    OR name='?'
+    OR false
+    OR (url_name='?'
+    OR url_name IS NULL))
+    AND NOT (name='?'
+    AND (? < '?')))
+  UNION ALL
+SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
+  WHERE name='?')
+
+SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
+  WHERE name=ANY('{"a
+a","a\\\\a"}')
+    AND some_flag=true
+    AND (name=ANY('{"a
+a","a\\\\a"}')
+    AND name<>'kk'
+    AND name IS DISTINCT FROM 'dd'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('kk')
+    AND url_name IS NOT NULL)
+    AND true/*empty_NOT_IN*/
+    AND ('5' > '2')
+    AND (name>='a'
+    AND name<='z'))
+    AND (name='a
+a'
+    OR name='a\\a'
+    OR false/*empty_ANY*/
+    OR (url_name='zzz'
+    OR url_name IS NULL))
+    AND NOT (name='zz'
+    AND (5 < '2')))
+----
+SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
+  WHERE name=ANY('?')
+    AND some_flag=true
+    AND (name=ANY('?')
+    AND name<>'?'
+    AND name IS DISTINCT FROM '?'
+    AND url_name IS DISTINCT FROM NULL
+    AND (url_name NOT IN('?')
+    AND url_name IS NOT NULL)
+    AND true
+    AND ('?' > '?')
+    AND (name>='?'
+    AND name<='?'))
+    AND (name='?'
+    OR name='?'
+    OR false
+    OR (url_name='?'
+    OR url_name IS NULL))
+    AND NOT (name='?'
+    AND (? < '?')))
+"
+`;
+
+exports[`select custom 1`] = `
+"
+WITH
+  cte1 AS (SELECT 1+'1' AS cte1_v FROM generate_series(1,1)),
+  cte2 AS (SELECT 10+'10' AS cte2_v)
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table" 
+JOIN cte1 ON true
+JOIN (SELECT 10+'10' AS join2_v) join2 ON true
+WHERE name=ANY('{a,aa}') AND ('5' > '2') ORDER BY name ASC, cte1_v LIMIT 10
+----
+WITH
+  cte1 AS (SELECT ?+'?' AS cte1_v FROM generate_series(?,?)),
+  cte2 AS (SELECT ?+'?' AS cte2_v)
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table" 
+JOIN cte1 ON true
+JOIN (SELECT ?+'?' AS join2_v) join2 ON true
+WHERE name=ANY('?') AND ('?' > '?') ORDER BY name ASC, cte1_v LIMIT ?
+
+(WITH
+  cte1 AS (SELECT 1+'1' AS cte1_v FROM generate_series(1,1)),
+  cte2 AS (SELECT 10+'10' AS cte2_v)
+SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table" 
+JOIN cte1 ON true
+JOIN (SELECT 10+'10' AS join2_v) join2 ON true
+WHERE name=ANY('{a,aa}') AND ('5' > '2') ORDER BY name ASC, cte1_v LIMIT 10)
+  UNION ALL
+(SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table" WHERE name='b' LIMIT 10)
+----
+(WITH
+  cte1 AS (SELECT ?+'?' AS cte1_v FROM generate_series(?,?)),
+  cte2 AS (SELECT ?+'?' AS cte2_v)
+SELECT '?' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table" 
+JOIN cte1 ON true
+JOIN (SELECT ?+'?' AS join2_v) join2 ON true
+WHERE name=ANY('?') AND ('?' > '?') ORDER BY name ASC, cte1_v LIMIT ?)
+  UNION ALL
+(SELECT '?' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table" WHERE name='?' LIMIT ?)
+"
+`;
+
+exports[`selectBy batched three columns 1`] = `
+"
+SELECT id, type, id1, id2, created_at, updated_at FROM "pg-schema.generic""table_3col"
+  WHERE (type, id1) IN(VALUES
+  ((NULL::"pg-schema.generic""table_3col").type, (NULL::"pg-schema.generic""table_3col").id1),
+  ('a', '1'),
+  ('a', '2'),
+  ('b', '1'))
+----
+SELECT id, type, id1, id2, created_at, updated_at FROM "pg-schema.generic""table_3col"
+  WHERE (type, id1) IN(VALUES
+  ((NULL::"pg-schema.generic""table_3col").type, (NULL::"pg-schema.generic""table_3col").id1),
+  ('?', '?'), ...)
+
+SELECT id, type, id1, id2, created_at, updated_at FROM "pg-schema.generic""table_3col"
+  WHERE type='b'
+----
+SELECT id, type, id1, id2, created_at, updated_at FROM "pg-schema.generic""table_3col"
+  WHERE type='?'
+"
+`;
+
+exports[`selectBy single three columns 1`] = `
+"
+SELECT id, type, id1, id2, created_at, updated_at FROM "pg-schema.generic""table_3col"
+  WHERE (type='a'
+    AND id1='1')
+----
+SELECT id, type, id1, id2, created_at, updated_at FROM "pg-schema.generic""table_3col"
+  WHERE (type='?'
+    AND id1='?')
+"
+`;
+
+exports[`update batched 1`] = `
+"
+WITH rows(id, name, some_flag, updated_at, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").id, (NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").updated_at, '<key>'),
+  ('42', 'absent', true, now(), '42')<reordered for test>,
+  ('<id>', 'a''upd', true, now(), '<id>')<reordered for test>)
+  UPDATE "pg-schema.generic""table" SET name=rows.name, some_flag=rows.some_flag, updated_at=rows.updated_at
+  FROM rows WHERE "pg-schema.generic""table".id=rows.id RETURNING rows._key
+----
+WITH rows(id, name, some_flag, updated_at, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").id, (NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").updated_at, '?'),
+  ('?', '?', true, now(), '?'), ...<reordered for test>)
+  UPDATE "pg-schema.generic""table" SET name=rows.name, some_flag=rows.some_flag, updated_at=rows.updated_at
+  FROM rows WHERE "pg-schema.generic""table".id=rows.id RETURNING rows._key
+
+WITH rows(id, name, url_name, updated_at, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").id, (NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").updated_at, '<key>'),
+  ('<id>', 'b''upd', NULL, now(), '<id>')<reordered for test>,
+  ('<id>', 'null''upd', 'n1', now(), '<id>')<reordered for test>)
+  UPDATE "pg-schema.generic""table" SET name=rows.name, url_name=rows.url_name, updated_at=rows.updated_at
+  FROM rows WHERE "pg-schema.generic""table".id=rows.id RETURNING rows._key
+----
+WITH rows(id, name, url_name, updated_at, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").id, (NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").updated_at, '?'),
+  ('?', '?', '?', now(), '?')<reordered for test>,
+  ('?', '?', NULL, now(), '?')<reordered for test>)
+  UPDATE "pg-schema.generic""table" SET name=rows.name, url_name=rows.url_name, updated_at=rows.updated_at
+  FROM rows WHERE "pg-schema.generic""table".id=rows.id RETURNING rows._key
+"
+`;
+
+exports[`update date 1`] = `
+"
+UPDATE "pg-schema.generic""table_date" SET name='bb' WHERE date_id='<id>' RETURNING date_id AS id
+----
+UPDATE "pg-schema.generic""table_date" SET name='?' WHERE date_id='?' RETURNING date_id AS id
+"
+`;
+
+exports[`update literal 1`] = `
+"
+UPDATE "pg-schema.generic""table" SET updated_at=now(), name = name || 42 WHERE id='<id>' RETURNING id
+----
+UPDATE "pg-schema.generic""table" SET updated_at=now(), name = name || ? WHERE id='?' RETURNING id
+
+UPDATE "pg-schema.generic""table" SET updated_at=now(), name = name || 42 WHERE id='<id>' RETURNING id
+----
+UPDATE "pg-schema.generic""table" SET updated_at=now(), name = name || ? WHERE id='?' RETURNING id
+
+UPDATE "pg-schema.generic""table" SET name='bbb', updated_at=now() WHERE id='<id>' RETURNING id
+----
+UPDATE "pg-schema.generic""table" SET name='?', updated_at=now() WHERE id='?' RETURNING id
+
+UPDATE "pg-schema.generic""table_date" SET name = name || 42 WHERE date_id='42' RETURNING date_id AS id
+----
+UPDATE "pg-schema.generic""table_date" SET name = name || ? WHERE date_id='?' RETURNING date_id AS id
+"
+`;
+
+exports[`update single 1`] = `
+"
+UPDATE "pg-schema.generic""table" SET name='a''upd', updated_at=now() WHERE id='<id>' RETURNING id
+----
+UPDATE "pg-schema.generic""table" SET name='?', updated_at=now() WHERE id='?' RETURNING id
+
+UPDATE "pg-schema.generic""table" SET name='b''upd', url_name=NULL, some_flag=true, updated_at=now() WHERE id='<id>' RETURNING id
+----
+UPDATE "pg-schema.generic""table" SET name='?', url_name=NULL, some_flag=true, updated_at=now() WHERE id='?' RETURNING id
+
+UPDATE "pg-schema.generic""table" SET url_name='n', updated_at=now() WHERE id='<id>' RETURNING id
+----
+UPDATE "pg-schema.generic""table" SET url_name='?', updated_at=now() WHERE id='?' RETURNING id
+
+UPDATE "pg-schema.generic""table" SET name='absent', updated_at=now() WHERE id='42' RETURNING id
+----
+UPDATE "pg-schema.generic""table" SET name='?', updated_at=now() WHERE id='?' RETURNING id
+"
+`;
+
+exports[`update skips if no known fields present 1`] = `
+"
+UPDATE "pg-schema.generic""table" SET name='absent', updated_at=now() WHERE id='42' RETURNING id
+----
+UPDATE "pg-schema.generic""table" SET name='?', updated_at=now() WHERE id='?' RETURNING id
+"
+`;
+
+exports[`upsert batched normal 1`] = `
+"
+INSERT INTO "pg-schema.generic""table" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), 'a''b''c', 'aaa_new', false, NULL, NULL, NULL, NULL, now(), now(), NULL),
+  (id_gen(), 'bbb', 'bbb_new', false, NULL, NULL, NULL, NULL, now(), now(), NULL),
+  (id_gen(), 'zzz', 'zzz_dup', false, NULL, NULL, NULL, NULL, now(), now(), NULL)
+  ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL), ...
+  ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+"
+`;
+
+exports[`upsert batched with nullable unique key 1`] = `
+"
+INSERT INTO "pg-schema.generic""table_nullable_unique_key" (id, name, url_name, created_at, updated_at) VALUES
+  (id_gen(), '000', '0', now(), now())
+  ON CONFLICT (url_name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+----
+INSERT INTO "pg-schema.generic""table_nullable_unique_key" (id, name, url_name, created_at, updated_at) VALUES
+  (id_gen(), '?', '?', now(), now())
+  ON CONFLICT (url_name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+
+INSERT INTO "pg-schema.generic""table_nullable_unique_key" (id, name, url_name, created_at, updated_at) VALUES
+  (id_gen(), 'a''b''c', NULL, now(), now()),
+  (id_gen(), 'bbb', NULL, now(), now()),
+  (id_gen(), 'ccc', NULL, now(), now())
+  ON CONFLICT (url_name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+----
+INSERT INTO "pg-schema.generic""table_nullable_unique_key" (id, name, url_name, created_at, updated_at) VALUES
+  (id_gen(), '?', NULL, now(), now()), ...
+  ON CONFLICT (url_name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+"
+`;
+
+exports[`upsert single 1`] = `
+"
+INSERT INTO "pg-schema.generic""table" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), 'a''b''c', 'aaa', false, NULL, NULL, NULL, NULL, now(), now(), NULL)
+  ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL)
+  ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+
+INSERT INTO "pg-schema.generic""table" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), 'a''b''c', 'aaa_dup', false, NULL, NULL, NULL, NULL, now(), now(), NULL)
+  ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL)
+  ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+
+INSERT INTO "pg-schema.generic""table" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), 'zzz', 'n', false, NULL, NULL, NULL, NULL, now(), now(), NULL)
+  ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL)
+  ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+"
+`;

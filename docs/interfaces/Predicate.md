@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Predicate
 
-# Interface: Predicate<TInput\>
+# Interface: Predicate\<TInput\>
 
 A predicate evaluates against some input (typically a row) and returns true
 or false (or throws which is considering the similar way as returning false).
@@ -46,7 +46,7 @@ immediately. This saves us lots of database operations.
 
 ### check
 
-▸ **check**(`vc`, `input`): `Promise`<`boolean`\>
+▸ **check**(`vc`, `input`): `Promise`\<`boolean`\>
 
 #### Parameters
 
@@ -57,7 +57,7 @@ immediately. This saves us lots of database operations.
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Defined in
 

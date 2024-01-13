@@ -1,9 +1,9 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Runner
 
-# Class: Runner<TInput, TOutput\>
+# Class: Runner\<TInput, TOutput\>
 
 Knows how to translate individual strongly typed requests into DB language
-(e.g. SQL, Redis etc.) and how to parse the result back.
+and how to parse the result back.
 
 ## Type parameters
 
@@ -16,13 +16,13 @@ Knows how to translate individual strongly typed requests into DB language
 
 - **`Runner`**
 
-  ↳ [`SQLRunner`](SQLRunner.md)
+  ↳ [`PgRunner`](PgRunner.md)
 
 ## Constructors
 
 ### constructor
 
-• **new Runner**<`TInput`, `TOutput`\>(`name`)
+• **new Runner**\<`TInput`, `TOutput`\>(`name`): [`Runner`](Runner.md)\<`TInput`, `TOutput`\>
 
 Parameter `name` is typically a table name.
 
@@ -38,6 +38,10 @@ Parameter `name` is typically a table name.
 | Name | Type |
 | :------ | :------ |
 | `name` | `string` |
+
+#### Returns
+
+[`Runner`](Runner.md)\<`TInput`, `TOutput`\>
 
 #### Defined in
 
@@ -106,9 +110,9 @@ ___
 
 ### runSingle
 
-▸ `Abstract` **runSingle**(`input`, `annotations`): `Promise`<`undefined` \| `TOutput`\>
+▸ **runSingle**(`input`, `annotations`): `Promise`\<`undefined` \| `TOutput`\>
 
-Method runSingle is to e.g. produce simple SQL requests when we have only
+Method runSingle is to e.g. produce simple DB requests when we have only
 one input to process, not many.
 
 #### Parameters
@@ -120,7 +124,7 @@ one input to process, not many.
 
 #### Returns
 
-`Promise`<`undefined` \| `TOutput`\>
+`Promise`\<`undefined` \| `TOutput`\>
 
 #### Defined in
 
@@ -130,7 +134,7 @@ ___
 
 ### runBatch
 
-▸ `Optional` `Abstract` **runBatch**(`inputs`, `annotations`): `Promise`<`Map`<`string`, `TOutput`\>\>
+▸ **runBatch**(`inputs`, `annotations`): `Promise`\<`Map`\<`string`, `TOutput`\>\>
 
 Typically issues complex queries with magic.
 
@@ -138,12 +142,12 @@ Typically issues complex queries with magic.
 
 | Name | Type |
 | :------ | :------ |
-| `inputs` | `Map`<`string`, `TInput`\> |
+| `inputs` | `Map`\<`string`, `TInput`\> |
 | `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
 
 #### Returns
 
-`Promise`<`Map`<`string`, `TOutput`\>\>
+`Promise`\<`Map`\<`string`, `TOutput`\>\>
 
 #### Defined in
 
@@ -153,7 +157,7 @@ ___
 
 ### delayForSingleQueryRetryOnError
 
-▸ `Abstract` **delayForSingleQueryRetryOnError**(`error`): `number` \| ``"immediate_retry"`` \| ``"no_retry"``
+▸ **delayForSingleQueryRetryOnError**(`error`): `number` \| ``"immediate_retry"`` \| ``"no_retry"``
 
 If the single query's error needs to be retried (e.g. it's a deadlock
 error), returns the number of milliseconds to wait before retrying.
@@ -176,7 +180,7 @@ ___
 
 ### shouldDebatchOnError
 
-▸ `Abstract` **shouldDebatchOnError**(`error`): `boolean`
+▸ **shouldDebatchOnError**(`error`): `boolean`
 
 If this method returns true for an error object, the batch is split back
 into sub-queries, they are executed individually, and then the response of

@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Rule
 
-# Class: Rule<TInput\>
+# Class: Rule\<TInput\>
 
 A base class which can e.g. accept not only a predicate, but also a plain JS
 lambda function as a predicate. Also has a logic of "glueing" the rule name
@@ -37,7 +37,7 @@ interpret the result.
 
 ### constructor
 
-• **new Rule**<`TInput`\>(`predicate`)
+• **new Rule**\<`TInput`\>(`predicate`): [`Rule`](Rule.md)\<`TInput`\>
 
 #### Type parameters
 
@@ -49,7 +49,11 @@ interpret the result.
 
 | Name | Type |
 | :------ | :------ |
-| `predicate` | [`Predicate`](../interfaces/Predicate.md)<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`<`boolean`\> |
+| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`\<`boolean`\> |
+
+#### Returns
+
+[`Rule`](Rule.md)\<`TInput`\>
 
 #### Defined in
 
@@ -59,7 +63,7 @@ interpret the result.
 
 ### predicate
 
-• `Readonly` **predicate**: [`Predicate`](../interfaces/Predicate.md)<`TInput`\>
+• `Readonly` **predicate**: [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>
 
 #### Defined in
 
@@ -79,7 +83,7 @@ ___
 
 ### evaluate
 
-▸ `Abstract` **evaluate**(`vc`, `input`): `Promise`<[`RuleResult`](../interfaces/RuleResult.md)\>
+▸ **evaluate**(`vc`, `input`): `Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
 
 #### Parameters
 
@@ -90,7 +94,7 @@ ___
 
 #### Returns
 
-`Promise`<[`RuleResult`](../interfaces/RuleResult.md)\>
+`Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
 
 #### Defined in
 

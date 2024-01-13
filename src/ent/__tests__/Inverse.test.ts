@@ -5,19 +5,20 @@ import uniq from "lodash/uniq";
 import { collect } from "streaming-iterables";
 import { MASTER } from "../../abstract/Shard";
 import { ShardError } from "../../abstract/ShardError";
-import { join, mapJoin } from "../../helpers/misc";
+import { join, mapJoin } from "../../internal/misc";
 import {
   recreateTestTables,
   testCluster,
   TEST_CONFIG,
   TCPProxyServer,
-} from "../../sql/__tests__/test-utils";
-import { SQLSchema } from "../../sql/SQLSchema";
+} from "../../pg/__tests__/test-utils";
+import { PgSchema } from "../../pg/PgSchema";
 import { ID } from "../../types";
-import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
+import { BaseEnt } from "../BaseEnt";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
+import { GLOBAL_SHARD } from "../ShardAffinity";
 import type { VC } from "../VC";
 import { createVC } from "./test-utils";
 
@@ -28,14 +29,14 @@ const TABLE_INVERSE = 'inverse"test_inverse';
  */
 class EntTestCompany extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'inverse"test_company',
     {
       id: { type: String, autoInsert: "id_gen()" },
       name: { type: String },
     },
-    ["name"]
-  )
+    ["name"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -58,7 +59,7 @@ class EntTestCompany extends BaseEnt(
  */
 class EntTestUser extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'inverse"test_user',
     {
       id: { type: ID, autoInsert: "id_gen()" },
@@ -66,8 +67,8 @@ class EntTestUser extends BaseEnt(
       team_id: { type: ID, allowNull: true },
       name: { type: String },
     },
-    ["company_id", "team_id"]
-  )
+    ["company_id", "team_id"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -97,7 +98,7 @@ class EntTestUser extends BaseEnt(
  */
 class EntTestTopic extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'inverse"test_topic',
     {
       id: { type: ID, autoInsert: "id_gen()" },
@@ -105,8 +106,8 @@ class EntTestTopic extends BaseEnt(
       slug: { type: String },
       sleep: { type: Number, allowNull: true, autoInsert: "0" },
     },
-    ["owner_id", "slug"]
-  )
+    ["owner_id", "slug"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -156,7 +157,7 @@ beforeEach(async () => {
 
   await recreateTestTables(
     [EntTestCompany, EntTestUser, EntTestTopic],
-    TABLE_INVERSE
+    TABLE_INVERSE,
   );
 
   vc = createVC();
@@ -222,7 +223,7 @@ test("cross-shard select", async () => {
   });
 
   expect(
-    await EntTestUser.select(vc, { company_id: companyIDNull }, 42)
+    await EntTestUser.select(vc, { company_id: companyIDNull }, 42),
   ).toMatchObject([{ id: user.id, name: "u1" }]);
 
   expect(await EntTestUser.select(vc, { team_id: teamID }, 42)).toMatchObject([
@@ -239,7 +240,7 @@ test("cross-shard select", async () => {
 
   const users = sortBy(
     await EntTestUser.select(vc, { team_id: teamID }, 42),
-    (u) => u.name
+    (u) => u.name,
   );
   expect(users).toMatchObject([
     { id: user.id, name: "u1" },
@@ -257,12 +258,12 @@ test("cross-shard selectChunked", async () => {
         startCompanyID: companyID,
         startTeamID: "1000000000000000001",
         increment: "teamID",
-      })
-    )
+      }),
+    ),
   );
   const chunkLens = await mapJoin(
     collect(EntTestUser.selectChunked(vc, { company_id: companyID }, 2, 8)),
-    async (chunk) => chunk.length
+    async (chunk) => chunk.length,
   );
   expect(chunkLens).toEqual([2, 2, 1, 2, 1]);
 });
@@ -285,10 +286,10 @@ test("optionally sharded colocation", async () => {
   });
   expect(await inverse.id2s(vc, user.id)).toEqual([]); // no inverse created since it's in shardAffinity
   expect(await EntTestTopic.select(vc, { owner_id: user.id }, 1)).toMatchObject(
-    [{ id: topic1.id }]
+    [{ id: topic1.id }],
   );
   expect(
-    await EntTestTopic.loadByX(vc, { owner_id: user.id, slug: "topic1" })
+    await EntTestTopic.loadByX(vc, { owner_id: user.id, slug: "topic1" }),
   ).toMatchObject({ id: topic1.id });
 
   const topic2 = await EntTestTopic.insertReturning(vc, {
@@ -297,17 +298,17 @@ test("optionally sharded colocation", async () => {
   });
   expect(await inverse.id2s(vc, company.id)).toEqual([topic2.id]);
   expect(
-    await EntTestTopic.select(vc, { owner_id: company.id }, 1)
+    await EntTestTopic.select(vc, { owner_id: company.id }, 1),
   ).toMatchObject([{ id: topic2.id }]);
   expect(
-    await EntTestTopic.loadByX(vc, { owner_id: company.id, slug: "topic2" })
+    await EntTestTopic.loadByX(vc, { owner_id: company.id, slug: "topic2" }),
   ).toMatchObject({ id: topic2.id });
 
   expect(
     await EntTestTopic.loadByNullable(vc, {
       owner_id: "1000000000000000000",
       slug: "topic2",
-    })
+    }),
   ).toBeNull();
 });
 
@@ -329,7 +330,7 @@ test("race condition in insert/loadBy", async () => {
         }
 
         return (await EntTestTopic.loadByX(vc, key)).id;
-      })
+      }),
     );
     expect(insertedTopicIDs).toHaveLength(1);
   }
@@ -341,14 +342,14 @@ test("inverses are deleted when ent insert DB operation fails", async () => {
     const master = await shard.client(MASTER);
     await master.rows(
       "DROP TABLE IF EXISTS %T CASCADE",
-      EntTestTopic.SCHEMA.name
+      EntTestTopic.SCHEMA.name,
     );
   });
   await expect(
     EntTestTopic.insertIfNotExists(vc, {
       owner_id: myCompany.id,
       slug: "topic",
-    })
+    }),
   ).rejects.toThrow(/undefined_table/);
   const inverse = EntTestTopic.INVERSES[0];
   expect(await inverse.id2s(vc, myCompany.id)).toEqual([]);
@@ -359,7 +360,7 @@ test("inverses are deleted when beforeInsert trigger throws any error", async ()
     EntTestTopic.insertIfNotExists(vc, {
       owner_id: myCompany.id,
       slug: "throwInBeforeInsert",
-    })
+    }),
   ).rejects.toThrow(Error);
   const inverse = EntTestTopic.INVERSES[0];
   expect(await inverse.id2s(vc, myCompany.id)).toEqual([]);
@@ -370,7 +371,7 @@ test("inverses are NOT deleted when throwInAfterMutation trigger throws any erro
     EntTestTopic.insertIfNotExists(vc, {
       owner_id: myCompany.id,
       slug: "throwInAfterMutation",
-    })
+    }),
   ).rejects.toThrow(Error);
   const inverse = EntTestTopic.INVERSES[0];
   expect(await inverse.id2s(vc, myCompany.id)).toHaveLength(1);
@@ -411,7 +412,7 @@ test("inverses are NOT deleted when connection aborts at ent creation", async ()
   // insert or not, so we should expect Ent Framework to NOT delete the inverse.
   const inverse = EntTestTopic.INVERSES[0];
   expect(
-    await inverse.id2s(vc.withOneTimeStaleReplica(), myCompany.id)
+    await inverse.id2s(vc.withOneTimeStaleReplica(), myCompany.id),
   ).toHaveLength(1);
 });
 
@@ -487,14 +488,14 @@ test("multiShardsFromInput returns minimal number of Shard candidates", async ()
   const shards = await EntTestUser.SHARD_LOCATOR.multiShardsFromInput(
     vc,
     { company_id: user1.company_id, team_id: sharedTeamID },
-    "loadBy"
+    "loadBy",
   );
   expect(shards).toHaveLength(1);
 });
 
 test("exception", async () => {
   await expect(EntTestUser.select(vc, { name: "u2" }, 42)).rejects.toThrow(
-    ShardError
+    ShardError,
   );
 });
 
@@ -510,7 +511,7 @@ test("id2s single", async () => {
   master.resetSnapshot();
   const id2s = await EntTestUser.INVERSES[0].id2s(
     vc.withEmptyCache(),
-    companyID1
+    companyID1,
   );
   expect(id2s).toEqual([u1.id]);
   master.toMatchSnapshot();

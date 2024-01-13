@@ -19,7 +19,7 @@ ___
 
 ### rule
 
-• **rule**: [`Rule`](../classes/Rule.md)<`object`\>
+• **rule**: [`Rule`](../classes/Rule.md)\<`object`\>
 
 #### Defined in
 

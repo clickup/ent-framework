@@ -6,13 +6,17 @@ Always passes; used for e.g. globally accessed objects.
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)<`never`\>
+- [`Predicate`](../interfaces/Predicate.md)\<`never`\>
 
 ## Constructors
 
 ### constructor
 
-• **new True**()
+• **new True**(): [`True`](True.md)
+
+#### Returns
+
+[`True`](True.md)
 
 ## Properties
 
@@ -32,7 +36,7 @@ Always passes; used for e.g. globally accessed objects.
 
 ### check
 
-▸ **check**(`_vc`): `Promise`<`boolean`\>
+▸ **check**(`_vc`): `Promise`\<`boolean`\>
 
 #### Parameters
 
@@ -42,7 +46,7 @@ Always passes; used for e.g. globally accessed objects.
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Implementation of
 

@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Validation
 
-# Class: Validation<TTable\>
+# Class: Validation\<TTable\>
 
 ## Type parameters
 
@@ -12,7 +12,7 @@
 
 ### constructor
 
-• **new Validation**<`TTable`\>(`entName`, `rules`)
+• **new Validation**\<`TTable`\>(`entName`, `rules`): [`Validation`](Validation.md)\<`TTable`\>
 
 #### Type parameters
 
@@ -25,7 +25,11 @@
 | Name | Type |
 | :------ | :------ |
 | `entName` | `string` |
-| `rules` | [`ValidationRules`](../modules.md#validationrules)<`TTable`\> |
+| `rules` | [`ValidationRules`](../modules.md#validationrules)\<`TTable`\> |
+
+#### Returns
+
+[`Validation`](Validation.md)\<`TTable`\>
 
 #### Defined in
 
@@ -35,7 +39,7 @@
 
 ### tenantPrincipalField
 
-• `Optional` `Readonly` **tenantPrincipalField**: [`InsertFieldsRequired`](../modules.md#insertfieldsrequired)<`TTable`\> & `string`
+• `Optional` `Readonly` **tenantPrincipalField**: [`InsertFieldsRequired`](../modules.md#insertfieldsrequired)\<`TTable`\> & `string`
 
 #### Defined in
 
@@ -45,22 +49,22 @@ ___
 
 ### inferPrincipal
 
-• `Optional` `Readonly` **inferPrincipal**: (`vc`: [`VC`](VC.md), `row`: [`Row`](../modules.md#row)<`TTable`\>) => `Promise`<``null`` \| `string`\>
+• `Optional` `Readonly` **inferPrincipal**: (`vc`: [`VC`](VC.md), `row`: [`Row`](../modules.md#row)\<`TTable`\>) => `Promise`\<``null`` \| `string`\>
 
 #### Type declaration
 
-▸ (`vc`, `row`): `Promise`<``null`` \| `string`\>
+▸ (`vc`, `row`): `Promise`\<``null`` \| `string`\>
 
 ##### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | [`Row`](../modules.md#row)<`TTable`\> |
+| `row` | [`Row`](../modules.md#row)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<``null`` \| `string`\>
+`Promise`\<``null`` \| `string`\>
 
 #### Defined in
 
@@ -70,7 +74,7 @@ ___
 
 ### load
 
-• `Readonly` **load**: [`LoadRule`](../modules.md#loadrule)<[`Row`](../modules.md#row)<`TTable`\>\>[]
+• `Readonly` **load**: [`LoadRule`](../modules.md#loadrule)\<[`Row`](../modules.md#row)\<`TTable`\>\>[]
 
 #### Defined in
 
@@ -80,7 +84,7 @@ ___
 
 ### insert
 
-• `Readonly` **insert**: [`WriteRules`](../modules.md#writerules)<[`InsertInput`](../modules.md#insertinput)<`TTable`\>\>
+• `Readonly` **insert**: [`WriteRules`](../modules.md#writerules)\<[`InsertInput`](../modules.md#insertinput)\<`TTable`\>\>
 
 #### Defined in
 
@@ -90,7 +94,7 @@ ___
 
 ### update
 
-• `Readonly` **update**: [`WriteRules`](../modules.md#writerules)<[`Row`](../modules.md#row)<`TTable`\>\>
+• `Readonly` **update**: [`WriteRules`](../modules.md#writerules)\<[`Row`](../modules.md#row)\<`TTable`\>\>
 
 #### Defined in
 
@@ -100,7 +104,7 @@ ___
 
 ### delete
 
-• `Readonly` **delete**: [`WriteRules`](../modules.md#writerules)<[`Row`](../modules.md#row)<`TTable`\>\>
+• `Readonly` **delete**: [`WriteRules`](../modules.md#writerules)\<[`Row`](../modules.md#row)\<`TTable`\>\>
 
 #### Defined in
 
@@ -110,7 +114,7 @@ ___
 
 ### validate
 
-• `Readonly` **validate**: [`Require`](Require.md)<[`InsertInput`](../modules.md#insertinput)<`TTable`\>\>[]
+• `Readonly` **validate**: [`Require`](Require.md)\<[`InsertInput`](../modules.md#insertinput)\<`TTable`\>\>[]
 
 #### Defined in
 
@@ -120,84 +124,84 @@ ___
 
 ### validateLoad
 
-▸ **validateLoad**(`vc`, `row`): `Promise`<`void`\>
+▸ **validateLoad**(`vc`, `row`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | [`Row`](../modules.md#row)<`TTable`\> |
+| `row` | [`Row`](../modules.md#row)\<`TTable`\> |
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 #### Defined in
 
-[src/ent/Validation.ts:94](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L94)
+[src/ent/Validation.ts:97](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L97)
 
 ___
 
 ### validateInsert
 
-▸ **validateInsert**(`vc`, `input`): `Promise`<`void`\>
+▸ **validateInsert**(`vc`, `input`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 #### Defined in
 
-[src/ent/Validation.ts:105](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L105)
+[src/ent/Validation.ts:108](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L108)
 
 ___
 
 ### validateUpdate
 
-▸ **validateUpdate**(`vc`, `old`, `input`, `privacyOnly?`): `Promise`<`void`\>
+▸ **validateUpdate**(`vc`, `old`, `input`, `privacyOnly?`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
 | `vc` | [`VC`](VC.md) | `undefined` |
-| `old` | [`Row`](../modules.md#row)<`TTable`\> | `undefined` |
-| `input` | [`UpdateInput`](../modules.md#updateinput)<`TTable`\> | `undefined` |
+| `old` | [`Row`](../modules.md#row)\<`TTable`\> | `undefined` |
+| `input` | [`UpdateInput`](../modules.md#updateinput)\<`TTable`\> | `undefined` |
 | `privacyOnly` | `boolean` | `false` |
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 #### Defined in
 
-[src/ent/Validation.ts:117](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L117)
+[src/ent/Validation.ts:120](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L120)
 
 ___
 
 ### validateDelete
 
-▸ **validateDelete**(`vc`, `row`): `Promise`<`void`\>
+▸ **validateDelete**(`vc`, `row`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | [`Row`](../modules.md#row)<`TTable`\> |
+| `row` | [`Row`](../modules.md#row)\<`TTable`\> |
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 #### Defined in
 
-[src/ent/Validation.ts:144](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L144)
+[src/ent/Validation.ts:147](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L147)

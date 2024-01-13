@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Require
 
-# Class: Require<TInput\>
+# Class: Require\<TInput\>
 
 Returns TOLERATE if the predicate succeeds, otherwise DENY.
 - Used mostly for write permission checks.
@@ -15,7 +15,7 @@ Returns TOLERATE if the predicate succeeds, otherwise DENY.
 
 ## Hierarchy
 
-- [`Rule`](Rule.md)<`TInput`\>
+- [`Rule`](Rule.md)\<`TInput`\>
 
   ↳ **`Require`**
 
@@ -23,7 +23,7 @@ Returns TOLERATE if the predicate succeeds, otherwise DENY.
 
 ### constructor
 
-• **new Require**<`TInput`\>(`predicate`)
+• **new Require**\<`TInput`\>(`predicate`): [`Require`](Require.md)\<`TInput`\>
 
 #### Type parameters
 
@@ -35,7 +35,11 @@ Returns TOLERATE if the predicate succeeds, otherwise DENY.
 
 | Name | Type |
 | :------ | :------ |
-| `predicate` | [`Predicate`](../interfaces/Predicate.md)<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`<`boolean`\> |
+| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`\<`boolean`\> |
+
+#### Returns
+
+[`Require`](Require.md)\<`TInput`\>
 
 #### Inherited from
 
@@ -59,7 +63,7 @@ ___
 
 ### predicate
 
-• `Readonly` **predicate**: [`Predicate`](../interfaces/Predicate.md)<`TInput`\>
+• `Readonly` **predicate**: [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>
 
 #### Inherited from
 
@@ -87,7 +91,7 @@ ___
 
 ### evaluate
 
-▸ **evaluate**(`vc`, `input`): `Promise`<[`RuleResult`](../interfaces/RuleResult.md)\>
+▸ **evaluate**(`vc`, `input`): `Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
 
 #### Parameters
 
@@ -98,7 +102,7 @@ ___
 
 #### Returns
 
-`Promise`<[`RuleResult`](../interfaces/RuleResult.md)\>
+`Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
 
 #### Overrides
 

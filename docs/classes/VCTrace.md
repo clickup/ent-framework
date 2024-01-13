@@ -10,13 +10,17 @@ they're a part of VC core interface to allow faster access.
 
 ### constructor
 
-• **new VCTrace**(`trace?`)
+• **new VCTrace**(`trace?`): [`VCTrace`](VCTrace.md)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `trace?` | `string` |
+
+#### Returns
+
+[`VCTrace`](VCTrace.md)
 
 #### Defined in
 

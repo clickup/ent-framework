@@ -1,14 +1,17 @@
-import { inspectCompact } from "../../helpers/misc";
+import { inspectCompact } from "../../internal/misc";
 
 /**
  * Error: while inserting or updating, DB unique key was violated,
  * so the Ent was not mutated.
  */
 export class EntUniqueKeyError extends Error {
-  constructor(public readonly entName: string, public readonly input: unknown) {
+  constructor(
+    public readonly entName: string,
+    public readonly input: unknown,
+  ) {
     super(
       `${entName} mutation violates unique key constraint: ` +
-        inspectCompact(input)
+        inspectCompact(input),
     );
 
     Object.defineProperty(this, "name", {

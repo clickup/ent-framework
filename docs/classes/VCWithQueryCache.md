@@ -14,7 +14,7 @@ If set, Ent cache is enabled for operations in this VC.
 
 ### constructor
 
-• **new VCWithQueryCache**(`options`)
+• **new VCWithQueryCache**(`options`): [`VCWithQueryCache`](VCWithQueryCache.md)
 
 #### Parameters
 
@@ -22,6 +22,10 @@ If set, Ent cache is enabled for operations in this VC.
 | :------ | :------ |
 | `options` | `Object` |
 | `options.maxQueries` | `number` |
+
+#### Returns
+
+[`VCWithQueryCache`](VCWithQueryCache.md)
 
 #### Overrides
 

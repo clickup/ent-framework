@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / HelpersInstance
 
-# Interface: HelpersInstance<TTable\>
+# Interface: HelpersInstance\<TTable\>
 
 ## Type parameters
 
@@ -10,7 +10,7 @@
 
 ## Hierarchy
 
-- [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\>
+- [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\>
 
   ↳ **`HelpersInstance`**
 
@@ -50,7 +50,7 @@ For simplicity, every Ent has an ID field name hardcoded to "id".
 
 ### updateChanged
 
-▸ **updateChanged**(`input`): `Promise`<``null`` \| ``false`` \| [`UpdateField`](../modules.md#updatefield)<`TTable`\>[]\>
+▸ **updateChanged**(`input`): `Promise`\<``null`` \| ``false`` \| [`UpdateField`](../modules.md#updatefield)\<`TTable`\>[]\>
 
 Same as updateOriginal(), but updates only the fields which are different
 in input and in the current object.
@@ -68,11 +68,11 @@ in input and in the current object.
 
 | Name | Type |
 | :------ | :------ |
-| `input` | [`UpdateOriginalInput`](../modules.md#updateoriginalinput)<`TTable`\> |
+| `input` | [`UpdateOriginalInput`](../modules.md#updateoriginalinput)\<`TTable`\> |
 
 #### Returns
 
-`Promise`<``null`` \| ``false`` \| [`UpdateField`](../modules.md#updatefield)<`TTable`\>[]\>
+`Promise`\<``null`` \| ``false`` \| [`UpdateField`](../modules.md#updatefield)\<`TTable`\>[]\>
 
 #### Defined in
 
@@ -82,7 +82,7 @@ ___
 
 ### updateChangedReturningX
 
-▸ **updateChangedReturningX**<`TEnt`\>(`this`, `input`): `Promise`<`TEnt`\>
+▸ **updateChangedReturningX**\<`TEnt`\>(`this`, `input`): `Promise`\<`TEnt`\>
 
 Same as updateChanged(), but returns the updated Ent (or the original one
 if no fields were updated).
@@ -91,18 +91,18 @@ if no fields were updated).
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `this` | `TEnt` |
-| `input` | [`UpdateInput`](../modules.md#updateinput)<`TTable`\> |
+| `input` | [`UpdateInput`](../modules.md#updateinput)\<`TTable`\> |
 
 #### Returns
 
-`Promise`<`TEnt`\>
+`Promise`\<`TEnt`\>
 
 #### Defined in
 
@@ -112,7 +112,7 @@ ___
 
 ### updateReturningNullable
 
-▸ **updateReturningNullable**<`TEnt`\>(`this`, `input`): `Promise`<``null`` \| `TEnt`\>
+▸ **updateReturningNullable**\<`TEnt`\>(`this`, `input`): `Promise`\<``null`` \| `TEnt`\>
 
 Same as updateOriginal(), but returns the updated Ent (or null of there
 was no such Ent in the database).
@@ -121,18 +121,18 @@ was no such Ent in the database).
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `this` | `TEnt` |
-| `input` | [`UpdateInput`](../modules.md#updateinput)<`TTable`\> |
+| `input` | [`UpdateInput`](../modules.md#updateinput)\<`TTable`\> |
 
 #### Returns
 
-`Promise`<``null`` \| `TEnt`\>
+`Promise`\<``null`` \| `TEnt`\>
 
 #### Defined in
 
@@ -142,7 +142,7 @@ ___
 
 ### updateReturningX
 
-▸ **updateReturningX**<`TEnt`\>(`this`, `input`): `Promise`<`TEnt`\>
+▸ **updateReturningX**\<`TEnt`\>(`this`, `input`): `Promise`\<`TEnt`\>
 
 Same as updateOriginal(), but throws if the object wasn't updated or
 doesn't exist after the update.
@@ -151,18 +151,18 @@ doesn't exist after the update.
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `this` | `TEnt` |
-| `input` | [`UpdateInput`](../modules.md#updateinput)<`TTable`\> |
+| `input` | [`UpdateInput`](../modules.md#updateinput)\<`TTable`\> |
 
 #### Returns
 
-`Promise`<`TEnt`\>
+`Promise`\<`TEnt`\>
 
 #### Defined in
 
@@ -172,7 +172,7 @@ ___
 
 ### updateOriginal
 
-▸ **updateOriginal**(`input`): `Promise`<`boolean`\>
+▸ **updateOriginal**(`input`): `Promise`\<`boolean`\>
 
 Updates the object in the DB, but doesn't update the Ent itself (since it's
 immutable).
@@ -192,11 +192,11 @@ immutable).
 
 | Name | Type |
 | :------ | :------ |
-| `input` | [`UpdateOriginalInput`](../modules.md#updateoriginalinput)<`TTable`\> |
+| `input` | [`UpdateOriginalInput`](../modules.md#updateoriginalinput)\<`TTable`\> |
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Inherited from
 
@@ -210,14 +210,14 @@ ___
 
 ### deleteOriginal
 
-▸ **deleteOriginal**(): `Promise`<`boolean`\>
+▸ **deleteOriginal**(): `Promise`\<`boolean`\>
 
 Deletes the object in the DB. Returns true if the object was found. Keeps
 the current object untouched (since it's immutable).
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Inherited from
 

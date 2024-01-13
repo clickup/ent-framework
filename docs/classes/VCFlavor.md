@@ -21,7 +21,11 @@ For each flavor type, only a single VCFlavor object may exist.
 
 ### constructor
 
-• **new VCFlavor**()
+• **new VCFlavor**(): [`VCFlavor`](VCFlavor.md)
+
+#### Returns
+
+[`VCFlavor`](VCFlavor.md)
 
 ## Properties
 

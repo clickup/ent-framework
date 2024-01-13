@@ -1,4 +1,4 @@
-import { indent, inspectCompact, mapJoin } from "../../helpers/misc";
+import { indent, inspectCompact, mapJoin } from "../../internal/misc";
 import { EntAccessError } from "../errors/EntAccessError";
 import type { VC } from "../VC";
 import type { Rule, RuleResult } from "./Rule";
@@ -53,7 +53,7 @@ export async function evaluate<TInput extends object>(
   vc: VC,
   input: TInput,
   rules: Array<Rule<TInput>>,
-  fashion: "parallel" | "sequential"
+  fashion: "parallel" | "sequential",
 ): Promise<{
   allow: boolean;
   results: RuleResult[];
@@ -116,7 +116,7 @@ export async function evaluate<TInput extends object>(
 async function ruleEvaluate<TInput extends object>(
   rule: Rule<TInput>,
   vc: VC,
-  input: TInput
+  input: TInput,
 ): Promise<RuleResult> {
   try {
     return await rule.evaluate(vc, input);
@@ -144,7 +144,7 @@ function resultsToCause(results: RuleResult[]): string {
         .map(
           ({ rule, decision, cause }) =>
             `Rule ${rule.name} returned ${decision}` +
-            (cause ? ", because:\n" + indent(cause.message) : "")
+            (cause ? ", because:\n" + indent(cause.message) : ""),
         )
         .join("\n");
 }

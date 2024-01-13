@@ -10,7 +10,7 @@ web servers only, to deliver the fastest UI response.
 
 ### constructor
 
-• **new QueryCache**(`vc`)
+• **new QueryCache**(`vc`): [`QueryCache`](QueryCache.md)
 
 Creates the QueryCache object. It enable caching only if VCWithQueryCache
 was manually added to the VC by the user, otherwise caching is a no-op.
@@ -20,6 +20,10 @@ was manually added to the VC by the user, otherwise caching is a no-op.
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
+
+#### Returns
+
+[`QueryCache`](QueryCache.md)
 
 #### Defined in
 
@@ -39,11 +43,11 @@ was manually added to the VC by the user, otherwise caching is a no-op.
 
 ### set
 
-▸ **set**(`EntClass`, `op`, `key`, `value`): [`QueryCache`](QueryCache.md)
+▸ **set**(`EntClass`, `op`, `key`, `value`): `this`
 
 Saves a Promise to the cache slot for `op`. If this Promise rejects, the
 slot will automatically be cleared (we don't cache rejected Promises to not
-have a risk of caching a transient SQL error).
+have a risk of caching a transient DB error).
 
 #### Parameters
 
@@ -52,11 +56,11 @@ have a risk of caching a transient SQL error).
 | `EntClass` | [`AnyClass`](../modules.md#anyclass) |
 | `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` \| ``"exists"`` |
 | `key` | `string` |
-| `value` | `undefined` \| `Promise`<`unknown`\> |
+| `value` | `undefined` \| `Promise`\<`unknown`\> |
 
 #### Returns
 
-[`QueryCache`](QueryCache.md)
+`this`
 
 #### Defined in
 
@@ -66,7 +70,7 @@ ___
 
 ### delete
 
-▸ **delete**(`EntClass`, `ops`, `key?`): [`QueryCache`](QueryCache.md)
+▸ **delete**(`EntClass`, `ops`, `key?`): `this`
 
 Deletes cache slots or keys for an Ent.
 
@@ -80,7 +84,7 @@ Deletes cache slots or keys for an Ent.
 
 #### Returns
 
-[`QueryCache`](QueryCache.md)
+`this`
 
 #### Defined in
 
@@ -90,7 +94,7 @@ ___
 
 ### get
 
-▸ **get**<`TValue`\>(`EntClass`, `op`, `key`): `undefined` \| `Promise`<`TValue`\>
+▸ **get**\<`TValue`\>(`EntClass`, `op`, `key`): `undefined` \| `Promise`\<`TValue`\>
 
 This method is non-async on intent. We store Promises in the cache, not end
 values, because we want the code to join awaiting an ongoing operation in
@@ -112,7 +116,7 @@ case it's inflight already.
 
 #### Returns
 
-`undefined` \| `Promise`<`TValue`\>
+`undefined` \| `Promise`\<`TValue`\>
 
 #### Defined in
 
@@ -122,7 +126,7 @@ ___
 
 ### through
 
-▸ **through**<`TValue`\>(`EntClass`, `op`, `key`, `creator`): `Promise`<`TValue`\>
+▸ **through**\<`TValue`\>(`EntClass`, `op`, `key`, `creator`): `Promise`\<`TValue`\>
 
 Read-through caching pattern.
 
@@ -139,11 +143,11 @@ Read-through caching pattern.
 | `EntClass` | [`AnyClass`](../modules.md#anyclass) |
 | `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` \| ``"exists"`` |
 | `key` | `string` |
-| `creator` | () => `Promise`<`TValue`\> |
+| `creator` | () => `Promise`\<`TValue`\> |
 
 #### Returns
 
-`Promise`<`TValue`\>
+`Promise`\<`TValue`\>
 
 #### Defined in
 
