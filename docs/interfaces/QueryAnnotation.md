@@ -39,12 +39,11 @@ ___
 • `Readonly` **debugStack**: `string`
 
 Sometimes a query may be annotated by the source stack trace. It's
-typically expensive, so it's likely "" in production. Non-empty string may
-enable detailed SQL logging as well.
+typically expensive, so it's likely "" in production.
 
 #### Defined in
 
-[src/abstract/QueryAnnotation.ts:36](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L36)
+[src/abstract/QueryAnnotation.ts:35](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L35)
 
 ___
 
@@ -56,7 +55,7 @@ Answers, why exactly this Client was selected to send the query to.
 
 #### Defined in
 
-[src/abstract/QueryAnnotation.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L38)
+[src/abstract/QueryAnnotation.ts:37](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L37)
 
 ___
 
@@ -68,4 +67,4 @@ In case it's a retry, the attempt number will be greater than 0.
 
 #### Defined in
 
-[src/abstract/QueryAnnotation.ts:40](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L40)
+[src/abstract/QueryAnnotation.ts:39](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryAnnotation.ts#L39)

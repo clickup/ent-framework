@@ -53,8 +53,8 @@ heartbeat exception.
 
 | Name | Type |
 | :------ | :------ |
-| `heartbeat` | () => `Promise`<`void`\> |
-| `delay` | (`ms`: `number`) => `Promise`<`void`\> |
+| `heartbeat` | () => `Promise`\<`void`\> |
+| `delay` | (`ms`: `number`) => `Promise`\<`void`\> |
 
 #### Defined in
 
@@ -64,7 +64,7 @@ heartbeat exception.
 
 ### createGuestPleaseDoNotUseCreationPointsMustBeLimited
 
-▸ `Static` **createGuestPleaseDoNotUseCreationPointsMustBeLimited**(`«destructured»?`): [`VC`](VC.md)
+▸ **createGuestPleaseDoNotUseCreationPointsMustBeLimited**(`«destructured»?`): [`VC`](VC.md)
 
 Please please don't call this method except one or two core places. The
 idea is that we create an "origin" VC once and then derive all other VCs
@@ -108,7 +108,7 @@ ___
 
 ### cache
 
-▸ **cache**<`TInstance`\>(`Class`): `TInstance`
+▸ **cache**\<`TInstance`\>(`Class`): `TInstance`
 
 Some IDs are cached in VC (e.g. is this ID readable? is it writable? is
 this VC an admin VC?). Also, people may define their own VC-local caches.
@@ -133,7 +133,7 @@ this VC an admin VC?). Also, people may define their own VC-local caches.
 
 [src/ent/VC.ts:100](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L100)
 
-▸ **cache**<`TInstance`\>(`tag`, `creator`): `TInstance`
+▸ **cache**\<`TInstance`\>(`tag`, `creator`): `TInstance`
 
 Same as the above overload, but allows to use a custom creating function.
 This is useful when e.g. cached values are async-created.
@@ -163,7 +163,7 @@ ___
 
 ### loader
 
-▸ **loader**<`TLoadArgs`, `TReturn`\>(`HandlerClass`): [`Loader`](Loader.md)<`TLoadArgs`, `TReturn`\>
+▸ **loader**\<`TLoadArgs`, `TReturn`\>(`HandlerClass`): [`Loader`](Loader.md)\<`TLoadArgs`, `TReturn`\>
 
 Returns a cached instance of Loader whose actual code is defined in
 HandlerClass. In case there is no such Loader yet, creates it.
@@ -179,12 +179,12 @@ HandlerClass. In case there is no such Loader yet, creates it.
 
 | Name | Type |
 | :------ | :------ |
-| `HandlerClass` | (`vc`: [`VC`](VC.md)) => [`Handler`](../interfaces/Handler.md)<`TLoadArgs`, `TReturn`\> |
+| `HandlerClass` | (`vc`: [`VC`](VC.md)) => [`Handler`](../interfaces/Handler.md)\<`TLoadArgs`, `TReturn`\> |
 | `HandlerClass.$loader?` | `symbol` |
 
 #### Returns
 
-[`Loader`](Loader.md)<`TLoadArgs`, `TReturn`\>
+[`Loader`](Loader.md)\<`TLoadArgs`, `TReturn`\>
 
 #### Defined in
 
@@ -203,7 +203,7 @@ particular schema name (most likely, table).
 
 | Name | Type |
 | :------ | :------ |
-| `shard` | [`Shard`](Shard.md)<[`Client`](Client.md)\> |
+| `shard` | [`Shard`](Shard.md)\<[`Client`](Client.md)\> |
 | `schemaName` | `string` |
 
 #### Returns
@@ -343,7 +343,7 @@ ___
 
 ### withFlavor
 
-▸ **withFlavor**(`prepend`, `...flavors`): [`VC`](VC.md)
+▸ **withFlavor**(`prepend`, `...flavors`): `this`
 
 Returns a new VC derived from the current one adding some more flavors to
 it. If no flavors were added, returns the same VC (`this`).
@@ -357,13 +357,13 @@ it. If no flavors were added, returns the same VC (`this`).
 
 #### Returns
 
-[`VC`](VC.md)
+`this`
 
 #### Defined in
 
 [src/ent/VC.ts:305](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L305)
 
-▸ **withFlavor**(`...flavors`): [`VC`](VC.md)
+▸ **withFlavor**(`...flavors`): `this`
 
 #### Parameters
 
@@ -373,7 +373,7 @@ it. If no flavors were added, returns the same VC (`this`).
 
 #### Returns
 
-[`VC`](VC.md)
+`this`
 
 #### Defined in
 
@@ -414,8 +414,8 @@ Derives the VC with the provided heartbeater injected.
 | Name | Type |
 | :------ | :------ |
 | `heartbeater` | `Object` |
-| `heartbeater.heartbeat` | () => `Promise`<`void`\> |
-| `heartbeater.delay` | (`ms`: `number`) => `Promise`<`void`\> |
+| `heartbeater.heartbeat` | () => `Promise`\<`void`\> |
+| `heartbeater.delay` | (`ms`: `number`) => `Promise`\<`void`\> |
 
 #### Returns
 
@@ -512,7 +512,7 @@ ___
 
 ### flavor
 
-▸ **flavor**<`TFlavor`\>(`flavor`): ``null`` \| `TFlavor`
+▸ **flavor**\<`TFlavor`\>(`flavor`): ``null`` \| `TFlavor`
 
 Returns VC's flavor of the particular type.
 

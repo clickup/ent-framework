@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Island
 
-# Class: Island<TClient\>
+# Class: Island\<TClient\>
 
 Island is a collection of DB connections (represented as Clients) that
 contains a single master server and any number of replicas.
@@ -18,7 +18,7 @@ code. The caller code should use only Client and Shard abstractions.
 
 ### constructor
 
-• **new Island**<`TClient`\>(`clients`)
+• **new Island**\<`TClient`\>(`clients`): [`Island`](Island.md)\<`TClient`\>
 
 Initializes the Island by copying the Client references into it.
 
@@ -34,6 +34,10 @@ Initializes the Island by copying the Client references into it.
 | :------ | :------ |
 | `clients` | readonly `TClient`[] |
 
+#### Returns
+
+[`Island`](Island.md)\<`TClient`\>
+
 #### Defined in
 
 [src/abstract/Island.ts:20](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L20)
@@ -42,7 +46,7 @@ Initializes the Island by copying the Client references into it.
 
 ### shardNos
 
-▸ **shardNos**(): `Promise`<readonly `number`[]\>
+▸ **shardNos**(): `Promise`\<readonly `number`[]\>
 
 Returns all Shards on the best available Client (preferably master, then
 replicas). If some Clients are unavailable, tries its best to infer the
@@ -55,7 +59,7 @@ after calling Client#shardNos().
 
 #### Returns
 
-`Promise`<readonly `number`[]\>
+`Promise`\<readonly `number`[]\>
 
 #### Defined in
 

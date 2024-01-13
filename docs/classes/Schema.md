@@ -1,11 +1,11 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Schema
 
-# Class: Schema<TTable, TUniqueKey\>
+# Class: Schema\<TTable, TUniqueKey\>
 
 Schema is like a "table" in some database (sharded, but it's beyond the scope
 of Schema). It is also a factory of Query: it knows how to build runnable
 Query objects. This 2nd role is database engine specific (e.g. there might be
-SQLSchema, RedisSchema etc.): such composition simplifies the code and lowers
+PgSchema, RedisSchema etc.): such composition simplifies the code and lowers
 the number of abstractions.
 
 The set of supported Queries is opinionated and is crafted carefully to
@@ -17,34 +17,38 @@ too limited in the queries the DB engine can execute.
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)<`TTable`\> = [`UniqueKey`](../modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> = [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
 
 ## Hierarchy
 
 - **`Schema`**
 
-  ↳ [`SQLSchema`](SQLSchema.md)
+  ↳ [`PgSchema`](PgSchema.md)
 
 ## Constructors
 
 ### constructor
 
-• **new Schema**<`TTable`, `TUniqueKey`\>(`name`, `table`, `uniqueKey`)
+• **new Schema**\<`TTable`, `TUniqueKey`\>(`name`, `table`, `uniqueKey`): [`Schema`](Schema.md)\<`TTable`, `TUniqueKey`\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)<`TTable`\> = [`UniqueKey`](../modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> = [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `name` | `string` | For SQL-like databases, it's likely a table name. |
+| `name` | `string` | For relational databases, it's likely a table name. |
 | `table` | `TTable` | Structure of the table. |
 | `uniqueKey` | `TUniqueKey` | Fields which the native unique key consists of (if any). |
+
+#### Returns
+
+[`Schema`](Schema.md)\<`TTable`, `TUniqueKey`\>
 
 #### Defined in
 
@@ -80,7 +84,7 @@ ___
 
 • `Readonly` **name**: `string`
 
-For SQL-like databases, it's likely a table name.
+For relational databases, it's likely a table name.
 
 #### Defined in
 
@@ -114,14 +118,14 @@ Fields which the native unique key consists of (if any).
 
 ### idGen
 
-▸ `Abstract` **idGen**(): [`Query`](../interfaces/Query.md)<`string`\>
+▸ **idGen**(): [`Query`](../interfaces/Query.md)\<`string`\>
 
 Generates a new ID for the row. Used when e.g. there is a beforeInsert
 trigger on the Ent which needs to know the ID beforehand.
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<`string`\>
+[`Query`](../interfaces/Query.md)\<`string`\>
 
 #### Defined in
 
@@ -131,7 +135,7 @@ ___
 
 ### insert
 
-▸ `Abstract` **insert**(`input`): [`Query`](../interfaces/Query.md)<``null`` \| `string`\>
+▸ **insert**(`input`): [`Query`](../interfaces/Query.md)\<``null`` \| `string`\>
 
 Creates a new row. Returns null if the row violates some unique key
 constraint, otherwise returns the row ID.
@@ -140,11 +144,11 @@ constraint, otherwise returns the row ID.
 
 | Name | Type |
 | :------ | :------ |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<``null`` \| `string`\>
+[`Query`](../interfaces/Query.md)\<``null`` \| `string`\>
 
 #### Defined in
 
@@ -154,7 +158,7 @@ ___
 
 ### upsert
 
-▸ `Abstract` **upsert**(`input`): [`Query`](../interfaces/Query.md)<`string`\>
+▸ **upsert**(`input`): [`Query`](../interfaces/Query.md)\<`string`\>
 
 Upserts a row. Always returns the row ID.
 
@@ -162,11 +166,11 @@ Upserts a row. Always returns the row ID.
 
 | Name | Type |
 | :------ | :------ |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<`string`\>
+[`Query`](../interfaces/Query.md)\<`string`\>
 
 #### Defined in
 
@@ -176,7 +180,7 @@ ___
 
 ### update
 
-▸ `Abstract` **update**(`id`, `input`): [`Query`](../interfaces/Query.md)<`boolean`\>
+▸ **update**(`id`, `input`): [`Query`](../interfaces/Query.md)\<`boolean`\>
 
 Updates one single row by its ID. Returns true if it actually existed.
 
@@ -185,11 +189,11 @@ Updates one single row by its ID. Returns true if it actually existed.
 | Name | Type |
 | :------ | :------ |
 | `id` | `string` |
-| `input` | [`UpdateInput`](../modules.md#updateinput)<`TTable`\> |
+| `input` | [`UpdateInput`](../modules.md#updateinput)\<`TTable`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<`boolean`\>
+[`Query`](../interfaces/Query.md)\<`boolean`\>
 
 #### Defined in
 
@@ -199,7 +203,7 @@ ___
 
 ### delete
 
-▸ `Abstract` **delete**(`id`): [`Query`](../interfaces/Query.md)<`boolean`\>
+▸ **delete**(`id`): [`Query`](../interfaces/Query.md)\<`boolean`\>
 
 Deletes a row by id. Returns true if it actually existed.
 
@@ -211,7 +215,7 @@ Deletes a row by id. Returns true if it actually existed.
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<`boolean`\>
+[`Query`](../interfaces/Query.md)\<`boolean`\>
 
 #### Defined in
 
@@ -221,7 +225,7 @@ ___
 
 ### load
 
-▸ `Abstract` **load**(`id`): [`Query`](../interfaces/Query.md)<``null`` \| [`Row`](../modules.md#row)<`TTable`\>\>
+▸ **load**(`id`): [`Query`](../interfaces/Query.md)\<``null`` \| [`Row`](../modules.md#row)\<`TTable`\>\>
 
 "Load" family of methods means that we load exactly one row. This one
 returns a row by its ID or null if it's not found.
@@ -234,7 +238,7 @@ returns a row by its ID or null if it's not found.
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<``null`` \| [`Row`](../modules.md#row)<`TTable`\>\>
+[`Query`](../interfaces/Query.md)\<``null`` \| [`Row`](../modules.md#row)\<`TTable`\>\>
 
 #### Defined in
 
@@ -244,7 +248,7 @@ ___
 
 ### loadBy
 
-▸ `Abstract` **loadBy**(`input`): [`Query`](../interfaces/Query.md)<``null`` \| [`Row`](../modules.md#row)<`TTable`\>\>
+▸ **loadBy**(`input`): [`Query`](../interfaces/Query.md)\<``null`` \| [`Row`](../modules.md#row)\<`TTable`\>\>
 
 Loads one single row by its unique key ("by" denotes that it's based on an
 unique key, not on an ID). Returns null if it's not found.
@@ -253,11 +257,11 @@ unique key, not on an ID). Returns null if it's not found.
 
 | Name | Type |
 | :------ | :------ |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\> |
+| `input` | [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<``null`` \| [`Row`](../modules.md#row)<`TTable`\>\>
+[`Query`](../interfaces/Query.md)\<``null`` \| [`Row`](../modules.md#row)\<`TTable`\>\>
 
 #### Defined in
 
@@ -267,7 +271,7 @@ ___
 
 ### selectBy
 
-▸ `Abstract` **selectBy**(`input`): [`Query`](../interfaces/Query.md)<[`Row`](../modules.md#row)<`TTable`\>[]\>
+▸ **selectBy**(`input`): [`Query`](../interfaces/Query.md)\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
 
 "Select" family of methods means that we load multiple rows ("by" denotes
 that it's based on an unique key, not on an arbitrary query). This one
@@ -277,11 +281,11 @@ returns all rows whose unique key prefix matches the input.
 
 | Name | Type |
 | :------ | :------ |
-| `input` | [`SelectByInput`](../modules.md#selectbyinput)<`TTable`, `TUniqueKey`\> |
+| `input` | [`SelectByInput`](../modules.md#selectbyinput)\<`TTable`, `TUniqueKey`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<[`Row`](../modules.md#row)<`TTable`\>[]\>
+[`Query`](../interfaces/Query.md)\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
 
 #### Defined in
 
@@ -291,7 +295,7 @@ ___
 
 ### select
 
-▸ `Abstract` **select**(`input`): [`Query`](../interfaces/Query.md)<[`Row`](../modules.md#row)<`TTable`\>[]\>
+▸ **select**(`input`): [`Query`](../interfaces/Query.md)\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
 
 Returns all rows matching an arbitrary query.
 
@@ -299,11 +303,11 @@ Returns all rows matching an arbitrary query.
 
 | Name | Type |
 | :------ | :------ |
-| `input` | [`SelectInput`](../modules.md#selectinput)<`TTable`\> |
+| `input` | [`SelectInput`](../modules.md#selectinput)\<`TTable`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<[`Row`](../modules.md#row)<`TTable`\>[]\>
+[`Query`](../interfaces/Query.md)\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
 
 #### Defined in
 
@@ -313,7 +317,7 @@ ___
 
 ### count
 
-▸ `Abstract` **count**(`input`): [`Query`](../interfaces/Query.md)<`number`\>
+▸ **count**(`input`): [`Query`](../interfaces/Query.md)\<`number`\>
 
 Returns the number of rows matching an arbitrary query.
 
@@ -321,11 +325,11 @@ Returns the number of rows matching an arbitrary query.
 
 | Name | Type |
 | :------ | :------ |
-| `input` | [`CountInput`](../modules.md#countinput)<`TTable`\> |
+| `input` | [`CountInput`](../modules.md#countinput)\<`TTable`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<`number`\>
+[`Query`](../interfaces/Query.md)\<`number`\>
 
 #### Defined in
 
@@ -335,7 +339,7 @@ ___
 
 ### exists
 
-▸ `Abstract` **exists**(`input`): [`Query`](../interfaces/Query.md)<`boolean`\>
+▸ **exists**(`input`): [`Query`](../interfaces/Query.md)\<`boolean`\>
 
 An optimized version of count() for the cases where we only need to know
 whether at least one row exists, and don't need a precise count.
@@ -344,11 +348,11 @@ whether at least one row exists, and don't need a precise count.
 
 | Name | Type |
 | :------ | :------ |
-| `input` | [`ExistsInput`](../modules.md#existsinput)<`TTable`\> |
+| `input` | [`ExistsInput`](../modules.md#existsinput)\<`TTable`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)<`boolean`\>
+[`Query`](../interfaces/Query.md)\<`boolean`\>
 
 #### Defined in
 

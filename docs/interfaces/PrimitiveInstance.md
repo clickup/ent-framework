@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / PrimitiveInstance
 
-# Interface: PrimitiveInstance<TTable\>
+# Interface: PrimitiveInstance\<TTable\>
 
 ## Type parameters
 
@@ -44,7 +44,7 @@ For simplicity, every Ent has an ID field name hardcoded to "id".
 
 ### updateOriginal
 
-▸ **updateOriginal**(`input`): `Promise`<`boolean`\>
+▸ **updateOriginal**(`input`): `Promise`\<`boolean`\>
 
 Updates the object in the DB, but doesn't update the Ent itself (since it's
 immutable).
@@ -64,11 +64,11 @@ immutable).
 
 | Name | Type |
 | :------ | :------ |
-| `input` | [`UpdateOriginalInput`](../modules.md#updateoriginalinput)<`TTable`\> |
+| `input` | [`UpdateOriginalInput`](../modules.md#updateoriginalinput)\<`TTable`\> |
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Defined in
 
@@ -78,14 +78,14 @@ ___
 
 ### deleteOriginal
 
-▸ **deleteOriginal**(): `Promise`<`boolean`\>
+▸ **deleteOriginal**(): `Promise`\<`boolean`\>
 
 Deletes the object in the DB. Returns true if the object was found. Keeps
 the current object untouched (since it's immutable).
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Defined in
 

@@ -7,7 +7,7 @@ import { EntAccessError } from "./EntAccessError";
 export class EntValidationError extends EntAccessError {
   constructor(
     entName: string,
-    public readonly errors: readonly EntValidationErrorInfo[]
+    public readonly errors: readonly EntValidationErrorInfo[],
   ) {
     super(
       entName,
@@ -15,7 +15,7 @@ export class EntValidationError extends EntAccessError {
       `${entName}: ` +
         errors
           .map((error) => error.field + ": " + JSON.stringify(error.message))
-          .join(", ")
+          .join(", "),
     );
   }
 }

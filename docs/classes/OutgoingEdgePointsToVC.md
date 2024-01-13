@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / OutgoingEdgePointsToVC
 
-# Class: OutgoingEdgePointsToVC<TField\>
+# Class: OutgoingEdgePointsToVC\<TField\>
 
 Checks that the field's value is the same as VC's principal:
 
@@ -14,13 +14,13 @@ EntOur[user_id] ---> vc.principal
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)<`Record`<`TField`, `string` \| ``null``\>\>
+- [`Predicate`](../interfaces/Predicate.md)\<`Record`\<`TField`, `string` \| ``null``\>\>
 
 ## Constructors
 
 ### constructor
 
-• **new OutgoingEdgePointsToVC**<`TField`\>(`field`)
+• **new OutgoingEdgePointsToVC**\<`TField`\>(`field`): [`OutgoingEdgePointsToVC`](OutgoingEdgePointsToVC.md)\<`TField`\>
 
 #### Type parameters
 
@@ -33,6 +33,10 @@ EntOur[user_id] ---> vc.principal
 | Name | Type |
 | :------ | :------ |
 | `field` | `TField` |
+
+#### Returns
+
+[`OutgoingEdgePointsToVC`](OutgoingEdgePointsToVC.md)\<`TField`\>
 
 #### Defined in
 
@@ -66,18 +70,18 @@ ___
 
 ### check
 
-▸ **check**(`vc`, `row`): `Promise`<`boolean`\>
+▸ **check**(`vc`, `row`): `Promise`\<`boolean`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | `Record`<`TField`, ``null`` \| `string`\> |
+| `row` | `Record`\<`TField`, ``null`` \| `string`\> |
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Implementation of
 
@@ -85,4 +89,4 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/OutgoingEdgePointsToVC.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L16)
+[src/ent/predicates/OutgoingEdgePointsToVC.ts:18](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L18)

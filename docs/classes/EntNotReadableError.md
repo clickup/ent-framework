@@ -14,7 +14,7 @@ Error: thrown when an Ent cannot be read due to privacy reasons.
 
 ### constructor
 
-• **new EntNotReadableError**(`entName`, `vc`, `row`, `cause?`)
+• **new EntNotReadableError**(`entName`, `vc`, `row`, `cause?`): [`EntNotReadableError`](EntNotReadableError.md)
 
 #### Parameters
 
@@ -24,6 +24,10 @@ Error: thrown when an Ent cannot be read due to privacy reasons.
 | `vc` | `string` | `undefined` |
 | `row` | [`RowWithID`](../modules.md#rowwithid) | `undefined` |
 | `cause` | `unknown` | `null` |
+
+#### Returns
+
+[`EntNotReadableError`](EntNotReadableError.md)
 
 #### Overrides
 

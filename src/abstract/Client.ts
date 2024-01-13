@@ -1,6 +1,6 @@
 import { Memoize } from "fast-typescript-memoize";
 import defaults from "lodash/defaults";
-import type { MaybeCallable, PickPartial } from "../helpers/misc";
+import type { MaybeCallable, PickPartial } from "../internal/misc";
 import type { Table } from "../types";
 import { Batcher } from "./Batcher";
 import type { Loggers } from "./Loggers";
@@ -37,8 +37,9 @@ export abstract class Client {
   readonly options: Required<ClientOptions>;
 
   /** Each Client may be bound to some Shard, so the queries executed via it
-   * will be namespaced to this Shard. E.g. in PostgreSQL, Shard name is schema
-   * name (or "public" if the Client wasn't created by withShard() method). */
+   * will be namespaced to this Shard. E.g. in relational databases, Shard name
+   * may be a namespace (or schema) name (or "public" if the Client wasn't
+   * created by withShard() method). */
   abstract readonly shardName: string;
 
   /** Tracks the master/replica replication timeline position. Shared across all
@@ -117,13 +118,13 @@ export abstract class Client {
    */
   @Memoize(
     (QueryClass: Function, schema: Schema<Table>, additionalShape: string) =>
-      QueryClass.name + ":" + schema.hash + ":" + additionalShape
+      QueryClass.name + ":" + schema.hash + ":" + additionalShape,
   )
   batcher<TInput, TOutput, TTable extends Table>(
     _QueryClass: Function,
     _schema: Schema<TTable>,
     _additionalShape: string,
-    runnerCreator: () => Runner<TInput, TOutput>
+    runnerCreator: () => Runner<TInput, TOutput>,
   ): Batcher<TInput, TOutput> {
     // At the moment, Runner doesn't depend on the Client. So theoretically we
     // could share the same Runner across multiple Batchers (and multiple
@@ -139,7 +140,7 @@ export abstract class Client {
   logSwallowedError(
     where: string,
     error: unknown,
-    elapsed: number | null
+    elapsed: number | null,
   ): void {
     this.options.loggers.swallowedErrorLogger({
       where: `${this.constructor.name}(${this.options.name}): ${where}`,

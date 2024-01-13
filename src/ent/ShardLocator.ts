@@ -3,13 +3,13 @@ import type { Client } from "../abstract/Client";
 import type { Cluster } from "../abstract/Cluster";
 import type { Shard } from "../abstract/Shard";
 import { ShardError } from "../abstract/ShardError";
-import { inspectCompact, mapJoin } from "../helpers/misc";
+import { inspectCompact, mapJoin } from "../internal/misc";
 import type { Table } from "../types";
 import { ID } from "../types";
-import type { ShardAffinity } from "./Configuration";
-import { GLOBAL_SHARD } from "./Configuration";
 import { EntNotFoundError } from "./errors/EntNotFoundError";
 import type { Inverse } from "./Inverse";
+import type { ShardAffinity } from "./ShardAffinity";
+import { GLOBAL_SHARD } from "./ShardAffinity";
 import type { VC } from "./VC";
 import { GUEST_ID } from "./VC";
 
@@ -21,7 +21,7 @@ import { GUEST_ID } from "./VC";
 export class ShardLocator<
   TClient extends Client,
   TTable extends Table,
-  TField extends string
+  TField extends string,
 > {
   private cluster;
   private entName;
@@ -75,7 +75,7 @@ export class ShardLocator<
    */
   async singleShardForInsert(
     input: Record<string, unknown>,
-    op: "insert" | "upsert"
+    op: "insert" | "upsert",
   ): Promise<Shard<TClient>> {
     let shard = await this.singleShardFromAffinity(input, op);
 
@@ -83,7 +83,7 @@ export class ShardLocator<
       shard = await this.cluster.randomShard(
         this.uniqueKey?.length
           ? this.uniqueKey.map((field) => input[field])
-          : undefined
+          : undefined,
       );
     }
 
@@ -94,7 +94,7 @@ export class ShardLocator<
           fields:
             this.shardAffinity instanceof Array ? this.shardAffinity : [ID],
           input,
-        })
+        }),
       );
     }
 
@@ -110,7 +110,7 @@ export class ShardLocator<
   async multiShardsFromInput(
     vc: VC,
     input: Record<string, unknown>,
-    op: string
+    op: string,
   ): Promise<Array<Shard<TClient>>> {
     const singleShard = await this.singleShardFromAffinity(input, op);
     if (singleShard) {
@@ -162,7 +162,7 @@ export class ShardLocator<
             ...inverseFields,
           ]),
           input,
-        })
+        }),
       );
     }
 
@@ -182,7 +182,7 @@ export class ShardLocator<
   async singleShardFromID(
     field: string,
     id: string | null | undefined,
-    op: string
+    op: string,
   ): Promise<Shard<TClient> | null> {
     try {
       let shard: Shard<TClient>;
@@ -198,7 +198,7 @@ export class ShardLocator<
           this.buildShardErrorMessage({
             op,
             why: "most likely you're trying to use a guest VC's principal instead of an ID",
-          })
+          }),
         );
       } else {
         if (id === null || id === undefined) {
@@ -206,7 +206,7 @@ export class ShardLocator<
             this.buildShardErrorMessage({
               op,
               why: `you should not pass null or undefined value in "${field}" field`,
-            })
+            }),
           );
         }
 
@@ -254,7 +254,7 @@ export class ShardLocator<
    */
   private async singleShardFromAffinity(
     input: Record<string, unknown>,
-    op: string
+    op: string,
   ): Promise<Shard<TClient> | null> {
     // For a low number of a very global objects only. ATTENTION: GLOBAL_SHARD
     // has precedence over a Shard number from ID! This allows to move some
@@ -269,7 +269,7 @@ export class ShardLocator<
       return this.singleShardFromID(
         "$shardOfID",
         input["$shardOfID"]?.toString(),
-        op
+        op,
       );
     }
 
@@ -306,7 +306,7 @@ export class ShardLocator<
               ? `at least one of non-empty "${fields.join(", ")}" fields`
               : `non-empty "${fields[0]}" field`) +
             " must be present at TOP LEVEL of the input, but got " +
-            inspectCompact(input))
+            inspectCompact(input)),
     );
   }
 }

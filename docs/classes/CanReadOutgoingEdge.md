@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / CanReadOutgoingEdge
 
-# Class: CanReadOutgoingEdge<TField\>
+# Class: CanReadOutgoingEdge\<TField\>
 
 Checks that an ent which a field is pointing to is readable:
 
@@ -20,13 +20,13 @@ to another ent with ID equals to the value of our ent's field.
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)<`Record`<`TField`, `string` \| ``null``\>\>
+- [`Predicate`](../interfaces/Predicate.md)\<`Record`\<`TField`, `string` \| ``null``\>\>
 
 ## Constructors
 
 ### constructor
 
-• **new CanReadOutgoingEdge**<`TField`\>(`field`, `toEntClass`)
+• **new CanReadOutgoingEdge**\<`TField`\>(`field`, `toEntClass`): [`CanReadOutgoingEdge`](CanReadOutgoingEdge.md)\<`TField`\>
 
 #### Type parameters
 
@@ -40,6 +40,10 @@ to another ent with ID equals to the value of our ent's field.
 | :------ | :------ |
 | `field` | `TField` |
 | `toEntClass` | [`EntClass`](../modules.md#entclass) |
+
+#### Returns
+
+[`CanReadOutgoingEdge`](CanReadOutgoingEdge.md)\<`TField`\>
 
 #### Defined in
 
@@ -83,18 +87,18 @@ ___
 
 ### check
 
-▸ **check**(`vc`, `row`): `Promise`<`boolean`\>
+▸ **check**(`vc`, `row`): `Promise`\<`boolean`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | `Record`<`TField`, ``null`` \| `string`\> |
+| `row` | `Record`\<`TField`, ``null`` \| `string`\> |
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Implementation of
 
@@ -102,4 +106,4 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/CanReadOutgoingEdge.ts:28](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L28)
+[src/ent/predicates/CanReadOutgoingEdge.ts:30](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L30)

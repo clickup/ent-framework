@@ -1,12 +1,9 @@
 import { collect } from "streaming-iterables";
-import { join } from "../../helpers/misc";
-import {
-  recreateTestTables,
-  testCluster,
-} from "../../sql/__tests__/test-utils";
-import { SQLSchema } from "../../sql/SQLSchema";
+import { join } from "../../internal/misc";
+import { recreateTestTables, testCluster } from "../../pg/__tests__/test-utils";
+import { PgSchema } from "../../pg/PgSchema";
 import { ID } from "../../types";
-import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
+import { BaseEnt } from "../BaseEnt";
 import { CanReadOutgoingEdge } from "../predicates/CanReadOutgoingEdge";
 import { CanUpdateOutgoingEdge } from "../predicates/CanUpdateOutgoingEdge";
 import { IncomingEdgeFromVCExists } from "../predicates/IncomingEdgeFromVCExists";
@@ -14,6 +11,7 @@ import { OutgoingEdgePointsToVC } from "../predicates/OutgoingEdgePointsToVC";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
+import { GLOBAL_SHARD } from "../ShardAffinity";
 import type { VC } from "../VC";
 import { createVC, expectToMatchSnapshot } from "./test-utils";
 
@@ -22,14 +20,14 @@ import { createVC, expectToMatchSnapshot } from "./test-utils";
  */
 export class EntTestCompany extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.generic"company',
     {
       id: { type: String, autoInsert: "id_gen()" },
       name: { type: String },
     },
-    ["name"]
-  )
+    ["name"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -47,7 +45,7 @@ export class EntTestCompany extends BaseEnt(
           return vcUser.is_alseeing;
         }),
         new AllowIf(
-          new IncomingEdgeFromVCExists(EntTestUser, "id", "company_id")
+          new IncomingEdgeFromVCExists(EntTestUser, "id", "company_id"),
         ),
       ],
       privacyInsert: [],
@@ -60,7 +58,7 @@ export class EntTestCompany extends BaseEnt(
  */
 export class EntTestUser extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.generic"user',
     {
       id: { type: ID, autoInsert: "id_gen()" },
@@ -71,8 +69,8 @@ export class EntTestUser extends BaseEnt(
       created_at: { type: Date, autoInsert: "now()" },
       updated_at: { type: Date, autoUpdate: "now()" },
     },
-    ["name"]
-  )
+    ["name"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -112,7 +110,7 @@ export class EntTestUser extends BaseEnt(
  */
 export class EntTestPost extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.generic"post',
     {
       post_id: { type: ID, autoInsert: "id_gen()" },
@@ -120,8 +118,8 @@ export class EntTestPost extends BaseEnt(
       title: { type: String },
       created_at: { type: Date, autoInsert: "now()" },
     },
-    ["post_id"]
-  )
+    ["post_id"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -166,15 +164,15 @@ export class EntTestPost extends BaseEnt(
  */
 export class EntTestComment extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.generic"comment',
     {
       comment_id: { type: String, autoInsert: "id_gen()" },
       post_id: { type: ID },
       text: { type: String },
     },
-    ["comment_id"]
-  )
+    ["comment_id"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -206,15 +204,15 @@ export class EntTestComment extends BaseEnt(
  */
 export class EntTestLike extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.generic"like',
     {
       id: { type: ID, autoInsert: "id_gen()" },
       post_id: { type: ID },
       user_id: { type: ID },
     },
-    ["post_id", "user_id"]
-  )
+    ["post_id", "user_id"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -251,7 +249,7 @@ beforeEach(async () => {
 
   const company = await EntTestCompany.insertReturning(
     createVC().toOmniDangerous(),
-    { name: "some" }
+    { name: "some" },
   );
 
   const user = await EntTestUser.insertReturning(company.vc.toOmniDangerous(), {
@@ -264,7 +262,7 @@ beforeEach(async () => {
 
   const otherUser = await EntTestUser.insertReturning(
     company.vc.toOmniDangerous(),
-    { name: Date.now().toString(), url_name: "" }
+    { name: Date.now().toString(), url_name: "" },
   );
   vcOther = otherUser.vc;
 });
@@ -377,7 +375,7 @@ test("select and count", async () => {
     vc,
     { post_id: post.id, text: ["c1", "c2", "c3"] },
     2,
-    [{ text: "DESC" }]
+    [{ text: "DESC" }],
   );
   expect(comments.length).toEqual(2);
   expect(comments[0].textUpper()).toEqual("C3");
@@ -387,21 +385,21 @@ test("select and count", async () => {
     vc,
     { id: [comments[0].id, comments[1].id] },
     2,
-    [{ text: "DESC" }]
+    [{ text: "DESC" }],
   );
   expect(comments2.length).toEqual(2);
 
   const error1 = await EntTestComment.select(
     vc,
     { post_id: [] },
-    Number.MAX_SAFE_INTEGER
+    Number.MAX_SAFE_INTEGER,
   ).catch((e) => e.toString());
   expect(error1).toMatchSnapshot();
 
   const error2 = await EntTestComment.select(
     vc,
     { post_id: "" },
-    Number.MAX_SAFE_INTEGER
+    Number.MAX_SAFE_INTEGER,
   ).catch((e) => e.toString());
   expect(error2).toMatchSnapshot();
 
@@ -441,8 +439,8 @@ test("selectChunked", async () => {
       vc,
       { post_id: post.id, $not: { text: "c4" } },
       2,
-      Number.MAX_SAFE_INTEGER
-    )
+      Number.MAX_SAFE_INTEGER,
+    ),
   );
   expect(commentChunks.length).toEqual(2);
   expect(commentChunks[0].length).toEqual(2);
@@ -453,8 +451,8 @@ test("selectChunked", async () => {
       vc,
       { post_id: post.id, text: "nothing" },
       2,
-      Number.MAX_SAFE_INTEGER
-    )
+      Number.MAX_SAFE_INTEGER,
+    ),
   );
   expect(noChunks).toEqual([]);
 });
@@ -466,20 +464,20 @@ test("custom shard", async () => {
   });
   const idInOtherNonGlobalShard = post.id.replace(
     /^(\d0+)(\d)/s,
-    (_, m1, m2) => m1 + (((parseInt(m2) - 1 + 1) % 2) + 1).toString()
+    (_, m1, m2) => m1 + (((parseInt(m2) - 1 + 1) % 2) + 1).toString(),
   );
 
   const posts = await EntTestPost.select(
     vc,
     { id: post.id, $shardOfID: idInOtherNonGlobalShard },
-    Number.MAX_SAFE_INTEGER
+    Number.MAX_SAFE_INTEGER,
   );
   expect(posts).toHaveLength(0);
 
   const error = await EntTestPost.select(
     vc,
     { id: post.id, $shardOfID: "" },
-    Number.MAX_SAFE_INTEGER
+    Number.MAX_SAFE_INTEGER,
   ).catch((e) => e.toString());
   expect(error).toMatchSnapshot();
 });
@@ -514,7 +512,7 @@ test("updateChanged ignores $literal when all fields are unchanged", async () =>
     await user.updateChanged({
       url_name: "john",
       $literal: ["url_name=?", "new"],
-    })
+    }),
   ).toStrictEqual(null);
   user = await EntTestUser.loadX(vc, vc.principal);
   expect(user).toMatchObject({ name: "John", url_name: "john" });
@@ -522,7 +520,7 @@ test("updateChanged ignores $literal when all fields are unchanged", async () =>
   expect(
     await user.updateChanged({
       $literal: ["url_name=?", "new"],
-    })
+    }),
   ).toStrictEqual(null);
   user = await EntTestUser.loadX(vc, vc.principal);
   expect(user).toMatchObject({ name: "John", url_name: "john" });
@@ -534,7 +532,7 @@ test("updateChanged applies $literal when there are changed fields", async () =>
     await user.updateChanged({
       name: "Doe",
       $literal: ["url_name=?", "new"],
-    })
+    }),
   ).toStrictEqual(["name"]);
   user = await EntTestUser.loadX(vc, vc.principal);
   expect(user).toMatchObject({ name: "Doe", url_name: "new" });
@@ -550,7 +548,7 @@ test("updateChangedReturningX", async () => {
 });
 
 test("updateOriginal with CAS", async () => {
-  // There are way more tests for CAS in sql/__tests__, with all corner cases
+  // There are way more tests for CAS in pg/__tests__, with all corner cases
   // covered; here we just illustrate the basic syntax.
   const user = await EntTestUser.loadX(vc, vc.principal);
 
@@ -558,21 +556,21 @@ test("updateOriginal with CAS", async () => {
     await user.updateOriginal({
       url_name: "skip",
       $cas: { updated_at: new Date(42) },
-    })
+    }),
   ).toBeFalsy();
 
   expect(
     await user.updateOriginal({
       url_name: "new",
       $cas: { updated_at: user.updated_at },
-    })
+    }),
   ).toBeTruthy();
 
   expect(
     await user.updateOriginal({
       url_name: "skip2",
       $cas: ["updated_at"],
-    })
+    }),
   ).toBeFalsy();
 
   let newUser = await EntTestUser.loadX(vc, vc.principal);
@@ -581,7 +579,7 @@ test("updateOriginal with CAS", async () => {
     await newUser.updateOriginal({
       url_name: "newest",
       $cas: "skip-if-someone-else-changed-updating-ent-props",
-    })
+    }),
   ).toBeTruthy();
 
   newUser = await EntTestUser.loadX(vc, vc.principal);
@@ -589,7 +587,7 @@ test("updateOriginal with CAS", async () => {
     await newUser.updateOriginal({
       url_name: "newest",
       $cas: ["updated_at"],
-    })
+    }),
   ).toBeTruthy();
 });
 
@@ -599,25 +597,25 @@ test("updateChanged with CAS", async () => {
     await user.updateChanged({
       url_name: "skip-by-cas",
       $cas: { updated_at: new Date(42) },
-    })
+    }),
   ).toStrictEqual(false);
   expect(
     await user.updateChanged({
       url_name: user.url_name, // skipped since no fields are changed
       $cas: { updated_at: new Date(42) }, // CAS doesn't matter
-    })
+    }),
   ).toStrictEqual(null);
   expect(
     await user.updateChanged({
       url_name: user.url_name, // skipped since no fields are changed
       $cas: ["updated_at"], // CAS doesn't matter
-    })
+    }),
   ).toStrictEqual(null);
   expect(
     await user.updateChanged({
       url_name: "new", // field changed
       $cas: ["updated_at"], // CAS succeeded
-    })
+    }),
   ).toStrictEqual(["url_name"]);
 });
 
@@ -671,7 +669,7 @@ test("can update comment of the same company user", async () => {
 test("cannot create posts for different users", async () => {
   const userAllseeing = await EntTestUser.insertReturning(
     vc.toOmniDangerous(),
-    { is_alseeing: true, name: "All-seeing", url_name: "all-seeing" }
+    { is_alseeing: true, name: "All-seeing", url_name: "all-seeing" },
   );
   try {
     await EntTestPost.insertReturning(userAllseeing.vc, {
@@ -685,22 +683,22 @@ test("cannot create posts for different users", async () => {
 });
 
 test("heisenbug: two different schema field sets make schema hash different", async () => {
-  const schema1 = new SQLSchema(
+  const schema1 = new PgSchema(
     EntTestUser.SCHEMA.name,
     {
       id: { type: ID, autoInsert: "id_gen()" },
       company_id: { type: ID, allowNull: true, autoInsert: "NULL" },
     },
-    []
+    [],
   );
 
-  const schema2 = new SQLSchema(
+  const schema2 = new PgSchema(
     EntTestUser.SCHEMA.name,
     {
       id: { type: ID, autoInsert: "id_gen()" },
       name: { type: String },
     },
-    []
+    [],
   );
 
   class Ent1 extends BaseEnt(testCluster, schema1) {
@@ -736,19 +734,19 @@ test("heisenbug: two different schema field sets make schema hash different", as
 test("attempt to use guest VC to load Ents", async () => {
   const fakeNull = null as unknown as string;
   await expect(
-    EntTestPost.loadNullable(vc.toGuest(), vc.toGuest().principal)
+    EntTestPost.loadNullable(vc.toGuest(), vc.toGuest().principal),
   ).rejects.toThrowErrorMatchingSnapshot();
   await expect(
-    EntTestPost.loadX(vc.toGuest(), vc.toGuest().principal)
+    EntTestPost.loadX(vc.toGuest(), vc.toGuest().principal),
   ).rejects.toThrowErrorMatchingSnapshot();
   await expect(
-    EntTestPost.select(vc.toGuest(), { post_id: vc.toGuest().principal }, 1)
+    EntTestPost.select(vc.toGuest(), { post_id: vc.toGuest().principal }, 1),
   ).rejects.toThrowErrorMatchingSnapshot();
   await expect(
-    EntTestPost.select(vc.toGuest(), { post_id: fakeNull }, 1)
+    EntTestPost.select(vc.toGuest(), { post_id: fakeNull }, 1),
   ).rejects.toThrowErrorMatchingSnapshot();
   await expect(
-    EntTestPost.loadNullable(vc.toGuest(), fakeNull)
+    EntTestPost.loadNullable(vc.toGuest(), fakeNull),
   ).rejects.toThrowErrorMatchingSnapshot();
 });
 

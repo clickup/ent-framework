@@ -8,7 +8,7 @@ Options for Client constructor.
 
 - **`ClientOptions`**
 
-  ↳ [`SQLClientOptions`](SQLClientOptions.md)
+  ↳ [`PgClientOptions`](PgClientOptions.md)
 
 ## Properties
 
@@ -38,7 +38,7 @@ ___
 
 ### batchDelayMs
 
-• `Optional` **batchDelayMs**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
+• `Optional` **batchDelayMs**: `MaybeCallable`\<`number`\>
 
 If passed, there will be an artificial queries accumulation delay while
 batching the requests. Default is 0 (turned off). Passed to

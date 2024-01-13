@@ -1,6 +1,6 @@
-import { deepEqual } from "../helpers/deepEqual";
-import type { Flatten, Writeable } from "../helpers/misc";
-import { join } from "../helpers/misc";
+import { deepEqual } from "../internal/deepEqual";
+import type { Flatten, Writeable } from "../internal/misc";
+import { join } from "../internal/misc";
 import type {
   InsertInput,
   Row,
@@ -55,15 +55,15 @@ export type TriggerUpdateOrDeleteOldRow<TTable extends Table> = Flatten<
 
 /**
  * Triggers could be used to simulate "transactional best-effort behavior" in a
- * non-transactional combination of some services. Imagine we have an SQL
- * database and a queue service; each time we change something in SQL, we want
- * to schedule the ID to the queue. Queue service is faulty: if a queueing
- * operation fails, we don't want the data to be stored to SQL DB afterwards.
- * SQL operations are faulty too, but it's okay for us to have something added
- * to the queue even if the corresponding SQL operation failed after it (a queue
- * worker will just do a no-op since it anyway rechecks the source of truth in
- * SQL DB). Queue service is like a write-ahead log for SQL DB which always has
- * not-less records than SQL DB. In this case, we have the following set of
+ * non-transactional combination of some services. Imagine we have a relational
+ * database and a queue service; each time we change something in the query, we
+ * want to schedule the ID to the queue. Queue service is faulty: if a queueing
+ * operation fails, we don't want the data to be stored to the DB afterwards.
+ * Queries are faulty too, but it's okay for us to have something added to the
+ * queue even if the corresponding query failed after it (a queue worker will
+ * just do a no-op since it anyway rechecks the source of truth in relational
+ * DBs). Queue service is like a write-ahead log for DB which always has
+ * not-less records than the DB. In this case, we have the following set of
  * triggers:
  *
  * 1. beforeInsert: schedules ID to the queue (ID is known, see below why)
@@ -93,7 +93,7 @@ export type TriggerUpdateOrDeleteOldRow<TTable extends Table> = Flatten<
 
 export type InsertTrigger<TTable extends Table> = (
   vc: VC,
-  args: { input: TriggerInsertInput<TTable> } // always knows ID even in beforeInsert
+  args: { input: TriggerInsertInput<TTable> }, // always knows ID even in beforeInsert
 ) => Promise<unknown>;
 
 export type BeforeUpdateTrigger<TTable extends Table> = (
@@ -102,7 +102,7 @@ export type BeforeUpdateTrigger<TTable extends Table> = (
     newRow: TriggerUpdateNewRow<TTable>;
     oldRow: TriggerUpdateOrDeleteOldRow<TTable>;
     input: TriggerUpdateInput<TTable>;
-  }
+  },
 ) => Promise<unknown>;
 
 export type AfterUpdateTrigger<TTable extends Table> = (
@@ -110,14 +110,14 @@ export type AfterUpdateTrigger<TTable extends Table> = (
   args: {
     newRow: TriggerUpdateNewRow<TTable>;
     oldRow: TriggerUpdateOrDeleteOldRow<TTable>;
-  }
+  },
 ) => Promise<unknown>;
 
 export type DeleteTrigger<TTable extends Table> = (
   vc: VC,
   args: {
     oldRow: TriggerUpdateOrDeleteOldRow<TTable>;
-  }
+  },
 ) => Promise<unknown>;
 
 export type BeforeMutationTrigger<TTable extends Table> = (
@@ -141,7 +141,7 @@ export type BeforeMutationTrigger<TTable extends Table> = (
          * read-only, then people would need to check `if (op !== "DELETE") ...`
          * in their beforeMutation triggers, which is a boilerplate. */
         input: Writeable<TriggerUpdateOrDeleteOldRow<TTable>>;
-      }
+      },
 ) => Promise<unknown>;
 
 export type AfterMutationTrigger<TTable extends Table> = (
@@ -158,12 +158,12 @@ export type AfterMutationTrigger<TTable extends Table> = (
     | {
         op: "DELETE";
         newOrOldRow: TriggerUpdateOrDeleteOldRow<TTable>;
-      }
+      },
 ) => Promise<unknown>;
 
 export type DepsBuilder<TTable extends Table> = (
   vc: VC,
-  row: Flatten<Readonly<Row<TTable>>>
+  row: Flatten<Readonly<Row<TTable>>>,
 ) => unknown[] | Promise<unknown[]>;
 
 export class Triggers<TTable extends Table> {
@@ -183,7 +183,7 @@ export class Triggers<TTable extends Table> {
     private afterDelete: Array<DeleteTrigger<TTable>>,
     private afterMutation: Array<
       [DepsBuilder<TTable> | null, AfterMutationTrigger<TTable>]
-    >
+    >,
   ) {}
 
   hasInsertTriggers(): boolean {
@@ -207,7 +207,7 @@ export class Triggers<TTable extends Table> {
   async wrapInsert(
     func: (input: InsertInput<TTable> & RowWithID) => Promise<string | null>,
     vc: VC,
-    input: InsertInput<TTable> & RowWithID
+    input: InsertInput<TTable> & RowWithID,
   ): Promise<string | null> {
     if (!this.hasInsertTriggers()) {
       return func(input);
@@ -252,7 +252,7 @@ export class Triggers<TTable extends Table> {
     func: (input: UpdateInput<TTable>) => Promise<boolean>,
     vc: VC,
     oldRow: TriggerUpdateOrDeleteOldRow<TTable>,
-    input: UpdateInput<TTable>
+    input: UpdateInput<TTable>,
   ): Promise<boolean> {
     if (!this.hasUpdateTriggers()) {
       return func(input);
@@ -312,7 +312,7 @@ export class Triggers<TTable extends Table> {
   async wrapDelete(
     func: () => Promise<boolean>,
     vc: VC,
-    oldRow: TriggerUpdateOrDeleteOldRow<TTable>
+    oldRow: TriggerUpdateOrDeleteOldRow<TTable>,
   ): Promise<boolean> {
     for (const triggerBeforeDelete of this.beforeDelete) {
       await triggerBeforeDelete(vc, { oldRow });
@@ -353,7 +353,7 @@ export class Triggers<TTable extends Table> {
  */
 export function buildUpdateNewRow<TTable extends Table>(
   oldRow: Row<TTable>,
-  input: UpdateInput<TTable>
+  input: UpdateInput<TTable>,
 ): TriggerUpdateNewRow<TTable> {
   const newRow = { ...oldRow } as TriggerUpdateNewRow<TTable>;
 
@@ -380,7 +380,7 @@ async function depsBuilderApproves<TTable extends Table>(
   depsBuilder: DepsBuilder<TTable> | null,
   vc: VC,
   oldRow: Row<TTable>,
-  newRow: Row<TTable>
+  newRow: Row<TTable>,
 ): Promise<boolean> {
   if (!depsBuilder) {
     return true;

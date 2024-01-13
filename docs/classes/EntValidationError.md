@@ -15,7 +15,7 @@ the row is invalid.
 
 ### constructor
 
-• **new EntValidationError**(`entName`, `errors`)
+• **new EntValidationError**(`entName`, `errors`): [`EntValidationError`](EntValidationError.md)
 
 #### Parameters
 
@@ -23,6 +23,10 @@ the row is invalid.
 | :------ | :------ |
 | `entName` | `string` |
 | `errors` | readonly [`EntValidationErrorInfo`](../interfaces/EntValidationErrorInfo.md)[] |
+
+#### Returns
+
+[`EntValidationError`](EntValidationError.md)
 
 #### Overrides
 

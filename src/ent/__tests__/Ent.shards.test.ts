@@ -1,14 +1,12 @@
 import { MASTER } from "../../abstract/Shard";
-import {
-  recreateTestTables,
-  testCluster,
-} from "../../sql/__tests__/test-utils";
-import { SQLSchema } from "../../sql/SQLSchema";
+import { recreateTestTables, testCluster } from "../../pg/__tests__/test-utils";
+import { PgSchema } from "../../pg/PgSchema";
 import { ID } from "../../types";
-import { BaseEnt, GLOBAL_SHARD } from "../BaseEnt";
+import { BaseEnt } from "../BaseEnt";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
+import { GLOBAL_SHARD } from "../ShardAffinity";
 import { createVC } from "./test-utils";
 
 const ID_FROM_EXISTING_SHARD = "500010000000";
@@ -20,11 +18,11 @@ const vc = createVC();
 
 class EntTestUniverse extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.discover"universe',
     { id: { type: ID, autoInsert: "id_gen()" } },
-    []
-  )
+    [],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -43,7 +41,7 @@ class EntTestUniverse extends BaseEnt(
 
 class EntTestHuman extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.discover"human',
     {
       id: { type: ID, autoInsert: "id_gen()" },
@@ -51,8 +49,8 @@ class EntTestHuman extends BaseEnt(
       universe_id: { type: ID, allowNull: true },
       name: { type: String },
     },
-    []
-  )
+    [],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -86,7 +84,7 @@ test("unknown shard failure, singleShardFromID", async () => {
   const shard = testCluster.shard(ID_FROM_UNKNOWN_SHARD);
   const spyShardOnRunError = jest.spyOn(shard.options, "onRunError");
   await expect(
-    EntTestHuman.loadNullable(vc, ID_FROM_UNKNOWN_SHARD)
+    EntTestHuman.loadNullable(vc, ID_FROM_UNKNOWN_SHARD),
   ).rejects.toThrowErrorMatchingSnapshot();
   expect(spyShardOnRunError).toBeCalledTimes(1); // not retried on intent
 });
@@ -99,14 +97,14 @@ test("unknown shard failure, singleShardForInsert", async () => {
       parent_id: PARENT_ID_FROM_UNKNOWN_SHARD,
       universe_id: null,
       name: "test",
-    })
+    }),
   ).rejects.toThrowErrorMatchingSnapshot();
   expect(spyShardOnRunError).toBeCalledTimes(1); // not retried on intent
 });
 
 test("unknown shard failure, multiShardsFromInput, no inverses", async () => {
   await expect(
-    EntTestHuman.select(vc, { universe_id: UNIVERSE_FROM_UNKNOWN_SHARD }, 1)
+    EntTestHuman.select(vc, { universe_id: UNIVERSE_FROM_UNKNOWN_SHARD }, 1),
   ).rejects.toThrowErrorMatchingSnapshot();
 });
 
@@ -120,7 +118,7 @@ test("shard relocation error when accessing a table should be retried", async ()
   await master.rows("DROP TABLE %T CASCADE", EntTestHuman.SCHEMA.name);
 
   await expect(
-    EntTestHuman.loadNullable(vc, ID_FROM_EXISTING_SHARD)
+    EntTestHuman.loadNullable(vc, ID_FROM_EXISTING_SHARD),
   ).rejects.toThrow(/undefined_table/);
   expect(spyShardOnRunError).toBeCalledTimes(3);
 });

@@ -6,14 +6,14 @@
 
 ### constructor
 
-• **new SchemaClass**<`TTable`, `TUniqueKey`\>(`name`, `table`, `uniqueKey?`)
+• **new SchemaClass**\<`TTable`, `TUniqueKey`\>(`name`, `table`, `uniqueKey?`): [`Schema`](../classes/Schema.md)\<`TTable`, `TUniqueKey`\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)<`TTable`\> = [`UniqueKey`](../modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> = [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
 
 #### Parameters
 
@@ -22,6 +22,10 @@
 | `name` | `string` |
 | `table` | `TTable` |
 | `uniqueKey?` | `TUniqueKey` |
+
+#### Returns
+
+[`Schema`](../classes/Schema.md)\<`TTable`, `TUniqueKey`\>
 
 #### Defined in
 

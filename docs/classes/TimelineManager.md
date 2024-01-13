@@ -12,15 +12,19 @@ not more often than every refreshMs interval.
 
 ### constructor
 
-• **new TimelineManager**(`maxLagMs`, `refreshMs`, `triggerRefresh`)
+• **new TimelineManager**(`maxLagMs`, `refreshMs`, `triggerRefresh`): [`TimelineManager`](TimelineManager.md)
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `maxLagMs` | [`MaybeCallable`](../modules.md#maybecallable)<`number`\> | Time interval after which a replica is declared as "caught up" even if it's not caught up. This is to not read from master forever when something has happened with the replica. |
-| `refreshMs` | [`MaybeCallable`](../modules.md#maybecallable)<`number`\> | Up to how often we call triggerRefresh(). |
-| `triggerRefresh` | () => `Promise`<`unknown`\> | This method is called time to time to refresh the data which is later returned by currentPos(). Makes sense for replica connections which execute queries rarely: for them, the framework triggers the update when the fresh data is needed. |
+| `maxLagMs` | `MaybeCallable`\<`number`\> | Time interval after which a replica is declared as "caught up" even if it's not caught up. This is to not read from master forever when something has happened with the replica. |
+| `refreshMs` | `MaybeCallable`\<`number`\> | Up to how often we call triggerRefresh(). |
+| `triggerRefresh` | () => `Promise`\<`unknown`\> | This method is called time to time to refresh the data which is later returned by currentPos(). Makes sense for replica connections which execute queries rarely: for them, the framework triggers the update when the fresh data is needed. |
+
+#### Returns
+
+[`TimelineManager`](TimelineManager.md)
 
 #### Defined in
 
@@ -30,7 +34,7 @@ not more often than every refreshMs interval.
 
 ### maxLagMs
 
-• `Readonly` **maxLagMs**: [`MaybeCallable`](../modules.md#maybecallable)<`number`\>
+• `Readonly` **maxLagMs**: `MaybeCallable`\<`number`\>
 
 Time interval after which a replica is declared as "caught up" even if
 it's not caught up. This is to not read from master forever when
@@ -44,14 +48,14 @@ something has happened with the replica.
 
 ### currentPos
 
-▸ **currentPos**(): `Promise`<`bigint`\>
+▸ **currentPos**(): `Promise`\<`bigint`\>
 
 Returns the current Client's replication timeline position (e.g. WAL
 position).
 
 #### Returns
 
-`Promise`<`bigint`\>
+`Promise`\<`bigint`\>
 
 #### Defined in
 

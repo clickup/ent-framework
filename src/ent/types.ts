@@ -1,6 +1,6 @@
 import type { Client } from "../abstract/Client";
 import type { Schema } from "../abstract/Schema";
-import type { DesperateAny } from "../helpers/misc";
+import type { DesperateAny } from "../internal/misc";
 import type {
   CountInput,
   ExistsInput,
@@ -40,22 +40,22 @@ export type EntClass<TTable extends Table = DesperateAny> = {
     vc: VC,
     where: Where<TTable>,
     limit: number,
-    order?: Order<TTable>
+    order?: Order<TTable>,
   ): Promise<Array<Ent<TTable>>>;
   selectChunked(
     vc: VC,
     where: Where<TTable>,
     chunkSize: number,
     limit: number,
-    custom?: {}
+    custom?: {},
   ): AsyncIterableIterator<Array<Ent<TTable>>>;
   loadByX(
     vc: VC,
-    keys: LoadByInput<TTable, UniqueKey<TTable>>
+    keys: LoadByInput<TTable, UniqueKey<TTable>>,
   ): Promise<Ent<TTable>>;
   loadByNullable(
     vc: VC,
-    input: LoadByInput<TTable, UniqueKey<TTable>>
+    input: LoadByInput<TTable, UniqueKey<TTable>>,
   ): Promise<Ent<TTable> | null>;
   insert(vc: VC, input: InsertInput<TTable>): Promise<string>;
   upsert(vc: VC, input: InsertInput<TTable>): Promise<string>;

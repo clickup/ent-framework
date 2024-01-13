@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / IncomingEdgeFromVCExists
 
-# Class: IncomingEdgeFromVCExists<TEdgeTable\>
+# Class: IncomingEdgeFromVCExists\<TEdgeTable\>
 
 An ent may represent not necessarily a node in the graph, but also an edge
 between two nodes. Consider EntMember in the below example:
@@ -23,13 +23,13 @@ database.
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)<[`RowWithID`](../modules.md#rowwithid)\>
+- [`Predicate`](../interfaces/Predicate.md)\<[`RowWithID`](../modules.md#rowwithid)\>
 
 ## Constructors
 
 ### constructor
 
-• **new IncomingEdgeFromVCExists**<`TEdgeTable`\>(`EntEdge`, `entEdgeVCField`, `entEdgeFKField`, `entEdgeFilter?`)
+• **new IncomingEdgeFromVCExists**\<`TEdgeTable`\>(`EntEdge`, `entEdgeVCField`, `entEdgeFKField`, `entEdgeFilter?`): [`IncomingEdgeFromVCExists`](IncomingEdgeFromVCExists.md)\<`TEdgeTable`\>
 
 #### Type parameters
 
@@ -41,14 +41,18 @@ database.
 
 | Name | Type |
 | :------ | :------ |
-| `EntEdge` | [`EntClass`](../modules.md#entclass)<`TEdgeTable`\> |
-| `entEdgeVCField` | ``"id"`` \| [`Field`](../modules.md#field)<`TEdgeTable`\> |
-| `entEdgeFKField` | ``"id"`` \| [`Field`](../modules.md#field)<`TEdgeTable`\> |
-| `entEdgeFilter?` | (`ent`: [`Row`](../modules.md#row)<`TEdgeTable`\>) => `boolean` |
+| `EntEdge` | [`EntClass`](../modules.md#entclass)\<`TEdgeTable`\> |
+| `entEdgeVCField` | ``"id"`` \| [`Field`](../modules.md#field)\<`TEdgeTable`\> |
+| `entEdgeFKField` | ``"id"`` \| [`Field`](../modules.md#field)\<`TEdgeTable`\> |
+| `entEdgeFilter?` | (`ent`: [`Row`](../modules.md#row)\<`TEdgeTable`\>) => `boolean` |
+
+#### Returns
+
+[`IncomingEdgeFromVCExists`](IncomingEdgeFromVCExists.md)\<`TEdgeTable`\>
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:38](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L38)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L29)
 
 ## Properties
 
@@ -68,37 +72,37 @@ ___
 
 ### EntEdge
 
-• `Readonly` **EntEdge**: [`EntClass`](../modules.md#entclass)<`TEdgeTable`\>
+• `Readonly` **EntEdge**: [`EntClass`](../modules.md#entclass)\<`TEdgeTable`\>
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:39](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L39)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:30](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L30)
 
 ___
 
 ### entEdgeVCField
 
-• `Readonly` **entEdgeVCField**: ``"id"`` \| [`Field`](../modules.md#field)<`TEdgeTable`\>
+• `Readonly` **entEdgeVCField**: ``"id"`` \| [`Field`](../modules.md#field)\<`TEdgeTable`\>
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:40](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L40)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L31)
 
 ___
 
 ### entEdgeFKField
 
-• `Readonly` **entEdgeFKField**: ``"id"`` \| [`Field`](../modules.md#field)<`TEdgeTable`\>
+• `Readonly` **entEdgeFKField**: ``"id"`` \| [`Field`](../modules.md#field)\<`TEdgeTable`\>
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:41](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L41)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:32](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L32)
 
 ___
 
 ### entEdgeFilter
 
-• `Optional` `Readonly` **entEdgeFilter**: (`ent`: [`Row`](../modules.md#row)<`TEdgeTable`\>) => `boolean`
+• `Optional` `Readonly` **entEdgeFilter**: (`ent`: [`Row`](../modules.md#row)\<`TEdgeTable`\>) => `boolean`
 
 #### Type declaration
 
@@ -108,7 +112,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `ent` | [`Row`](../modules.md#row)<`TEdgeTable`\> |
+| `ent` | [`Row`](../modules.md#row)\<`TEdgeTable`\> |
 
 ##### Returns
 
@@ -116,13 +120,13 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:42](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L42)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:33](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L33)
 
 ## Methods
 
 ### check
 
-▸ **check**(`vc`, `row`): `Promise`<`boolean`\>
+▸ **check**(`vc`, `row`): `Promise`\<`boolean`\>
 
 #### Parameters
 
@@ -133,7 +137,7 @@ ___
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Implementation of
 
@@ -141,4 +145,4 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:45](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L45)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:47](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L47)

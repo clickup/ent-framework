@@ -25,7 +25,7 @@ them as a DENY/SKIP.
 
 ### constructor
 
-• **new EntAccessError**(`entName`, `message`, `cause?`)
+• **new EntAccessError**(`entName`, `message`, `cause?`): [`EntAccessError`](EntAccessError.md)
 
 #### Parameters
 
@@ -34,6 +34,10 @@ them as a DENY/SKIP.
 | `entName` | `string` | `undefined` |
 | `message` | `string` | `undefined` |
 | `cause` | `unknown` | `null` |
+
+#### Returns
+
+[`EntAccessError`](EntAccessError.md)
 
 #### Overrides
 

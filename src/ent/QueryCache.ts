@@ -13,7 +13,7 @@ const OPS = [
 
 export type AnyClass = new (...args: never[]) => unknown;
 
-type Op = typeof OPS[number];
+type Op = (typeof OPS)[number];
 
 /**
  * Caches Ents loaded by a particular VC. I.e. the same query running for the
@@ -51,13 +51,13 @@ export class QueryCache {
   /**
    * Saves a Promise to the cache slot for `op`. If this Promise rejects, the
    * slot will automatically be cleared (we don't cache rejected Promises to not
-   * have a risk of caching a transient SQL error).
+   * have a risk of caching a transient DB error).
    */
   set(
     EntClass: AnyClass,
     op: Op,
     key: string,
-    value: Promise<unknown> | undefined
+    value: Promise<unknown> | undefined,
   ): this {
     if (!this.maxQueries) {
       // Caching is turned off.
@@ -113,7 +113,7 @@ export class QueryCache {
   get<TValue>(
     EntClass: AnyClass,
     op: Op,
-    key: string
+    key: string,
   ): Promise<TValue> | undefined {
     const byOp = this.byEntClass?.get(EntClass);
     if (!byOp) {
@@ -130,7 +130,7 @@ export class QueryCache {
     EntClass: AnyClass,
     op: Op,
     key: string,
-    creator: () => Promise<TValue>
+    creator: () => Promise<TValue>,
   ): Promise<TValue> {
     if (!this.maxQueries) {
       // Caching is turned off.

@@ -46,7 +46,9 @@ export abstract class Rule<TInput> {
   abstract evaluate(vc: VC, input: TInput): Promise<RuleResult>;
 
   constructor(
-    predicate: Predicate<TInput> | ((vc: VC, input: TInput) => Promise<boolean>)
+    predicate:
+      | Predicate<TInput>
+      | ((vc: VC, input: TInput) => Promise<boolean>),
   ) {
     this.predicate =
       predicate instanceof Function

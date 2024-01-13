@@ -1,4 +1,4 @@
-import { copyStack, indent, inspectCompact } from "../../helpers/misc";
+import { copyStack, indent, inspectCompact } from "../../internal/misc";
 
 /**
  * A base class for errors which trigger the validation framework to process
@@ -10,14 +10,14 @@ export class EntAccessError extends Error {
   constructor(
     public readonly entName: string,
     message: string,
-    cause: unknown = null
+    cause: unknown = null,
   ) {
     super(
       cause
         ? message.replace(/[,.?!:;]+$/s, "") +
             ", because:\n" +
             indent(causeToString(cause))
-        : message
+        : message,
     );
 
     Object.defineProperty(this, "name", {

@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Query
 
-# Interface: Query<TOutput\>
+# Interface: Query\<TOutput\>
 
 A very lean interface for a Query. In practice each query is so different
 that this interface is the only common part of them all.
@@ -13,9 +13,9 @@ that this interface is the only common part of them all.
 
 ## Implemented by
 
+- [`PgQuerySelectBy`](../classes/PgQuerySelectBy.md)
+- [`PgQueryUpdate`](../classes/PgQueryUpdate.md)
 - [`QueryBase`](../classes/QueryBase.md)
-- [`SQLQuerySelectBy`](../classes/SQLQuerySelectBy.md)
-- [`SQLQueryUpdate`](../classes/SQLQueryUpdate.md)
 
 ## Properties
 
@@ -31,7 +31,7 @@ that this interface is the only common part of them all.
 
 ### run
 
-▸ **run**(`client`, `annotation`): `Promise`<`TOutput`\>
+▸ **run**(`client`, `annotation`): `Promise`\<`TOutput`\>
 
 #### Parameters
 
@@ -42,7 +42,7 @@ that this interface is the only common part of them all.
 
 #### Returns
 
-`Promise`<`TOutput`\>
+`Promise`\<`TOutput`\>
 
 #### Defined in
 

@@ -15,7 +15,11 @@ query. This is expensive, use in dev mode only!
 
 ### constructor
 
-• **new VCWithStacks**()
+• **new VCWithStacks**(): [`VCWithStacks`](VCWithStacks.md)
+
+#### Returns
+
+[`VCWithStacks`](VCWithStacks.md)
 
 #### Inherited from
 

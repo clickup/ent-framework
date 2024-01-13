@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ShardLocator
 
-# Class: ShardLocator<TClient, TTable, TField\>
+# Class: ShardLocator\<TClient, TTable, TField\>
 
 Knows how to locate Shard(s) based on various inputs. In some contexts, we
 expect exactly one Shard returned, and in other contexts, multiple Shards are
@@ -18,7 +18,7 @@ okay.
 
 ### constructor
 
-• **new ShardLocator**<`TClient`, `TTable`, `TField`\>(`«destructured»`)
+• **new ShardLocator**\<`TClient`, `TTable`, `TField`\>(`«destructured»`): [`ShardLocator`](ShardLocator.md)\<`TClient`, `TTable`, `TField`\>
 
 #### Type parameters
 
@@ -33,11 +33,15 @@ okay.
 | Name | Type |
 | :------ | :------ |
 | `«destructured»` | `Object` |
-| › `cluster` | [`Cluster`](Cluster.md)<`TClient`, `any`\> |
+| › `cluster` | [`Cluster`](Cluster.md)\<`TClient`, `any`\> |
 | › `entName` | `string` |
-| › `shardAffinity` | [`ShardAffinity`](../modules.md#shardaffinity)<`TField`\> |
+| › `shardAffinity` | [`ShardAffinity`](../modules.md#shardaffinity)\<`TField`\> |
 | › `uniqueKey` | `undefined` \| readonly `string`[] |
-| › `inverses` | readonly [`Inverse`](Inverse.md)<`TClient`, `TTable`\>[] |
+| › `inverses` | readonly [`Inverse`](Inverse.md)\<`TClient`, `TTable`\>[] |
+
+#### Returns
+
+[`ShardLocator`](ShardLocator.md)\<`TClient`, `TTable`, `TField`\>
 
 #### Defined in
 
@@ -47,7 +51,7 @@ okay.
 
 ### singleShardForInsert
 
-▸ **singleShardForInsert**(`input`, `op`): `Promise`<[`Shard`](Shard.md)<`TClient`\>\>
+▸ **singleShardForInsert**(`input`, `op`): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>\>
 
 Called in a context when we must know exactly 1 Shard to work with (e.g.
 INSERT, UPSERT etc.). If op === "insert" (fallback to random Shard), then
@@ -69,12 +73,12 @@ been changed).
 
 | Name | Type |
 | :------ | :------ |
-| `input` | `Record`<`string`, `unknown`\> |
+| `input` | `Record`\<`string`, `unknown`\> |
 | `op` | ``"insert"`` \| ``"upsert"`` |
 
 #### Returns
 
-`Promise`<[`Shard`](Shard.md)<`TClient`\>\>
+`Promise`\<[`Shard`](Shard.md)\<`TClient`\>\>
 
 #### Defined in
 
@@ -84,7 +88,7 @@ ___
 
 ### multiShardsFromInput
 
-▸ **multiShardsFromInput**(`vc`, `input`, `op`): `Promise`<[`Shard`](Shard.md)<`TClient`\>[]\>
+▸ **multiShardsFromInput**(`vc`, `input`, `op`): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>[]\>
 
 Called in a context when multiple Shards may be involved, e.g. when
 selecting Ents referred by some Inverses. May also return the empty list of
@@ -96,12 +100,12 @@ filtering is correct), there are no Inverse rows existing in the database.
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `input` | `Record`<`string`, `unknown`\> |
+| `input` | `Record`\<`string`, `unknown`\> |
 | `op` | `string` |
 
 #### Returns
 
-`Promise`<[`Shard`](Shard.md)<`TClient`\>[]\>
+`Promise`\<[`Shard`](Shard.md)\<`TClient`\>[]\>
 
 #### Defined in
 
@@ -111,7 +115,7 @@ ___
 
 ### singleShardFromID
 
-▸ **singleShardFromID**(`field`, `id`, `op`): `Promise`<``null`` \| [`Shard`](Shard.md)<`TClient`\>\>
+▸ **singleShardFromID**(`field`, `id`, `op`): `Promise`\<``null`` \| [`Shard`](Shard.md)\<`TClient`\>\>
 
 A wrapper for Cluster#shard() which injects Ent name to the exception (in
 case of e.g. "Cannot locate Shard" exception). This is just a convenience
@@ -132,7 +136,7 @@ identical to the case of an Ent not existing in the database.
 
 #### Returns
 
-`Promise`<``null`` \| [`Shard`](Shard.md)<`TClient`\>\>
+`Promise`\<``null`` \| [`Shard`](Shard.md)\<`TClient`\>\>
 
 #### Defined in
 
@@ -142,13 +146,13 @@ ___
 
 ### allShards
 
-▸ **allShards**(): `Promise`<readonly [`Shard`](Shard.md)<`TClient`\>[]\>
+▸ **allShards**(): `Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
 
 All shards for this particular Ent depending on its affinity.
 
 #### Returns
 
-`Promise`<readonly [`Shard`](Shard.md)<`TClient`\>[]\>
+`Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
 
 #### Defined in
 

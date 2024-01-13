@@ -1,5 +1,5 @@
 import type { Client } from "../../abstract/Client";
-import type { AddNew, OmitNew } from "../../helpers/misc";
+import type { AddNew, OmitNew } from "../../internal/misc";
 import type {
   InsertInput,
   LoadByInput,
@@ -33,7 +33,7 @@ export interface HelpersInstance<TTable extends Table>
    *   in the list matches the order of fields in the Ent schema definition.
    */
   updateChanged(
-    input: UpdateOriginalInput<TTable>
+    input: UpdateOriginalInput<TTable>,
   ): Promise<Array<UpdateField<TTable>> | false | null>;
 
   /**
@@ -42,7 +42,7 @@ export interface HelpersInstance<TTable extends Table>
    */
   updateChangedReturningX<TEnt extends HelpersInstance<TTable>>(
     this: TEnt,
-    input: UpdateInput<TTable>
+    input: UpdateInput<TTable>,
   ): Promise<TEnt>;
 
   /**
@@ -51,7 +51,7 @@ export interface HelpersInstance<TTable extends Table>
    */
   updateReturningNullable<TEnt extends HelpersInstance<TTable>>(
     this: TEnt,
-    input: UpdateInput<TTable>
+    input: UpdateInput<TTable>,
   ): Promise<TEnt | null>;
 
   /**
@@ -60,14 +60,14 @@ export interface HelpersInstance<TTable extends Table>
    */
   updateReturningX<TEnt extends HelpersInstance<TTable>>(
     this: TEnt,
-    input: UpdateInput<TTable>
+    input: UpdateInput<TTable>,
   ): Promise<TEnt>;
 }
 
 export interface HelpersClass<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
-  TClient extends Client
+  TClient extends Client,
 > extends OmitNew<PrimitiveClass<TTable, TUniqueKey, TClient>> {
   /**
    * Same as insertIfNotExists(), but throws if the Ent violates unique key
@@ -81,7 +81,7 @@ export interface HelpersClass<
   insertReturning: <TEnt extends HelpersInstance<TTable>>(
     this: new () => TEnt,
     vc: VC,
-    input: InsertInput<TTable>
+    input: InsertInput<TTable>,
   ) => Promise<TEnt>;
 
   /**
@@ -90,7 +90,7 @@ export interface HelpersClass<
   upsertReturning: <TEnt extends HelpersInstance<TTable>>(
     this: new () => TEnt,
     vc: VC,
-    input: InsertInput<TTable>
+    input: InsertInput<TTable>,
   ) => Promise<TEnt>;
 
   /**
@@ -100,7 +100,7 @@ export interface HelpersClass<
   loadIfReadableNullable: <TEnt extends HelpersInstance<TTable>>(
     this: new () => TEnt,
     vc: VC,
-    id: string
+    id: string,
   ) => Promise<TEnt | null>;
 
   /**
@@ -110,7 +110,7 @@ export interface HelpersClass<
   loadX: <TEnt extends HelpersInstance<TTable>>(
     this: new () => TEnt,
     vc: VC,
-    id: string
+    id: string,
   ) => Promise<TEnt>;
 
   /**
@@ -120,7 +120,7 @@ export interface HelpersClass<
   loadByX: <TEnt extends HelpersInstance<TTable>>(
     this: new () => TEnt,
     vc: VC,
-    input: LoadByInput<TTable, TUniqueKey>
+    input: LoadByInput<TTable, TUniqueKey>,
   ) => Promise<TEnt>;
 
   /**
@@ -138,9 +138,9 @@ export interface HelpersClass<
 export function HelpersMixin<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
-  TClient extends Client
+  TClient extends Client,
 >(
-  Base: PrimitiveClass<TTable, TUniqueKey, TClient>
+  Base: PrimitiveClass<TTable, TUniqueKey, TClient>,
 ): HelpersClass<TTable, TUniqueKey, TClient> {
   class HelpersMixin extends Base {
     override ["constructor"]!: typeof HelpersMixin;
@@ -156,7 +156,7 @@ export function HelpersMixin<
 
     static async insertReturning(
       vc: VC,
-      input: InsertInput<TTable>
+      input: InsertInput<TTable>,
     ): Promise<HelpersMixin> {
       const id = await this.insert(vc, input);
       return this.loadX(vc, id);
@@ -164,7 +164,7 @@ export function HelpersMixin<
 
     static async upsertReturning(
       vc: VC,
-      input: InsertInput<TTable>
+      input: InsertInput<TTable>,
     ): Promise<HelpersMixin> {
       const id = await this.upsert(vc, input);
       return this.loadX(vc, id);
@@ -172,7 +172,7 @@ export function HelpersMixin<
 
     static async loadIfReadableNullable(
       vc: VC,
-      id: string
+      id: string,
     ): Promise<HelpersMixin | null> {
       try {
         return await this.loadNullable(vc, id);
@@ -196,7 +196,7 @@ export function HelpersMixin<
 
     static async loadByX(
       vc: VC,
-      input: LoadByInput<TTable, TUniqueKey>
+      input: LoadByInput<TTable, TUniqueKey>,
     ): Promise<HelpersMixin> {
       const ent = await this.loadByNullable(vc, input);
       if (!ent) {
@@ -207,7 +207,7 @@ export function HelpersMixin<
     }
 
     async updateChanged(
-      input: UpdateOriginalInput<TTable>
+      input: UpdateOriginalInput<TTable>,
     ): Promise<Array<UpdateField<TTable>> | false | null> {
       const changedFields: Array<UpdateField<TTable>> = [];
       const changedInput: UpdateOriginalInput<TTable> = {};
@@ -216,7 +216,7 @@ export function HelpersMixin<
       // symbol fields, we'll always have a "changed" signal since the input Ent
       // doesn't have them (they are to be used in triggers only).
       for (const keyOrSymbol of Reflect.ownKeys(
-        this.constructor.SCHEMA.table
+        this.constructor.SCHEMA.table,
       )) {
         // ID field is always treated as immutable.
         if (keyOrSymbol === ID) {
@@ -272,7 +272,7 @@ export function HelpersMixin<
     }
 
     async updateChangedReturningX(
-      input: UpdateInput<TTable>
+      input: UpdateInput<TTable>,
     ): Promise<HelpersMixin | this> {
       return (await this.updateChanged(input as UpdateOriginalInput<TTable>))
         ? this.constructor.loadX(this.vc, this[ID])
@@ -280,10 +280,10 @@ export function HelpersMixin<
     }
 
     async updateReturningNullable(
-      input: UpdateInput<TTable>
+      input: UpdateInput<TTable>,
     ): Promise<HelpersMixin | null> {
       const updated = await this.updateOriginal(
-        input as UpdateOriginalInput<TTable>
+        input as UpdateOriginalInput<TTable>,
       );
       return updated ? this.constructor.loadNullable(this.vc, this[ID]) : null;
     }

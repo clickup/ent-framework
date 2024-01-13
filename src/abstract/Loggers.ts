@@ -1,8 +1,7 @@
 import type { QueryAnnotation } from "./QueryAnnotation";
 
 export interface Loggers {
-  /** Logs actual queries to the database (e.g. raw SQL queries, after
-   * batching). */
+  /** Logs actual queries to the database (after batching). */
   clientQueryLogger?: (props: ClientQueryLoggerProps) => void;
   /** Logs errors which did not throw through (typically recoverable). */
   swallowedErrorLogger: (props: SwallowedErrorLoggerProps) => void;

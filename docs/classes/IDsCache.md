@@ -16,7 +16,11 @@
 
 ### constructor
 
-• **new IDsCache**()
+• **new IDsCache**(): [`IDsCache`](IDsCache.md)
+
+#### Returns
+
+[`IDsCache`](IDsCache.md)
 
 ## Methods
 

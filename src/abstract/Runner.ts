@@ -4,7 +4,7 @@ const INIT_SEQUENCE = 3; // small prime, doesn't matter
 
 /**
  * Knows how to translate individual strongly typed requests into DB language
- * (e.g. SQL, Redis etc.) and how to parse the result back.
+ * and how to parse the result back.
  */
 export abstract class Runner<TInput, TOutput> {
   /** If true, it's a write operation. */
@@ -24,12 +24,12 @@ export abstract class Runner<TInput, TOutput> {
   abstract readonly default: TOutput;
 
   /**
-   * Method runSingle is to e.g. produce simple SQL requests when we have only
+   * Method runSingle is to e.g. produce simple DB requests when we have only
    * one input to process, not many.
    */
   abstract runSingle(
     input: TInput,
-    annotations: QueryAnnotation[]
+    annotations: QueryAnnotation[],
   ): Promise<TOutput | undefined>;
 
   /**
@@ -37,7 +37,7 @@ export abstract class Runner<TInput, TOutput> {
    */
   abstract runBatch?(
     inputs: Map<string, TInput>,
-    annotations: QueryAnnotation[]
+    annotations: QueryAnnotation[],
   ): Promise<Map<string, TOutput>>;
 
   /**
@@ -45,7 +45,7 @@ export abstract class Runner<TInput, TOutput> {
    * error), returns the number of milliseconds to wait before retrying.
    */
   abstract delayForSingleQueryRetryOnError(
-    error: unknown
+    error: unknown,
   ): number | "immediate_retry" | "no_retry";
 
   /**

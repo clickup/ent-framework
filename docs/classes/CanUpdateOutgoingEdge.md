@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / CanUpdateOutgoingEdge
 
-# Class: CanUpdateOutgoingEdge<TField\>
+# Class: CanUpdateOutgoingEdge\<TField\>
 
 Checks that an Ent available via a field is updatable. See
 CanReadOutgoingEdge comments for more details.
@@ -13,13 +13,13 @@ CanReadOutgoingEdge comments for more details.
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)<`Record`<`TField`, `string` \| ``null``\>\>
+- [`Predicate`](../interfaces/Predicate.md)\<`Record`\<`TField`, `string` \| ``null``\>\>
 
 ## Constructors
 
 ### constructor
 
-• **new CanUpdateOutgoingEdge**<`TField`\>(`field`, `toEntClass`)
+• **new CanUpdateOutgoingEdge**\<`TField`\>(`field`, `toEntClass`): [`CanUpdateOutgoingEdge`](CanUpdateOutgoingEdge.md)\<`TField`\>
 
 #### Type parameters
 
@@ -33,6 +33,10 @@ CanReadOutgoingEdge comments for more details.
 | :------ | :------ |
 | `field` | `TField` |
 | `toEntClass` | [`EntClass`](../modules.md#entclass) |
+
+#### Returns
+
+[`CanUpdateOutgoingEdge`](CanUpdateOutgoingEdge.md)\<`TField`\>
 
 #### Defined in
 
@@ -76,18 +80,18 @@ ___
 
 ### check
 
-▸ **check**(`vc`, `row`): `Promise`<`boolean`\>
+▸ **check**(`vc`, `row`): `Promise`\<`boolean`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | `Record`<`TField`, ``null`` \| `string`\> |
+| `row` | `Record`\<`TField`, ``null`` \| `string`\> |
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Implementation of
 
@@ -95,4 +99,4 @@ ___
 
 #### Defined in
 
-[src/ent/predicates/CanUpdateOutgoingEdge.ts:20](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L20)
+[src/ent/predicates/CanUpdateOutgoingEdge.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L22)

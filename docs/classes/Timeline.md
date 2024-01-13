@@ -2,31 +2,46 @@
 
 # Class: Timeline
 
-Tracks replication timeline position at master per "user" and Ent.
+Tracks replication lag timeline position at master per "user" and Ent.
 - serialization format: "pos:expiresAt"
 - wipes expired records (expiration is calculated at assignment moment)
+
+How replication lag (timeline) tracking works: for each
+microshard+Ent+"user", we know the “last write-ahead log write position”
+which that user (typically, VC#principal) made recently. This info can be
+propagated through e.g. user's session and push notifications/subscriptions
+channels automatically (“serialized timeline” and “timelines merging”). So
+the next time the same user tries to read the data from the same Ent on the
+same microshard, Ent Framework makes a choice, whether the replica is “good
+enough” for this already; if not, it falls back to master read. I.e. the data
+is not granular to individual Ent ID, it’s granular to the
+user+Ent+microshard, and thus it is decoupled from IDs.
 
 ## Constructors
 
 ### constructor
 
-• **new Timeline**(`state?`)
+• **new Timeline**(`state?`): [`Timeline`](Timeline.md)
 
 #### Parameters
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
-| `state` | { `pos`: `bigint` ; `expiresAt`: `number`  } \| ``"unknown"`` | `"unknown"` |
+| `state` | \{ `pos`: `bigint` ; `expiresAt`: `number`  } \| ``"unknown"`` | `"unknown"` |
+
+#### Returns
+
+[`Timeline`](Timeline.md)
 
 #### Defined in
 
-[src/abstract/Timeline.ts:26](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L26)
+[src/abstract/Timeline.ts:37](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L37)
 
 ## Methods
 
 ### deserialize
 
-▸ `Static` **deserialize**(`data`, `prevTimeline`): [`Timeline`](Timeline.md)
+▸ **deserialize**(`data`, `prevTimeline`): [`Timeline`](Timeline.md)
 
 #### Parameters
 
@@ -41,27 +56,27 @@ Tracks replication timeline position at master per "user" and Ent.
 
 #### Defined in
 
-[src/abstract/Timeline.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L32)
+[src/abstract/Timeline.ts:43](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L43)
 
 ___
 
 ### cloneMap
 
-▸ `Static` **cloneMap**(`timelines`): `Map`<`string`, [`Timeline`](Timeline.md)\>
+▸ **cloneMap**(`timelines`): `Map`\<`string`, [`Timeline`](Timeline.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `timelines` | `ReadonlyMap`<`string`, [`Timeline`](Timeline.md)\> |
+| `timelines` | `ReadonlyMap`\<`string`, [`Timeline`](Timeline.md)\> |
 
 #### Returns
 
-`Map`<`string`, [`Timeline`](Timeline.md)\>
+`Map`\<`string`, [`Timeline`](Timeline.md)\>
 
 #### Defined in
 
-[src/abstract/Timeline.ts:54](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L54)
+[src/abstract/Timeline.ts:65](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L65)
 
 ___
 
@@ -75,7 +90,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Timeline.ts:67](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L67)
+[src/abstract/Timeline.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L78)
 
 ___
 
@@ -96,7 +111,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Timeline.ts:74](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L74)
+[src/abstract/Timeline.ts:85](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L85)
 
 ___
 
@@ -116,7 +131,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Timeline.ts:83](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L83)
+[src/abstract/Timeline.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L94)
 
 ___
 
@@ -130,4 +145,4 @@ ___
 
 #### Defined in
 
-[src/abstract/Timeline.ts:93](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L93)
+[src/abstract/Timeline.ts:104](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L104)

@@ -28,6 +28,7 @@ module.exports = (projectRoot) => ({
     project: "tsconfig.json",
     warnOnUnsupportedTypeScriptVersion: false,
   },
+  overrides: [{ files: [".eslintrc.base.js"] }],
   plugins: [
     "@typescript-eslint",
     "import",
@@ -54,10 +55,12 @@ module.exports = (projectRoot) => ({
   },
   ignorePatterns: [
     "node_modules",
+    "dist",
     "webpack.config.ts",
     "**/bin/**",
     "*.d.ts",
     "**/jest.config.js",
+    "**/.eslintrc*.js",
   ],
   rules: {
     // TODO: slowly enable no-extraneous-dependencies rule below. For now, it's

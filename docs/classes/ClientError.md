@@ -11,23 +11,27 @@ carries suggestions, what to do next.
 
   ↳ **`ClientError`**
 
-  ↳↳ [`SQLError`](SQLError.md)
+  ↳↳ [`PgError`](PgError.md)
 
 ## Constructors
 
 ### constructor
 
-• **new ClientError**(`cause`, `where`, `postAction`, `kind`, `comment?`)
+• **new ClientError**(`cause`, `where`, `postAction`, `kind`, `comment?`): [`ClientError`](ClientError.md)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `cause` | `undefined` \| ``null`` \| { `message?`: `unknown` ; `stack?`: `unknown`  } |
+| `cause` | `undefined` \| ``null`` \| \{ `message?`: `unknown` ; `stack?`: `unknown`  } |
 | `where` | `string` |
 | `postAction` | [`ClientErrorPostAction`](../modules.md#clienterrorpostaction) |
 | `kind` | [`ClientErrorKind`](../modules.md#clienterrorkind) |
 | `comment?` | `string` |
+
+#### Returns
+
+[`ClientError`](ClientError.md)
 
 #### Overrides
 
@@ -41,7 +45,7 @@ Error.constructor
 
 ### cause
 
-• `Readonly` **cause**: `undefined` \| ``null`` \| { `message?`: `unknown` ; `stack?`: `unknown`  }
+• `Readonly` **cause**: `undefined` \| ``null`` \| \{ `message?`: `unknown` ; `stack?`: `unknown`  }
 
 #### Defined in
 

@@ -2,14 +2,11 @@ import type { Client } from "../abstract/Client";
 import type { Cluster } from "../abstract/Cluster";
 import type { Schema } from "../abstract/Schema";
 import type { Table, UniqueKey } from "../types";
-import { GLOBAL_SHARD } from "./Configuration";
 import { CacheMixin } from "./mixins/CacheMixin";
 import { ConfigMixin } from "./mixins/ConfigMixin";
 import type { HelpersClass } from "./mixins/HelpersMixin";
 import { HelpersMixin } from "./mixins/HelpersMixin";
 import { PrimitiveMixin } from "./mixins/PrimitiveMixin";
-
-export { GLOBAL_SHARD };
 
 /**
  * This is a helper function to create new Ent classes. Run once per each
@@ -32,12 +29,12 @@ export { GLOBAL_SHARD };
 export function BaseEnt<
   TTable extends Table,
   TUniqueKey extends UniqueKey<TTable>,
-  TClient extends Client
+  TClient extends Client,
 >(
   cluster: Cluster<TClient>,
-  schema: Schema<TTable, TUniqueKey>
+  schema: Schema<TTable, TUniqueKey>,
 ): HelpersClass<TTable, TUniqueKey, TClient> {
   return HelpersMixin(
-    CacheMixin(PrimitiveMixin(ConfigMixin(class {}, cluster, schema)))
+    CacheMixin(PrimitiveMixin(ConfigMixin(class {}, cluster, schema))),
   );
 }

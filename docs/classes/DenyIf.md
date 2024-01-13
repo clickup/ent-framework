@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / DenyIf
 
-# Class: DenyIf<TInput\>
+# Class: DenyIf\<TInput\>
 
 Returns DENY if the predicate succeeds, otherwise SKIP.
 - Used mostly to early block some read/write access.
@@ -17,7 +17,7 @@ Returns DENY if the predicate succeeds, otherwise SKIP.
 
 ## Hierarchy
 
-- [`Rule`](Rule.md)<`TInput`\>
+- [`Rule`](Rule.md)\<`TInput`\>
 
   ↳ **`DenyIf`**
 
@@ -25,7 +25,7 @@ Returns DENY if the predicate succeeds, otherwise SKIP.
 
 ### constructor
 
-• **new DenyIf**<`TInput`\>(`predicate`)
+• **new DenyIf**\<`TInput`\>(`predicate`): [`DenyIf`](DenyIf.md)\<`TInput`\>
 
 #### Type parameters
 
@@ -37,7 +37,11 @@ Returns DENY if the predicate succeeds, otherwise SKIP.
 
 | Name | Type |
 | :------ | :------ |
-| `predicate` | [`Predicate`](../interfaces/Predicate.md)<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`<`boolean`\> |
+| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`\<`boolean`\> |
+
+#### Returns
+
+[`DenyIf`](DenyIf.md)\<`TInput`\>
 
 #### Inherited from
 
@@ -61,7 +65,7 @@ ___
 
 ### predicate
 
-• `Readonly` **predicate**: [`Predicate`](../interfaces/Predicate.md)<`TInput`\>
+• `Readonly` **predicate**: [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>
 
 #### Inherited from
 
@@ -89,7 +93,7 @@ ___
 
 ### evaluate
 
-▸ **evaluate**(`vc`, `input`): `Promise`<[`RuleResult`](../interfaces/RuleResult.md)\>
+▸ **evaluate**(`vc`, `input`): `Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
 
 #### Parameters
 
@@ -100,7 +104,7 @@ ___
 
 #### Returns
 
-`Promise`<[`RuleResult`](../interfaces/RuleResult.md)\>
+`Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
 
 #### Overrides
 

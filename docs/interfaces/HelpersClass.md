@@ -1,21 +1,18 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / HelpersClass
 
-# Interface: HelpersClass<TTable, TUniqueKey, TClient\>
-
-Removes constructor signature from a type.
-https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
+# Interface: HelpersClass\<TTable, TUniqueKey, TClient\>
 
 ## Type parameters
 
 | Name | Type |
 | :------ | :------ |
 | `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)<`TTable`\> |
+| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
 | `TClient` | extends [`Client`](../classes/Client.md) |
 
 ## Hierarchy
 
-- [`OmitNew`](../modules.md#omitnew)<[`PrimitiveClass`](../modules.md#primitiveclass)<`TTable`, `TUniqueKey`, `TClient`\>\>
+- `OmitNew`\<[`PrimitiveClass`](../modules.md#primitiveclass)\<`TTable`, `TUniqueKey`, `TClient`\>\>
 
   ↳ **`HelpersClass`**
 
@@ -23,14 +20,18 @@ https://github.com/microsoft/TypeScript/issues/40110#issuecomment-747142570
 
 ### constructor
 
-• **new HelpersClass**()
+• **new HelpersClass**(): [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> & [`RowWithID`](../modules.md#rowwithid) & \{ [K in string]: Value\<TTable[K]\> }
 
 TS requires us to have a public constructor to infer instance types in
 various places. We make this constructor throw if it's called.
 
+#### Returns
+
+[`HelpersInstance`](HelpersInstance.md)\<`TTable`\> & [`RowWithID`](../modules.md#rowwithid) & \{ [K in string]: Value\<TTable[K]\> }
+
 #### Inherited from
 
-OmitNew<PrimitiveClass<TTable, TUniqueKey, TClient\>\>.constructor
+OmitNew\<PrimitiveClass\<TTable, TUniqueKey, TClient\>\>.constructor
 
 #### Defined in
 
@@ -40,11 +41,15 @@ OmitNew<PrimitiveClass<TTable, TUniqueKey, TClient\>\>.constructor
 
 ### Configuration
 
-• `Readonly` **Configuration**: (`cfg`: [`Configuration`](../classes/Configuration.md)<`TTable`\>) => [`Configuration`](../classes/Configuration.md)<`TTable`\>
+• `Readonly` **Configuration**: (`cfg`: [`Configuration`](../classes/Configuration.md)\<`TTable`\>) => [`Configuration`](../classes/Configuration.md)\<`TTable`\>
+
+A helper class to work-around TS weakness in return value type inference:
+https://github.com/Microsoft/TypeScript/issues/31273. It could've been just
+a function, but having a class is a little more natural.
 
 #### Type declaration
 
-• **new Configuration**(`cfg`)
+• **new Configuration**(`cfg`): [`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
 A helper class to work-around TS weakness in return value type inference:
 https://github.com/Microsoft/TypeScript/issues/31273. It could've been just
@@ -54,7 +59,11 @@ a function, but having a class is a little more natural.
 
 | Name | Type |
 | :------ | :------ |
-| `cfg` | [`Configuration`](../classes/Configuration.md)<`TTable`\> |
+| `cfg` | [`Configuration`](../classes/Configuration.md)\<`TTable`\> |
+
+##### Returns
+
+[`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
 #### Inherited from
 
@@ -68,7 +77,7 @@ ___
 
 ### CLUSTER
 
-• `Readonly` **CLUSTER**: [`Cluster`](../classes/Cluster.md)<`TClient`, `any`\>
+• `Readonly` **CLUSTER**: [`Cluster`](../classes/Cluster.md)\<`TClient`, `any`\>
 
 A Cluster where this Ent lives.
 
@@ -84,7 +93,7 @@ ___
 
 ### SCHEMA
 
-• `Readonly` **SCHEMA**: [`Schema`](../classes/Schema.md)<`TTable`, `TUniqueKey`\>
+• `Readonly` **SCHEMA**: [`Schema`](../classes/Schema.md)\<`TTable`, `TUniqueKey`\>
 
 A schema which represents this Ent.
 
@@ -100,7 +109,7 @@ ___
 
 ### SHARD\_AFFINITY
 
-• `Readonly` **SHARD\_AFFINITY**: [`ShardAffinity`](../modules.md#shardaffinity)<[`FieldOfIDType`](../modules.md#fieldofidtype)<`TTable`\>\>
+• `Readonly` **SHARD\_AFFINITY**: [`ShardAffinity`](../modules.md#shardaffinity)\<[`FieldOfIDType`](../modules.md#fieldofidtype)\<`TTable`\>\>
 
 Defines how to find the right Shard during Ent insertion.
 
@@ -116,7 +125,7 @@ ___
 
 ### SHARD\_LOCATOR
 
-• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)<`TClient`, `TTable`, [`FieldOfIDType`](../modules.md#fieldofidtype)<`TTable`\>\>
+• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)\<`TClient`, `TTable`, [`FieldOfIDType`](../modules.md#fieldofidtype)\<`TTable`\>\>
 
 Shard locator for this Ent, responsible for resolving IDs into Shard objects.
 
@@ -132,7 +141,7 @@ ___
 
 ### VALIDATION
 
-• `Readonly` **VALIDATION**: [`Validation`](../classes/Validation.md)<`TTable`\>
+• `Readonly` **VALIDATION**: [`Validation`](../classes/Validation.md)\<`TTable`\>
 
 Privacy rules for this Ent class.
 
@@ -148,7 +157,7 @@ ___
 
 ### TRIGGERS
 
-• `Readonly` **TRIGGERS**: [`Triggers`](../classes/Triggers.md)<`TTable`\>
+• `Readonly` **TRIGGERS**: [`Triggers`](../classes/Triggers.md)\<`TTable`\>
 
 Triggers for this Ent class.
 
@@ -164,7 +173,7 @@ ___
 
 ### INVERSES
 
-• `Readonly` **INVERSES**: [`Inverse`](../classes/Inverse.md)<`TClient`, `TTable`\>[]
+• `Readonly` **INVERSES**: [`Inverse`](../classes/Inverse.md)\<`TClient`, `TTable`\>[]
 
 Inverse assoc managers for fields.
 
@@ -180,11 +189,14 @@ ___
 
 ### insert
 
-• **insert**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`string`\>
+• **insert**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)\<`TTable`\>) => `Promise`\<`string`\>
+
+Same as insertIfNotExists(), but throws if the Ent violates unique key
+constraints.
 
 #### Type declaration
 
-▸ (`vc`, `input`): `Promise`<`string`\>
+▸ (`vc`, `input`): `Promise`\<`string`\>
 
 Same as insertIfNotExists(), but throws if the Ent violates unique key
 constraints.
@@ -194,11 +206,11 @@ constraints.
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<`string`\>
+`Promise`\<`string`\>
 
 #### Defined in
 
@@ -208,11 +220,13 @@ ___
 
 ### insertReturning
 
-• **insertReturning**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`TEnt`\>
+• **insertReturning**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)\<`TTable`\>) => `Promise`\<`TEnt`\>
+
+Same as insert(), but returns the created Ent.
 
 #### Type declaration
 
-▸ <`TEnt`\>(`this`, `vc`, `input`): `Promise`<`TEnt`\>
+▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`\>
 
 Same as insert(), but returns the created Ent.
 
@@ -220,7 +234,7 @@ Same as insert(), but returns the created Ent.
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
 
 ##### Parameters
 
@@ -228,11 +242,11 @@ Same as insert(), but returns the created Ent.
 | :------ | :------ |
 | `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<`TEnt`\>
+`Promise`\<`TEnt`\>
 
 #### Defined in
 
@@ -242,11 +256,13 @@ ___
 
 ### upsertReturning
 
-• **upsertReturning**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`TEnt`\>
+• **upsertReturning**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)\<`TTable`\>) => `Promise`\<`TEnt`\>
+
+Same, but returns the created/updated Ent.
 
 #### Type declaration
 
-▸ <`TEnt`\>(`this`, `vc`, `input`): `Promise`<`TEnt`\>
+▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`\>
 
 Same, but returns the created/updated Ent.
 
@@ -254,7 +270,7 @@ Same, but returns the created/updated Ent.
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
 
 ##### Parameters
 
@@ -262,11 +278,11 @@ Same, but returns the created/updated Ent.
 | :------ | :------ |
 | `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<`TEnt`\>
+`Promise`\<`TEnt`\>
 
 #### Defined in
 
@@ -276,11 +292,14 @@ ___
 
 ### loadIfReadableNullable
 
-• **loadIfReadableNullable**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<``null`` \| `TEnt`\>
+• **loadIfReadableNullable**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`\<``null`` \| `TEnt`\>
+
+Same as loadNullable(), but if no permissions to read, returns null and
+doesn't throw. It's more a convenience function rather than a concept.
 
 #### Type declaration
 
-▸ <`TEnt`\>(`this`, `vc`, `id`): `Promise`<``null`` \| `TEnt`\>
+▸ \<`TEnt`\>(`this`, `vc`, `id`): `Promise`\<``null`` \| `TEnt`\>
 
 Same as loadNullable(), but if no permissions to read, returns null and
 doesn't throw. It's more a convenience function rather than a concept.
@@ -289,7 +308,7 @@ doesn't throw. It's more a convenience function rather than a concept.
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
 
 ##### Parameters
 
@@ -301,7 +320,7 @@ doesn't throw. It's more a convenience function rather than a concept.
 
 ##### Returns
 
-`Promise`<``null`` \| `TEnt`\>
+`Promise`\<``null`` \| `TEnt`\>
 
 #### Defined in
 
@@ -311,11 +330,14 @@ ___
 
 ### loadX
 
-• **loadX**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<`TEnt`\>
+• **loadX**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`\<`TEnt`\>
+
+Loads an Ent by its ID. Throws if no such Ent is found.
+This method is used VERY often.
 
 #### Type declaration
 
-▸ <`TEnt`\>(`this`, `vc`, `id`): `Promise`<`TEnt`\>
+▸ \<`TEnt`\>(`this`, `vc`, `id`): `Promise`\<`TEnt`\>
 
 Loads an Ent by its ID. Throws if no such Ent is found.
 This method is used VERY often.
@@ -324,7 +346,7 @@ This method is used VERY often.
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
 
 ##### Parameters
 
@@ -336,7 +358,7 @@ This method is used VERY often.
 
 ##### Returns
 
-`Promise`<`TEnt`\>
+`Promise`\<`TEnt`\>
 
 #### Defined in
 
@@ -346,11 +368,14 @@ ___
 
 ### loadByX
 
-• **loadByX**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>) => `Promise`<`TEnt`\>
+• **loadByX**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\>) => `Promise`\<`TEnt`\>
+
+Loads an Ent by its ID. Throws if no such Ent is found.
+This method is used VERY often.
 
 #### Type declaration
 
-▸ <`TEnt`\>(`this`, `vc`, `input`): `Promise`<`TEnt`\>
+▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`\>
 
 Loads an Ent by its ID. Throws if no such Ent is found.
 This method is used VERY often.
@@ -359,7 +384,7 @@ This method is used VERY often.
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)<`TTable`\> |
+| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
 
 ##### Parameters
 
@@ -367,11 +392,11 @@ This method is used VERY often.
 | :------ | :------ |
 | `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\> |
+| `input` | [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\> |
 
 ##### Returns
 
-`Promise`<`TEnt`\>
+`Promise`\<`TEnt`\>
 
 #### Defined in
 
@@ -381,11 +406,19 @@ ___
 
 ### insertIfNotExists
 
-• **insertIfNotExists**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<``null`` \| `string`\>
+• **insertIfNotExists**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)\<`TTable`\>) => `Promise`\<``null`` \| `string`\>
+
+Runs INSERT mutation for the Ent.
+- The Shard is inferred from the input fields using SHARD_AFFINITY.
+- Returns ID of the newly inserted row.
+- Returns null if the Ent violates unique key constraints.
+- If the Ent has some triggers set up, this will be translated into two
+  schema operations: idGen() and insert(), and before-triggers will run in
+  between having the ID known in advance.
 
 #### Type declaration
 
-▸ (`vc`, `input`): `Promise`<``null`` \| `string`\>
+▸ (`vc`, `input`): `Promise`\<``null`` \| `string`\>
 
 Runs INSERT mutation for the Ent.
 - The Shard is inferred from the input fields using SHARD_AFFINITY.
@@ -400,11 +433,11 @@ Runs INSERT mutation for the Ent.
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<``null`` \| `string`\>
+`Promise`\<``null`` \| `string`\>
 
 #### Inherited from
 
@@ -418,16 +451,24 @@ ___
 
 ### upsert
 
-• **upsert**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)<`TTable`\>) => `Promise`<`string`\>
+• **upsert**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)\<`TTable`\>) => `Promise`\<`string`\>
+
+Inserts an Ent or updates an existing one if unique key matches.
+- Don't use upsert() too often, because upsert may still delete IDs even if
+  the object was updated, not inserted (there is no good ways to solve this
+  in some DB engines like relational DBs so far).
+- Upsert can't work if some triggers are defined for the Ent, because we
+  don't know Ent ID in advance (whether the upsert succeeds or skips on
+  duplication).
 
 #### Type declaration
 
-▸ (`vc`, `input`): `Promise`<`string`\>
+▸ (`vc`, `input`): `Promise`\<`string`\>
 
 Inserts an Ent or updates an existing one if unique key matches.
-- Don't use upsert() too often, because upsert may still delete IDs even
-  if the object was updated, not inserted (there is no good ways to solve
-  this in some DB engines like SQL so far).
+- Don't use upsert() too often, because upsert may still delete IDs even if
+  the object was updated, not inserted (there is no good ways to solve this
+  in some DB engines like relational DBs so far).
 - Upsert can't work if some triggers are defined for the Ent, because we
   don't know Ent ID in advance (whether the upsert succeeds or skips on
   duplication).
@@ -437,11 +478,11 @@ Inserts an Ent or updates an existing one if unique key matches.
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)<`TTable`\> |
+| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<`string`\>
+`Promise`\<`string`\>
 
 #### Inherited from
 
@@ -455,11 +496,14 @@ ___
 
 ### loadNullable
 
-• **loadNullable**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`<``null`` \| `TEnt`\>
+• **loadNullable**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`\<``null`` \| `TEnt`\>
+
+Loads an Ent by its ID. Returns null if no such Ent exists. Try to use
+loadX() instead as much as you can.
 
 #### Type declaration
 
-▸ <`TEnt`\>(`this`, `vc`, `id`): `Promise`<``null`` \| `TEnt`\>
+▸ \<`TEnt`\>(`this`, `vc`, `id`): `Promise`\<``null`` \| `TEnt`\>
 
 Loads an Ent by its ID. Returns null if no such Ent exists. Try to use
 loadX() instead as much as you can.
@@ -468,7 +512,7 @@ loadX() instead as much as you can.
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\> |
+| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\> |
 
 ##### Parameters
 
@@ -480,7 +524,7 @@ loadX() instead as much as you can.
 
 ##### Returns
 
-`Promise`<``null`` \| `TEnt`\>
+`Promise`\<``null`` \| `TEnt`\>
 
 #### Inherited from
 
@@ -494,11 +538,16 @@ ___
 
 ### loadByNullable
 
-• **loadByNullable**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\>) => `Promise`<``null`` \| `TEnt`\>
+• **loadByNullable**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\>) => `Promise`\<``null`` \| `TEnt`\>
+
+Loads an Ent by its unique key. Returns null if no such Ent exists. Notice
+that the key must be REALLY unique, otherwise the database may return
+multiple items, and the API will break. Don't try to use this method with
+non-unique keys!
 
 #### Type declaration
 
-▸ <`TEnt`\>(`this`, `vc`, `input`): `Promise`<``null`` \| `TEnt`\>
+▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<``null`` \| `TEnt`\>
 
 Loads an Ent by its unique key. Returns null if no such Ent exists. Notice
 that the key must be REALLY unique, otherwise the database may return
@@ -509,7 +558,7 @@ non-unique keys!
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\> |
+| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\> |
 
 ##### Parameters
 
@@ -517,11 +566,11 @@ non-unique keys!
 | :------ | :------ |
 | `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, `TUniqueKey`\> |
+| `input` | [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\> |
 
 ##### Returns
 
-`Promise`<``null`` \| `TEnt`\>
+`Promise`\<``null`` \| `TEnt`\>
 
 #### Inherited from
 
@@ -535,11 +584,16 @@ ___
 
 ### selectBy
 
-• **selectBy**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, [`TuplePrefixes`](../modules.md#tupleprefixes)<`TUniqueKey`\>\>) => `Promise`<`TEnt`[]\>
+• **selectBy**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TuplePrefixes`\<`TUniqueKey`\>\>) => `Promise`\<`TEnt`[]\>
+
+Selects the list of Ents by their unique key prefix. The query can span
+multiple Shards if their locations can be inferred from inverses related to
+the fields mentioned in the query. Ordering of the results is not
+guaranteed.
 
 #### Type declaration
 
-▸ <`TEnt`\>(`this`, `vc`, `input`): `Promise`<`TEnt`[]\>
+▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`[]\>
 
 Selects the list of Ents by their unique key prefix. The query can span
 multiple Shards if their locations can be inferred from inverses related to
@@ -550,7 +604,7 @@ guaranteed.
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\> |
+| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\> |
 
 ##### Parameters
 
@@ -558,11 +612,11 @@ guaranteed.
 | :------ | :------ |
 | `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)<`TTable`, [`TuplePrefixes`](../modules.md#tupleprefixes)<`TUniqueKey`\>\> |
+| `input` | [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TuplePrefixes`\<`TUniqueKey`\>\> |
 
 ##### Returns
 
-`Promise`<`TEnt`[]\>
+`Promise`\<`TEnt`[]\>
 
 #### Inherited from
 
@@ -576,11 +630,19 @@ ___
 
 ### select
 
-• **select**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)<`TTable`\>, `limit`: `number`, `order?`: [`Order`](../modules.md#order)<`TTable`\>, `custom?`: {}) => `Promise`<`TEnt`[]\>
+• **select**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)\<`TTable`\>, `limit`: `number`, `order?`: [`Order`](../modules.md#order)\<`TTable`\>, `custom?`: {}) => `Promise`\<`TEnt`[]\>
+
+Selects the list of Ents by some predicate.
+- The query can span multiple Shards if their locations can be inferred
+  from inverses related to the fields mentioned in the query.
+- In multi-Shard case, ordering of results is not guaranteed.
+- In multi-Shard case, it may return more results than requested by limit
+  (basically, limit is applied to each Shard individually). The caller has
+  then freedom to reorder & slice the results as they wish.
 
 #### Type declaration
 
-▸ <`TEnt`\>(`this`, `vc`, `where`, `limit`, `order?`, `custom?`): `Promise`<`TEnt`[]\>
+▸ \<`TEnt`\>(`this`, `vc`, `where`, `limit`, `order?`, `custom?`): `Promise`\<`TEnt`[]\>
 
 Selects the list of Ents by some predicate.
 - The query can span multiple Shards if their locations can be inferred
@@ -594,7 +656,7 @@ Selects the list of Ents by some predicate.
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\> |
+| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\> |
 
 ##### Parameters
 
@@ -602,14 +664,14 @@ Selects the list of Ents by some predicate.
 | :------ | :------ |
 | `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`Where`](../modules.md#where)<`TTable`\> |
+| `where` | [`Where`](../modules.md#where)\<`TTable`\> |
 | `limit` | `number` |
-| `order?` | [`Order`](../modules.md#order)<`TTable`\> |
+| `order?` | [`Order`](../modules.md#order)\<`TTable`\> |
 | `custom?` | `Object` |
 
 ##### Returns
 
-`Promise`<`TEnt`[]\>
+`Promise`\<`TEnt`[]\>
 
 #### Inherited from
 
@@ -623,11 +685,19 @@ ___
 
 ### selectChunked
 
-• **selectChunked**: <TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom?`: {}) => `AsyncIterableIterator`<`TEnt`[]\>
+• **selectChunked**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)\<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom?`: {}) => `AsyncIterableIterator`\<`TEnt`[]\>
+
+Same as select(), but returns data in chunks.
+- Uses multiple select() queries under the hood.
+- The query can span multiple Shards if their locations can be inferred
+  from inverses related to the fields mentioned in the query.
+- Ents in each chunk always belong to the same Shard and are ordered by ID
+  (there is no support for custom ordering). Make sure you have the right
+  index in the database.
 
 #### Type declaration
 
-▸ <`TEnt`\>(`this`, `vc`, `where`, `chunkSize`, `limit`, `custom?`): `AsyncIterableIterator`<`TEnt`[]\>
+▸ \<`TEnt`\>(`this`, `vc`, `where`, `chunkSize`, `limit`, `custom?`): `AsyncIterableIterator`\<`TEnt`[]\>
 
 Same as select(), but returns data in chunks.
 - Uses multiple select() queries under the hood.
@@ -641,7 +711,7 @@ Same as select(), but returns data in chunks.
 
 | Name | Type |
 | :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)<`TTable`\> |
+| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\> |
 
 ##### Parameters
 
@@ -649,14 +719,14 @@ Same as select(), but returns data in chunks.
 | :------ | :------ |
 | `this` | () => `TEnt` |
 | `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`Where`](../modules.md#where)<`TTable`\> |
+| `where` | [`Where`](../modules.md#where)\<`TTable`\> |
 | `chunkSize` | `number` |
 | `limit` | `number` |
 | `custom?` | `Object` |
 
 ##### Returns
 
-`AsyncIterableIterator`<`TEnt`[]\>
+`AsyncIterableIterator`\<`TEnt`[]\>
 
 #### Inherited from
 
@@ -670,11 +740,15 @@ ___
 
 ### count
 
-• **count**: (`vc`: [`VC`](../classes/VC.md), `where`: [`CountInput`](../modules.md#countinput)<`TTable`\>) => `Promise`<`number`\>
+• **count**: (`vc`: [`VC`](../classes/VC.md), `where`: [`CountInput`](../modules.md#countinput)\<`TTable`\>) => `Promise`\<`number`\>
+
+Returns count of Ents matching a predicate. The query can span multiple
+Shards if their locations can be inferred from inverses related to the
+fields mentioned in the query.
 
 #### Type declaration
 
-▸ (`vc`, `where`): `Promise`<`number`\>
+▸ (`vc`, `where`): `Promise`\<`number`\>
 
 Returns count of Ents matching a predicate. The query can span multiple
 Shards if their locations can be inferred from inverses related to the
@@ -685,11 +759,11 @@ fields mentioned in the query.
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`CountInput`](../modules.md#countinput)<`TTable`\> |
+| `where` | [`CountInput`](../modules.md#countinput)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<`number`\>
+`Promise`\<`number`\>
 
 #### Inherited from
 
@@ -703,11 +777,14 @@ ___
 
 ### exists
 
-• **exists**: (`vc`: [`VC`](../classes/VC.md), `where`: [`ExistsInput`](../modules.md#existsinput)<`TTable`\>) => `Promise`<`boolean`\>
+• **exists**: (`vc`: [`VC`](../classes/VC.md), `where`: [`ExistsInput`](../modules.md#existsinput)\<`TTable`\>) => `Promise`\<`boolean`\>
+
+A more optimal approach than count() when we basically just need to know
+whether we have "0 or not 0" rows.
 
 #### Type declaration
 
-▸ (`vc`, `where`): `Promise`<`boolean`\>
+▸ (`vc`, `where`): `Promise`\<`boolean`\>
 
 A more optimal approach than count() when we basically just need to know
 whether we have "0 or not 0" rows.
@@ -717,11 +794,11 @@ whether we have "0 or not 0" rows.
 | Name | Type |
 | :------ | :------ |
 | `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`ExistsInput`](../modules.md#existsinput)<`TTable`\> |
+| `where` | [`ExistsInput`](../modules.md#existsinput)\<`TTable`\> |
 
 ##### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Inherited from
 
@@ -735,7 +812,7 @@ OmitNew.exists
 
 ### configure
 
-▸ **configure**(): [`Configuration`](../classes/Configuration.md)<`TTable`\>
+▸ **configure**(): [`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
 Some Ent parameters need to be configured lazily, on the 1st access,
 because there could be cyclic references between Ent classes (e.g. in their
@@ -745,7 +822,7 @@ abstract methods in TS yet, so making it non-abstract.
 
 #### Returns
 
-[`Configuration`](../classes/Configuration.md)<`TTable`\>
+[`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
 #### Inherited from
 

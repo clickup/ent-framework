@@ -6,19 +6,23 @@ Checks that the VC has some flavor.
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)<`never`\>
+- [`Predicate`](../interfaces/Predicate.md)\<`never`\>
 
 ## Constructors
 
 ### constructor
 
-• **new VCHasFlavor**(`Flavor`)
+• **new VCHasFlavor**(`Flavor`): [`VCHasFlavor`](VCHasFlavor.md)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `Flavor` | (...`args`: `never`[]) => [`VCFlavor`](VCFlavor.md) |
+
+#### Returns
+
+[`VCHasFlavor`](VCHasFlavor.md)
 
 #### Defined in
 
@@ -42,7 +46,7 @@ Checks that the VC has some flavor.
 
 ### check
 
-▸ **check**(`vc`): `Promise`<`boolean`\>
+▸ **check**(`vc`): `Promise`\<`boolean`\>
 
 #### Parameters
 
@@ -52,7 +56,7 @@ Checks that the VC has some flavor.
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Implementation of
 
@@ -60,4 +64,4 @@ Checks that the VC has some flavor.
 
 #### Defined in
 
-[src/ent/predicates/VCHasFlavor.ts:13](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L13)
+[src/ent/predicates/VCHasFlavor.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L15)

@@ -10,12 +10,12 @@ export class EntNotUpdatableError extends EntAccessError {
     entName: string,
     public readonly vc: string,
     public readonly row: RowWithID,
-    cause: unknown = null
+    cause: unknown = null,
   ) {
     super(
       entName,
       `${entName}:${row[ID]} is not updatable/deletable in ${vc}`,
-      cause
+      cause,
     );
   }
 }

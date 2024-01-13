@@ -39,14 +39,14 @@ export type WriteRules<TInput extends object> =
       LoadRule<TInput>,
       LoadRule<TInput>,
       Require<TInput>,
-      ...Array<Require<TInput>>
+      ...Array<Require<TInput>>,
     ]
   | [
       LoadRule<TInput>,
       LoadRule<TInput>,
       LoadRule<TInput>,
       Require<TInput>,
-      ...Array<Require<TInput>>
+      ...Array<Require<TInput>>,
     ]
   | [
       LoadRule<TInput>,
@@ -54,14 +54,14 @@ export type WriteRules<TInput extends object> =
       LoadRule<TInput>,
       LoadRule<TInput>,
       Require<TInput>,
-      ...Array<Require<TInput>>
+      ...Array<Require<TInput>>,
     ];
 
 export type ValidationRules<TTable extends Table> = {
   readonly tenantPrincipalField?: InsertFieldsRequired<TTable> & string;
   readonly inferPrincipal?: (
     vc: VC,
-    row: Row<TTable>
+    row: Row<TTable>,
   ) => Promise<string | null>;
   readonly load: Validation<TTable>["load"];
   readonly insert: Validation<TTable>["insert"];
@@ -81,7 +81,10 @@ export class Validation<TTable extends Table> {
   readonly delete: WriteRules<Row<TTable>>;
   readonly validate: Array<Require<InsertInput<TTable>>>;
 
-  constructor(private entName: string, rules: ValidationRules<TTable>) {
+  constructor(
+    private entName: string,
+    rules: ValidationRules<TTable>,
+  ) {
     this.tenantPrincipalField = rules.tenantPrincipalField;
     this.inferPrincipal = rules.inferPrincipal;
     this.load = rules.load;
@@ -98,7 +101,7 @@ export class Validation<TTable extends Table> {
       vc,
       row,
       "sequential",
-      EntNotReadableError
+      EntNotReadableError,
     );
   }
 
@@ -110,7 +113,7 @@ export class Validation<TTable extends Table> {
       vc,
       input,
       "parallel",
-      EntNotInsertableError
+      EntNotInsertableError,
     );
   }
 
@@ -118,7 +121,7 @@ export class Validation<TTable extends Table> {
     vc: VC,
     old: Row<TTable>,
     input: UpdateInput<TTable>,
-    privacyOnly = false
+    privacyOnly = false,
   ): Promise<void> {
     // Simulate the update, as if it's applied to the ent.
     const newRow = buildUpdateNewRow(old, input);
@@ -127,7 +130,7 @@ export class Validation<TTable extends Table> {
       await this.validateUserInputImpl(
         vc,
         newRow as InsertInput<TTable>,
-        input
+        input,
       );
     }
 
@@ -137,7 +140,7 @@ export class Validation<TTable extends Table> {
       vc,
       newRow,
       "parallel",
-      EntNotUpdatableError
+      EntNotUpdatableError,
     );
   }
 
@@ -148,7 +151,7 @@ export class Validation<TTable extends Table> {
       vc,
       row,
       "parallel",
-      EntNotUpdatableError // same exception as for update
+      EntNotUpdatableError, // same exception as for update
     );
   }
 
@@ -161,7 +164,7 @@ export class Validation<TTable extends Table> {
     ExceptionClass:
       | typeof EntNotReadableError
       | typeof EntNotInsertableError
-      | typeof EntNotUpdatableError
+      | typeof EntNotUpdatableError,
   ): Promise<void> {
     this.validateTenantUserIDImpl(vc, row, ExceptionClass);
 
@@ -177,7 +180,7 @@ export class Validation<TTable extends Table> {
       this.entName,
       vc.toString(),
       { [ID]: "?", ...row },
-      cause
+      cause,
     );
   }
 
@@ -187,7 +190,7 @@ export class Validation<TTable extends Table> {
     ExceptionClass:
       | typeof EntNotReadableError
       | typeof EntNotInsertableError
-      | typeof EntNotUpdatableError
+      | typeof EntNotUpdatableError,
   ): void {
     if (this.tenantPrincipalField === undefined) {
       return;
@@ -207,20 +210,20 @@ export class Validation<TTable extends Table> {
       `${this.tenantPrincipalField} is expected to be ` +
         JSON.stringify(vc.principal) +
         ", but got " +
-        JSON.stringify(rowTenantUserID)
+        JSON.stringify(rowTenantUserID),
     );
   }
 
   private async validateUserInputImpl(
     vc: VC,
     newRow: InsertInput<TTable>,
-    input: object
+    input: object,
   ): Promise<void> {
     const { allow, results } = await evaluate(
       vc,
       newRow,
       this.validate,
-      "parallel"
+      "parallel",
     );
     if (allow) {
       // Quick path (expected to fire most of the time).

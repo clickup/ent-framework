@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Handler
 
-# Interface: Handler<TLoadArgs, TReturn\>
+# Interface: Handler\<TLoadArgs, TReturn\>
 
 ## Type parameters
 
@@ -37,15 +37,15 @@ ___
 
 ### onWait
 
-• `Optional` **onWait**: () => `Promise`<`void`\>
+• `Optional` **onWait**: () => `Promise`\<`void`\>
 
 #### Type declaration
 
-▸ (): `Promise`<`void`\>
+▸ (): `Promise`\<`void`\>
 
 ##### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 #### Defined in
 
@@ -55,11 +55,11 @@ ___
 
 ### onFlush
 
-• **onFlush**: (`collected`: `number`) => `Promise`<`void`\>
+• **onFlush**: (`collected`: `number`) => `Promise`\<`void`\>
 
 #### Type declaration
 
-▸ (`collected`): `Promise`<`void`\>
+▸ (`collected`): `Promise`\<`void`\>
 
 ##### Parameters
 
@@ -69,7 +69,7 @@ ___
 
 ##### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 #### Defined in
 

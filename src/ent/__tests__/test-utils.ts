@@ -22,10 +22,10 @@ export function createVC(): VC {
  */
 export function expectToMatchSnapshot(
   str: string,
-  snapshotName?: string
+  snapshotName?: string,
 ): void {
   const exp = expect(
-    str.replace(/\b(vc:\w+)\(\d+\)/g, "$1").replace(/\d{10,}/g, "<id>")
+    str.replace(/\b(vc:\w+)\(\d+\)/g, "$1").replace(/\d{10,}/g, "<id>"),
   );
   snapshotName ? exp.toMatchSnapshot(snapshotName) : exp.toMatchSnapshot();
 }
@@ -61,7 +61,7 @@ export class ValidationTester {
       | "validateUpdate"
       | "validateDelete",
     updateInput: UpdateInput<TTable> = {},
-    vc = vcTestGuest
+    vc = vcTestGuest,
   ): Promise<void> {
     let res = "";
     try {

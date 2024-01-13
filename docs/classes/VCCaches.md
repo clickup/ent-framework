@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / VCCaches
 
-# Class: VCCaches<TKey, TValue\>
+# Class: VCCaches\<TKey, TValue\>
 
 Holds an auto-expiring map of VC caches.
 
@@ -13,7 +13,7 @@ Holds an auto-expiring map of VC caches.
 
 ## Hierarchy
 
-- `Map`<`TKey`, `TValue`\>
+- `Map`\<`TKey`, `TValue`\>
 
   ↳ **`VCCaches`**
 
@@ -21,7 +21,7 @@ Holds an auto-expiring map of VC caches.
 
 ### constructor
 
-• **new VCCaches**<`TKey`, `TValue`\>(`expirationMs`)
+• **new VCCaches**\<`TKey`, `TValue`\>(`expirationMs`): [`VCCaches`](VCCaches.md)\<`TKey`, `TValue`\>
 
 #### Type parameters
 
@@ -36,9 +36,13 @@ Holds an auto-expiring map of VC caches.
 | :------ | :------ |
 | `expirationMs` | `number` |
 
+#### Returns
+
+[`VCCaches`](VCCaches.md)\<`TKey`, `TValue`\>
+
 #### Overrides
 
-Map&lt;TKey, TValue\&gt;.constructor
+Map\&lt;TKey, TValue\&gt;.constructor
 
 #### Defined in
 

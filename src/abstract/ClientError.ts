@@ -1,4 +1,4 @@
-import { copyStack } from "../helpers/misc";
+import { copyStack } from "../internal/misc";
 
 /**
  * The suggested action, what can we do when facing this error.
@@ -29,11 +29,11 @@ export class ClientError extends Error {
     where: string,
     public readonly postAction: ClientErrorPostAction,
     public readonly kind: ClientErrorKind,
-    public readonly comment?: string
+    public readonly comment?: string,
   ) {
     super(
       (typeof cause === "string" ? cause : cause?.message) +
-        (comment ? `\n${comment}` : "")
+        (comment ? `\n${comment}` : ""),
     );
 
     Object.defineProperty(this, "name", {

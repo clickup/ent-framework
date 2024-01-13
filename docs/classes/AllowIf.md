@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / AllowIf
 
-# Class: AllowIf<TInput\>
+# Class: AllowIf\<TInput\>
 
 Returns ALLOW if the predicate succeeds, otherwise SKIP.
 - Used mostly for read permission checks.
@@ -15,7 +15,7 @@ Returns ALLOW if the predicate succeeds, otherwise SKIP.
 
 ## Hierarchy
 
-- [`Rule`](Rule.md)<`TInput`\>
+- [`Rule`](Rule.md)\<`TInput`\>
 
   ↳ **`AllowIf`**
 
@@ -23,7 +23,7 @@ Returns ALLOW if the predicate succeeds, otherwise SKIP.
 
 ### constructor
 
-• **new AllowIf**<`TInput`\>(`predicate`)
+• **new AllowIf**\<`TInput`\>(`predicate`): [`AllowIf`](AllowIf.md)\<`TInput`\>
 
 #### Type parameters
 
@@ -35,7 +35,11 @@ Returns ALLOW if the predicate succeeds, otherwise SKIP.
 
 | Name | Type |
 | :------ | :------ |
-| `predicate` | [`Predicate`](../interfaces/Predicate.md)<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`<`boolean`\> |
+| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`\<`boolean`\> |
+
+#### Returns
+
+[`AllowIf`](AllowIf.md)\<`TInput`\>
 
 #### Inherited from
 
@@ -59,7 +63,7 @@ ___
 
 ### predicate
 
-• `Readonly` **predicate**: [`Predicate`](../interfaces/Predicate.md)<`TInput`\>
+• `Readonly` **predicate**: [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>
 
 #### Inherited from
 
@@ -87,7 +91,7 @@ ___
 
 ### evaluate
 
-▸ **evaluate**(`vc`, `input`): `Promise`<[`RuleResult`](../interfaces/RuleResult.md)\>
+▸ **evaluate**(`vc`, `input`): `Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
 
 #### Parameters
 
@@ -98,7 +102,7 @@ ___
 
 #### Returns
 
-`Promise`<[`RuleResult`](../interfaces/RuleResult.md)\>
+`Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
 
 #### Overrides
 

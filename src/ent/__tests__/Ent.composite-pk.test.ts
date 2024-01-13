@@ -1,28 +1,25 @@
-import {
-  recreateTestTables,
-  testCluster,
-} from "../../sql/__tests__/test-utils";
-import { SQLSchema } from "../../sql/SQLSchema";
+import { recreateTestTables, testCluster } from "../../pg/__tests__/test-utils";
+import { PgSchema } from "../../pg/PgSchema";
 import { ID } from "../../types";
 import { BaseEnt } from "../BaseEnt";
-import { GLOBAL_SHARD } from "../Configuration";
 import { CanReadOutgoingEdge } from "../predicates/CanReadOutgoingEdge";
 import { OutgoingEdgePointsToVC } from "../predicates/OutgoingEdgePointsToVC";
 import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
+import { GLOBAL_SHARD } from "../ShardAffinity";
 import { createVC } from "./test-utils";
 
 export class EntTestUser extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.composite-pk"test_user',
     {
       userid: { type: ID, autoInsert: "id_gen()" },
       name: { type: String },
     },
-    ["userid"]
-  )
+    ["userid"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -44,15 +41,15 @@ export class EntTestUser extends BaseEnt(
 
 export class EntTestComposite extends BaseEnt(
   testCluster,
-  new SQLSchema(
+  new PgSchema(
     'ent.composite-pk"test_composite',
     {
       user_id: { type: ID },
       some_id: { type: ID, autoInsert: "id_gen()" },
       name: { type: String },
     },
-    ["user_id", "some_id"]
-  )
+    ["user_id", "some_id"],
+  ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
@@ -101,7 +98,7 @@ test("simple use case", async () => {
   const rows = await EntTestComposite.select(
     user.vc,
     { user_id: composite.user_id, some_id: composite.some_id },
-    1
+    1,
   );
   expect(rows).toHaveLength(1);
 

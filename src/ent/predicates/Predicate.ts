@@ -27,9 +27,11 @@ export interface Predicate<TInput> {
  * predicate.
  */
 export class FuncToPredicate<TInput> implements Predicate<TInput> {
-  readonly name = this.func.name || "lambda";
+  readonly name;
 
-  constructor(private func: (vc: VC, input: TInput) => Promise<boolean>) {}
+  constructor(private func: (vc: VC, input: TInput) => Promise<boolean>) {
+    this.name = this.func.name || "lambda";
+  }
 
   async check(vc: VC, input: TInput): Promise<boolean> {
     return this.func(vc, input);

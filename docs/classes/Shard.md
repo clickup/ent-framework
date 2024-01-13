@@ -1,6 +1,6 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Shard
 
-# Class: Shard<TClient\>
+# Class: Shard\<TClient\>
 
 Shard lives within an Island with one master and N replicas.
 
@@ -14,7 +14,7 @@ Shard lives within an Island with one master and N replicas.
 
 ### constructor
 
-• **new Shard**<`TClient`\>(`no`, `options`)
+• **new Shard**\<`TClient`\>(`no`, `options`): [`Shard`](Shard.md)\<`TClient`\>
 
 #### Type parameters
 
@@ -27,7 +27,11 @@ Shard lives within an Island with one master and N replicas.
 | Name | Type |
 | :------ | :------ |
 | `no` | `number` |
-| `options` | [`ShardOptions`](../interfaces/ShardOptions.md)<`TClient`\> |
+| `options` | [`ShardOptions`](../interfaces/ShardOptions.md)\<`TClient`\> |
+
+#### Returns
+
+[`Shard`](Shard.md)\<`TClient`\>
 
 #### Defined in
 
@@ -47,7 +51,7 @@ ___
 
 ### options
 
-• `Readonly` **options**: [`ShardOptions`](../interfaces/ShardOptions.md)<`TClient`\>
+• `Readonly` **options**: [`ShardOptions`](../interfaces/ShardOptions.md)\<`TClient`\>
 
 #### Defined in
 
@@ -57,7 +61,7 @@ ___
 
 ### client
 
-▸ **client**(`timeline`): `Promise`<`TClient`\>
+▸ **client**(`timeline`): `Promise`\<`TClient`\>
 
 Chooses the right Client to be used for this Shard. We don't memoize,
 because the Shard may relocate to another Island during re-discovery.
@@ -70,7 +74,7 @@ because the Shard may relocate to another Island during re-discovery.
 
 #### Returns
 
-`Promise`<`TClient`\>
+`Promise`\<`TClient`\>
 
 #### Defined in
 
@@ -80,7 +84,7 @@ ___
 
 ### run
 
-▸ **run**<`TOutput`\>(`query`, `annotation`, `timeline`, `freshness`): `Promise`<`TOutput`\>
+▸ **run**\<`TOutput`\>(`query`, `annotation`, `timeline`, `freshness`): `Promise`\<`TOutput`\>
 
 Runs a query after choosing the right Client (destination connection,
 Shard, annotation etc.)
@@ -95,14 +99,14 @@ Shard, annotation etc.)
 
 | Name | Type |
 | :------ | :------ |
-| `query` | [`Query`](../interfaces/Query.md)<`TOutput`\> |
+| `query` | [`Query`](../interfaces/Query.md)\<`TOutput`\> |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 | `timeline` | [`Timeline`](Timeline.md) |
 | `freshness` | ``null`` \| typeof [`MASTER`](../modules.md#master) \| typeof [`STALE_REPLICA`](../modules.md#stale_replica) |
 
 #### Returns
 
-`Promise`<`TOutput`\>
+`Promise`\<`TOutput`\>
 
 #### Defined in
 
@@ -112,14 +116,14 @@ ___
 
 ### assertDiscoverable
 
-▸ **assertDiscoverable**(): `Promise`<`void`\>
+▸ **assertDiscoverable**(): `Promise`\<`void`\>
 
 Throws if this Shard does not exist, or its Island is down, or something
 else is wrong with it.
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 #### Defined in
 

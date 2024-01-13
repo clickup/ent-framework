@@ -12,7 +12,11 @@
 
 ### constructor
 
-• **new IDsCacheUpdatable**()
+• **new IDsCacheUpdatable**(): [`IDsCacheUpdatable`](IDsCacheUpdatable.md)
+
+#### Returns
+
+[`IDsCacheUpdatable`](IDsCacheUpdatable.md)
 
 #### Inherited from
 

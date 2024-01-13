@@ -7,7 +7,7 @@ test("serialize and deserialize", async () => {
 
   timeline.setPos(BigInt(42), 10000 /* ms */);
   expect(timeline.serialize()).toEqual(
-    Timeline.deserialize(timeline.serialize(), null).serialize()
+    Timeline.deserialize(timeline.serialize(), null).serialize(),
   );
   expect(timeline.isCaughtUp(BigInt(50))).toBeTruthy();
   expect(timeline.isCaughtUp(BigInt(40))).not.toBeTruthy();

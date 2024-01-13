@@ -1,9 +1,9 @@
 import delay from "delay";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
-import { DefaultMap } from "../helpers/DefaultMap";
-import type { MaybeCallable } from "../helpers/misc";
-import { maybeCall, runInVoid } from "../helpers/misc";
+import { DefaultMap } from "../internal/DefaultMap";
+import type { MaybeCallable } from "../internal/misc";
+import { maybeCall, runInVoid } from "../internal/misc";
 import type { QueryAnnotation } from "./QueryAnnotation";
 import type { Runner } from "./Runner";
 
@@ -58,7 +58,7 @@ export class Batcher<TInput, TOutput> {
             inputs,
             incrementAttempt(annotations),
             outputs,
-            errors
+            errors,
           );
         } else {
           for (const key of defers.keys()) {
@@ -89,7 +89,7 @@ export class Batcher<TInput, TOutput> {
 
   constructor(
     private runner: Runner<TInput, TOutput>,
-    private batchDelayMs: MaybeCallable<number>
+    private batchDelayMs: MaybeCallable<number>,
   ) {}
 
   async run(input: TInput, annotation: QueryAnnotation): Promise<TOutput> {
@@ -111,7 +111,7 @@ export class Batcher<TInput, TOutput> {
         annotation.vc +
         annotation.debugStack +
         annotation.whyClient,
-      annotation
+      annotation,
     );
 
     if (this.queuedInputs.size >= this.runner.maxBatchSize) {
@@ -129,8 +129,8 @@ export class Batcher<TInput, TOutput> {
         Promise.resolve().then(() =>
           delay > 0
             ? setTimeout(() => runInVoid(this.flushQueue()), delay)
-            : process.nextTick(this.flushQueue)
-        )
+            : process.nextTick(this.flushQueue),
+        ),
       );
     }
 
@@ -141,7 +141,7 @@ export class Batcher<TInput, TOutput> {
     inputs: Map<string, TInput>,
     annotations: QueryAnnotation[],
     outOutputs: Map<string, TOutput | undefined>,
-    outErrors: Map<string, unknown>
+    outErrors: Map<string, unknown>,
   ): Promise<void> {
     const promises: Array<Promise<unknown>> = [];
     for (const [key, input] of inputs) {
@@ -158,14 +158,14 @@ export class Batcher<TInput, TOutput> {
             if (retryMs !== "no_retry") {
               return this.runner.runSingle(
                 input,
-                incrementAttempt(annotations)
+                incrementAttempt(annotations),
               );
             }
 
             throw error;
           })
           .then((output) => outOutputs.set(key, output))
-          .catch((error) => outErrors.set(key, error))
+          .catch((error) => outErrors.set(key, error)),
       );
     }
 

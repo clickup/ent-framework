@@ -8,7 +8,7 @@ export class EntNotInsertableError extends EntAccessError {
     entName: string,
     public readonly vc: string,
     public readonly row: object,
-    cause: unknown = null
+    cause: unknown = null,
   ) {
     super(entName, `${entName}: cannot insert in ${vc}`, cause);
   }

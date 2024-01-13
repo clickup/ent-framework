@@ -4,12 +4,12 @@ import type { Cluster } from "../abstract/Cluster";
 import type { Query } from "../abstract/Query";
 import type { Schema } from "../abstract/Schema";
 import type { Shard } from "../abstract/Shard";
-import type { DesperateAny } from "../helpers/misc";
-import { join } from "../helpers/misc";
+import type { DesperateAny } from "../internal/misc";
+import { join } from "../internal/misc";
 import type { FieldOfIDTypeRequired, Table } from "../types";
 import { ID } from "../types";
-import type { ShardAffinity } from "./Configuration";
-import { GLOBAL_SHARD } from "./Configuration";
+import type { ShardAffinity } from "./ShardAffinity";
+import { GLOBAL_SHARD } from "./ShardAffinity";
 import type { VC } from "./VC";
 
 /**
@@ -21,7 +21,7 @@ const ZERO_NULL = "0";
 
 /**
  * Represents an Inverse assoc manager which knows how to modify/query Inverses.
- * Parameter `name` is the Inverse's schema name (in SQL like databases, most
+ * Parameter `name` is the Inverse's schema name (in relational databases, most
  * likely a table name), and `type` holds both the name of the "parent" entity
  * and the field name of the child (e.g. "org2users" when a field "org_id" in
  * EntUser refers an EntOrg row).
@@ -64,7 +64,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   async beforeInsert(
     vc: VC,
     id1: string | null,
-    id2: string
+    id2: string,
   ): Promise<boolean> {
     if (this.id2ShardIsInferrableFromShardAffinity(id1)) {
       return false;
@@ -77,7 +77,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
         type: this.type,
         id1: id1 ?? ZERO_NULL,
         id2,
-      })
+      }),
     );
     return id !== null;
   }
@@ -89,7 +89,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
     vc: VC,
     id1: string | null,
     id2: string,
-    oldID1: string | null
+    oldID1: string | null,
   ): Promise<void> {
     if (id1 === oldID1) {
       return;
@@ -116,7 +116,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
         type: this.type,
         id1: id1 ?? ZERO_NULL,
         id2,
-      })
+      }),
     );
     if (row) {
       await this.run(vc, this.shard(id1), this.inverseSchema.delete(row.id));
@@ -134,7 +134,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
       this.inverseSchema.selectBy({
         type: this.type,
         id1: id1 ?? ZERO_NULL,
-      })
+      }),
     );
     return rows.map((row) => row.id2).sort();
   }
@@ -148,12 +148,12 @@ export class Inverse<TClient extends Client, TTable extends Table> {
    */
   @Memoize(
     (id2Schema: Schema<DesperateAny>, name: string) =>
-      id2Schema.table[ID].autoInsert + name
+      id2Schema.table[ID].autoInsert + name,
   )
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   private static buildInverseSchema(
     id2Schema: Schema<DesperateAny>,
-    name: string
+    name: string,
   ) {
     return new id2Schema.constructor(
       name,
@@ -164,7 +164,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
         id1: { type: ID },
         id2: { type: ID },
       },
-      ["type", "id1", "id2"]
+      ["type", "id1", "id2"],
     );
   }
 
@@ -193,13 +193,13 @@ export class Inverse<TClient extends Client, TTable extends Table> {
   private async run<TOutput>(
     vc: VC,
     shard: Shard<TClient>,
-    query: Query<TOutput>
+    query: Query<TOutput>,
   ): Promise<TOutput> {
     return shard.run(
       query,
       vc.toAnnotation(),
       vc.timeline(shard, `${this.name}:${this.type}`),
-      vc.freshness
+      vc.freshness,
     );
   }
 

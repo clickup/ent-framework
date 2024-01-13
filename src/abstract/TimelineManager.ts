@@ -1,4 +1,4 @@
-import { maybeCall, type MaybeCallable } from "../helpers/misc";
+import { maybeCall, type MaybeCallable } from "../internal/misc";
 
 /**
  * A side effect based container which holds the current master or replica
@@ -23,7 +23,7 @@ export class TimelineManager {
      * returned by currentPos(). Makes sense for replica connections which
      * execute queries rarely: for them, the framework triggers the update when
      * the fresh data is needed. */
-    private triggerRefresh: () => Promise<unknown>
+    private triggerRefresh: () => Promise<unknown>,
   ) {}
 
   /**

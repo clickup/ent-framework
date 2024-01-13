@@ -1,9 +1,9 @@
 [@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Inverse
 
-# Class: Inverse<TClient, TTable\>
+# Class: Inverse\<TClient, TTable\>
 
 Represents an Inverse assoc manager which knows how to modify/query Inverses.
-Parameter `name` is the Inverse's schema name (in SQL like databases, most
+Parameter `name` is the Inverse's schema name (in relational databases, most
 likely a table name), and `type` holds both the name of the "parent" entity
 and the field name of the child (e.g. "org2users" when a field "org_id" in
 EntUser refers an EntOrg row).
@@ -19,7 +19,7 @@ EntUser refers an EntOrg row).
 
 ### constructor
 
-• **new Inverse**<`TClient`, `TTable`\>(`«destructured»`)
+• **new Inverse**\<`TClient`, `TTable`\>(`«destructured»`): [`Inverse`](Inverse.md)\<`TClient`, `TTable`\>
 
 #### Type parameters
 
@@ -33,12 +33,16 @@ EntUser refers an EntOrg row).
 | Name | Type |
 | :------ | :------ |
 | `«destructured»` | `Object` |
-| › `cluster` | [`Cluster`](Cluster.md)<`TClient`, `any`\> |
-| › `shardAffinity` | [`ShardAffinity`](../modules.md#shardaffinity)<`string`\> |
-| › `id2Schema` | [`Schema`](Schema.md)<`TTable`, [`UniqueKey`](../modules.md#uniquekey)<`TTable`\>\> |
-| › `id2Field` | [`FieldOfIDTypeRequired`](../modules.md#fieldofidtyperequired)<`TTable`\> |
+| › `cluster` | [`Cluster`](Cluster.md)\<`TClient`, `any`\> |
+| › `shardAffinity` | [`ShardAffinity`](../modules.md#shardaffinity)\<`string`\> |
+| › `id2Schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\> |
+| › `id2Field` | [`FieldOfIDTypeRequired`](../modules.md#fieldofidtyperequired)\<`TTable`\> |
 | › `name` | `string` |
 | › `type` | `string` |
+
+#### Returns
+
+[`Inverse`](Inverse.md)\<`TClient`, `TTable`\>
 
 #### Defined in
 
@@ -48,7 +52,7 @@ EntUser refers an EntOrg row).
 
 ### id2Field
 
-• `Readonly` **id2Field**: [`FieldOfIDTypeRequired`](../modules.md#fieldofidtyperequired)<`TTable`\>
+• `Readonly` **id2Field**: [`FieldOfIDTypeRequired`](../modules.md#fieldofidtyperequired)\<`TTable`\>
 
 #### Defined in
 
@@ -68,7 +72,7 @@ ___
 
 ### beforeInsert
 
-▸ **beforeInsert**(`vc`, `id1`, `id2`): `Promise`<`boolean`\>
+▸ **beforeInsert**(`vc`, `id1`, `id2`): `Promise`\<`boolean`\>
 
 Runs before a row with a pre-generated id2 was inserted to the main schema.
 Returns true if the Inverse row was actually inserted in the DB.
@@ -83,7 +87,7 @@ Returns true if the Inverse row was actually inserted in the DB.
 
 #### Returns
 
-`Promise`<`boolean`\>
+`Promise`\<`boolean`\>
 
 #### Defined in
 
@@ -93,7 +97,7 @@ ___
 
 ### afterUpdate
 
-▸ **afterUpdate**(`vc`, `id1`, `id2`, `oldID1`): `Promise`<`void`\>
+▸ **afterUpdate**(`vc`, `id1`, `id2`, `oldID1`): `Promise`\<`void`\>
 
 Runs after a row was updated in the main schema.
 
@@ -108,7 +112,7 @@ Runs after a row was updated in the main schema.
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 #### Defined in
 
@@ -118,7 +122,7 @@ ___
 
 ### afterDelete
 
-▸ **afterDelete**(`vc`, `id1`, `id2`): `Promise`<`void`\>
+▸ **afterDelete**(`vc`, `id1`, `id2`): `Promise`\<`void`\>
 
 Runs after a row was deleted in the main schema.
 
@@ -132,7 +136,7 @@ Runs after a row was deleted in the main schema.
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 #### Defined in
 
@@ -142,7 +146,7 @@ ___
 
 ### id2s
 
-▸ **id2s**(`vc`, `id1`): `Promise`<`string`[]\>
+▸ **id2s**(`vc`, `id1`): `Promise`\<`string`[]\>
 
 Returns all id2s by a particular (id1, type) pair. The number of resulting
 rows is limited to not overload the database.
@@ -156,7 +160,7 @@ rows is limited to not overload the database.
 
 #### Returns
 
-`Promise`<`string`[]\>
+`Promise`\<`string`[]\>
 
 #### Defined in
 

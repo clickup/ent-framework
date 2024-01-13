@@ -15,7 +15,7 @@ so the Ent was not mutated.
 
 ### constructor
 
-• **new EntUniqueKeyError**(`entName`, `input`)
+• **new EntUniqueKeyError**(`entName`, `input`): [`EntUniqueKeyError`](EntUniqueKeyError.md)
 
 #### Parameters
 
@@ -23,6 +23,10 @@ so the Ent was not mutated.
 | :------ | :------ |
 | `entName` | `string` |
 | `input` | `unknown` |
+
+#### Returns
+
+[`EntUniqueKeyError`](EntUniqueKeyError.md)
 
 #### Overrides
 
@@ -40,7 +44,7 @@ Error.constructor
 
 #### Defined in
 
-[src/ent/errors/EntUniqueKeyError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L8)
+[src/ent/errors/EntUniqueKeyError.ts:9](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L9)
 
 ___
 
@@ -50,13 +54,13 @@ ___
 
 #### Defined in
 
-[src/ent/errors/EntUniqueKeyError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L8)
+[src/ent/errors/EntUniqueKeyError.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L10)
 
 ## Methods
 
 ### ignore
 
-▸ `Static` **ignore**<`T`\>(`promise`): `Promise`<`undefined` \| `T`\>
+▸ **ignore**\<`T`\>(`promise`): `Promise`\<`undefined` \| `T`\>
 
 Returns a promise of T on success, and undefined in case unique key
 violation happened during the promise resolution.
@@ -71,12 +75,12 @@ violation happened during the promise resolution.
 
 | Name | Type |
 | :------ | :------ |
-| `promise` | `Promise`<`T`\> |
+| `promise` | `Promise`\<`T`\> |
 
 #### Returns
 
-`Promise`<`undefined` \| `T`\>
+`Promise`\<`undefined` \| `T`\>
 
 #### Defined in
 
-[src/ent/errors/EntUniqueKeyError.ts:25](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L25)
+[src/ent/errors/EntUniqueKeyError.ts:28](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L28)
