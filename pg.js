@@ -1,4 +1,2 @@
 "use strict";
-Object.assign(exports, {
-  ...require("./dist/pg"),
-});
+module.exports = require("./dist/pg");
