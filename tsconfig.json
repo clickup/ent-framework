@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "incremental": true,
-    "lib": ["es2019", "es2021.WeakRef"],
+    "lib": ["ES2021", "ES2021.WeakRef"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmitOnError": true,
@@ -20,12 +20,11 @@
     "outDir": "dist",
     "pretty": true,
     "removeComments": false,
-    "resolveJsonModule": true,
     "rootDir": "src",
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es2019",
+    "target": "ES2021",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "types": ["node", "jest"]
   }
