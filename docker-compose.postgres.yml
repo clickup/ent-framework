@@ -3,7 +3,7 @@ services:
   postgres:
     image: postgres:16
     ports:
-      - "54832:5432"
+      - "${PGPORT:?err}:5432"
     environment:
       POSTGRES_PASSWORD: postgres
       PGDATA: /tmp/postgresql

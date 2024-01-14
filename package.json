@@ -25,14 +25,14 @@
     "barrel": "barrelsby --directory=./src/abstract --directory=./src/ent --directory=./src/helpers --directory=./src/pg --delete --exclude=__ --exclude=internal --name=index",
     "build": "$npm_execpath run barrel && tsc",
     "dev": "$npm_execpath run barrel && tsc --watch --preserveWatchOutput",
-    "lint": "eslint . --ext .ts --cache --cache-location dist/.eslintcache",
-    "test": "set -e; bash internal/docker-compose-up.sh; export PGHOST=127.0.0.1 PGPORT=54832 PGDATABASE=postgres PGUSER=postgres PGPASSWORD=postgres; bash ./internal/init-db.sh; jest",
-    "psql": "PGHOST=127.0.0.1 PGPORT=54832 PGDATABASE=postgres PGUSER=postgres PGPASSWORD=postgres psql",
-    "docs": "rm -rf docs && typedoc --plugin typedoc-plugin-markdown --plugin typedoc-plugin-merge-modules && sed -i '' -E 's#packages/[^/]+/##g' $(find docs -type f -name '*.md')",
-    "clean": "rm -rf dist yarn.lock package-lock.json pnpm-lock.yaml *.log",
+    "lint": "bash internal/lint.sh",
+    "test": "PGPORT=54832 bash internal/with-docker-compose-up.postgres.sh 'bash ./internal/init-db.sh && jest'",
+    "psql": "PGPORT=54832 bash internal/with-docker-compose-up.postgres.sh psql",
+    "docs": "bash internal/docs.sh",
+    "clean": "bash internal/clean.sh",
     "copy-package-to-public-dir": "copy-package-to-public-dir.sh",
     "backport-package-from-public-dir": "backport-package-from-public-dir.sh",
-    "deploy": "npm run build && npm run lint && npm run test && npm publish --access=public"
+    "deploy": "bash internal/deploy.sh"
   },
   "dependencies": {
     "delay": "^4.4.1",
