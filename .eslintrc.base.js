@@ -1,5 +1,5 @@
 "use strict";
-module.exports = (projectRoot) => ({
+module.exports = (projectRoot, extraRules = {}) => ({
   root: true, // fix possible "Plugin %s was conflicted between %s.json and %s.json" errors
   env: {
     jest: true,
@@ -430,5 +430,6 @@ module.exports = (projectRoot) => ({
     ],
 
     quotes: ["error", "double", { avoidEscape: true }],
+    ...extraRules,
   },
 });
