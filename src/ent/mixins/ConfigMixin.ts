@@ -194,7 +194,7 @@ export function ConfigMixin<
 
             return new Inverse({
               cluster,
-              shardAffinity: this.SHARD_AFFINITY,
+              shardAffinity: this.SHARD_AFFINITY as ShardAffinity<string>,
               id2Schema: schema,
               id2Field: field,
               name,

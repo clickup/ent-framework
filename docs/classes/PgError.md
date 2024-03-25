@@ -41,7 +41,7 @@ carries suggestions, what to do next.
 
 ### cause
 
-• `Readonly` **cause**: `undefined` \| ``null`` \| \{ `message?`: `unknown` ; `stack?`: `unknown`  }
+• `Readonly` **cause**: `MaybeError`
 
 #### Inherited from
 
@@ -49,7 +49,7 @@ carries suggestions, what to do next.
 
 #### Defined in
 
-[src/abstract/ClientError.ts:25](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L25)
+[src/abstract/ClientError.ts:45](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L45)
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 #### Defined in
 
-[src/abstract/ClientError.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L30)
+[src/abstract/ClientError.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L47)
 
 ___
 
@@ -77,7 +77,21 @@ ___
 
 #### Defined in
 
-[src/abstract/ClientError.ts:31](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L31)
+[src/abstract/ClientError.ts:48](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L48)
+
+___
+
+### abbreviation
+
+• `Readonly` **abbreviation**: `string`
+
+#### Inherited from
+
+[ClientError](ClientError.md).[abbreviation](ClientError.md#abbreviation)
+
+#### Defined in
+
+[src/abstract/ClientError.ts:49](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L49)
 
 ___
 
@@ -91,7 +105,7 @@ ___
 
 #### Defined in
 
-[src/abstract/ClientError.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L32)
+[src/abstract/ClientError.ts:50](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L50)
 
 ___
 

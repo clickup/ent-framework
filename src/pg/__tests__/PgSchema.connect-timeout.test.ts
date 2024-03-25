@@ -33,7 +33,7 @@ let connStuckTestConfig: typeof TEST_CONFIG;
 
 beforeEach(async () => {
   testCluster.options.locateIslandErrorRetryCount = 2;
-  testCluster.options.locateIslandErrorRetryDelayMs = 100;
+  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 100;
   testCluster.options.shardsDiscoverRecheckIslandsIntervalMs = 20000; // intentionally large
   testCluster.options.shardsDiscoverIntervalMs = 100000;
 
@@ -75,7 +75,9 @@ afterEach(async () => {
 });
 
 test("when connection gets stuck during background rediscovery, it does not slowdown queries", async () => {
-  const errorSpy = jest.spyOn(connStuckTestConfig, "swallowedErrorLogger");
+  const errorSpy = jest.mocked(
+    connStuckTestConfig.loggers.swallowedErrorLogger,
+  );
   testCluster.options.islands = [
     { no: 0, nodes: [TEST_CONFIG, connStuckTestConfig] },
   ];
@@ -98,7 +100,9 @@ test("when rediscovery is triggered by a failed query, and connection gets stuck
   const master = await shard.client(MASTER);
   await master.rows("ALTER TABLE %T RENAME TO %T", schema.name, TABLE_BAK);
 
-  const errorSpy = jest.spyOn(connStuckTestConfig, "swallowedErrorLogger");
+  const errorSpy = jest.mocked(
+    connStuckTestConfig.loggers.swallowedErrorLogger,
+  );
   testCluster.options.islands = [
     { no: 0, nodes: [TEST_CONFIG, connStuckTestConfig] },
   ];

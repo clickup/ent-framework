@@ -10,17 +10,7 @@
 
 #### Defined in
 
-[src/abstract/Loggers.ts:11](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L11)
-
-___
-
-### connID
-
-• **connID**: `string`
-
-#### Defined in
-
-[src/abstract/Loggers.ts:12](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L12)
+[src/abstract/Loggers.ts:20](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L20)
 
 ___
 
@@ -30,7 +20,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:13](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L13)
+[src/abstract/Loggers.ts:21](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L21)
 
 ___
 
@@ -40,7 +30,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:14](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L14)
+[src/abstract/Loggers.ts:22](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L22)
 
 ___
 
@@ -50,7 +40,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L15)
+[src/abstract/Loggers.ts:23](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L23)
 
 ___
 
@@ -60,7 +50,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:16](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L16)
+[src/abstract/Loggers.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L24)
 
 ___
 
@@ -70,7 +60,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:17](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L17)
+[src/abstract/Loggers.ts:25](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L25)
 
 ___
 
@@ -80,7 +70,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:18](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L18)
+[src/abstract/Loggers.ts:26](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L26)
 
 ___
 
@@ -97,7 +87,24 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:19](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L19)
+[src/abstract/Loggers.ts:27](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L27)
+
+___
+
+### connStats
+
+• **connStats**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `id` | `string` |
+| `queriesSent` | `number` |
+
+#### Defined in
+
+[src/abstract/Loggers.ts:31](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L31)
 
 ___
 
@@ -107,15 +114,15 @@ ___
 
 #### Type declaration
 
-| Name | Type |
-| :------ | :------ |
-| `totalCount` | `number` |
-| `waitingCount` | `number` |
-| `idleCount` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `totalConns` | `number` | Total number of connections in the pool. |
+| `idleConns` | `number` | Connections not busy running a query. |
+| `queuedReqs` | `number` | Once all idle connections are over, requests are queued waiting for a new available connection. This is the number of such queued requests. |
 
 #### Defined in
 
-[src/abstract/Loggers.ts:23](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L23)
+[src/abstract/Loggers.ts:35](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L35)
 
 ___
 
@@ -125,17 +132,17 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:28](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L28)
+[src/abstract/Loggers.ts:44](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L44)
 
 ___
 
-### isMaster
+### role
 
-• **isMaster**: `boolean`
+• **role**: [`ClientRole`](../modules.md#clientrole)
 
 #### Defined in
 
-[src/abstract/Loggers.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L29)
+[src/abstract/Loggers.ts:45](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L45)
 
 ___
 
@@ -145,4 +152,14 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L30)
+[src/abstract/Loggers.ts:46](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L46)
+
+___
+
+### address
+
+• **address**: `string`
+
+#### Defined in
+
+[src/abstract/Loggers.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L47)

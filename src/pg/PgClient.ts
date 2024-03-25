@@ -1,19 +1,26 @@
 import defaults from "lodash/defaults";
 import type { QueryResult, QueryResultRow } from "pg";
-import type { ClientOptions } from "../abstract/Client";
-import { Client } from "../abstract/Client";
 import type {
-  ClientErrorKind,
-  ClientErrorPostAction,
-} from "../abstract/ClientError";
+  ClientConnectionIssue,
+  ClientOptions,
+  ClientPingInput,
+  ClientRole,
+} from "../abstract/Client";
+import { Client } from "../abstract/Client";
+import type { ClientErrorPostAction } from "../abstract/ClientError";
 import { ClientError } from "../abstract/ClientError";
+import {
+  OP_PING,
+  OP_SHARD_NOS,
+  OP_TIMELINE_POS_REFRESH,
+} from "../abstract/internal/misc";
 import type { ClientQueryLoggerProps } from "../abstract/Loggers";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { ShardError } from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
-import type { MaybeCallable, PickPartial } from "../internal/misc";
+import type { MaybeCallable, MaybeError, PickPartial } from "../internal/misc";
 import {
-  hasKey,
+  addSentenceSuffixes,
   maybeCall,
   nullthrows,
   sanitizeIDForDebugPrinting,
@@ -21,91 +28,10 @@ import {
 import { Ref } from "../internal/Ref";
 import type { Literal } from "../types";
 import { escapeLiteral } from "./helpers/escapeLiteral";
+import { CLIENT_ERROR_PREDICATES } from "./internal/misc";
 import { parseCompositeRow } from "./internal/parseCompositeRow";
 import { parseLsn } from "./internal/parseLsn";
 import { PgError } from "./PgError";
-
-const TIMELINE_POS_REFRESH = "TIMELINE_POS_REFRESH";
-
-/**
- * Some errors affect the logic of choosing another replica Client when a query
- * retry is requested (controlled via ClientError). Mostly, those are the
- * situation when a PG node goes down.
- */
-const CLIENT_ERROR_PREDICATES: Array<
-  (error: { code: string; message: string }) =>
-    | false
-    | {
-        postAction: ClientErrorPostAction;
-        kind: ClientErrorKind;
-        comment: string;
-      }
-> = [
-  ({ code }) =>
-    code === "42P01" && {
-      postAction: "rediscover",
-      kind: "data-on-server-is-unchanged",
-      comment:
-        "Table doesn't exist or disappeared (undefined_table; e.g. the Shard was relocated to another Island).",
-    },
-  ({ code }) =>
-    code === "25006" && {
-      postAction: "rediscover",
-      kind: "data-on-server-is-unchanged",
-      comment:
-        "A write happened in a read-only Client (read_only_sql_transaction; probably the Client's role was changed from master to replica due to a failover/switchover).",
-    },
-  ({ code }) =>
-    code === "57P01" && {
-      postAction: "rediscover",
-      kind: "data-on-server-is-unchanged",
-      comment:
-        "The database is shutting down by an administrator (admin_shutdown).",
-    },
-  ({ code }) =>
-    code === "57P02" && {
-      postAction: "rediscover",
-      kind: "data-on-server-is-unchanged",
-      comment: "The database is crashed and is shutting down (crash_shutdown).",
-    },
-  ({ message }) =>
-    message === "Connection terminated unexpectedly" && {
-      postAction: "choose-another-client",
-      kind: "unknown-server-state", // !!!
-      comment:
-        "Node-postgres connection terminated unexpectedly (from client.js).",
-    },
-  ({ code }) =>
-    code === "ECONNREFUSED" && {
-      postAction: "choose-another-client",
-      kind: "data-on-server-is-unchanged",
-      comment: "Node TCP library connect error (ECONNREFUSED).",
-    },
-  ({ code, message }) =>
-    code === "08P01" && // protocol_violation
-    message === "query_wait_timeout" && {
-      postAction: "choose-another-client",
-      kind: "data-on-server-is-unchanged",
-      comment:
-        "PG went down a few seconds ago, but a PgBouncer connection is still open, so the query sent to it times out waiting (query_wait_timeout). After some time, PgBouncer will stop emitting this error and start emitting server_login_retry on new connections instead.",
-    },
-  ({ code, message }) =>
-    code === "08P01" && // protocol_violation
-    message.includes("server_login_retry") && {
-      postAction: "choose-another-client",
-      kind: "data-on-server-is-unchanged",
-      comment:
-        "PG is down for quite some time, so PgBouncer throws this exception on each new connection immediately (server_login_retry).",
-    },
-  ({ code, message }) =>
-    code === "08P01" && // protocol_violation
-    message === "pgbouncer cannot connect to server" && {
-      postAction: "choose-another-client",
-      kind: "data-on-server-is-unchanged",
-      comment:
-        'PgBouncer emits "cannot connect to server" error sometimes instead of query_wait_timeout and server_login_retry.',
-    },
-];
 
 /**
  * Options for PgClient constructor.
@@ -145,6 +71,7 @@ export interface PgClientOptions extends ClientOptions {
  */
 export interface PgClientConn {
   id?: number;
+  queriesSent?: number;
   query<R extends QueryResultRow>(
     query: string,
   ): Promise<Array<QueryResult<R>>>;
@@ -182,16 +109,17 @@ export abstract class PgClient extends Client {
    * since it expands to "sh0012"). */
   private readonly shardNoPadLen: number = 0;
 
-  /** This flag is set after each request to reflect the actual role of the
+  /** This value is set after each request to reflect the actual role of the
    * client. The idea is that master/replica role may change online, without
    * reconnecting the Client, so we need to refresh it after each request and be
    * ready for a fallback. The expectation is that the initial value is
    * populated during the very first shardNos() call. */
-  private readonly reportedMasterAfterLastQuery = new Ref(false);
+  private readonly reportedRoleAfterLastQuery = new Ref<ClientRole>("unknown");
 
-  /** This flag is set if there was an unsuccessful connection attempt (i.e. the
-   * PG may be down), and there were no successful queries since then. */
-  private readonly reportedConnectionIssue = new Ref(false);
+  /** This value is non-null if there was an unsuccessful connection attempt
+   * (i.e. the PG is down), and there were no successful queries since then. */
+  private readonly reportedConnectionIssue =
+    new Ref<ClientConnectionIssue | null>(null);
 
   /** PgClient configuration options. */
   override readonly options: Required<PgClientOptions>;
@@ -236,18 +164,19 @@ export abstract class PgClient extends Client {
         const startTime = performance.now();
         try {
           await this.query({
-            query: [`SELECT '${TIMELINE_POS_REFRESH}'`],
+            query: [`SELECT '${OP_TIMELINE_POS_REFRESH}'`],
             isWrite: false,
             annotations: [],
-            op: TIMELINE_POS_REFRESH,
+            op: OP_TIMELINE_POS_REFRESH,
             table: "pg_catalog",
           });
         } catch (error: unknown) {
-          this.logSwallowedError(
-            TIMELINE_POS_REFRESH,
+          this.logSwallowedError({
+            where: OP_TIMELINE_POS_REFRESH,
             error,
-            performance.now() - startTime,
-          );
+            elapsed: performance.now() - startTime,
+            importance: "normal",
+          });
         }
       },
     );
@@ -264,7 +193,7 @@ export abstract class PgClient extends Client {
 
   /**
    * Sends a query (internally, a multi-query). After the query finishes, we
-   * should expect that isMaster() returns the actual master/replica role.
+   * should expect that role() returns the actual master/replica role.
    */
   async query<TRow>({
     query: queryLiteral,
@@ -283,204 +212,114 @@ export abstract class PgClient extends Client {
     table: string;
     batchFactor?: number;
   }): Promise<TRow[]> {
-    annotations ??= [];
-    const query = escapeLiteral(queryLiteral).trimEnd();
-
-    const queriesPrologue: string[] = [];
-    const queriesEpilogue: string[] = [];
-    const queriesRollback: string[] = [];
-
-    // Prepend per-query hints to the prologue (if any); they will be logged.
-    if (hints) {
-      queriesPrologue.unshift(
-        ...Object.entries(hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`),
+    const { queries, queriesRollback, debugQueryWithHints, resultPos } =
+      this.buildMultiQuery(
+        hints,
+        queryLiteral,
+        // For master, we read its WAL LSN (pg_current_wal_insert_lsn) after
+        // each query (notice that, when run on a replica,
+        // pg_current_wal_insert_lsn() throws, so we call it only if
+        // pg_is_in_recovery() returns false). For replica, we read its WAL LSN
+        // (pg_last_wal_replay_lsn).
+        "SELECT CASE WHEN pg_is_in_recovery() THEN NULL ELSE pg_current_wal_insert_lsn() END AS pg_current_wal_insert_lsn, pg_last_wal_replay_lsn()",
+        isWrite,
       );
-    }
 
-    // The query which is logged to the logging infra. For more brief messages,
-    // we don't log internal hints (this.hints) and search_path; see below.
-    const debugQueryWithHints =
-      `/*${this.shardName}*/` + [...queriesPrologue, query].join("; ");
-
-    // Prepend internal per-Client hints to the prologue.
-    if (this.options.hints) {
-      queriesPrologue.unshift(
-        ...Object.entries(maybeCall(this.options.hints)).map(([k, v]) =>
-          k.toLowerCase() === "transaction"
-            ? `SET LOCAL ${k} ${v}`
-            : `SET LOCAL ${k} TO ${v}`,
-        ),
-      );
-    }
-
-    // We must always have "public" in search_path, because extensions are by
-    // default installed in "public" schema. Some extensions may expose
-    // operators (e.g. "citext" exposes comparison operators) which must be
-    // available in all Shards by default, so they should live in "public".
-    // (There is a way to install an extension to a particular schema, but a)
-    // there can be only one such schema, and b) there are problems running
-    // pg_dump when migrating this Shard to another machine since pg_dump
-    // doesn't emit CREATE EXTENSION statement when filtering by schema name).
-    queriesPrologue.unshift(
-      `SET LOCAL search_path TO ${this.shardName}, public`,
-    );
-
-    // Why BEGIN...COMMIT for write queries? See here:
-    // https://www.postgresql.org/message-id/20220803.163217.1789690807623885906.horikyota.ntt%40gmail.com
-    if (isWrite) {
-      queriesPrologue.unshift("BEGIN");
-      queriesRollback.push("ROLLBACK");
-      queriesEpilogue.push("COMMIT");
-    }
-
-    // For master, we read its WAL LSN (pg_current_wal_insert_lsn) after each
-    // query (notice that, when run on a replica, pg_current_wal_insert_lsn()
-    // throws, so we call it only if pg_is_in_recovery() returns false). For
-    // replica, we read its WAL LSN (pg_last_wal_replay_lsn).
-    queriesEpilogue.push(
-      "SELECT CASE WHEN pg_is_in_recovery() THEN NULL ELSE pg_current_wal_insert_lsn() END AS pg_current_wal_insert_lsn, pg_last_wal_replay_lsn()",
-    );
-
-    const queries = [...queriesPrologue, query, ...queriesEpilogue];
+    const startTime = performance.now();
+    let queryTime: number | undefined = undefined;
+    let conn: PgClientConn | undefined = undefined;
+    let res: TRow[] | undefined = undefined;
+    let e: MaybeError<{ severity?: unknown }> = undefined;
+    let postAction: ClientErrorPostAction = "fail";
 
     try {
-      const startTime = performance.now();
-      let acquireElapsed: number | null = null;
-      let e: unknown = undefined;
-      let connID: string = "?";
-      let res: TRow[] | undefined;
-
-      try {
-        if (this.isEnded()) {
-          throw new ClientError(
-            Error(`Cannot use ${this.constructor.name} since it's ended`),
-            this.options.name,
-            "choose-another-client",
-            "data-on-server-is-unchanged",
-          );
-        }
-
-        const conn = await this.acquireConn();
-        acquireElapsed = performance.now() - startTime;
-        connID = "" + (conn.id ?? 0);
-        try {
-          if (query === "") {
-            throw Error("Empty query passed to query()");
-          }
-
-          let resMulti: QueryResult[];
-          try {
-            // A good and simple explanation of the protocol is here:
-            // https://www.postgresql.org/docs/13/protocol-flow.html. In short,
-            // we can't use prepared-statement-based operations even
-            // theoretically, because this mode doesn't support multi-queries.
-            // Also notice that TS typing is doomed for multi-queries:
-            // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/33297
-            resMulti = await conn.query(
-              `/*${this.shardName}*/${queries.join("; ")}`,
-            );
-            this.reportedConnectionIssue.current = false;
-          } catch (e: unknown) {
-            // We must run a ROLLBACK if we used BEGIN in the queries, because
-            // otherwise the connection is released to the pool in "aborted
-            // transaction" state (see the protocol link above).
-            if (queriesRollback.length > 0) {
-              await conn.query(queriesRollback.join("; ")).catch(() => {});
-            }
-
-            throw e;
-          }
-
-          if (resMulti.length !== queries.length) {
-            throw Error(
-              `Multi-query (with semicolons) is not allowed as an input to query(); got ${debugQueryWithHints}`,
-            );
-          }
-
-          res = resMulti[queriesPrologue.length].rows;
-
-          const lsns = resMulti[resMulti.length - 1].rows[0] as {
-            pg_current_wal_insert_lsn: string | null;
-            pg_last_wal_replay_lsn: string | null;
-          };
-
-          this.reportedMasterAfterLastQuery.current = this.options
-            .isAlwaysLaggingReplica
-            ? false
-            : lsns.pg_current_wal_insert_lsn !== null;
-          this.timelineManager.setCurrentPos(
-            this.options.isAlwaysLaggingReplica
-              ? // For debugging, we pretend that the replica is always lagging.
-                BigInt(0)
-              : lsns.pg_current_wal_insert_lsn
-                ? // Master always has pg_current_wal_insert_lsn defined.
-                  nullthrows(parseLsn(lsns.pg_current_wal_insert_lsn))
-                : // This is a replica, so pg_last_wal_replay_lsn must be non-null.
-                  nullthrows(parseLsn(lsns.pg_last_wal_replay_lsn)),
-          );
-        } finally {
-          this.releaseConn(conn);
-        }
-      } catch (ex: unknown) {
-        e = ex;
-        throw ex;
-      } finally {
-        const totalElapsed = performance.now() - startTime;
-        this.options.loggers.clientQueryLogger?.({
-          annotations,
-          connID,
-          op,
-          shard: this.shardName,
-          table,
-          batchFactor: batchFactor ?? 1,
-          msg: debugQueryWithHints,
-          output: res ? res : undefined,
-          elapsed: {
-            total: totalElapsed,
-            acquire: acquireElapsed ?? totalElapsed,
-          },
-          poolStats: this.poolStats(),
-          error:
-            e === undefined
-              ? undefined
-              : `${e}` + (hasKey("code", e) ? ` (code=${e.code})` : ""),
-          isMaster: this.isMaster(),
-          backend: this.options.name,
-        });
+      if (this.isEnded()) {
+        throw new ClientError(
+          Error(`Cannot use ${this.constructor.name} since it's ended`),
+          this.options.name,
+          "choose-another-client",
+          "data-on-server-is-unchanged",
+          "client_is_ended",
+        );
       }
+
+      conn = await this.acquireConn();
+      conn.queriesSent = (conn.queriesSent ?? 0) + 1;
+
+      queryTime = performance.now() - startTime;
+      const resMulti = await this.sendMultiQuery(
+        conn,
+        queries,
+        queriesRollback,
+      );
+      this.reportedConnectionIssue.current = null;
+
+      res = resMulti[resultPos].rows;
+
+      const lsns = resMulti[resMulti.length - 1].rows[0] as {
+        pg_current_wal_insert_lsn: string | null;
+        pg_last_wal_replay_lsn: string | null;
+      };
+      this.reportedRoleAfterLastQuery.current = this.options
+        .isAlwaysLaggingReplica
+        ? "replica"
+        : lsns.pg_current_wal_insert_lsn !== null
+          ? "master"
+          : "replica";
+      this.timelineManager.setCurrentPos(
+        this.options.isAlwaysLaggingReplica
+          ? // For debugging, we pretend that the replica is always lagging.
+            BigInt(0)
+          : lsns.pg_current_wal_insert_lsn
+            ? // Master always has pg_current_wal_insert_lsn defined.
+              nullthrows(parseLsn(lsns.pg_current_wal_insert_lsn))
+            : // This is a replica, so pg_last_wal_replay_lsn must be non-null.
+              nullthrows(parseLsn(lsns.pg_last_wal_replay_lsn)),
+      );
 
       return res;
     } catch (cause: unknown) {
-      if (cause instanceof ClientError) {
-        throw cause;
-      }
+      e = cause as MaybeError<{ severity?: unknown }>;
 
-      // We can't do "instanceof Error" check, since Node internals sometimes
-      // throw errors which are not instanceof Error (although they look like
-      // regular instances of Error class).
-      const e = cause as
-        | { code?: string; severity?: unknown; message?: unknown }
-        | null
-        | undefined;
+      if (e instanceof ClientError) {
+        throw e;
+      }
 
       // Infer ClientError which affects Client choosing logic.
       for (const predicate of CLIENT_ERROR_PREDICATES) {
-        const res = predicate({ code: "" + e?.code, message: "" + e?.message });
+        const res = predicate({
+          code: "" + e?.code,
+          message: "" + e?.message,
+        });
         if (res) {
-          if (res.postAction === "choose-another-client") {
-            this.reportedConnectionIssue.current = true;
-          }
-
           if (!isWrite) {
             // For read queries, we know for sure that the data wasn't changed.
             res.kind = "data-on-server-is-unchanged";
           }
 
+          postAction =
+            this.role() === "master"
+              ? res.postAction.ifMaster
+              : res.postAction.ifReplica;
+
+          if (res.postAction.reportConnectionIssue) {
+            // Mark the current Client as non-healthy, so the retry logic will
+            // likely choose another one if available.
+            this.reportedConnectionIssue.current = {
+              timestamp: new Date(),
+              cause,
+              postAction,
+              kind: res.kind,
+              comment: res.comment,
+            };
+          }
+
           throw new ClientError(
             e,
             this.options.name,
-            res.postAction,
+            postAction,
             res.kind,
+            res.abbreviation,
             res.comment +
               (res.kind === "unknown-server-state"
                 ? " The write might have been committed on the PG server though."
@@ -492,12 +331,47 @@ export abstract class PgClient extends Client {
       // Only wrap the errors which PG sent to us explicitly. Those errors mean
       // that there was some aborted transaction, so it's safe to retry.
       if (e?.severity) {
-        throw new PgError(e, this.options.name, debugQueryWithHints.trim());
+        throw new PgError(e, this.options.name, debugQueryWithHints);
       }
 
       // Some other error which should not trigger query retries or
       // Shards/Islands rediscovery.
       throw e;
+    } finally {
+      if (conn) {
+        this.releaseConn(conn);
+      }
+
+      const now = performance.now();
+      this.options.loggers?.clientQueryLogger?.({
+        annotations,
+        op,
+        shard: this.shardName,
+        table,
+        batchFactor: batchFactor ?? 1,
+        msg: debugQueryWithHints,
+        output: res ? res : undefined,
+        elapsed: {
+          total: now - startTime,
+          acquire: (queryTime ?? now) - startTime,
+        },
+        connStats: {
+          id: conn ? "" + (conn.id ?? 0) : "?",
+          queriesSent: conn?.queriesSent ?? 0,
+        },
+        poolStats: this.poolStats(),
+        error:
+          e === undefined
+            ? undefined
+            : addSentenceSuffixes(
+                `${e}`,
+                e?.code ? ` (${e.code})` : undefined,
+                ` [${postAction}]`,
+              ),
+        role: this.role(),
+        backend: this.options.name,
+        address: this.address(),
+      });
     }
   }
 
@@ -512,7 +386,7 @@ export abstract class PgClient extends Client {
       query: [maybeCall(this.options.shards.discoverQuery)],
       isWrite: false,
       annotations: [],
-      op: "SHARDS",
+      op: OP_SHARD_NOS,
       table: "pg_catalog",
     });
     return rows
@@ -523,6 +397,24 @@ export abstract class PgClient extends Client {
       })
       .filter((no): no is number => no !== null)
       .sort();
+  }
+
+  async ping({
+    execTimeMs,
+    isWrite,
+    annotation,
+  }: ClientPingInput): Promise<void> {
+    await this.query<Partial<Record<string, string>>>({
+      query: [
+        "DO $$ BEGIN PERFORM pg_sleep(?); IF pg_is_in_recovery() AND ? THEN RAISE read_only_sql_transaction; END IF; END $$",
+        execTimeMs / 1000,
+        isWrite,
+      ],
+      isWrite,
+      annotations: [annotation],
+      op: OP_PING,
+      table: "pg_catalog",
+    });
   }
 
   shardNoByID(id: string): number {
@@ -592,16 +484,133 @@ export abstract class PgClient extends Client {
     });
   }
 
-  isMaster(): boolean {
-    return this.reportedMasterAfterLastQuery.current;
+  role(): ClientRole {
+    return this.reportedRoleAfterLastQuery.current;
   }
 
-  isConnectionIssue(): boolean {
+  connectionIssue(): ClientConnectionIssue | null {
     return this.reportedConnectionIssue.current;
   }
 
+  /**
+   * Prepares a PG Client multi-query from the query literal and hints.
+   */
+  private buildMultiQuery(
+    hints: Record<string, string> | undefined,
+    literal: Literal,
+    epilogue: string,
+    isWrite: boolean,
+  ): {
+    queries: string[];
+    queriesRollback: string[];
+    debugQueryWithHints: string;
+    resultPos: number;
+  } {
+    const query = escapeLiteral(literal).trimEnd();
+    if (query === "") {
+      throw Error("Empty query passed to query()");
+    }
+
+    const queriesPrologue: string[] = [];
+    const queriesEpilogue: string[] = [];
+    const queriesRollback: string[] = [];
+
+    // Prepend per-query hints to the prologue (if any); they will be logged.
+    if (hints) {
+      queriesPrologue.unshift(
+        ...Object.entries(hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`),
+      );
+    }
+
+    // The query which is logged to the logging infra. For more brief messages,
+    // we don't log internal hints (this.hints) and search_path; see below.
+    const debugQueryWithHints =
+      `/*${this.shardName}*/` + [...queriesPrologue, query].join("; ").trim();
+
+    // Prepend internal per-Client hints to the prologue.
+    if (this.options.hints) {
+      queriesPrologue.unshift(
+        ...Object.entries(maybeCall(this.options.hints)).map(([k, v]) =>
+          k.toLowerCase() === "transaction"
+            ? `SET LOCAL ${k} ${v}`
+            : `SET LOCAL ${k} TO ${v}`,
+        ),
+      );
+    }
+
+    // We must always have "public" in search_path, because extensions are by
+    // default installed in "public" schema. Some extensions may expose
+    // operators (e.g. "citext" exposes comparison operators) which must be
+    // available in all Shards by default, so they should live in "public".
+    // (There is a way to install an extension to a particular schema, but a)
+    // there can be only one such schema, and b) there are problems running
+    // pg_dump when migrating this Shard to another machine since pg_dump
+    // doesn't emit CREATE EXTENSION statement when filtering by schema name).
+    queriesPrologue.unshift(
+      `SET LOCAL search_path TO ${this.shardName}, public`,
+    );
+
+    // Why wrapping with BEGIN...COMMIT for write queries? See here:
+    // https://www.postgresql.org/message-id/20220803.163217.1789690807623885906.horikyota.ntt%40gmail.com
+    if (isWrite) {
+      queriesPrologue.unshift("BEGIN");
+      queriesRollback.push("ROLLBACK");
+      queriesEpilogue.push("COMMIT");
+    }
+
+    queriesEpilogue.push(epilogue);
+
+    return {
+      queries: [...queriesPrologue, query, ...queriesEpilogue],
+      queriesRollback,
+      debugQueryWithHints,
+      resultPos: queriesPrologue.length,
+    };
+  }
+
+  /**
+   * Sends a multi-query to PG Client.
+   *
+   * A good and simple explanation of the protocol is here:
+   * https://www.postgresql.org/docs/13/protocol-flow.html. In short, we can't
+   * use prepared-statement-based operations even theoretically, because this
+   * mode doesn't support multi-queries. Also notice that TS typing is doomed
+   * for multi-queries:
+   * https://github.com/DefinitelyTyped/DefinitelyTyped/pull/33297
+   */
+  private async sendMultiQuery(
+    conn: PgClientConn,
+    queries: string[],
+    queriesRollback: string[],
+  ): Promise<QueryResult[]> {
+    const queriesStr = `/*${this.shardName}*/${queries.join("; ")}`;
+
+    const resMulti = await conn.query(queriesStr).catch(async (e) => {
+      // We must run a ROLLBACK if we used BEGIN in the queries, because
+      // otherwise the connection is released to the pool in "aborted
+      // transaction" state (see the protocol link above).
+      queriesRollback.length > 0 &&
+        (await conn.query(queriesRollback.join("; ")).catch(() => {}));
+      throw e;
+    });
+
+    if (resMulti.length !== queries.length) {
+      throw Error(
+        `Multi-query (with semicolons) is not allowed as an input to query(); got ${queriesStr}`,
+      );
+    }
+
+    return resMulti;
+  }
+
+  /**
+   * Builds the schema name (aka "Shard name") by Shard number using
+   * `options#shards#nameFormat`.
+   *
+   * E.g. nameFormat="sh%04d" generates names like "sh0042".
+   */
   private buildShardName(no: number | string): string {
-    // e.g. "sh%04d" -> "sh0042"
+    //
     return this.options.shards
       ? this.options.shards.nameFormat.replace(
           /%(0?)(\d+)[sd]/,

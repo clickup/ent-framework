@@ -1,6 +1,6 @@
 import waitForExpect from "wait-for-expect";
 import { ClientError } from "../../abstract/ClientError";
-import { STALE_REPLICA, type Shard } from "../../abstract/Shard";
+import { type Shard } from "../../abstract/Shard";
 import { maybeCall } from "../../internal/misc";
 import { PgSchema } from "../PgSchema";
 import type { TestPgClient } from "./test-utils";
@@ -28,7 +28,7 @@ let proxyServer: TCPProxyServer;
 
 beforeEach(async () => {
   testCluster.options.locateIslandErrorRetryCount = 1;
-  testCluster.options.locateIslandErrorRetryDelayMs = 10000;
+  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 10000;
   testCluster.options.shardsDiscoverRecheckIslandsIntervalMs = 10;
   testCluster.options.shardsDiscoverIntervalMs = 100000;
 
@@ -71,26 +71,30 @@ afterEach(async () => {
 
 test("chooses another replica if new connection can't be opened", async () => {
   await proxyServer.destroy();
-  const shardOnRunErrorSpy = jest.spyOn(shard.options, "onRunError");
   const promise = shardRun(shard, schema.select({ where: {}, limit: 1 }));
 
   jest.advanceTimersByTime(
-    maybeCall(testCluster.options.locateIslandErrorRetryDelayMs) * 1.5,
+    maybeCall(testCluster.options.locateIslandErrorRediscoverClusterDelayMs) *
+      1.5,
   );
   await waitForExpect(() =>
-    expect("" + shardOnRunErrorSpy.mock.lastCall?.[1]).toContain(
-      "ECONNREFUSED",
-    ),
+    expect(
+      "" +
+        jest.mocked(testCluster.options.loggers.locateIslandErrorLogger!).mock
+          .lastCall?.[0].error,
+    ).toContain("ECONNREFUSED"),
   );
 
   await jest.advanceTimersByTimeAsync(
-    maybeCall(testCluster.options.locateIslandErrorRetryDelayMs) * 3,
+    maybeCall(testCluster.options.locateIslandErrorRediscoverClusterDelayMs) *
+      3,
   );
   await promise;
 });
 
 test("retries on another replica if connection is aborted mid-query", async () => {
-  const replica = await testCluster.islandClient(0, STALE_REPLICA);
+  const island0 = await testCluster.island(0);
+  const replica = island0.replica();
   await proxyServer.abortConnections();
 
   const promise = replica

@@ -17,16 +17,17 @@ carries suggestions, what to do next.
 
 ### constructor
 
-• **new ClientError**(`cause`, `where`, `postAction`, `kind`, `comment?`): [`ClientError`](ClientError.md)
+• **new ClientError**(`cause`, `where`, `postAction`, `kind`, `abbreviation`, `comment?`): [`ClientError`](ClientError.md)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `cause` | `undefined` \| ``null`` \| \{ `message?`: `unknown` ; `stack?`: `unknown`  } |
+| `cause` | `MaybeError` |
 | `where` | `string` |
 | `postAction` | [`ClientErrorPostAction`](../modules.md#clienterrorpostaction) |
 | `kind` | [`ClientErrorKind`](../modules.md#clienterrorkind) |
+| `abbreviation` | `string` |
 | `comment?` | `string` |
 
 #### Returns
@@ -39,17 +40,17 @@ Error.constructor
 
 #### Defined in
 
-[src/abstract/ClientError.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L24)
+[src/abstract/ClientError.ts:44](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L44)
 
 ## Properties
 
 ### cause
 
-• `Readonly` **cause**: `undefined` \| ``null`` \| \{ `message?`: `unknown` ; `stack?`: `unknown`  }
+• `Readonly` **cause**: `MaybeError`
 
 #### Defined in
 
-[src/abstract/ClientError.ts:25](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L25)
+[src/abstract/ClientError.ts:45](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L45)
 
 ___
 
@@ -59,7 +60,7 @@ ___
 
 #### Defined in
 
-[src/abstract/ClientError.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L30)
+[src/abstract/ClientError.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L47)
 
 ___
 
@@ -69,7 +70,17 @@ ___
 
 #### Defined in
 
-[src/abstract/ClientError.ts:31](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L31)
+[src/abstract/ClientError.ts:48](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L48)
+
+___
+
+### abbreviation
+
+• `Readonly` **abbreviation**: `string`
+
+#### Defined in
+
+[src/abstract/ClientError.ts:49](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L49)
 
 ___
 
@@ -79,4 +90,4 @@ ___
 
 #### Defined in
 
-[src/abstract/ClientError.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L32)
+[src/abstract/ClientError.ts:50](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L50)

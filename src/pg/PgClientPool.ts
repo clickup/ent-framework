@@ -2,9 +2,12 @@ import defaults from "lodash/defaults";
 import range from "lodash/range";
 import type { PoolClient, PoolConfig } from "pg";
 import { Pool } from "pg";
-import type { ClientQueryLoggerProps } from "../abstract/Loggers";
+import type {
+  ClientQueryLoggerProps,
+  SwallowedErrorLoggerProps,
+} from "../abstract/Loggers";
 import type { MaybeCallable, PickPartial } from "../internal/misc";
-import { maybeCall, runInVoid } from "../internal/misc";
+import { jitter, maybeCall, runInVoid } from "../internal/misc";
 import { Ref } from "../internal/Ref";
 import type { PgClientConn, PgClientOptions } from "./PgClient";
 import { PgClient } from "./PgClient";
@@ -13,10 +16,17 @@ import { PgClient } from "./PgClient";
  * Options for PgClientPool constructor.
  */
 export interface PgClientPoolOptions extends PgClientOptions {
+  /** Node-Postgres config. We can't make it MaybeCallable unfortunately,
+   * because it's used to initialize Node-Postgres Pool. */
   config: PoolConfig;
-  maxConnLifetimeMs?: number;
-  maxConnLifetimeJitter?: number;
-  prewarmIntervalMs?: number;
+  /** Close the connection after the query if it was opened long time ago. */
+  maxConnLifetimeMs?: MaybeCallable<number>;
+  /** Jitter for old connections closure. */
+  maxConnLifetimeJitter?: MaybeCallable<number>;
+  /** How often to send bursts of prewarm queries to all Clients to keep the
+   * minimal number of open connections. */
+  prewarmIntervalMs?: MaybeCallable<number>;
+  /** What prewarm query to send. */
   prewarmQuery?: MaybeCallable<string>;
 }
 
@@ -56,9 +66,6 @@ export class PgClientPool extends PgClient {
   /** PG connection pool to use. */
   private readonly pool: Pool;
 
-  /** All open PG client connections. */
-  private readonly clients = new Set<PgClientPoolConn>();
-
   /** Prewarming periodic timer (if scheduled). */
   private readonly prewarmTimeout = new Ref<NodeJS.Timeout | null>(null);
 
@@ -79,9 +86,9 @@ export class PgClientPool extends PgClient {
 
   protected poolStats(): ClientQueryLoggerProps["poolStats"] {
     return {
-      totalCount: this.pool.totalCount,
-      waitingCount: this.pool.waitingCount,
-      idleCount: this.pool.idleCount,
+      totalConns: this.pool.totalCount,
+      idleConns: this.pool.idleCount,
+      queuedReqs: this.pool.waitingCount,
     };
   }
 
@@ -96,13 +103,12 @@ export class PgClientPool extends PgClient {
 
     this.pool = new Pool(this.options.config)
       .on("connect", (client: PgClientPoolConn & PoolClient) => {
-        this.clients.add(client);
         client.id = connNo++;
         client.closeAt =
-          this.options.maxConnLifetimeMs > 0
+          maybeCall(this.options.maxConnLifetimeMs) > 0
             ? Date.now() +
-              this.options.maxConnLifetimeMs *
-                (1 + this.options.maxConnLifetimeJitter * Math.random())
+              maybeCall(this.options.maxConnLifetimeMs) *
+                jitter(maybeCall(this.options.maxConnLifetimeJitter))
             : undefined;
         // Sets a "default error" handler to not let errors leak to e.g. Jest
         // and the outside world as "unhandled error". Appending an additional
@@ -110,20 +116,31 @@ export class PgClientPool extends PgClient {
         // handlers anyhow, so should be safe.
         client.on("error", () => {});
       })
-      .on("remove", (conn) => this.clients.delete(conn))
-      .on("error", (e) =>
+      .on("error", (error) =>
         // Having this hook prevents node from crashing.
-        this.logSwallowedError('Pool.on("error")', e, null),
+        this.logSwallowedError({
+          where: 'Pool.on("error")',
+          error,
+          elapsed: null,
+          importance: "low",
+        }),
       );
   }
 
-  override logSwallowedError(
-    where: string,
-    e: unknown,
-    elapsed: number | null,
-  ): void {
+  address(): string {
+    const { host, port, database } = this.options.config;
+    return (
+      host +
+      (port ? `:${port}` : "") +
+      (database ? `/${database}` : "") +
+      "#" +
+      this.shardName
+    );
+  }
+
+  override logSwallowedError(props: SwallowedErrorLoggerProps): void {
     if (!this.ended.current) {
-      super.logSwallowedError(where, e, elapsed);
+      super.logSwallowedError(props);
     }
   }
 
@@ -152,20 +169,23 @@ export class PgClientPool extends PgClient {
       return;
     }
 
-    const toPrewarm = this.options.config.min - this.pool.waitingCount;
+    const min = Math.min(
+      this.options.config.min,
+      this.options.config.max ?? Infinity,
+    );
+    const toPrewarm = min - this.pool.waitingCount;
     if (toPrewarm > 0) {
       const startTime = performance.now();
       range(toPrewarm).forEach(() =>
         runInVoid(
-          this.pool
-            .query(maybeCall(this.options.prewarmQuery))
-            .catch((error) =>
-              this.logSwallowedError(
-                `${this.constructor.name}.prewarm`,
-                error,
-                performance.now() - startTime,
-              ),
-            ),
+          this.pool.query(maybeCall(this.options.prewarmQuery)).catch((error) =>
+            this.logSwallowedError({
+              where: `${this.constructor.name}.prewarm`,
+              error,
+              elapsed: performance.now() - startTime,
+              importance: "normal",
+            }),
+          ),
         ),
       );
     }
@@ -173,7 +193,7 @@ export class PgClientPool extends PgClient {
     this.prewarmTimeout.current = setTimeout(() => {
       this.prewarmTimeout.current = null;
       this.prewarm();
-    }, this.options.prewarmIntervalMs);
+    }, maybeCall(this.options.prewarmIntervalMs));
   }
 }
 

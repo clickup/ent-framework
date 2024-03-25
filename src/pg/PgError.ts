@@ -6,7 +6,7 @@ export class PgError extends ClientError {
     where: string,
     public readonly sql: string,
   ) {
-    super(cause, where, "fail", "data-on-server-is-unchanged");
+    super(cause, where, "fail", "data-on-server-is-unchanged", "pg_error");
 
     Object.defineProperty(this, "sql", {
       value: sql,

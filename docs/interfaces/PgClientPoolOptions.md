@@ -24,13 +24,13 @@ Name of the Client; used for logging.
 
 #### Defined in
 
-[src/abstract/Client.ts:16](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L16)
+[src/abstract/Client.ts:18](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L18)
 
 ___
 
 ### loggers
 
-• **loggers**: [`Loggers`](Loggers.md)
+• `Optional` **loggers**: ``null`` \| [`Loggers`](Loggers.md)
 
 Loggers to be called at different stages.
 
@@ -40,7 +40,7 @@ Loggers to be called at different stages.
 
 #### Defined in
 
-[src/abstract/Client.ts:18](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L18)
+[src/abstract/Client.ts:20](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L20)
 
 ___
 
@@ -58,7 +58,7 @@ Batcher#batchDelayMs.
 
 #### Defined in
 
-[src/abstract/Client.ts:22](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L22)
+[src/abstract/Client.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L24)
 
 ___
 
@@ -74,7 +74,7 @@ Info on how to discover the shards.
 
 #### Defined in
 
-[src/pg/PgClient.ts:115](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L115)
+[src/pg/PgClient.ts:41](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L41)
 
 ___
 
@@ -94,7 +94,7 @@ statement_timeout TO ..." before each query in multi-query mode.
 
 #### Defined in
 
-[src/pg/PgClient.ts:127](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L127)
+[src/pg/PgClient.ts:53](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L53)
 
 ___
 
@@ -111,7 +111,7 @@ with the master.
 
 #### Defined in
 
-[src/pg/PgClient.ts:130](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L130)
+[src/pg/PgClient.ts:56](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L56)
 
 ___
 
@@ -127,7 +127,7 @@ Up to how often we call TimelineManager#triggerRefresh().
 
 #### Defined in
 
-[src/pg/PgClient.ts:132](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L132)
+[src/pg/PgClient.ts:58](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L58)
 
 ___
 
@@ -148,7 +148,7 @@ master's pos.
 
 #### Defined in
 
-[src/pg/PgClient.ts:139](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L139)
+[src/pg/PgClient.ts:65](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L65)
 
 ___
 
@@ -156,39 +156,49 @@ ___
 
 • **config**: `PoolConfig`
 
+Node-Postgres config. We can't make it MaybeCallable unfortunately,
+because it's used to initialize Node-Postgres Pool.
+
 #### Defined in
 
-[src/pg/PgClientPool.ts:16](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L16)
+[src/pg/PgClientPool.ts:21](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L21)
 
 ___
 
 ### maxConnLifetimeMs
 
-• `Optional` **maxConnLifetimeMs**: `number`
+• `Optional` **maxConnLifetimeMs**: `MaybeCallable`\<`number`\>
+
+Close the connection after the query if it was opened long time ago.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:17](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L17)
+[src/pg/PgClientPool.ts:23](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L23)
 
 ___
 
 ### maxConnLifetimeJitter
 
-• `Optional` **maxConnLifetimeJitter**: `number`
+• `Optional` **maxConnLifetimeJitter**: `MaybeCallable`\<`number`\>
+
+Jitter for old connections closure.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:18](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L18)
+[src/pg/PgClientPool.ts:25](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L25)
 
 ___
 
 ### prewarmIntervalMs
 
-• `Optional` **prewarmIntervalMs**: `number`
+• `Optional` **prewarmIntervalMs**: `MaybeCallable`\<`number`\>
+
+How often to send bursts of prewarm queries to all Clients to keep the
+minimal number of open connections.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:19](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L19)
+[src/pg/PgClientPool.ts:28](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L28)
 
 ___
 
@@ -196,6 +206,8 @@ ___
 
 • `Optional` **prewarmQuery**: `MaybeCallable`\<`string`\>
 
+What prewarm query to send.
+
 #### Defined in
 
-[src/pg/PgClientPool.ts:20](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L20)
+[src/pg/PgClientPool.ts:30](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L30)

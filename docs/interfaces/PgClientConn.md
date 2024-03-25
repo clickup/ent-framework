@@ -13,7 +13,17 @@ can't use $N parameter substitutions.
 
 #### Defined in
 
-[src/pg/PgClient.ts:147](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L147)
+[src/pg/PgClient.ts:73](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L73)
+
+___
+
+### queriesSent
+
+• `Optional` **queriesSent**: `number`
+
+#### Defined in
+
+[src/pg/PgClient.ts:74](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L74)
 
 ## Methods
 
@@ -39,7 +49,7 @@ can't use $N parameter substitutions.
 
 #### Defined in
 
-[src/pg/PgClient.ts:148](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L148)
+[src/pg/PgClient.ts:75](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L75)
 
 ___
 
@@ -59,4 +69,4 @@ ___
 
 #### Defined in
 
-[src/pg/PgClient.ts:151](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L151)
+[src/pg/PgClient.ts:78](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L78)

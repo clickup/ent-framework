@@ -1,4 +1,4 @@
-import { minifyStack } from "../misc";
+import { addSentenceSuffixes, minifyStack } from "../misc";
 
 test("minifyStack", () => {
   expect(
@@ -17,4 +17,11 @@ test("minifyStack", () => {
       1,
     ),
   ).toMatchSnapshot();
+});
+
+test("addSentenceSuffixes", () => {
+  expect(addSentenceSuffixes("a", " b", "c")).toEqual("a bc");
+  expect(addSentenceSuffixes("a.", " [b]", "c")).toEqual("a [b]c");
+  expect(addSentenceSuffixes("a?", "\nb", "c")).toEqual("a?\nbc");
+  expect(addSentenceSuffixes("a?", "b", "c")).toEqual("abc");
 });

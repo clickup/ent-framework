@@ -1,5 +1,7 @@
-import { inspect } from "util";
-import { MASTER, STALE_REPLICA, type Shard } from "../../abstract/Shard";
+import delay from "delay";
+import range from "lodash/range";
+import { type Shard } from "../../abstract/Shard";
+import { mapJoin } from "../../internal/misc";
 import { PgSchema } from "../PgSchema";
 import type { TestPgClient } from "./test-utils";
 import { recreateTestTables, shardRun, testCluster } from "./test-utils";
@@ -18,11 +20,15 @@ let islandClient1: TestPgClient;
 let islandClient2: TestPgClient;
 
 beforeEach(async () => {
+  testCluster.options.shardsDiscoverIntervalMs = 1_000_000;
   testCluster.options.locateIslandErrorRetryCount = 1;
-  testCluster.options.locateIslandErrorRetryDelayMs = 100;
+  testCluster.options.locateIslandErrorRediscoverIslandDelayMs = 100;
+  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 10000000;
+  await testCluster.rediscover();
 
-  islandClient1 = await testCluster.islandClient(0, MASTER);
-  islandClient2 = await testCluster.islandClient(0, STALE_REPLICA);
+  const island0 = await testCluster.island(0);
+  islandClient1 = island0.master();
+  islandClient2 = island0.replica();
   islandClient1.options.hints = { transaction: "read write" };
   islandClient2.options.hints = { transaction: "read only" };
 
@@ -46,37 +52,45 @@ test("query retries on new master when switchover happens", async () => {
   islandClient1.options.hints = { transaction: "read only" };
   islandClient2.options.hints = { transaction: "read write" };
 
-  const shardOnRunErrorSpy = jest.spyOn(shard.options, "onRunError");
-  const shardClient1 = await shard.client(MASTER);
-  jest.spyOn(shardClient1, "query").mockImplementationOnce(async (...args) => {
-    // On the 1st call here, the mock will be removed (restored) due to
-    // mockImplementationOnce().
-    try {
-      await shardClient1.query(...args); // should throw
-      throw "The query() call above should fail with a read-only SQL transaction error";
-    } catch (e: unknown) {
-      expect(inspect(e)).toMatch(/read_only_sql_transaction/);
-      throw e;
-    } finally {
-      // After the query(), pretend that islandClient1 became replica and
+  const islandRediscoverSpy = jest
+    .spyOn(await testCluster.island(0), "rediscover")
+    .mockImplementation(async () => {
+      // After the query() fails, pretend that islandClient1 became replica and
       // islandClient2 became master, so after rediscovery and a retry to
       // query(), it will choose the right master (islandClient2).
-      jest.spyOn(islandClient1, "isMaster").mockReturnValue(false);
-      jest.spyOn(islandClient2, "isMaster").mockReturnValue(true);
-    }
+      jest.spyOn(islandClient1, "role").mockReturnValue("replica");
+      jest.spyOn(islandClient2, "role").mockReturnValue("master");
+    });
+
+  // Produce a burst of erroring queries.
+  const queries = range(50).map((i) => schema.insert({ name: `test${i}` }));
+  await mapJoin(queries, async (query, i) => {
+    await delay((i / queries.length) * 10);
+    await shardRun(shard, query);
   });
 
-  await shardRun(shard, schema.insert({ name: "test" }));
-  expect(shardOnRunErrorSpy).toBeCalledTimes(1);
+  // All 10 queries fail and cause Island rediscovery to happen.
+  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
+    queries.length,
+  );
+
+  // Island#rediscover() requests should be coalesced into significantly less
+  // calls (i.e. Cluster#rediscoverIsland() is coalesce-memoized). Despite we
+  // have 50 parallel queries, the calls to Island rediscovery were coalesced to
+  // just a few.
+  expect(islandRediscoverSpy.mock.calls.length).toBeLessThan(
+    queries.length / 3,
+  );
 });
 
 test("query fails when no master appears after a retry", async () => {
   islandClient1.options.hints = { transaction: "read only" };
   islandClient2.options.hints = { transaction: "read only" };
 
-  const shardOnRunErrorSpy = jest.spyOn(shard.options, "onRunError");
   await expect(
     shardRun(shard, schema.insert({ name: "test" })),
   ).rejects.toThrow(/read_only_sql_transaction/);
-  expect(shardOnRunErrorSpy).toBeCalledTimes(2);
+  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
+    2,
+  );
 });

@@ -12,4 +12,9 @@ export PGHOST=127.0.0.1
 export PGDATABASE=postgres
 export PGUSER=postgres
 export PGPASSWORD=postgres
-eval "$1"
+
+# Run "$1" as a bash command (possibly with && in it) and pass $2, $3, ... as
+# properly quoted arguments to it.
+cmd="$1"
+shift
+eval "$cmd \"\$@\""

@@ -123,10 +123,6 @@ even if the callback is not set (to a guest VC in such cases).
 
 ▸ (`vc`, `row`): `Promise`\<``null`` \| `string`\>
 
-If defined, an attempt to load this Ent using an omni VC will "lower" that
-VC to the principal returned by this callback. Omni VC is always lowered,
-even if the callback is not set (to a guest VC in such cases).
-
 ##### Parameters
 
 | Name | Type |

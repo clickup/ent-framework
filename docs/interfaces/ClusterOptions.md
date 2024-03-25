@@ -36,9 +36,6 @@ when a new node appears in the Cluster statically or dynamically.
 
 ▸ (`node`): `TClient`
 
-Given a node of some Island, instantiates a Client for this node. Called
-when a new node appears in the Cluster statically or dynamically.
-
 ##### Parameters
 
 | Name | Type |
@@ -55,6 +52,31 @@ when a new node appears in the Cluster statically or dynamically.
 
 ___
 
+### loggers
+
+• **loggers**: [`Loggers`](Loggers.md)
+
+Loggers to be injected into all Clients returned by createClient().
+
+#### Defined in
+
+[src/abstract/Cluster.ts:42](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L42)
+
+___
+
+### localCache
+
+• `Optional` **localCache**: ``null`` \| [`LocalCache`](../classes/LocalCache.md)\<`never`\>
+
+An instance of LocalCache which may be used for auxillary purposes when
+discovering Shards/Clients.
+
+#### Defined in
+
+[src/abstract/Cluster.ts:45](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L45)
+
+___
+
 ### shardsDiscoverIntervalMs
 
 • `Optional` **shardsDiscoverIntervalMs**: `MaybeCallable`\<`number`\>
@@ -63,7 +85,7 @@ How often to run Shards rediscovery in normal circumstances.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:42](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L42)
+[src/abstract/Cluster.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L47)
 
 ___
 
@@ -77,35 +99,7 @@ Cluster configuration is changed, then we trigger rediscovery ASAP.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:46](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L46)
-
-___
-
-### shardsDiscoverErrorRetryCount
-
-• `Optional` **shardsDiscoverErrorRetryCount**: `MaybeCallable`\<`number`\>
-
-If there were DB errors during Shards discovery (e.g. transport errors,
-which is rare), the discovery is retried that many times before giving up
-and throwing the error through. The number here can be high, because
-rediscovery happens in background.
-
-#### Defined in
-
 [src/abstract/Cluster.ts:51](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L51)
-
-___
-
-### shardsDiscoverErrorRetryDelayMs
-
-• `Optional` **shardsDiscoverErrorRetryDelayMs**: `MaybeCallable`\<`number`\>
-
-If there were DB errors during Shards discovery (rare), this is how much
-we wait between attempts.
-
-#### Defined in
-
-[src/abstract/Cluster.ts:54](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L54)
 
 ___
 
@@ -113,26 +107,46 @@ ___
 
 • `Optional` **locateIslandErrorRetryCount**: `MaybeCallable`\<`number`\>
 
-If we think that we know Island of a particular Shard, but an attempt to
-access it fails, this means that maybe the Shard is migrating to another
-Island. In this case, we wait a bit and retry that many times. We should
-not do it too many times though, because all DB requests will be blocked
-waiting for the resolution.
+Used in the following situations:
+1. If we think that we know Island of a particular Shard, but an attempt to
+   access it fails, this means that maybe the Shard is migrating to another
+   Island. In this case, we wait a bit and retry that many times. We should
+   not do it too many times though, because all DB requests will be blocked
+   waiting for the resolution.
+2. If we sent a write request to a Client, but it appeared that this Client
+   is a replica, and the master moved to some other Client. In this case,
+   we wait a bit and ping all Clients of the Island to refresh, who is
+   master and who is replica.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:60](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L60)
+[src/abstract/Cluster.ts:62](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L62)
 
 ___
 
-### locateIslandErrorRetryDelayMs
+### locateIslandErrorRediscoverClusterDelayMs
 
-• `Optional` **locateIslandErrorRetryDelayMs**: `MaybeCallable`\<`number`\>
+• `Optional` **locateIslandErrorRediscoverClusterDelayMs**: `MaybeCallable`\<`number`\>
 
-How much time to wait between the retries mentioned above. The time here
-should be just enough to wait for switching the Shard from one Island to
-another (typically quick).
+How much time to wait before we retry rediscovering the entire Cluster.
+The time here should be just enough to wait for switching the Shard from
+one Island to another (typically quick).
 
 #### Defined in
 
-[src/abstract/Cluster.ts:64](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L64)
+[src/abstract/Cluster.ts:66](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L66)
+
+___
+
+### locateIslandErrorRediscoverIslandDelayMs
+
+• `Optional` **locateIslandErrorRediscoverIslandDelayMs**: `MaybeCallable`\<`number`\>
+
+How much time to wait before sending discover requests to all Clients of
+the Island trying to find the new master. The time here may reach several
+seconds, since some DBs shut down the old master and promote some replica
+to it not simultaneously.
+
+#### Defined in
+
+[src/abstract/Cluster.ts:71](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L71)

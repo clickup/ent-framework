@@ -3,7 +3,9 @@ import defaults from "lodash/defaults";
 import type { MaybeCallable, PickPartial } from "../internal/misc";
 import type { Table } from "../types";
 import { Batcher } from "./Batcher";
-import type { Loggers } from "./Loggers";
+import type { ClientErrorKind, ClientErrorPostAction } from "./ClientError";
+import type { Loggers, SwallowedErrorLoggerProps } from "./Loggers";
+import type { QueryAnnotation } from "./QueryAnnotation";
 import type { Runner } from "./Runner";
 import type { Schema } from "./Schema";
 import type { TimelineManager } from "./TimelineManager";
@@ -15,11 +17,39 @@ export interface ClientOptions {
   /** Name of the Client; used for logging. */
   name: string;
   /** Loggers to be called at different stages. */
-  loggers: Loggers;
+  loggers?: Loggers | null;
   /** If passed, there will be an artificial queries accumulation delay while
    * batching the requests. Default is 0 (turned off). Passed to
    * Batcher#batchDelayMs. */
   batchDelayMs?: MaybeCallable<number>;
+}
+
+/**
+ * Role of the Client as reported after the last successful query. If we know
+ * for sure that the Client is a master or a replica, the role will be "master"
+ * or "replica" correspondingly. If no queries were run by the Client yet (i.e.
+ * we don't know the role for sure), the role is assigned to "unknown".
+ */
+export type ClientRole = "master" | "replica" | "unknown";
+
+/**
+ * An information about Client's connection related issue.
+ */
+export interface ClientConnectionIssue {
+  timestamp: Date;
+  cause: unknown;
+  postAction: ClientErrorPostAction;
+  kind: ClientErrorKind;
+  comment: string;
+}
+
+/**
+ * Input for Client#ping().
+ */
+export interface ClientPingInput {
+  execTimeMs: number;
+  isWrite: boolean;
+  annotation: QueryAnnotation;
 }
 
 /**
@@ -30,6 +60,7 @@ export interface ClientOptions {
 export abstract class Client {
   /** Default values for the constructor options. */
   static readonly DEFAULT_OPTIONS: Required<PickPartial<ClientOptions>> = {
+    loggers: null,
     batchDelayMs: 0,
   };
 
@@ -47,6 +78,15 @@ export abstract class Client {
   abstract readonly timelineManager: TimelineManager;
 
   /**
+   * Represents the full destination address this Client is working with.
+   * Depending on the implementation, it may include hostname, port number,
+   * database name, shard name etc. It is required that the address is stable
+   * enough to be able to cache some destination database related metadata (e.g.
+   * shardNos) based on that address.
+   */
+  abstract address(): string;
+
+  /**
    * Gracefully closes the connections to let the caller destroy the Client. The
    * pending queries are awaited to finish before returning. The Client becomes
    * unusable after calling this method: you should not send queries to it.
@@ -58,6 +98,12 @@ export abstract class Client {
    * database.
    */
   abstract shardNos(): Promise<readonly number[]>;
+
+  /**
+   * Sends a read or write test query to the server. Tells the server to sit and
+   * wait for at least the provided number of milliseconds.
+   */
+  abstract ping(input: ClientPingInput): Promise<void>;
 
   /**
    * Extracts Shard number from an ID.
@@ -76,19 +122,29 @@ export abstract class Client {
   abstract isEnded(): boolean;
 
   /**
-   * Returns true if, after the last query, the Client reported being a master
-   * node. Master and replica roles may switch online unpredictably, without
-   * reconnecting, so we only know the role after a query.
+   * Returns the Client's role reported after the last successful query. Master
+   * and replica roles may switch online unpredictably, without reconnecting, so
+   * we only know the role after a query.
    */
-  abstract isMaster(): boolean;
+  abstract role(): ClientRole;
 
   /**
-   * Returns true if the Client couldn't connect to the server (or it could, but
-   * the load balancer reported the remote server as not working), so it should
-   * ideally be removed from the list of active replicas until e.g. the next
-   * discovery query to it (or any query) succeeds.
+   * Returns a non-nullable value if the Client couldn't connect to the server
+   * (or it could, but the load balancer reported the remote server as not
+   * working), so it should ideally be removed from the list of active replicas
+   * until e.g. the next discovery query to it (or any query) succeeds.
    */
-  abstract isConnectionIssue(): boolean;
+  abstract connectionIssue(): ClientConnectionIssue | null;
+
+  /**
+   * Calls swallowedErrorLogger() doing some preliminary amendment.
+   */
+  protected logSwallowedError(props: SwallowedErrorLoggerProps): void {
+    this.options.loggers?.swallowedErrorLogger({
+      ...props,
+      where: `${this.constructor.name}(${this.options.name}): ${props.where}`,
+    });
+  }
 
   /**
    * Initializes an instance of Client.
@@ -132,21 +188,6 @@ export abstract class Client {
     // methods). But we don't do all that right now.
     const runner = runnerCreator();
     return new Batcher<TInput, TOutput>(runner, this.options.batchDelayMs);
-  }
-
-  /**
-   * Calls swallowedErrorLogger() doing some preliminary amendment.
-   */
-  logSwallowedError(
-    where: string,
-    error: unknown,
-    elapsed: number | null,
-  ): void {
-    this.options.loggers.swallowedErrorLogger({
-      where: `${this.constructor.name}(${this.options.name}): ${where}`,
-      error,
-      elapsed,
-    });
   }
 
   /**

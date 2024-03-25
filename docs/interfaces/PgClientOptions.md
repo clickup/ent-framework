@@ -26,13 +26,13 @@ Name of the Client; used for logging.
 
 #### Defined in
 
-[src/abstract/Client.ts:16](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L16)
+[src/abstract/Client.ts:18](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L18)
 
 ___
 
 ### loggers
 
-• **loggers**: [`Loggers`](Loggers.md)
+• `Optional` **loggers**: ``null`` \| [`Loggers`](Loggers.md)
 
 Loggers to be called at different stages.
 
@@ -42,7 +42,7 @@ Loggers to be called at different stages.
 
 #### Defined in
 
-[src/abstract/Client.ts:18](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L18)
+[src/abstract/Client.ts:20](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L20)
 
 ___
 
@@ -60,7 +60,7 @@ Batcher#batchDelayMs.
 
 #### Defined in
 
-[src/abstract/Client.ts:22](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L22)
+[src/abstract/Client.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L24)
 
 ___
 
@@ -72,7 +72,7 @@ Info on how to discover the shards.
 
 #### Defined in
 
-[src/pg/PgClient.ts:115](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L115)
+[src/pg/PgClient.ts:41](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L41)
 
 ___
 
@@ -88,7 +88,7 @@ statement_timeout TO ..." before each query in multi-query mode.
 
 #### Defined in
 
-[src/pg/PgClient.ts:127](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L127)
+[src/pg/PgClient.ts:53](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L53)
 
 ___
 
@@ -101,7 +101,7 @@ with the master.
 
 #### Defined in
 
-[src/pg/PgClient.ts:130](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L130)
+[src/pg/PgClient.ts:56](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L56)
 
 ___
 
@@ -113,7 +113,7 @@ Up to how often we call TimelineManager#triggerRefresh().
 
 #### Defined in
 
-[src/pg/PgClient.ts:132](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L132)
+[src/pg/PgClient.ts:58](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L58)
 
 ___
 
@@ -130,4 +130,4 @@ master's pos.
 
 #### Defined in
 
-[src/pg/PgClient.ts:139](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L139)
+[src/pg/PgClient.ts:65](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L65)

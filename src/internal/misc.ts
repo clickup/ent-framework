@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
 import { inspect } from "util";
+import compact from "lodash/compact";
 import objectHashModule from "object-hash";
 
 /**
@@ -60,6 +61,17 @@ export type PickPartial<T> = {
  * Denotes an option which can be dynamically configured at runtime.
  */
 export type MaybeCallable<T> = T | (() => T);
+
+/**
+ * Some Node APIs throw not an instance of Error object, but something looking
+ * like an Error. So we can't do "instanceof Error" check in all cases, we can
+ * only compare the shape of a variable received in a `catch (e: unknown)` block
+ * and hope for best.
+ */
+export type MaybeError<TExtra extends {} = {}> =
+  | ({ code?: string; message?: string; stack?: string } & Partial<TExtra>)
+  | null
+  | undefined;
 
 /**
  * Turns a list of Promises to a list of Promise resolution results.
@@ -151,6 +163,13 @@ export async function mapJoin<TElem, TRet>(
 }
 
 /**
+ * Returns a random value between 1 and 1+jitter.
+ */
+export function jitter(jitter: number): number {
+  return 1 + jitter * Math.random();
+}
+
+/**
  * Copies a stack-trace from fromErr error into toErr object. Useful for
  * lightweight exceptions wrapping.
  */
@@ -216,7 +235,7 @@ let sequenceValue = 1;
  * https://medium.com/@chris_72272/what-is-the-fastest-node-js-hashing-algorithm-c15c1a0e164e
  */
 export function stringHash(s: string): string {
-  return createHash("sha1").update(s).digest("base64");
+  return createHash("sha1").update(s).digest("hex");
 }
 
 /**
@@ -247,6 +266,35 @@ export function jsonHash(obj: unknown): string {
  */
 export function indent(message: string): string {
   return message.replace(/^/gm, "  ");
+}
+
+/**
+ * Adds text suffixes to the sentence (typically, to an error message).
+ */
+export function addSentenceSuffixes(
+  sentence: string,
+  ...suffixes: Array<string | undefined>
+): string {
+  const compacted = compact(suffixes);
+  if (compacted.length === 0) {
+    return sentence;
+  }
+
+  const suffix = compacted
+    .filter((suffix) => !sentence.endsWith(suffix))
+    .join("");
+  return suffix.startsWith("\n")
+    ? sentence + suffix
+    : sentence.trimEnd().replace(/[.!?]+$/s, "") + suffix;
+}
+
+/**
+ * Returns the 1st line of the message.
+ */
+export function firstLine<T extends string | undefined>(message: T): T {
+  return (
+    typeof message === "string" ? message.replace(/\n.*/s, "") : message
+  ) as T;
 }
 
 /**

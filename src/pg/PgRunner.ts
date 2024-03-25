@@ -50,7 +50,9 @@ export abstract class PgRunner<
   TOutput,
 > extends Runner<TInput, TOutput> {
   private escapers: Partial<Record<string, (v: unknown) => string>> = {};
-  private oneOfBuilders: Partial<Record<string, (v: unknown[]) => string>> = {};
+  private oneOfBuilders: Partial<
+    Record<string, (v: readonly unknown[]) => string>
+  > = {};
   private dbValueToJs: Array<[string, (v: unknown) => unknown]> = [];
   private stringify: Partial<Record<string, (v: never) => string>> = {};
 

@@ -10,7 +10,7 @@
 
 #### Defined in
 
-[src/abstract/Loggers.ts:34](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L34)
+[src/abstract/Loggers.ts:51](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L51)
 
 ___
 
@@ -20,7 +20,7 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:35](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L35)
+[src/abstract/Loggers.ts:52](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L52)
 
 ___
 
@@ -30,4 +30,14 @@ ___
 
 #### Defined in
 
-[src/abstract/Loggers.ts:36](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L36)
+[src/abstract/Loggers.ts:53](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L53)
+
+___
+
+### importance
+
+• **importance**: ``"low"`` \| ``"normal"``
+
+#### Defined in
+
+[src/abstract/Loggers.ts:54](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L54)

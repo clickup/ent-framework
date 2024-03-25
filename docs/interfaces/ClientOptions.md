@@ -20,19 +20,19 @@ Name of the Client; used for logging.
 
 #### Defined in
 
-[src/abstract/Client.ts:16](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L16)
+[src/abstract/Client.ts:18](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L18)
 
 ___
 
 ### loggers
 
-• **loggers**: [`Loggers`](Loggers.md)
+• `Optional` **loggers**: ``null`` \| [`Loggers`](Loggers.md)
 
 Loggers to be called at different stages.
 
 #### Defined in
 
-[src/abstract/Client.ts:18](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L18)
+[src/abstract/Client.ts:20](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L20)
 
 ___
 
@@ -46,4 +46,4 @@ Batcher#batchDelayMs.
 
 #### Defined in
 
-[src/abstract/Client.ts:22](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L22)
+[src/abstract/Client.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L24)

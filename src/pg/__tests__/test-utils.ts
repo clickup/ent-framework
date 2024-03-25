@@ -5,9 +5,14 @@ import compact from "lodash/compact";
 import type { PoolConfig } from "pg";
 import { types } from "pg";
 import waitForExpect from "wait-for-expect";
-import type { ClientOptions } from "../../abstract/Client";
+import type {
+  ClientConnectionIssue,
+  ClientPingInput,
+  ClientRole,
+} from "../../abstract/Client";
 import { Client } from "../../abstract/Client";
 import { Cluster } from "../../abstract/Cluster";
+import type { Loggers } from "../../abstract/Loggers";
 import type { Query } from "../../abstract/Query";
 import type { STALE_REPLICA, Shard } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
@@ -46,12 +51,20 @@ export class TestPgClient
     return this.client.timelineManager;
   }
 
+  address(): string {
+    return this.client.address();
+  }
+
   async end(): Promise<void> {
     return this.client.end();
   }
 
   async shardNos(): Promise<readonly number[]> {
     return this.client.shardNos();
+  }
+
+  async ping(input: ClientPingInput): Promise<void> {
+    return this.client.ping(input);
   }
 
   shardNoByID(id: string): number {
@@ -66,12 +79,12 @@ export class TestPgClient
     return this.client.isEnded();
   }
 
-  isMaster(): boolean {
-    return this.client.isMaster();
+  role(): ClientRole {
+    return this.client.role();
   }
 
-  isConnectionIssue(): boolean {
-    return this.client.isConnectionIssue();
+  connectionIssue(): ClientConnectionIssue | null {
+    return this.client.connectionIssue();
   }
 
   async query<TRes>(params: Parameters<PgClient["query"]>[0]): Promise<TRes[]> {
@@ -242,7 +255,7 @@ export class TCPProxyServer {
 export const TEST_CONFIG: PoolConfig & {
   nameSuffix: string | undefined;
   isAlwaysLaggingReplica: boolean;
-  swallowedErrorLogger: ClientOptions["loggers"]["swallowedErrorLogger"];
+  loggers: Loggers;
 } = {
   host: process.env["PGHOST"] || process.env["DB_HOST_DEFAULT"],
   port:
@@ -254,7 +267,11 @@ export const TEST_CONFIG: PoolConfig & {
   // Additional custom props (tests facilities).
   nameSuffix: undefined,
   isAlwaysLaggingReplica: false,
-  swallowedErrorLogger: () => {},
+  loggers: {
+    swallowedErrorLogger: jest.fn(),
+    clientQueryLogger: jest.fn(),
+    locateIslandErrorLogger: jest.fn(),
+  },
 };
 
 /**
@@ -293,18 +310,13 @@ beforeEach(() => {
 export const testCluster = new Cluster({
   shardsDiscoverIntervalMs: 500,
   islands: TEST_ISLANDS,
-  createClient: ({
-    nameSuffix,
-    isAlwaysLaggingReplica,
-    swallowedErrorLogger,
-    ...config
-  }) =>
+  createClient: ({ nameSuffix, isAlwaysLaggingReplica, loggers, ...config }) =>
     new TestPgClient(
       new PgClientPool({
         name:
           `test-pool(replica=${isAlwaysLaggingReplica})` +
           (nameSuffix ? `-${nameSuffix}` : ""),
-        loggers: { swallowedErrorLogger },
+        loggers,
         isAlwaysLaggingReplica,
         shards: {
           nameFormat: "sh%04d",
@@ -314,6 +326,11 @@ export const testCluster = new Cluster({
         config,
       }),
     ),
+  loggers: {
+    swallowedErrorLogger: jest.fn(),
+    clientQueryLogger: jest.fn(),
+    locateIslandErrorLogger: jest.fn(),
+  },
 });
 
 /**
@@ -387,7 +404,8 @@ export async function reconfigureToTwoIslands(): Promise<void> {
   // Since we add the same physical host to island 1 as we already have in
   // island 0, we force the old Client to discover 0 shards to avoid "Shard
   // exists in more than one island" error.
-  const oldMaster0 = await testCluster.islandClient(0, MASTER); // will be reused
+  const oldIsland0 = await testCluster.island(0);
+  const oldMaster0 = oldIsland0.master(); // will be reused
   jest.spyOn(oldMaster0, "shardNos").mockResolvedValue([]);
 
   testCluster.options.islands = () => [
@@ -400,7 +418,7 @@ export async function reconfigureToTwoIslands(): Promise<void> {
 function indentQuery(query: string): string {
   query = query
     .replace(/\d{4}-\d{2}-\d{2}T[^']+/g, "<date>")
-    .replace(/(?<=[':])[A-Za-z0-9+/]{27}='/g, "<hash>'")
+    .replace(/(?<=[':])[a-f0-9]{40}'/g, "<hash>'")
     .replace(/'k\d+'/g, "'<key>'")
     .replace(/\d{16,}/g, (m) =>
       m === Number.MAX_SAFE_INTEGER.toString() ? m : "<id>",

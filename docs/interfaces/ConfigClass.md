@@ -41,10 +41,6 @@ a function, but having a class is a little more natural.
 
 • **new Configuration**(`cfg`): [`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
-A helper class to work-around TS weakness in return value type inference:
-https://github.com/Microsoft/TypeScript/issues/31273. It could've been just
-a function, but having a class is a little more natural.
-
 ##### Parameters
 
 | Name | Type |

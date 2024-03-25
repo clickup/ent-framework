@@ -14,7 +14,9 @@
 - [Cluster](classes/Cluster.md)
 - [Island](classes/Island.md)
 - [Loader](classes/Loader.md)
+- [LocalCache](classes/LocalCache.md)
 - [QueryBase](classes/QueryBase.md)
+- [QueryPing](classes/QueryPing.md)
 - [Runner](classes/Runner.md)
 - [Schema](classes/Schema.md)
 - [Shard](classes/Shard.md)
@@ -74,19 +76,25 @@
 - [PgQueryUpsert](classes/PgQueryUpsert.md)
 - [PgRunner](classes/PgRunner.md)
 - [PgSchema](classes/PgSchema.md)
+- [ToolPing](classes/ToolPing.md)
+- [ToolScoreboard](classes/ToolScoreboard.md)
 
 ## Interfaces
 
 - [ClientOptions](interfaces/ClientOptions.md)
+- [ClientConnectionIssue](interfaces/ClientConnectionIssue.md)
+- [ClientPingInput](interfaces/ClientPingInput.md)
 - [ClusterOptions](interfaces/ClusterOptions.md)
+- [IslandOptions](interfaces/IslandOptions.md)
 - [Handler](interfaces/Handler.md)
+- [LocalCacheOptions](interfaces/LocalCacheOptions.md)
 - [Loggers](interfaces/Loggers.md)
 - [ClientQueryLoggerProps](interfaces/ClientQueryLoggerProps.md)
 - [SwallowedErrorLoggerProps](interfaces/SwallowedErrorLoggerProps.md)
+- [LocateIslandErrorLoggerProps](interfaces/LocateIslandErrorLoggerProps.md)
 - [Query](interfaces/Query.md)
 - [QueryAnnotation](interfaces/QueryAnnotation.md)
 - [SchemaClass](interfaces/SchemaClass.md)
-- [ShardOptions](interfaces/ShardOptions.md)
 - [EntValidationErrorInfo](interfaces/EntValidationErrorInfo.md)
 - [ConfigInstance](interfaces/ConfigInstance.md)
 - [ConfigClass](interfaces/ConfigClass.md)
@@ -98,18 +106,35 @@
 - [PgClientOptions](interfaces/PgClientOptions.md)
 - [PgClientConn](interfaces/PgClientConn.md)
 - [PgClientPoolOptions](interfaces/PgClientPoolOptions.md)
+- [ToolPingOptions](interfaces/ToolPingOptions.md)
+- [ToolScoreboardOptions](interfaces/ToolScoreboardOptions.md)
 
 ## Type Aliases
 
-### ClientErrorPostAction
+### ClientRole
 
-Ƭ **ClientErrorPostAction**: ``"rediscover"`` \| ``"choose-another-client"`` \| ``"fail"``
+Ƭ **ClientRole**: ``"master"`` \| ``"replica"`` \| ``"unknown"``
 
-The suggested action, what can we do when facing this error.
+Role of the Client as reported after the last successful query. If we know
+for sure that the Client is a master or a replica, the role will be "master"
+or "replica" correspondingly. If no queries were run by the Client yet (i.e.
+we don't know the role for sure), the role is assigned to "unknown".
 
 #### Defined in
 
-[src/abstract/ClientError.ts:6](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L6)
+[src/abstract/Client.ts:33](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L33)
+
+___
+
+### ClientErrorPostAction
+
+Ƭ **ClientErrorPostAction**: ``"rediscover-cluster"`` \| ``"rediscover-island"`` \| ``"choose-another-client"`` \| ``"fail"``
+
+The suggested action, what can we do when facing a ClientError.
+
+#### Defined in
+
+[src/abstract/ClientError.ts:7](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L7)
 
 ___
 
@@ -122,7 +147,7 @@ but the write was still applied in the database.
 
 #### Defined in
 
-[src/abstract/ClientError.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L15)
+[src/abstract/ClientError.ts:35](https://github.com/clickup/ent-framework/blob/master/src/abstract/ClientError.ts#L35)
 
 ___
 
@@ -739,7 +764,7 @@ across queries in the same connection).
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:28](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L28)
+[src/pg/PgClientPool.ts:38](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L38)
 
 ___
 
@@ -1271,7 +1296,7 @@ Master freshness: reads always go to master.
 
 #### Defined in
 
-[src/abstract/Shard.ts:10](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L10)
+[src/abstract/Shard.ts:11](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L11)
 
 ___
 
@@ -1283,7 +1308,7 @@ Stale replica freshness: reads always go to a replica, even if it's stale.
 
 #### Defined in
 
-[src/abstract/Shard.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L15)
+[src/abstract/Shard.ts:16](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L16)
 
 ___
 

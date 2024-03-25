@@ -77,21 +77,19 @@ beforeEach(async () => {
   await recreateTestTables([EntTestUniverse, EntTestHuman]);
 
   testCluster.options.locateIslandErrorRetryCount = 2;
-  testCluster.options.locateIslandErrorRetryDelayMs = 1000;
+  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 1000;
 });
 
 test("unknown shard failure, singleShardFromID", async () => {
-  const shard = testCluster.shard(ID_FROM_UNKNOWN_SHARD);
-  const spyShardOnRunError = jest.spyOn(shard.options, "onRunError");
   await expect(
     EntTestHuman.loadNullable(vc, ID_FROM_UNKNOWN_SHARD),
   ).rejects.toThrowErrorMatchingSnapshot();
-  expect(spyShardOnRunError).toBeCalledTimes(1); // not retried on intent
+  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
+    1,
+  ); // not retried on intent
 });
 
 test("unknown shard failure, singleShardForInsert", async () => {
-  const shard = testCluster.shard(PARENT_ID_FROM_UNKNOWN_SHARD);
-  const spyShardOnRunError = jest.spyOn(shard.options, "onRunError");
   await expect(
     EntTestHuman.insertIfNotExists(vc, {
       parent_id: PARENT_ID_FROM_UNKNOWN_SHARD,
@@ -99,7 +97,9 @@ test("unknown shard failure, singleShardForInsert", async () => {
       name: "test",
     }),
   ).rejects.toThrowErrorMatchingSnapshot();
-  expect(spyShardOnRunError).toBeCalledTimes(1); // not retried on intent
+  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
+    1,
+  ); // not retried on intent
 });
 
 test("unknown shard failure, multiShardsFromInput, no inverses", async () => {
@@ -109,16 +109,15 @@ test("unknown shard failure, multiShardsFromInput, no inverses", async () => {
 });
 
 test("shard relocation error when accessing a table should be retried", async () => {
-  testCluster.options.locateIslandErrorRetryDelayMs = 1;
+  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 1;
 
-  const shard = testCluster.shard(ID_FROM_EXISTING_SHARD);
-  const spyShardOnRunError = jest.spyOn(shard.options, "onRunError");
-
-  const master = await shard.client(MASTER);
+  const master = await testCluster.shard(ID_FROM_EXISTING_SHARD).client(MASTER);
   await master.rows("DROP TABLE %T CASCADE", EntTestHuman.SCHEMA.name);
 
   await expect(
     EntTestHuman.loadNullable(vc, ID_FROM_EXISTING_SHARD),
   ).rejects.toThrow(/undefined_table/);
-  expect(spyShardOnRunError).toBeCalledTimes(3);
+  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
+    3,
+  );
 });

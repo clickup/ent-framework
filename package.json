@@ -1,7 +1,7 @@
 {
   "name": "@clickup/ent-framework",
   "description": "A PostgreSQL graph database alike library with micro-sharding and row-level security",
-  "version": "2.10.296",
+  "version": "2.10.297",
   "license": "MIT",
   "keywords": [
     "postgresql",
@@ -22,7 +22,7 @@
     "./pg": "./pg.js"
   },
   "scripts": {
-    "barrel": "barrelsby --directory=./src/abstract --directory=./src/ent --directory=./src/helpers --directory=./src/pg --delete --exclude=__ --exclude=internal --name=index",
+    "barrel": "barrelsby --directory=./src/abstract --directory=./src/ent --directory=./src/helpers --directory=./src/pg --directory=./src/tools --delete --exclude=__ --exclude=internal --name=index",
     "build": "$npm_execpath run barrel && tsc",
     "dev": "$npm_execpath run barrel && tsc --watch --preserveWatchOutput",
     "lint": "bash internal/lint.sh",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "delay": "^4.4.1",
-    "fast-typescript-memoize": "^1.0.2",
+    "fast-typescript-memoize": "^1.1.1",
     "lodash": "^4.17.21",
     "object-hash": "^2.2.0",
     "p-defer": "^3.0.0",
@@ -55,6 +55,7 @@
     "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.6",
     "barrelsby": "^2.8.1",
+    "chalk": "^4.1.2",
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-lodash": "^7.4.0",
@@ -68,6 +69,7 @@
     "jest": "^29.7.0",
     "prettier": "3.2.1",
     "streaming-iterables": "^7.1.0",
+    "table": "^6.8.0",
     "ts-jest": "^29.1.1",
     "typedoc-plugin-markdown": "^3.16.0",
     "typedoc-plugin-merge-modules": "^5.1.0",

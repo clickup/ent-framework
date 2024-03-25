@@ -332,12 +332,13 @@ export function PrimitiveMixin<
               inverseRows,
               async ({ inverse, id1, id2, canUndoInverseInsert }) => {
                 if (canUndoInverseInsert) {
-                  this.CLUSTER.loggers.swallowedErrorLogger({
+                  this.CLUSTER.options.loggers.swallowedErrorLogger({
                     where:
                       `(not an error, just a debug warning) PrimitiveMixin.insertIfNotExists(${this.name}), ` +
                       `undoing Inverse ${inverse.type} ${id1}->${id2}`,
                     error: lastError ?? Error("duplicate key on insert"),
                     elapsed: null,
+                    importance: "low",
                   });
                   await inverse.afterDelete(vc, id1, id2).catch(() => {});
                 }

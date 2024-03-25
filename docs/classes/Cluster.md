@@ -23,6 +23,9 @@ Shard 0 is a special "global" Shard.
 
 • **new Cluster**\<`TClient`, `TNode`\>(`options`): [`Cluster`](Cluster.md)\<`TClient`, `TNode`\>
 
+Initializes the Cluster, but doesn't send any queries yet, even discovery
+queries (also, no implicit prewarming).
+
 #### Type parameters
 
 | Name | Type |
@@ -42,7 +45,7 @@ Shard 0 is a special "global" Shard.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:125](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L125)
+[src/abstract/Cluster.ts:133](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L133)
 
 ## Properties
 
@@ -54,7 +57,7 @@ Default values for the constructor options.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:89](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L89)
+[src/abstract/Cluster.ts:95](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L95)
 
 ___
 
@@ -66,19 +69,7 @@ Cluster configuration options.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:121](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L121)
-
-___
-
-### loggers
-
-• `Readonly` **loggers**: [`Loggers`](../interfaces/Loggers.md)
-
-Cluster logging handlers (derived from some node's Client).
-
-#### Defined in
-
-[src/abstract/Cluster.ts:123](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L123)
+[src/abstract/Cluster.ts:127](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L127)
 
 ## Methods
 
@@ -96,7 +87,7 @@ mean; typically, it's keeping some minimal number of pooled connections.)
 
 #### Defined in
 
-[src/abstract/Cluster.ts:181](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L181)
+[src/abstract/Cluster.ts:210](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L210)
 
 ___
 
@@ -114,7 +105,23 @@ actual query.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:196](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L196)
+[src/abstract/Cluster.ts:226](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L226)
+
+___
+
+### nonGlobalShards
+
+▸ **nonGlobalShards**(): `Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
+
+Returns all currently known (discovered) non-global Shards in the Cluster.
+
+#### Returns
+
+`Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
+
+#### Defined in
+
+[src/abstract/Cluster.ts:233](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L233)
 
 ___
 
@@ -148,7 +155,7 @@ the query), no matter whether it was an immediate call or a deferred one.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:215](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L215)
+[src/abstract/Cluster.ts:253](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L253)
 
 ___
 
@@ -171,84 +178,45 @@ Returns a random Shard among the ones which are currently known
 
 #### Defined in
 
-[src/abstract/Cluster.ts:223](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L223)
+[src/abstract/Cluster.ts:261](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L261)
 
 ___
 
-### nonGlobalShards
+### island
 
-▸ **nonGlobalShards**(): `Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
+▸ **island**(`islandNo`): `Promise`\<[`Island`](Island.md)\<`TClient`\>\>
 
-Returns all currently known (discovered) non-global Shards in the Cluster.
+Returns an Island by its number.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `islandNo` | `number` |
 
 #### Returns
 
-`Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
+`Promise`\<[`Island`](Island.md)\<`TClient`\>\>
 
 #### Defined in
 
-[src/abstract/Cluster.ts:242](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L242)
+[src/abstract/Cluster.ts:280](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L280)
 
 ___
 
 ### islands
 
-▸ **islands**(): `Promise`\<`number`[]\>
+▸ **islands**(): `Promise`\<[`Island`](Island.md)\<`TClient`\>[]\>
 
-Returns all Island numbers in the Cluster.
-
-#### Returns
-
-`Promise`\<`number`[]\>
-
-#### Defined in
-
-[src/abstract/Cluster.ts:250](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L250)
-
-___
-
-### islandShards
-
-▸ **islandShards**(`islandNo`): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>[]\>
-
-Returns all currently known (discovered) Shards of a particular Island.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `islandNo` | `number` |
+Returns all Islands in the Cluster.
 
 #### Returns
 
-`Promise`\<[`Shard`](Shard.md)\<`TClient`\>[]\>
+`Promise`\<[`Island`](Island.md)\<`TClient`\>[]\>
 
 #### Defined in
 
-[src/abstract/Cluster.ts:258](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L258)
-
-___
-
-### islandClient
-
-▸ **islandClient**(`islandNo`, `freshness`): `Promise`\<`TClient`\>
-
-Returns a Client of a particular Island.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `islandNo` | `number` |
-| `freshness` | typeof [`MASTER`](../modules.md#master) \| typeof [`STALE_REPLICA`](../modules.md#stale_replica) |
-
-#### Returns
-
-`Promise`\<`TClient`\>
-
-#### Defined in
-
-[src/abstract/Cluster.ts:270](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L270)
+[src/abstract/Cluster.ts:291](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L291)
 
 ___
 
@@ -266,4 +234,4 @@ cluster configuration.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:287](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L287)
+[src/abstract/Cluster.ts:301](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L301)

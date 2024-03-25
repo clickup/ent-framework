@@ -54,7 +54,7 @@ specs.
 
 #### Defined in
 
-[src/pg/PgRunner.ts:497](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L497)
+[src/pg/PgRunner.ts:499](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L499)
 
 ## Properties
 
@@ -143,7 +143,7 @@ ___
 
 #### Defined in
 
-[src/pg/PgRunner.ts:57](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L57)
+[src/pg/PgRunner.ts:59](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L59)
 
 ___
 
@@ -153,7 +153,7 @@ ___
 
 #### Defined in
 
-[src/pg/PgRunner.ts:498](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L498)
+[src/pg/PgRunner.ts:500](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L500)
 
 ## Methods
 
@@ -265,7 +265,7 @@ ___
 
 #### Defined in
 
-[src/pg/PgRunner.ts:59](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L59)
+[src/pg/PgRunner.ts:61](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L61)
 
 ___
 
@@ -291,7 +291,7 @@ performance-critical path!
 
 #### Defined in
 
-[src/pg/PgRunner.ts:98](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L98)
+[src/pg/PgRunner.ts:100](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L100)
 
 ___
 
@@ -319,7 +319,7 @@ use escapers table and the codegen for the following reasons:
 
 #### Defined in
 
-[src/pg/PgRunner.ts:164](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L164)
+[src/pg/PgRunner.ts:166](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L166)
 
 ___
 
@@ -349,7 +349,7 @@ Escapes field name identifier.
 
 #### Defined in
 
-[src/pg/PgRunner.ts:177](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L177)
+[src/pg/PgRunner.ts:179](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L179)
 
 ___
 
@@ -393,7 +393,7 @@ of columns is passed in specs.
 
 #### Defined in
 
-[src/pg/PgRunner.ts:215](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L215)
+[src/pg/PgRunner.ts:217](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L217)
 
 ___
 
@@ -462,7 +462,7 @@ generate VALUES clause without exact identification of the destination.
 
 #### Defined in
 
-[src/pg/PgRunner.ts:283](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L283)
+[src/pg/PgRunner.ts:285](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L285)
 
 ___
 
@@ -502,7 +502,7 @@ The set of columns is passed in specs, all other columns are ignored.
 
 #### Defined in
 
-[src/pg/PgRunner.ts:354](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L354)
+[src/pg/PgRunner.ts:356](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L356)
 
 ___
 
@@ -538,7 +538,7 @@ a=ANY('{...}') clause). Otherwise, builds an IN(...) clause.
 
 #### Defined in
 
-[src/pg/PgRunner.ts:382](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L382)
+[src/pg/PgRunner.ts:384](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L384)
 
 ___
 
@@ -598,7 +598,7 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 
 #### Defined in
 
-[src/pg/PgRunner.ts:416](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L416)
+[src/pg/PgRunner.ts:418](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L418)
 
 ___
 
@@ -633,7 +633,7 @@ returns the generated SQL WHERE clause.
 
 #### Defined in
 
-[src/pg/PgRunner.ts:451](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L451)
+[src/pg/PgRunner.ts:453](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L453)
 
 ___
 
@@ -669,7 +669,7 @@ transactions. This lowers the chances of deadlocks too.
 
 #### Defined in
 
-[src/pg/PgRunner.ts:486](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L486)
+[src/pg/PgRunner.ts:488](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L488)
 
 ___
 
@@ -696,7 +696,7 @@ error), returns the number of milliseconds to wait before retrying.
 
 #### Defined in
 
-[src/pg/PgRunner.ts:519](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L519)
+[src/pg/PgRunner.ts:521](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L521)
 
 ___
 
@@ -732,4 +732,4 @@ false.)
 
 #### Defined in
 
-[src/pg/PgRunner.ts:532](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L532)
+[src/pg/PgRunner.ts:534](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L534)

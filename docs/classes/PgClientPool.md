@@ -37,7 +37,7 @@ connection pooling solution. They don't have to use PgClientPool.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:88](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L88)
+[src/pg/PgClientPool.ts:95](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L95)
 
 ## Properties
 
@@ -53,7 +53,7 @@ Name of the shard associated to this Client.
 
 #### Defined in
 
-[src/pg/PgClient.ts:200](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L200)
+[src/pg/PgClient.ts:128](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L128)
 
 ___
 
@@ -69,7 +69,7 @@ An active TimelineManager for this particular Client.
 
 #### Defined in
 
-[src/pg/PgClient.ts:203](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L203)
+[src/pg/PgClient.ts:131](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L131)
 
 ___
 
@@ -85,7 +85,7 @@ Default values for the constructor options.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:46](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L46)
+[src/pg/PgClientPool.ts:56](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L56)
 
 ___
 
@@ -101,7 +101,7 @@ PgClientPool configuration options.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:69](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L69)
+[src/pg/PgClientPool.ts:76](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L76)
 
 ## Methods
 
@@ -154,7 +154,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 #### Defined in
 
-[src/abstract/Client.ts:123](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L123)
+[src/abstract/Client.ts:179](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L179)
 
 ___
 
@@ -163,7 +163,7 @@ ___
 ▸ **query**\<`TRow`\>(`«destructured»`): `Promise`\<`TRow`[]\>
 
 Sends a query (internally, a multi-query). After the query finishes, we
-should expect that isMaster() returns the actual master/replica role.
+should expect that role() returns the actual master/replica role.
 
 #### Type parameters
 
@@ -194,7 +194,7 @@ should expect that isMaster() returns the actual master/replica role.
 
 #### Defined in
 
-[src/pg/PgClient.ts:269](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L269)
+[src/pg/PgClient.ts:198](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L198)
 
 ___
 
@@ -215,7 +215,34 @@ database.
 
 #### Defined in
 
-[src/pg/PgClient.ts:504](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L504)
+[src/pg/PgClient.ts:378](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L378)
+
+___
+
+### ping
+
+▸ **ping**(`«destructured»`): `Promise`\<`void`\>
+
+Sends a read or write test query to the server. Tells the server to sit and
+wait for at least the provided number of milliseconds.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | [`ClientPingInput`](../interfaces/ClientPingInput.md) |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Inherited from
+
+[PgClient](PgClient.md).[ping](PgClient.md#ping)
+
+#### Defined in
+
+[src/pg/PgClient.ts:402](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L402)
 
 ___
 
@@ -241,7 +268,7 @@ Extracts Shard number from an ID.
 
 #### Defined in
 
-[src/pg/PgClient.ts:528](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L528)
+[src/pg/PgClient.ts:420](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L420)
 
 ___
 
@@ -268,52 +295,52 @@ new Client will share the same connection pool with the parent's Client.
 
 #### Defined in
 
-[src/pg/PgClient.ts:584](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L584)
+[src/pg/PgClient.ts:476](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L476)
 
 ___
 
-### isMaster
+### role
 
-▸ **isMaster**(): `boolean`
+▸ **role**(): [`ClientRole`](../modules.md#clientrole)
 
-Returns true if, after the last query, the Client reported being a master
-node. Master and replica roles may switch online unpredictably, without
-reconnecting, so we only know the role after a query.
+Returns the Client's role reported after the last successful query. Master
+and replica roles may switch online unpredictably, without reconnecting, so
+we only know the role after a query.
 
 #### Returns
 
-`boolean`
+[`ClientRole`](../modules.md#clientrole)
 
 #### Inherited from
 
-[PgClient](PgClient.md).[isMaster](PgClient.md#ismaster)
+[PgClient](PgClient.md).[role](PgClient.md#role)
 
 #### Defined in
 
-[src/pg/PgClient.ts:595](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L595)
+[src/pg/PgClient.ts:487](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L487)
 
 ___
 
-### isConnectionIssue
+### connectionIssue
 
-▸ **isConnectionIssue**(): `boolean`
+▸ **connectionIssue**(): ``null`` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
 
-Returns true if the Client couldn't connect to the server (or it could, but
-the load balancer reported the remote server as not working), so it should
-ideally be removed from the list of active replicas until e.g. the next
-discovery query to it (or any query) succeeds.
+Returns a non-nullable value if the Client couldn't connect to the server
+(or it could, but the load balancer reported the remote server as not
+working), so it should ideally be removed from the list of active replicas
+until e.g. the next discovery query to it (or any query) succeeds.
 
 #### Returns
 
-`boolean`
+``null`` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
 
 #### Inherited from
 
-[PgClient](PgClient.md).[isConnectionIssue](PgClient.md#isconnectionissue)
+[PgClient](PgClient.md).[connectionIssue](PgClient.md#connectionissue)
 
 #### Defined in
 
-[src/pg/PgClient.ts:599](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L599)
+[src/pg/PgClient.ts:491](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L491)
 
 ___
 
@@ -333,7 +360,7 @@ Called when the Client needs a connection to run a query against.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:71](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L71)
+[src/pg/PgClientPool.ts:78](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L78)
 
 ___
 
@@ -359,7 +386,7 @@ Called when the Client is done with the connection.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:75](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L75)
+[src/pg/PgClientPool.ts:82](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L82)
 
 ___
 
@@ -373,11 +400,11 @@ Returns statistics about the connection pool.
 
 `Object`
 
-| Name | Type |
-| :------ | :------ |
-| `totalCount` | `number` |
-| `waitingCount` | `number` |
-| `idleCount` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `totalConns` | `number` | Total number of connections in the pool. |
+| `idleConns` | `number` | Connections not busy running a query. |
+| `queuedReqs` | `number` | Once all idle connections are over, requests are queued waiting for a new available connection. This is the number of such queued requests. |
 
 #### Overrides
 
@@ -385,13 +412,37 @@ Returns statistics about the connection pool.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:80](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L80)
+[src/pg/PgClientPool.ts:87](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L87)
+
+___
+
+### address
+
+▸ **address**(): `string`
+
+Represents the full destination address this Client is working with.
+Depending on the implementation, it may include hostname, port number,
+database name, shard name etc. It is required that the address is stable
+enough to be able to cache some destination database related metadata (e.g.
+shardNos) based on that address.
+
+#### Returns
+
+`string`
+
+#### Overrides
+
+[PgClient](PgClient.md).[address](PgClient.md#address)
+
+#### Defined in
+
+[src/pg/PgClientPool.ts:130](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L130)
 
 ___
 
 ### logSwallowedError
 
-▸ **logSwallowedError**(`where`, `e`, `elapsed`): `void`
+▸ **logSwallowedError**(`props`): `void`
 
 Calls swallowedErrorLogger() doing some preliminary amendment.
 
@@ -399,9 +450,7 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 | Name | Type |
 | :------ | :------ |
-| `where` | `string` |
-| `e` | `unknown` |
-| `elapsed` | ``null`` \| `number` |
+| `props` | [`SwallowedErrorLoggerProps`](../interfaces/SwallowedErrorLoggerProps.md) |
 
 #### Returns
 
@@ -413,7 +462,7 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:120](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L120)
+[src/pg/PgClientPool.ts:141](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L141)
 
 ___
 
@@ -435,7 +484,7 @@ unusable after calling this method: you should not send queries to it.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:130](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L130)
+[src/pg/PgClientPool.ts:147](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L147)
 
 ___
 
@@ -455,7 +504,7 @@ Returns true if the Client is ended and can't be used anymore.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:141](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L141)
+[src/pg/PgClientPool.ts:158](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L158)
 
 ___
 
@@ -478,4 +527,4 @@ full-text dictionaries).
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:145](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L145)
+[src/pg/PgClientPool.ts:162](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L162)

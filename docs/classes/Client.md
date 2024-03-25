@@ -32,7 +32,7 @@ Initializes an instance of Client.
 
 #### Defined in
 
-[src/abstract/Client.ts:96](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L96)
+[src/abstract/Client.ts:152](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L152)
 
 ## Properties
 
@@ -44,7 +44,7 @@ Default values for the constructor options.
 
 #### Defined in
 
-[src/abstract/Client.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L32)
+[src/abstract/Client.ts:62](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L62)
 
 ___
 
@@ -56,7 +56,7 @@ Client configuration options.
 
 #### Defined in
 
-[src/abstract/Client.ts:37](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L37)
+[src/abstract/Client.ts:68](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L68)
 
 ___
 
@@ -71,7 +71,7 @@ created by withShard() method).
 
 #### Defined in
 
-[src/abstract/Client.ts:43](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L43)
+[src/abstract/Client.ts:74](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L74)
 
 ___
 
@@ -84,9 +84,29 @@ the Clients within the same Island.
 
 #### Defined in
 
-[src/abstract/Client.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L47)
+[src/abstract/Client.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L78)
 
 ## Methods
+
+### address
+
+▸ **address**(): `string`
+
+Represents the full destination address this Client is working with.
+Depending on the implementation, it may include hostname, port number,
+database name, shard name etc. It is required that the address is stable
+enough to be able to cache some destination database related metadata (e.g.
+shardNos) based on that address.
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[src/abstract/Client.ts:87](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L87)
+
+___
 
 ### end
 
@@ -102,7 +122,7 @@ unusable after calling this method: you should not send queries to it.
 
 #### Defined in
 
-[src/abstract/Client.ts:54](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L54)
+[src/abstract/Client.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L94)
 
 ___
 
@@ -119,7 +139,30 @@ database.
 
 #### Defined in
 
-[src/abstract/Client.ts:60](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L60)
+[src/abstract/Client.ts:100](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L100)
+
+___
+
+### ping
+
+▸ **ping**(`input`): `Promise`\<`void`\>
+
+Sends a read or write test query to the server. Tells the server to sit and
+wait for at least the provided number of milliseconds.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `input` | [`ClientPingInput`](../interfaces/ClientPingInput.md) |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Defined in
+
+[src/abstract/Client.ts:106](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L106)
 
 ___
 
@@ -141,7 +184,7 @@ Extracts Shard number from an ID.
 
 #### Defined in
 
-[src/abstract/Client.ts:65](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L65)
+[src/abstract/Client.ts:111](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L111)
 
 ___
 
@@ -164,7 +207,7 @@ new Client will share the same connection pool with the parent's Client.
 
 #### Defined in
 
-[src/abstract/Client.ts:71](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L71)
+[src/abstract/Client.ts:117](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L117)
 
 ___
 
@@ -180,44 +223,66 @@ Returns true if the Client is ended and can't be used anymore.
 
 #### Defined in
 
-[src/abstract/Client.ts:76](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L76)
+[src/abstract/Client.ts:122](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L122)
 
 ___
 
-### isMaster
+### role
 
-▸ **isMaster**(): `boolean`
+▸ **role**(): [`ClientRole`](../modules.md#clientrole)
 
-Returns true if, after the last query, the Client reported being a master
-node. Master and replica roles may switch online unpredictably, without
-reconnecting, so we only know the role after a query.
+Returns the Client's role reported after the last successful query. Master
+and replica roles may switch online unpredictably, without reconnecting, so
+we only know the role after a query.
 
 #### Returns
 
-`boolean`
+[`ClientRole`](../modules.md#clientrole)
 
 #### Defined in
 
-[src/abstract/Client.ts:83](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L83)
+[src/abstract/Client.ts:129](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L129)
 
 ___
 
-### isConnectionIssue
+### connectionIssue
 
-▸ **isConnectionIssue**(): `boolean`
+▸ **connectionIssue**(): ``null`` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
 
-Returns true if the Client couldn't connect to the server (or it could, but
-the load balancer reported the remote server as not working), so it should
-ideally be removed from the list of active replicas until e.g. the next
-discovery query to it (or any query) succeeds.
+Returns a non-nullable value if the Client couldn't connect to the server
+(or it could, but the load balancer reported the remote server as not
+working), so it should ideally be removed from the list of active replicas
+until e.g. the next discovery query to it (or any query) succeeds.
 
 #### Returns
 
-`boolean`
+``null`` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
 
 #### Defined in
 
-[src/abstract/Client.ts:91](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L91)
+[src/abstract/Client.ts:137](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L137)
+
+___
+
+### logSwallowedError
+
+▸ **logSwallowedError**(`props`): `void`
+
+Calls swallowedErrorLogger() doing some preliminary amendment.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `props` | [`SwallowedErrorLoggerProps`](../interfaces/SwallowedErrorLoggerProps.md) |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/abstract/Client.ts:142](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L142)
 
 ___
 
@@ -266,31 +331,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 #### Defined in
 
-[src/abstract/Client.ts:123](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L123)
-
-___
-
-### logSwallowedError
-
-▸ **logSwallowedError**(`where`, `error`, `elapsed`): `void`
-
-Calls swallowedErrorLogger() doing some preliminary amendment.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `where` | `string` |
-| `error` | `unknown` |
-| `elapsed` | ``null`` \| `number` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/abstract/Client.ts:140](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L140)
+[src/abstract/Client.ts:179](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L179)
 
 ___
 
@@ -309,4 +350,4 @@ full-text dictionaries).
 
 #### Defined in
 
-[src/abstract/Client.ts:158](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L158)
+[src/abstract/Client.ts:199](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L199)

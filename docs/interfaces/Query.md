@@ -16,6 +16,7 @@ that this interface is the only common part of them all.
 - [`PgQuerySelectBy`](../classes/PgQuerySelectBy.md)
 - [`PgQueryUpdate`](../classes/PgQueryUpdate.md)
 - [`QueryBase`](../classes/QueryBase.md)
+- [`QueryPing`](../classes/QueryPing.md)
 
 ## Properties
 

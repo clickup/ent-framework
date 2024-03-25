@@ -14,7 +14,7 @@ Shard lives within an Island with one master and N replicas.
 
 ### constructor
 
-• **new Shard**\<`TClient`\>(`no`, `options`): [`Shard`](Shard.md)\<`TClient`\>
+• **new Shard**\<`TClient`\>(`no`, `runWithLocatedIsland`): [`Shard`](Shard.md)\<`TClient`\>
 
 #### Type parameters
 
@@ -24,10 +24,10 @@ Shard lives within an Island with one master and N replicas.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `no` | `number` |
-| `options` | [`ShardOptions`](../interfaces/ShardOptions.md)\<`TClient`\> |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `no` | `number` | Shard number. |
+| `runWithLocatedIsland` | \<TRes\>(`body`: (`island`: [`Island`](Island.md)\<`TClient`\>, `attempt`: `number`) => `Promise`\<`TRes`\>) => `Promise`\<`TRes`\> | A middleware to wrap queries with. It's responsible for locating the right Island and retrying the call to body() (i.e. failed queries) in case e.g. a shard is moved to another Island. |
 
 #### Returns
 
@@ -35,7 +35,7 @@ Shard lives within an Island with one master and N replicas.
 
 #### Defined in
 
-[src/abstract/Shard.ts:33](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L33)
+[src/abstract/Shard.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L24)
 
 ## Properties
 
@@ -43,19 +43,45 @@ Shard lives within an Island with one master and N replicas.
 
 • `Readonly` **no**: `number`
 
+Shard number.
+
 #### Defined in
 
-[src/abstract/Shard.ts:34](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L34)
+[src/abstract/Shard.ts:26](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L26)
 
 ___
 
-### options
+### runWithLocatedIsland
 
-• `Readonly` **options**: [`ShardOptions`](../interfaces/ShardOptions.md)\<`TClient`\>
+• `Readonly` **runWithLocatedIsland**: \<TRes\>(`body`: (`island`: [`Island`](Island.md)\<`TClient`\>, `attempt`: `number`) => `Promise`\<`TRes`\>) => `Promise`\<`TRes`\>
+
+A middleware to wrap queries with. It's responsible for locating the
+right Island and retrying the call to body() (i.e. failed queries) in
+case e.g. a shard is moved to another Island.
+
+#### Type declaration
+
+▸ \<`TRes`\>(`body`): `Promise`\<`TRes`\>
+
+##### Type parameters
+
+| Name |
+| :------ |
+| `TRes` |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `body` | (`island`: [`Island`](Island.md)\<`TClient`\>, `attempt`: `number`) => `Promise`\<`TRes`\> |
+
+##### Returns
+
+`Promise`\<`TRes`\>
 
 #### Defined in
 
-[src/abstract/Shard.ts:35](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L35)
+[src/abstract/Shard.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L30)
 
 ## Methods
 
@@ -78,7 +104,7 @@ because the Shard may relocate to another Island during re-discovery.
 
 #### Defined in
 
-[src/abstract/Shard.ts:42](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L42)
+[src/abstract/Shard.ts:39](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L39)
 
 ___
 
@@ -110,7 +136,7 @@ Shard, annotation etc.)
 
 #### Defined in
 
-[src/abstract/Shard.ts:63](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L63)
+[src/abstract/Shard.ts:52](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L52)
 
 ___
 
@@ -127,4 +153,4 @@ else is wrong with it.
 
 #### Defined in
 
-[src/abstract/Shard.ts:117](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L117)
+[src/abstract/Shard.ts:89](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L89)

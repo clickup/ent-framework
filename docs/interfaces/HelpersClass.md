@@ -51,10 +51,6 @@ a function, but having a class is a little more natural.
 
 • **new Configuration**(`cfg`): [`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
-A helper class to work-around TS weakness in return value type inference:
-https://github.com/Microsoft/TypeScript/issues/31273. It could've been just
-a function, but having a class is a little more natural.
-
 ##### Parameters
 
 | Name | Type |
@@ -198,9 +194,6 @@ constraints.
 
 ▸ (`vc`, `input`): `Promise`\<`string`\>
 
-Same as insertIfNotExists(), but throws if the Ent violates unique key
-constraints.
-
 ##### Parameters
 
 | Name | Type |
@@ -227,8 +220,6 @@ Same as insert(), but returns the created Ent.
 #### Type declaration
 
 ▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`\>
-
-Same as insert(), but returns the created Ent.
 
 ##### Type parameters
 
@@ -263,8 +254,6 @@ Same, but returns the created/updated Ent.
 #### Type declaration
 
 ▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`\>
-
-Same, but returns the created/updated Ent.
 
 ##### Type parameters
 
@@ -301,9 +290,6 @@ doesn't throw. It's more a convenience function rather than a concept.
 
 ▸ \<`TEnt`\>(`this`, `vc`, `id`): `Promise`\<``null`` \| `TEnt`\>
 
-Same as loadNullable(), but if no permissions to read, returns null and
-doesn't throw. It's more a convenience function rather than a concept.
-
 ##### Type parameters
 
 | Name | Type |
@@ -339,9 +325,6 @@ This method is used VERY often.
 
 ▸ \<`TEnt`\>(`this`, `vc`, `id`): `Promise`\<`TEnt`\>
 
-Loads an Ent by its ID. Throws if no such Ent is found.
-This method is used VERY often.
-
 ##### Type parameters
 
 | Name | Type |
@@ -376,9 +359,6 @@ This method is used VERY often.
 #### Type declaration
 
 ▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`\>
-
-Loads an Ent by its ID. Throws if no such Ent is found.
-This method is used VERY often.
 
 ##### Type parameters
 
@@ -420,14 +400,6 @@ Runs INSERT mutation for the Ent.
 
 ▸ (`vc`, `input`): `Promise`\<``null`` \| `string`\>
 
-Runs INSERT mutation for the Ent.
-- The Shard is inferred from the input fields using SHARD_AFFINITY.
-- Returns ID of the newly inserted row.
-- Returns null if the Ent violates unique key constraints.
-- If the Ent has some triggers set up, this will be translated into two
-  schema operations: idGen() and insert(), and before-triggers will run in
-  between having the ID known in advance.
-
 ##### Parameters
 
 | Name | Type |
@@ -465,14 +437,6 @@ Inserts an Ent or updates an existing one if unique key matches.
 
 ▸ (`vc`, `input`): `Promise`\<`string`\>
 
-Inserts an Ent or updates an existing one if unique key matches.
-- Don't use upsert() too often, because upsert may still delete IDs even if
-  the object was updated, not inserted (there is no good ways to solve this
-  in some DB engines like relational DBs so far).
-- Upsert can't work if some triggers are defined for the Ent, because we
-  don't know Ent ID in advance (whether the upsert succeeds or skips on
-  duplication).
-
 ##### Parameters
 
 | Name | Type |
@@ -504,9 +468,6 @@ loadX() instead as much as you can.
 #### Type declaration
 
 ▸ \<`TEnt`\>(`this`, `vc`, `id`): `Promise`\<``null`` \| `TEnt`\>
-
-Loads an Ent by its ID. Returns null if no such Ent exists. Try to use
-loadX() instead as much as you can.
 
 ##### Type parameters
 
@@ -549,11 +510,6 @@ non-unique keys!
 
 ▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<``null`` \| `TEnt`\>
 
-Loads an Ent by its unique key. Returns null if no such Ent exists. Notice
-that the key must be REALLY unique, otherwise the database may return
-multiple items, and the API will break. Don't try to use this method with
-non-unique keys!
-
 ##### Type parameters
 
 | Name | Type |
@@ -594,11 +550,6 @@ guaranteed.
 #### Type declaration
 
 ▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`[]\>
-
-Selects the list of Ents by their unique key prefix. The query can span
-multiple Shards if their locations can be inferred from inverses related to
-the fields mentioned in the query. Ordering of the results is not
-guaranteed.
 
 ##### Type parameters
 
@@ -643,14 +594,6 @@ Selects the list of Ents by some predicate.
 #### Type declaration
 
 ▸ \<`TEnt`\>(`this`, `vc`, `where`, `limit`, `order?`, `custom?`): `Promise`\<`TEnt`[]\>
-
-Selects the list of Ents by some predicate.
-- The query can span multiple Shards if their locations can be inferred
-  from inverses related to the fields mentioned in the query.
-- In multi-Shard case, ordering of results is not guaranteed.
-- In multi-Shard case, it may return more results than requested by limit
-  (basically, limit is applied to each Shard individually). The caller has
-  then freedom to reorder & slice the results as they wish.
 
 ##### Type parameters
 
@@ -699,14 +642,6 @@ Same as select(), but returns data in chunks.
 
 ▸ \<`TEnt`\>(`this`, `vc`, `where`, `chunkSize`, `limit`, `custom?`): `AsyncIterableIterator`\<`TEnt`[]\>
 
-Same as select(), but returns data in chunks.
-- Uses multiple select() queries under the hood.
-- The query can span multiple Shards if their locations can be inferred
-  from inverses related to the fields mentioned in the query.
-- Ents in each chunk always belong to the same Shard and are ordered by ID
-  (there is no support for custom ordering). Make sure you have the right
-  index in the database.
-
 ##### Type parameters
 
 | Name | Type |
@@ -750,10 +685,6 @@ fields mentioned in the query.
 
 ▸ (`vc`, `where`): `Promise`\<`number`\>
 
-Returns count of Ents matching a predicate. The query can span multiple
-Shards if their locations can be inferred from inverses related to the
-fields mentioned in the query.
-
 ##### Parameters
 
 | Name | Type |
@@ -785,9 +716,6 @@ whether we have "0 or not 0" rows.
 #### Type declaration
 
 ▸ (`vc`, `where`): `Promise`\<`boolean`\>
-
-A more optimal approach than count() when we basically just need to know
-whether we have "0 or not 0" rows.
 
 ##### Parameters
 
