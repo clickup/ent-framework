@@ -10,7 +10,7 @@ import { True } from "../predicates/True";
 import { AllowIf } from "../rules/AllowIf";
 import { Require } from "../rules/Require";
 import { GLOBAL_SHARD } from "../ShardAffinity";
-import type { VC } from "../VC";
+import { type VC } from "../VC";
 import { createVC, expectToMatchSnapshot } from "./test-utils";
 
 const $EPHEMERAL = Symbol("$EPHEMERAL");
@@ -50,7 +50,7 @@ export class EntTestUser extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
-      privacyInferPrincipal: async (_vc, { id }) => id,
+      privacyInferPrincipal: async (_vc, row) => row.id,
       privacyLoad: [new AllowIf(new OutgoingEdgePointsToVC("id"))],
       privacyInsert: [],
       privacyUpdate: [new Require(new OutgoingEdgePointsToVC("id"))],
@@ -101,6 +101,7 @@ export class EntTestHeadline extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: [],
+      privacyInferPrincipal: async (_vc, row) => row.user_id,
       privacyLoad: [
         new AllowIf(new CanReadOutgoingEdge("user_id", EntTestUser)),
       ],
@@ -297,6 +298,7 @@ export class EntTestCountry extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
+      privacyInferPrincipal: null,
       privacyLoad: [new AllowIf(new True())],
       privacyInsert: [new Require(new True())],
       beforeInsert: [

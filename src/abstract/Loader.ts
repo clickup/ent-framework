@@ -11,7 +11,7 @@ export interface Handler<TLoadArgs extends unknown[], TReturn> {
 interface LoaderSession<TLoadArgs extends unknown[], TReturn> {
   handler: Handler<TLoadArgs, TReturn>;
   flush: Promise<void>;
-  flushNow: DeferredPromise<void>;
+  abortWait: DeferredPromise<void>;
   collected: number;
 }
 
@@ -48,13 +48,25 @@ export class Loader<TLoadArgs extends unknown[], TReturn> {
     const session = (this.session ??= {
       collected: 0,
       handler: this.handlerCreator(),
-      flushNow: pDefer<void>(),
+      abortWait: pDefer<void>(),
       flush: new Promise((resolve) =>
         process.nextTick(async () => {
-          await Promise.race([
-            session.handler.onWait?.(),
-            session.flushNow.promise,
-          ]);
+          const waitPromise = session.handler.onWait?.();
+          if (waitPromise) {
+            // If we have onWait() handler, we should wait on it, but interrupt
+            // this wait in case session.abortWait resolves.
+            await Promise.race([waitPromise, session.abortWait.promise]);
+            // Often times, wait() returns a ClearablePromise (e.g. from delay
+            // module), so we can utilize it here to cancel the lingering timer.
+            if (
+              "clear" in waitPromise &&
+              typeof waitPromise.clear === "function" &&
+              waitPromise.clear.length === 0
+            ) {
+              waitPromise.clear();
+            }
+          }
+
           this.session = this.session === session ? null : this.session;
           resolve(session.handler.onFlush(session.collected));
         }),
@@ -64,7 +76,7 @@ export class Loader<TLoadArgs extends unknown[], TReturn> {
     session.collected++;
     if (session.handler.onCollect(...args) === "flush") {
       this.session = this.session === session ? null : this.session;
-      session.flushNow.resolve();
+      session.abortWait.resolve();
     }
 
     await session.flush;

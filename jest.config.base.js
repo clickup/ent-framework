@@ -6,7 +6,7 @@ module.exports = {
   restoreMocks: true,
   ...(process.env.IN_JEST_PROJECT
     ? {}
-    : { forceExit: true, testTimeout: 30000, forceExit: true }),
+    : { forceExit: true, testTimeout: 30000 }),
   transform: {
     "\\.ts$": "ts-jest",
   },

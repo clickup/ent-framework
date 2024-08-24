@@ -1,28 +1,26 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / IDsCache
+[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / IDsCacheDeletable
 
-# Class: IDsCache
+# Class: IDsCacheDeletable
 
 ## Hierarchy
 
-- **`IDsCache`**
+- [`IDsCache`](IDsCache.md)
 
-  ↳ [`IDsCacheReadable`](IDsCacheReadable.md)
-
-  ↳ [`IDsCacheUpdatable`](IDsCacheUpdatable.md)
-
-  ↳ [`IDsCacheDeletable`](IDsCacheDeletable.md)
-
-  ↳ [`IDsCacheCanReadIncomingEdge`](IDsCacheCanReadIncomingEdge.md)
+  ↳ **`IDsCacheDeletable`**
 
 ## Constructors
 
 ### constructor
 
-• **new IDsCache**(): [`IDsCache`](IDsCache.md)
+• **new IDsCacheDeletable**(): [`IDsCacheDeletable`](IDsCacheDeletable.md)
 
 #### Returns
 
-[`IDsCache`](IDsCache.md)
+[`IDsCacheDeletable`](IDsCacheDeletable.md)
+
+#### Inherited from
+
+[IDsCache](IDsCache.md).[constructor](IDsCache.md#constructor)
 
 ## Methods
 
@@ -39,6 +37,10 @@
 #### Returns
 
 `boolean`
+
+#### Inherited from
+
+[IDsCache](IDsCache.md).[has](IDsCache.md#has)
 
 #### Defined in
 
@@ -61,6 +63,10 @@ ___
 
 `void`
 
+#### Inherited from
+
+[IDsCache](IDsCache.md).[add](IDsCache.md#add)
+
 #### Defined in
 
 [src/ent/IDsCache.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/IDsCache.ts#L10)
@@ -80,6 +86,10 @@ ___
 #### Returns
 
 `undefined` \| `boolean`
+
+#### Inherited from
+
+[IDsCache](IDsCache.md).[get](IDsCache.md#get)
 
 #### Defined in
 

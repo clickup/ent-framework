@@ -158,7 +158,7 @@ export class VC {
   /**
    * Serializes Shard timelines (master WAL positions) to a string format. The
    * method always returns a value which is compatible to
-   * withDeserializedTimelines() input.
+   * deserializeTimelines() input.
    */
   serializeTimelines(): string | undefined {
     const timelines: Record<string, string> = {};
@@ -178,21 +178,21 @@ export class VC {
   }
 
   /**
-   * Returns the new VC derived from the current one with empty caches and with
-   * all replication timelines restored based on the serialized info provided.
+   * Restores all replication timelines in the VC based on the serialized info
+   * provided. Returns the new VC derived from the current one, but with empty
+   * caches.
    *
-   * This method also has a side effect, because it reflects the changes in the
-   * global DB state as seen by the current VC's user. It restores previously
-   * serialized timelines to the existing VC and all its parent VCs which share
-   * the same principal. (The latter happens, because `this.timelines` map is
-   * passed by reference to all derived VCs starting from the one which sets
-   * principal; see `new VC(...)` clauses all around and toLowerInternal()
-   * logic.) The timelines are merged according to wal position (greater wal
-   * position wins).
+   * This method has a side effect of changing the timelines of the current VC
+   * (and actually all parent VCs), because it reflects the changes in the
+   * global DB state as seen by the current VC's principal. It restores
+   * previously serialized timelines to the existing VC and all its parent VCs
+   * which share the same principal. (The latter happens, because
+   * `this.timelines` map is passed by reference to all derived VCs starting
+   * from the one which sets principal; see `new VC(...)` clauses all around and
+   * toLowerInternal() logic.) The timelines are merged according to WAL
+   * positions (larger WAL positions win).
    */
-  withDeserializedTimelines(
-    ...dataStrs: ReadonlyArray<string | undefined>
-  ): VC {
+  deserializeTimelines(...dataStrs: ReadonlyArray<string | undefined>): VC {
     let deserialized = false;
     for (const dataStr of dataStrs) {
       if (dataStr) {

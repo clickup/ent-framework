@@ -21,6 +21,7 @@ export class EntTestCompany extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
+      privacyInferPrincipal: null,
       privacyLoad: [new AllowIf(new True())],
       privacyInsert: [],
     });

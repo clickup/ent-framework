@@ -27,6 +27,7 @@ export * from "./mixins/CacheMixin";
 export * from "./mixins/ConfigMixin";
 export * from "./mixins/HelpersMixin";
 export * from "./mixins/PrimitiveMixin";
+export * from "./predicates/CanDeleteOutgoingEdge";
 export * from "./predicates/CanReadOutgoingEdge";
 export * from "./predicates/CanUpdateOutgoingEdge";
 export * from "./predicates/FieldIs";

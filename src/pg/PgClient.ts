@@ -50,7 +50,7 @@ export interface PgClientOptions extends ClientOptions {
    * per-connection statement timeout in transaction pooling mode: it throws
    * "unsupported startup parameter" error. I.e. we may want to emit "SET
    * statement_timeout TO ..." before each query in multi-query mode. */
-  hints?: MaybeCallable<Record<string, string>> | null;
+  hints?: MaybeCallable<Record<string, string | undefined>> | null;
   /** After how many milliseconds we give up waiting for the replica to catch up
    * with the master. */
   maxReplicationLagMs?: MaybeCallable<number>;
@@ -396,7 +396,7 @@ export abstract class PgClient extends Client {
         return no !== null && name === this.buildShardName(no) ? no : null;
       })
       .filter((no): no is number => no !== null)
-      .sort();
+      .sort((a, b) => a - b);
   }
 
   async ping({
@@ -530,11 +530,13 @@ export abstract class PgClient extends Client {
     // Prepend internal per-Client hints to the prologue.
     if (this.options.hints) {
       queriesPrologue.unshift(
-        ...Object.entries(maybeCall(this.options.hints)).map(([k, v]) =>
-          k.toLowerCase() === "transaction"
-            ? `SET LOCAL ${k} ${v}`
-            : `SET LOCAL ${k} TO ${v}`,
-        ),
+        ...Object.entries(maybeCall(this.options.hints))
+          .filter(([_, v]) => v !== undefined)
+          .map(([k, v]) =>
+            k.toLowerCase() === "transaction"
+              ? `SET LOCAL ${k} ${v}`
+              : `SET LOCAL ${k} TO ${v}`,
+          ),
       );
     }
 

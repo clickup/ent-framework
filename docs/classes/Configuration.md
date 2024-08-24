@@ -47,7 +47,7 @@ Motivation:
 
 #### Defined in
 
-[src/ent/Configuration.ts:123](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L123)
+[src/ent/Configuration.ts:138](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L138)
 
 ## Properties
 
@@ -79,7 +79,7 @@ defined in most of the cases.
 
 #### Defined in
 
-[src/ent/Configuration.ts:52](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L52)
+[src/ent/Configuration.ts:59](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L59)
 
 ___
 
@@ -93,7 +93,7 @@ value in this field, inverses allow to locate Shard(s) of the Ent.
 
 #### Defined in
 
-[src/ent/Configuration.ts:56](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L56)
+[src/ent/Configuration.ts:63](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L63)
 
 ___
 
@@ -107,36 +107,25 @@ in the privacy rules chain, thus it's bullet-proof.
 
 #### Defined in
 
-[src/ent/Configuration.ts:62](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L62)
+[src/ent/Configuration.ts:69](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L69)
 
 ___
 
 ### privacyInferPrincipal
 
-• `Optional` `Readonly` **privacyInferPrincipal**: (`vc`: [`VC`](VC.md), `row`: [`Row`](../modules.md#row)\<`TTable`\>) => `Promise`\<``null`` \| `string`\>
+• `Readonly` **privacyInferPrincipal**: ``null`` \| `string` \| (`vc`: [`VC`](VC.md), `row`: [`Row`](../modules.md#row)\<`TTable`\>) => `Promise`\<``null`` \| `string` \| [`Ent`](../modules.md#ent)\<{}\>\>
 
-If defined, an attempt to load this Ent using an omni VC will "lower" that
-VC to the principal returned by this callback. Omni VC is always lowered,
-even if the callback is not set (to a guest VC in such cases).
-
-#### Type declaration
-
-▸ (`vc`, `row`): `Promise`\<``null`` \| `string`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](VC.md) |
-| `row` | [`Row`](../modules.md#row)\<`TTable`\> |
-
-##### Returns
-
-`Promise`\<``null`` \| `string`\>
+An attempt to load this Ent using an omni VC will "lower" that VC to the
+principal returned. Omni VC is always lowered.
+1. If an Ent is returned, the lowered principal will be Ent#vc.principal.
+   It is a way to delegate principal inference to another Ent.
+2. If a string is returned, then it's treated as a principal ID.
+3. If a null is returned, then a guest principal will be used.
+4. Returning an omni principal or VC will result in a run-time error.
 
 #### Defined in
 
-[src/ent/Configuration.ts:66](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L66)
+[src/ent/Configuration.ts:77](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L77)
 
 ___
 
@@ -148,7 +137,7 @@ Privacy rules checked on every row loaded from the DB.
 
 #### Defined in
 
-[src/ent/Configuration.ts:68](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L68)
+[src/ent/Configuration.ts:83](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L83)
 
 ___
 
@@ -169,7 +158,7 @@ Privacy rules checked before a row is inserted to the DB.
 
 #### Defined in
 
-[src/ent/Configuration.ts:79](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L79)
+[src/ent/Configuration.ts:94](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L94)
 
 ___
 
@@ -183,7 +172,7 @@ Privacy rules checked before a row is updated in the DB.
 
 #### Defined in
 
-[src/ent/Configuration.ts:83](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L83)
+[src/ent/Configuration.ts:98](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L98)
 
 ___
 
@@ -197,7 +186,7 @@ Privacy rules checked before a row is deleted in the DB.
 
 #### Defined in
 
-[src/ent/Configuration.ts:87](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L87)
+[src/ent/Configuration.ts:102](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L102)
 
 ___
 
@@ -209,7 +198,7 @@ Custom field values validators run before any insert/update.
 
 #### Defined in
 
-[src/ent/Configuration.ts:89](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L89)
+[src/ent/Configuration.ts:104](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L104)
 
 ___
 
@@ -221,7 +210,7 @@ Triggers run before every insert.
 
 #### Defined in
 
-[src/ent/Configuration.ts:91](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L91)
+[src/ent/Configuration.ts:106](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L106)
 
 ___
 
@@ -233,7 +222,7 @@ Triggers run before every update.
 
 #### Defined in
 
-[src/ent/Configuration.ts:93](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L93)
+[src/ent/Configuration.ts:108](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L108)
 
 ___
 
@@ -245,7 +234,7 @@ Triggers run before every delete.
 
 #### Defined in
 
-[src/ent/Configuration.ts:98](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L98)
+[src/ent/Configuration.ts:113](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L113)
 
 ___
 
@@ -259,7 +248,7 @@ if the deps are modified.
 
 #### Defined in
 
-[src/ent/Configuration.ts:102](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L102)
+[src/ent/Configuration.ts:117](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L117)
 
 ___
 
@@ -271,7 +260,7 @@ Triggers run after every delete.
 
 #### Defined in
 
-[src/ent/Configuration.ts:107](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L107)
+[src/ent/Configuration.ts:122](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L122)
 
 ___
 
@@ -283,7 +272,7 @@ Triggers run after every update.
 
 #### Defined in
 
-[src/ent/Configuration.ts:109](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L109)
+[src/ent/Configuration.ts:124](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L124)
 
 ___
 
@@ -295,7 +284,7 @@ Triggers run after every delete.
 
 #### Defined in
 
-[src/ent/Configuration.ts:114](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L114)
+[src/ent/Configuration.ts:129](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L129)
 
 ___
 
@@ -309,4 +298,4 @@ if the deps are modified.
 
 #### Defined in
 
-[src/ent/Configuration.ts:118](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L118)
+[src/ent/Configuration.ts:133](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L133)

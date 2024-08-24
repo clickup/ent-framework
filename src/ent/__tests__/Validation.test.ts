@@ -21,6 +21,7 @@ test("0000: load succeeds when first rule allows", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [
         new AllowIf(async function First(_vc, _row) {
           return tester.respond("First", true);
@@ -42,6 +43,7 @@ test("0010: load succeeds when any rule allows", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [
         new AllowIf(async function First(_vc, _row) {
           return tester.respond("First", false);
@@ -60,6 +62,7 @@ test("0020: load fails when first rule throws", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [
         new AllowIf(async function First(_vc, _row) {
           return tester.respond("First", Error("wild"));
@@ -75,6 +78,7 @@ test("0030: insert succeeds when all require allow", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [
         new Require(async function First(_vc, row) {
@@ -96,6 +100,7 @@ test("0040: insert fails when any require denies", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [
         new Require(async function First(_vc, _row) {
@@ -114,6 +119,7 @@ test("0041: update fails when any require denies", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [],
       update: [
@@ -136,6 +142,7 @@ test("0042: delete fails when any require denies", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [],
       delete: [
@@ -158,6 +165,7 @@ test("0043: update fails when user errors", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [new Require(new True())],
       validate: [
@@ -175,6 +183,7 @@ test("0044: update succeeds user validation when field untouched", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [new Require(new True())],
       validate: [new FieldIs("id", (_value, _row) => false, "some one")],
@@ -189,6 +198,7 @@ test("0050: insert fails when any require throws", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [
         new Require(async function First(_vc, _row) {
@@ -207,6 +217,7 @@ test("0060: load succeeds when any rule allows even if another rule throws EntNo
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [
         new AllowIf(async function First(vc, _row) {
           return tester.respond(
@@ -234,6 +245,7 @@ test("0070: load fails when any rule allows but another rule throws any wild exc
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [
         new AllowIf(async function First(_vc, _row) {
           // "Wild" means "not derived from EntAccessError"
@@ -253,6 +265,7 @@ test("0080: validations fail when no rules defined", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [],
     }),
@@ -261,6 +274,7 @@ test("0080: validations fail when no rules defined", async () => {
   );
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [],
     }),
@@ -273,6 +287,7 @@ test("0090: load fails with nice error message if only one rule", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [
         new AllowIf(async function First(_vc, _row) {
           return tester.respond("First", Error("wild"));
@@ -284,6 +299,7 @@ test("0090: load fails with nice error message if only one rule", async () => {
   );
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [
         new AllowIf(async function First(_vc, _row) {
           return tester.respond("First", false);
@@ -299,6 +315,7 @@ test("0100: insert fails with nice error message if only one rule", async () => 
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [
         new Require(async function First(_vc, _row) {
@@ -310,6 +327,7 @@ test("0100: insert fails with nice error message if only one rule", async () => 
   );
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [
         new Require(async function First(_vc, _row) {
@@ -325,6 +343,7 @@ test("0110: insert succeeds when DenyIf rule evaluates", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [
         new DenyIf(async function First(_vc, _row) {
@@ -341,6 +360,7 @@ test("0120: load fails when DenyIf rule throws", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [
         new DenyIf(async function First(vc, _row) {
           return tester.respond(
@@ -363,6 +383,7 @@ test("0120: load fails when DenyIf rule throws", async () => {
 test("0130: fail when tenant user id mismatches", async () => {
   const tester = new ValidationTester();
   const validation = new Validation<typeof companyTable>("table", {
+    inferPrincipal: async (vc) => vc.toGuest(),
     tenantPrincipalField: "tenant_id",
     load: [],
     insert: [],
@@ -408,6 +429,7 @@ test("0140: load succeeds when some of Or predicates succeed", async () => {
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [
         new Require(
@@ -438,6 +460,7 @@ test("0150: load fails with nice error when all of Or predicates fail", async ()
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [
         new Require(
@@ -468,6 +491,7 @@ test("0160: load crashes when some predicates fail with a wild error", async () 
   const tester = new ValidationTester();
   await tester.matchSnapshot(
     new Validation<typeof companyTable>("table", {
+      inferPrincipal: async (vc) => vc.toGuest(),
       load: [],
       insert: [
         new Require(

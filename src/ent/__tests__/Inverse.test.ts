@@ -48,6 +48,7 @@ class EntTestCompany extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
+      privacyInferPrincipal: null,
       privacyLoad: [new AllowIf(new True())],
       privacyInsert: [new Require(new True())],
     });
@@ -86,6 +87,7 @@ class EntTestUser extends BaseEnt(
         company_id: { name: TABLE_INVERSE, type: "company2users" },
         team_id: { name: TABLE_INVERSE, type: "team2users" },
       },
+      privacyInferPrincipal: async (_vc, row) => row.id,
       privacyLoad: [new AllowIf(new True())],
       privacyInsert: [new Require(new True())],
     });
@@ -128,6 +130,7 @@ class EntTestTopic extends BaseEnt(
       inverses: {
         owner_id: { name: TABLE_INVERSE, type: "owner2topics" },
       },
+      privacyInferPrincipal: async (_vc, row) => row.owner_id,
       privacyLoad: [new AllowIf(new True())],
       privacyInsert: [new Require(new True())],
       beforeInsert: [

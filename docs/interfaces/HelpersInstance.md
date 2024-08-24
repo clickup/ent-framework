@@ -176,7 +176,7 @@ ___
 
 Updates the object in the DB, but doesn't update the Ent itself (since it's
 immutable).
-- This method can works with CAS; see $cas property of the passed object.
+- This method can work with CAS; see $cas property of the passed object.
 - If a special value "skip-if-someone-else-changed-updating-ent-props" is
   passed to $cas, then the list of props for CAS is brought from the input,
   and the values of these props are brought from the Ent itself (i.e. from

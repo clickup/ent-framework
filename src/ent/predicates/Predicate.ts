@@ -43,4 +43,5 @@ export class FuncToPredicate<TInput> implements Predicate<TInput> {
 
 export class IDsCacheReadable extends IDsCache {}
 export class IDsCacheUpdatable extends IDsCache {}
+export class IDsCacheDeletable extends IDsCache {}
 export class IDsCacheCanReadIncomingEdge extends IDsCache {}

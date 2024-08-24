@@ -110,6 +110,69 @@ INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_fie
 "
 `;
 
+exports[`insert de-batches pg error: data type: bigint 1`] = `
+"
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '<key>'),
+  ('other', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, 'not a bigint', '<key>'),
+  ('some', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'))
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+----
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '?'),
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, '?', '?'),
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '?'))
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET ?
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('some', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
+
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('other', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, 'not a bigint') ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, '?') ON CONFLICT DO NOTHING RETURNING id
+"
+`;
+
+exports[`insert de-batches pg error: data type: varchar 1`] = `
+"
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '<key>'),
+  ('loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooog', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'),
+  ('some', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '<key>'))
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET 1
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+----
+WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES
+  ((NULL::"pg-schema.generic""table").name, (NULL::"pg-schema.generic""table").url_name, (NULL::"pg-schema.generic""table").some_flag, (NULL::"pg-schema.generic""table").json_text_field, (NULL::"pg-schema.generic""table").json_strongly_typed_field, (NULL::"pg-schema.generic""table").jsonb_field, (NULL::"pg-schema.generic""table").encrypted_field, (NULL::"pg-schema.generic""table").created_at, (NULL::"pg-schema.generic""table").updated_at, (NULL::"pg-schema.generic""table").parent_id, (NULL::"pg-schema.generic""table").id, '?'),
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen(), '?'), ...)
+  INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id)
+  SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM rows OFFSET ?
+  ON CONFLICT DO NOTHING RETURNING (SELECT _key FROM rows WHERE rows.id="pg-schema.generic""table".id), id
+
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('some', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
+
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooog', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id) VALUES
+  ('?', NULL, false, NULL, NULL, NULL, NULL, now(), now(), NULL, id_gen()) ON CONFLICT DO NOTHING RETURNING id
+"
+`;
+
 exports[`insert is never dedupped 1`] = `
 "
 WITH rows(name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id, _key) AS (VALUES

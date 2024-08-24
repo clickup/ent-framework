@@ -31,7 +31,7 @@ export class EntTestUser extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
-      privacyInferPrincipal: async (_vc, { userid }) => userid,
+      privacyInferPrincipal: async (_vc, row) => row.userid,
       privacyLoad: [new AllowIf(new OutgoingEdgePointsToVC("userid"))],
       privacyInsert: [],
       privacyUpdate: [new Require(new OutgoingEdgePointsToVC("userid"))],
@@ -63,6 +63,7 @@ export class EntTestComposite extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: ["some_id"],
+      privacyInferPrincipal: async (_vc, row) => row.user_id,
       privacyLoad: [
         new AllowIf(new CanReadOutgoingEdge("user_id", EntTestUser)),
       ],

@@ -38,6 +38,7 @@ module.exports = (projectRoot, extraRules = {}) => ({
     "typescript-enum",
     "typescript-sort-keys",
     "unused-imports",
+    "no-only-tests",
   ],
   settings: {
     react: {
@@ -109,6 +110,10 @@ module.exports = (projectRoot, extraRules = {}) => ({
     "@typescript-eslint/no-useless-constructor": ["error"],
     "@typescript-eslint/prefer-optional-chain": ["error"],
     "@typescript-eslint/consistent-type-imports": ["error"],
+    "@typescript-eslint/require-array-sort-compare": [
+      "error",
+      { ignoreStringArrays: true },
+    ],
     eqeqeq: ["error"],
     "object-shorthand": ["error", "always"],
     "@typescript-eslint/unbound-method": ["error"],
@@ -430,6 +435,9 @@ module.exports = (projectRoot, extraRules = {}) => ({
     ],
 
     quotes: ["error", "double", { avoidEscape: true }],
+
+    "no-only-tests/no-only-tests": "error",
+
     ...extraRules,
   },
 });

@@ -59,10 +59,7 @@ export type WriteRules<TInput extends object> =
 
 export type ValidationRules<TTable extends Table> = {
   readonly tenantPrincipalField?: InsertFieldsRequired<TTable> & string;
-  readonly inferPrincipal?: (
-    vc: VC,
-    row: Row<TTable>,
-  ) => Promise<string | null>;
+  readonly inferPrincipal: (vc: VC, row: Row<TTable>) => Promise<VC>;
   readonly load: Validation<TTable>["load"];
   readonly insert: Validation<TTable>["insert"];
   readonly update?: Validation<TTable>["update"];
@@ -74,7 +71,7 @@ export type ValidationRules<TTable extends Table> = {
 
 export class Validation<TTable extends Table> {
   readonly tenantPrincipalField?: ValidationRules<TTable>["tenantPrincipalField"];
-  readonly inferPrincipal?: ValidationRules<TTable>["inferPrincipal"];
+  readonly inferPrincipal: ValidationRules<TTable>["inferPrincipal"];
   readonly load: Array<LoadRule<Row<TTable>>>;
   readonly insert: WriteRules<InsertInput<TTable>>;
   readonly update: WriteRules<Row<TTable>>;

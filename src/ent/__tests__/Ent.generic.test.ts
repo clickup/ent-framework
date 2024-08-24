@@ -4,6 +4,7 @@ import { recreateTestTables, testCluster } from "../../pg/__tests__/test-utils";
 import { PgSchema } from "../../pg/PgSchema";
 import { ID } from "../../types";
 import { BaseEnt } from "../BaseEnt";
+import { CanDeleteOutgoingEdge } from "../predicates/CanDeleteOutgoingEdge";
 import { CanReadOutgoingEdge } from "../predicates/CanReadOutgoingEdge";
 import { CanUpdateOutgoingEdge } from "../predicates/CanUpdateOutgoingEdge";
 import { IncomingEdgeFromVCExists } from "../predicates/IncomingEdgeFromVCExists";
@@ -39,6 +40,7 @@ export class EntTestCompany extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
+      privacyInferPrincipal: null,
       privacyLoad: [
         new AllowIf(async function VCIsAllSeeing(vc, _company) {
           const vcUser = await EntTestUser.loadX(vc, vc.principal);
@@ -90,7 +92,7 @@ export class EntTestUser extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
-      privacyInferPrincipal: async (_vc, { id }) => id,
+      privacyInferPrincipal: async (_vc, row) => row.id,
       privacyLoad: [
         new AllowIf(new OutgoingEdgePointsToVC("id")),
         new AllowIf(new CanReadOutgoingEdge("company_id", EntTestCompany)),
@@ -133,6 +135,7 @@ export class EntTestPost extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: ["post_id"],
+      privacyInferPrincipal: async (_vc, row) => row.user_id,
       privacyLoad: [
         new AllowIf(new CanReadOutgoingEdge("user_id", EntTestUser)),
       ],
@@ -185,11 +188,16 @@ export class EntTestComment extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: ["post_id"],
+      privacyInferPrincipal: async (vc, row) =>
+        EntTestPost.loadX(vc, row.post_id),
       privacyLoad: [
         new AllowIf(new CanReadOutgoingEdge("post_id", EntTestPost)),
       ],
       privacyInsert: [
         new Require(new CanUpdateOutgoingEdge("post_id", EntTestPost)),
+      ],
+      privacyDelete: [
+        new Require(new CanDeleteOutgoingEdge("post_id", EntTestPost)),
       ],
     });
   }
@@ -225,6 +233,7 @@ export class EntTestLike extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: ["post_id"],
+      privacyInferPrincipal: async (_vc, row) => row.user_id,
       privacyLoad: [
         new AllowIf(new CanReadOutgoingEdge("post_id", EntTestPost)),
       ],
@@ -705,6 +714,7 @@ test("heisenbug: two different schema field sets make schema hash different", as
     static override configure() {
       return new this.Configuration({
         shardAffinity: GLOBAL_SHARD,
+        privacyInferPrincipal: async (_vc, row) => row.id,
         privacyLoad: [new AllowIf(new True())],
         privacyInsert: [],
         privacyUpdate: [new Require(new True())],
@@ -718,6 +728,7 @@ test("heisenbug: two different schema field sets make schema hash different", as
     static override configure() {
       return new this.Configuration({
         shardAffinity: GLOBAL_SHARD,
+        privacyInferPrincipal: async (_vc, row) => row.id,
         privacyLoad: [new AllowIf(new True())],
         privacyInsert: [],
         privacyUpdate: [new Require(new True())],
@@ -770,3 +781,25 @@ test("should support inserting simple Ents with custom IDs", async () => {
   const newEnt = await EntTestUser.insertReturning(vc.toOmniDangerous(), ent);
   expect(newEnt.id).toEqual(ent.id);
 });
+
+test("delete orphaned comment", async () => testCommentDeletion(true));
+
+test("delete comment", async () => testCommentDeletion(false));
+
+async function testCommentDeletion(
+  makeCommentOrphaned: boolean,
+): Promise<void> {
+  const post = await EntTestPost.insertReturning(vc, {
+    user_id: vc.principal,
+    title: "some_post",
+  });
+  const comment = await EntTestComment.insertReturning(vc, {
+    post_id: post.id,
+    text: "some_comment",
+  });
+  if (makeCommentOrphaned) {
+    await post.deleteOriginal();
+  }
+
+  await comment.deleteOriginal();
+}

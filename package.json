@@ -1,7 +1,7 @@
 {
   "name": "@clickup/ent-framework",
   "description": "A PostgreSQL graph database alike library with micro-sharding and row-level security",
-  "version": "2.10.297",
+  "version": "2.11.0",
   "license": "MIT",
   "keywords": [
     "postgresql",
@@ -22,7 +22,7 @@
     "./pg": "./pg.js"
   },
   "scripts": {
-    "barrel": "barrelsby --directory=./src/abstract --directory=./src/ent --directory=./src/helpers --directory=./src/pg --directory=./src/tools --delete --exclude=__ --exclude=internal --name=index",
+    "barrel": "barrelsby -c barrelsby.json",
     "build": "$npm_execpath run barrel && tsc",
     "dev": "$npm_execpath run barrel && tsc --watch --preserveWatchOutput",
     "lint": "bash internal/lint.sh",
@@ -59,6 +59,7 @@
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-lodash": "^7.4.0",
+    "eslint-plugin-no-only-tests": "^3.1.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react": "^7.32.2",

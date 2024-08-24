@@ -144,7 +144,7 @@ beforeEach(async () => {
       CREATE: [
         `CREATE TABLE %T(
           id bigint NOT NULL PRIMARY KEY,
-          name text NOT NULL,
+          name varchar(1024) NOT NULL,
           url_name text,
           some_flag boolean,
           json_text_field text,
@@ -393,6 +393,48 @@ test("insert de-batches pg error", async () => {
   expect(res2).toBeInstanceOf(PgError);
   expect(res2.isFKError()).toBeTruthy();
   expect(res2.isFKError("fk_parent_id")).toBeTruthy();
+});
+
+test("insert de-batches pg error: data type: varchar", async () => {
+  const [res1, res2] = await join([
+    shardRun(
+      shard,
+      // should succeed
+      schema.insert({ name: "some", url_name: null }),
+    ).catch((e) => e),
+    shardRun(
+      shard,
+      // should fail with "value too long for type character varying" error
+      schema.insert({ name: `l${"o".repeat(1024)}g`, url_name: null }),
+    ).catch((e) => e),
+  ]);
+  master.toMatchSnapshot();
+  expect(typeof res1).toEqual("string");
+  expect(res2).toBeInstanceOf(PgError);
+  expect(res2.message).toContain("value too long for type character varying");
+});
+
+test("insert de-batches pg error: data type: bigint", async () => {
+  const [res1, res2] = await join([
+    shardRun(
+      shard,
+      // should succeed
+      schema.insert({ name: "some", url_name: null }),
+    ).catch((e) => e),
+    shardRun(
+      shard,
+      // should fail with "invalid input syntax for type bigint" error
+      schema.insert({
+        name: "other",
+        url_name: null,
+        id: "not a bigint",
+      }),
+    ).catch((e) => e),
+  ]);
+  master.toMatchSnapshot();
+  expect(typeof res1).toEqual("string");
+  expect(res2).toBeInstanceOf(PgError);
+  expect(res2.message).toContain("invalid input syntax for type bigint");
 });
 
 test("upsert single", async () => {

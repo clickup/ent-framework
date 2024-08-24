@@ -35,6 +35,10 @@ const ERROR_DEADLOCK = "deadlock detected";
 const ERROR_FK = "violates foreign key constraint ";
 const ERROR_CONFLICT_RECOVERY =
   "canceling statement due to conflict with recovery";
+// "Class 22 — Data Exception" errors are typically caused by invalid
+// input values (e.g. invalid date format or type cast). See for details:
+// https://www.postgresql.org/docs/14/errcodes-appendix.html
+const ERROR_CODE_PREFIX_DATA_EXCEPTION = "22";
 
 /**
  * A convenient pile of helper methods usable by most of PgQuery* classes. In
@@ -538,7 +542,9 @@ export abstract class PgRunner<
       (e instanceof PgError && e.message.includes(ERROR_FK)) ||
       // Debatch "conflict with recovery" errors (we support retries only after
       // debatching, so have to return true here).
-      (e instanceof PgError && e.message.includes(ERROR_CONFLICT_RECOVERY))
+      (e instanceof PgError && e.message.includes(ERROR_CONFLICT_RECOVERY)) ||
+      (e instanceof PgError &&
+        !!e.cause?.code?.startsWith(ERROR_CODE_PREFIX_DATA_EXCEPTION))
     );
   }
 

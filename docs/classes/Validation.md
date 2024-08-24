@@ -33,7 +33,7 @@
 
 #### Defined in
 
-[src/ent/Validation.ts:84](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L84)
+[src/ent/Validation.ts:81](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L81)
 
 ## Properties
 
@@ -43,17 +43,17 @@
 
 #### Defined in
 
-[src/ent/Validation.ts:76](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L76)
+[src/ent/Validation.ts:73](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L73)
 
 ___
 
 ### inferPrincipal
 
-• `Optional` `Readonly` **inferPrincipal**: (`vc`: [`VC`](VC.md), `row`: [`Row`](../modules.md#row)\<`TTable`\>) => `Promise`\<``null`` \| `string`\>
+• `Readonly` **inferPrincipal**: (`vc`: [`VC`](VC.md), `row`: [`Row`](../modules.md#row)\<`TTable`\>) => `Promise`\<[`VC`](VC.md)\>
 
 #### Type declaration
 
-▸ (`vc`, `row`): `Promise`\<``null`` \| `string`\>
+▸ (`vc`, `row`): `Promise`\<[`VC`](VC.md)\>
 
 ##### Parameters
 
@@ -64,11 +64,11 @@ ___
 
 ##### Returns
 
-`Promise`\<``null`` \| `string`\>
+`Promise`\<[`VC`](VC.md)\>
 
 #### Defined in
 
-[src/ent/Validation.ts:77](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L77)
+[src/ent/Validation.ts:74](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L74)
 
 ___
 
@@ -78,7 +78,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:78](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L78)
+[src/ent/Validation.ts:75](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L75)
 
 ___
 
@@ -88,7 +88,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:79](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L79)
+[src/ent/Validation.ts:76](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L76)
 
 ___
 
@@ -98,7 +98,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:80](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L80)
+[src/ent/Validation.ts:77](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L77)
 
 ___
 
@@ -108,7 +108,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:81](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L81)
+[src/ent/Validation.ts:78](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L78)
 
 ___
 
@@ -118,7 +118,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:82](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L82)
+[src/ent/Validation.ts:79](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L79)
 
 ## Methods
 
@@ -139,7 +139,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:97](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L97)
+[src/ent/Validation.ts:94](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L94)
 
 ___
 
@@ -160,7 +160,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:108](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L108)
+[src/ent/Validation.ts:105](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L105)
 
 ___
 
@@ -183,7 +183,7 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:120](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L120)
+[src/ent/Validation.ts:117](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L117)
 
 ___
 
@@ -204,4 +204,4 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:147](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L147)
+[src/ent/Validation.ts:144](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L144)

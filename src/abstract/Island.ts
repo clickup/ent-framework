@@ -1,9 +1,9 @@
-import delay from "delay";
 import compact from "lodash/compact";
 import defaults from "lodash/defaults";
 import first from "lodash/first";
 import sample from "lodash/sample";
 import sortBy from "lodash/sortBy";
+import pTimeout from "p-timeout";
 import type { PickPartial } from "../internal/misc";
 import { mapJoin, nullthrows } from "../internal/misc";
 import type { Client, ClientRole } from "./Client";
@@ -196,7 +196,7 @@ export class Island<TClient extends Client> {
     this.reclassifyClients();
 
     if (res.length > 0) {
-      this.shardNos = [...res[0].shardNos].sort();
+      this.shardNos = [...res[0].shardNos].sort((a, b) => a - b);
     } else {
       // Being unable to access all DB Clients is not a critical error here,
       // we'll just miss some Shards (and other Shards will work). DO NOT throw
@@ -321,12 +321,13 @@ export class Island<TClient extends Client> {
     }
 
     const promise = client.shardNos();
-    const maybeShardNos = await Promise.race([
+    const maybeShardNos = await pTimeout(
       promise,
-      delay(this.options.shardNosConcurrentRetryDelayMs),
-    ]);
+      this.options.shardNosConcurrentRetryDelayMs,
+      () => "TIMEOUT" as const,
+    );
     return maybeShardNos instanceof Array
       ? maybeShardNos
-      : Promise.race([promise, client.shardNos()]);
+      : Promise.race([promise, client.shardNos()]); // try again once
   }
 }

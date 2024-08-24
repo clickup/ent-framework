@@ -132,7 +132,25 @@ export function ConfigMixin<
       Object.defineProperty(this, "VALIDATION", {
         value: new Validation(this.name, {
           tenantPrincipalField: cfg.privacyTenantPrincipalField,
-          inferPrincipal: cfg.privacyInferPrincipal,
+          inferPrincipal: async (vc, row) => {
+            const res =
+              typeof cfg.privacyInferPrincipal === "function"
+                ? await cfg.privacyInferPrincipal(vc, row)
+                : cfg.privacyInferPrincipal;
+            const lowerVC =
+              typeof res === "string"
+                ? vc.toLowerInternal(res)
+                : res === null
+                  ? vc.toGuest()
+                  : res.vc;
+            if (lowerVC.isOmni()) {
+              throw Error(
+                `It is prohibited to return an omni VC "${lowerVC.toString()}" from ${this.name} privacyInferPrincipal callback. Loading VC was: "${vc.toString()}".`,
+              );
+            } else {
+              return lowerVC;
+            }
+          },
           load: cfg.privacyLoad,
           insert: cfg.privacyInsert,
           update: cfg.privacyUpdate,

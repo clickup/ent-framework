@@ -328,6 +328,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
       let island: Island<TClient>;
       try {
         // Re-read Islands map on every retry, because it might change.
+        const startTime = performance.now();
         const { shardNoToIslandNo, islandNoToIsland } =
           await this.shardsDiscoverCache.cached();
         const islandNo = shardNoToIslandNo.get(shardNo);
@@ -338,13 +339,15 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
           // to log it through locateIslandErrorLogger() though.
           throw new ShardError(
             `Shard ${shardNo} is not discoverable (no such Shard in the Cluster? some Islands are down? connections limit?)`,
-            [...islandNoToIsland.entries()]
-              .map(([no, island]) => `${no}:${island.master().options.name}`)
-              .join(", "),
+            "Islands " +
+              [...islandNoToIsland.entries()]
+                .map(([no, { clients }]) => `${no}@${clients[0].options.name}`)
+                .join(", ") +
+              `; cached discovery took ${Math.round(performance.now() - startTime)} ms`,
           );
         }
 
-        // Retry the entire call to fn(), to let it re-elect Client if needed.
+        // Retry the entire call to body(), to let it re-elect Client if needed.
         island = nullthrows(islandNoToIsland.get(islandNo));
         return await body(island, attempt);
       } catch (cause: unknown) {

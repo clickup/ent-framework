@@ -1,4 +1,9 @@
-import type { FieldOfIDType, FieldOfIDTypeRequired, Table } from "../types";
+import type {
+  FieldOfIDType,
+  FieldOfIDTypeRequired,
+  Row,
+  Table,
+} from "../types";
 import type { ShardAffinity } from "./ShardAffinity";
 import type {
   AfterMutationTrigger,
@@ -9,7 +14,9 @@ import type {
   DepsBuilder,
   InsertTrigger,
 } from "./Triggers";
+import type { Ent } from "./types";
 import type { Validation, ValidationRules } from "./Validation";
+import type { VC } from "./VC";
 
 /**
  * Strongly typed configuration framework to force TS auto-infer privacy
@@ -60,10 +67,18 @@ export class Configuration<TTable extends Table> {
    * equal to VC's principal at load time. This is a very 1st unavoidable check
    * in the privacy rules chain, thus it's bullet-proof. */
   readonly privacyTenantPrincipalField?: Validation<TTable>["tenantPrincipalField"];
-  /** If defined, an attempt to load this Ent using an omni VC will "lower" that
-   * VC to the principal returned by this callback. Omni VC is always lowered,
-   * even if the callback is not set (to a guest VC in such cases). */
-  readonly privacyInferPrincipal?: Validation<TTable>["inferPrincipal"];
+  /** An attempt to load this Ent using an omni VC will "lower" that VC to the
+   * principal returned. Omni VC is always lowered.
+   * 1. If an Ent is returned, the lowered principal will be Ent#vc.principal.
+   *    It is a way to delegate principal inference to another Ent.
+   * 2. If a string is returned, then it's treated as a principal ID.
+   * 3. If a null is returned, then a guest principal will be used.
+   * 4. Returning an omni principal or VC will result in a run-time error. */
+  readonly privacyInferPrincipal!:
+    | ((vc: VC, row: Row<TTable>) => Promise<Ent<{}> | string | null>)
+    | string
+    | null;
+
   /** Privacy rules checked on every row loaded from the DB. */
   readonly privacyLoad!: ValidationRules<TTable>["load"];
   /** Privacy rules checked before a row is inserted to the DB.

@@ -43,6 +43,7 @@
 - [EntNotUpdatableError](classes/EntNotUpdatableError.md)
 - [EntUniqueKeyError](classes/EntUniqueKeyError.md)
 - [EntValidationError](classes/EntValidationError.md)
+- [CanDeleteOutgoingEdge](classes/CanDeleteOutgoingEdge.md)
 - [CanReadOutgoingEdge](classes/CanReadOutgoingEdge.md)
 - [CanUpdateOutgoingEdge](classes/CanUpdateOutgoingEdge.md)
 - [FieldIs](classes/FieldIs.md)
@@ -52,6 +53,7 @@
 - [FuncToPredicate](classes/FuncToPredicate.md)
 - [IDsCacheReadable](classes/IDsCacheReadable.md)
 - [IDsCacheUpdatable](classes/IDsCacheUpdatable.md)
+- [IDsCacheDeletable](classes/IDsCacheDeletable.md)
 - [IDsCacheCanReadIncomingEdge](classes/IDsCacheCanReadIncomingEdge.md)
 - [True](classes/True.md)
 - [VCHasFlavor](classes/VCHasFlavor.md)
@@ -629,7 +631,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `tenantPrincipalField?` | [`InsertFieldsRequired`](modules.md#insertfieldsrequired)\<`TTable`\> & `string` |
-| `inferPrincipal?` | (`vc`: [`VC`](classes/VC.md), `row`: [`Row`](modules.md#row)\<`TTable`\>) => `Promise`\<`string` \| ``null``\> |
+| `inferPrincipal` | (`vc`: [`VC`](classes/VC.md), `row`: [`Row`](modules.md#row)\<`TTable`\>) => `Promise`\<[`VC`](classes/VC.md)\> |
 | `load` | [`Validation`](classes/Validation.md)\<`TTable`\>[``"load"``] |
 | `insert` | [`Validation`](classes/Validation.md)\<`TTable`\>[``"insert"``] |
 | `update?` | [`Validation`](classes/Validation.md)\<`TTable`\>[``"update"``] |
@@ -1601,7 +1603,6 @@ is often AllowIf) to succeed, so we evaluate the rules sequentially, not in
 parallel (to minimize the number of DB queries).
 
 Example of a chain (the order of rules always matters!):
-- new AllowIf(new VCHasFlavor(VCAdmin))
 - new Require(new OutgoingEdgePointsToVC("user_id"))
 - new Require(new CanReadOutgoingEdge("post_id", EntPost))
 
@@ -1610,7 +1611,6 @@ Example of a chain:
 - new AllowIf(new CanReadOutgoingEdge("post_id", EntPost))
 
 Example of a chain:
-- new AllowIf(new VCHasFlavor(VCAdmin))
 - new DenyIf(new UserIsPendingApproval())
 - new AllowIf(new OutgoingEdgePointsToVC("user_id"))
 
@@ -1635,7 +1635,7 @@ Example of a chain:
 
 #### Defined in
 
-[src/ent/rules/evaluate.ts:52](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/evaluate.ts#L52)
+[src/ent/rules/evaluate.ts:50](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/evaluate.ts#L50)
 
 ___
 

@@ -36,7 +36,6 @@ import { RuleDecision } from "./Rule";
  * parallel (to minimize the number of DB queries).
  *
  * Example of a chain (the order of rules always matters!):
- * - new AllowIf(new VCHasFlavor(VCAdmin))
  * - new Require(new OutgoingEdgePointsToVC("user_id"))
  * - new Require(new CanReadOutgoingEdge("post_id", EntPost))
  *
@@ -45,7 +44,6 @@ import { RuleDecision } from "./Rule";
  * - new AllowIf(new CanReadOutgoingEdge("post_id", EntPost))
  *
  * Example of a chain:
- * - new AllowIf(new VCHasFlavor(VCAdmin))
  * - new DenyIf(new UserIsPendingApproval())
  * - new AllowIf(new OutgoingEdgePointsToVC("user_id"))
  */

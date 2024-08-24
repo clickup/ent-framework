@@ -80,7 +80,7 @@ ___
 
 ### hints
 
-• `Optional` **hints**: ``null`` \| `MaybeCallable`\<`Record`\<`string`, `string`\>\>
+• `Optional` **hints**: ``null`` \| `MaybeCallable`\<`Record`\<`string`, `undefined` \| `string`\>\>
 
 PG "SET key=value" hints to run before each query. Often times we use it
 to pass statement_timeout option since e.g. PGBouncer doesn't support

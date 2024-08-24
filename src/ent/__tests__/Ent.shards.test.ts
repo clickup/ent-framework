@@ -33,6 +33,7 @@ class EntTestUniverse extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
+      privacyInferPrincipal: null,
       privacyLoad: [new AllowIf(new True())],
       privacyInsert: [new Require(new True())],
     });
@@ -67,6 +68,7 @@ class EntTestHuman extends BaseEnt(
       inverses: {
         universe_id: { name: "inverses", type: "universe2humans" },
       },
+      privacyInferPrincipal: null,
       privacyLoad: [new AllowIf(new True())],
       privacyInsert: [new Require(new True())],
     });

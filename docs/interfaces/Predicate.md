@@ -22,6 +22,7 @@ immediately. This saves us lots of database operations.
 
 ## Implemented by
 
+- [`CanDeleteOutgoingEdge`](../classes/CanDeleteOutgoingEdge.md)
 - [`CanReadOutgoingEdge`](../classes/CanReadOutgoingEdge.md)
 - [`CanUpdateOutgoingEdge`](../classes/CanUpdateOutgoingEdge.md)
 - [`FieldIs`](../classes/FieldIs.md)
