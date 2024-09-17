@@ -1,6 +1,6 @@
 import defaults from "lodash/defaults";
 import range from "lodash/range";
-import type { PoolClient, PoolConfig } from "pg";
+import type { PoolConfig } from "pg";
 import { Pool } from "pg";
 import type {
   ClientQueryLoggerProps,
@@ -19,6 +19,8 @@ export interface PgClientPoolOptions extends PgClientOptions {
   /** Node-Postgres config. We can't make it MaybeCallable unfortunately,
    * because it's used to initialize Node-Postgres Pool. */
   config: PoolConfig;
+  /** Pool class (constructor) compatible with node-postgres Pool. */
+  Pool?: typeof Pool;
   /** Close the connection after the query if it was opened long time ago. */
   maxConnLifetimeMs?: MaybeCallable<number>;
   /** Jitter for old connections closure. */
@@ -29,19 +31,6 @@ export interface PgClientPoolOptions extends PgClientOptions {
   /** What prewarm query to send. */
   prewarmQuery?: MaybeCallable<string>;
 }
-
-/**
- * Our extension to Pool connection which adds a couple props to the connection
- * in on("connect") handler (persistent for the same connection objects, i.e.
- * across queries in the same connection).
- */
-export type PgClientPoolConn = PgClientConn & {
-  /** Implemented but not documented property, see:
-   * https://github.com/brianc/node-postgres/issues/2665 */
-  processID?: number | null;
-  /** Assigned manually in addition to PoolClient props. */
-  closeAt?: number;
-};
 
 /**
  * This class carries connection pooling logic only and delegates the rest to
@@ -57,6 +46,7 @@ export class PgClientPool extends PgClient {
     PickPartial<PgClientPoolOptions>
   > = {
     ...super.DEFAULT_OPTIONS,
+    Pool,
     maxConnLifetimeMs: 0,
     maxConnLifetimeJitter: 0.2,
     prewarmIntervalMs: 10000,
@@ -75,23 +65,6 @@ export class PgClientPool extends PgClient {
   /** PgClientPool configuration options. */
   override readonly options: Required<PgClientPoolOptions>;
 
-  protected async acquireConn(): Promise<PgClientPoolConn> {
-    return this.pool.connect();
-  }
-
-  protected releaseConn(conn: PgClientPoolConn): void {
-    const needClose = !!(conn.closeAt && Date.now() > conn.closeAt);
-    conn.release(needClose);
-  }
-
-  protected poolStats(): ClientQueryLoggerProps["poolStats"] {
-    return {
-      totalConns: this.pool.totalCount,
-      idleConns: this.pool.idleCount,
-      queuedReqs: this.pool.waitingCount,
-    };
-  }
-
   constructor(options: PgClientPoolOptions) {
     super(options);
     this.options = defaults(
@@ -101,15 +74,17 @@ export class PgClientPool extends PgClient {
       PgClientPool.DEFAULT_OPTIONS,
     );
 
-    this.pool = new Pool(this.options.config)
-      .on("connect", (client: PgClientPoolConn & PoolClient) => {
-        client.id = connNo++;
-        client.closeAt =
-          maybeCall(this.options.maxConnLifetimeMs) > 0
-            ? Date.now() +
-              maybeCall(this.options.maxConnLifetimeMs) *
-                jitter(maybeCall(this.options.maxConnLifetimeJitter))
-            : undefined;
+    this.pool = new this.options.Pool(this.options.config)
+      .on("connect", (client: PgClientConn) => {
+        // Called only once, after the connection is 1st created.
+        const maxConnLifetimeMs = maybeCall(this.options.maxConnLifetimeMs);
+        if (maxConnLifetimeMs > 0) {
+          client.closeAt =
+            Date.now() +
+            maxConnLifetimeMs *
+              jitter(maybeCall(this.options.maxConnLifetimeJitter));
+        }
+
         // Sets a "default error" handler to not let errors leak to e.g. Jest
         // and the outside world as "unhandled error". Appending an additional
         // error handler to EventEmitter doesn't affect the existing error
@@ -125,6 +100,27 @@ export class PgClientPool extends PgClient {
           importance: "low",
         }),
       );
+  }
+
+  async acquireConn(): Promise<PgClientConn> {
+    const conn: PgClientConn = await this.pool.connect();
+    const connReleaseOrig = conn.release.bind(conn);
+    conn.release = (arg) => {
+      // Manage maxConnLifetimeMs manually since it's not supported by the
+      // vanilla node-postgres.
+      const needClose = !!(conn.closeAt && Date.now() > conn.closeAt);
+      return connReleaseOrig(arg !== undefined ? arg : needClose);
+    };
+
+    return conn;
+  }
+
+  poolStats(): ClientQueryLoggerProps["poolStats"] {
+    return {
+      totalConns: this.pool.totalCount,
+      idleConns: this.pool.idleCount,
+      queuedReqs: this.pool.waitingCount,
+    };
   }
 
   address(): string {
@@ -196,5 +192,3 @@ export class PgClientPool extends PgClient {
     }, maybeCall(this.options.prewarmIntervalMs));
   }
 }
-
-let connNo = 1;

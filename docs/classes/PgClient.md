@@ -46,7 +46,7 @@ Initializes an instance of PgClient.
 
 #### Defined in
 
-[src/pg/PgClient.ts:151](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L151)
+[src/pg/PgClient.ts:152](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L152)
 
 ## Properties
 
@@ -62,7 +62,7 @@ Default values for the constructor options.
 
 #### Defined in
 
-[src/pg/PgClient.ts:96](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L96)
+[src/pg/PgClient.ts:101](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L101)
 
 ___
 
@@ -78,7 +78,7 @@ PgClient configuration options.
 
 #### Defined in
 
-[src/pg/PgClient.ts:125](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L125)
+[src/pg/PgClient.ts:130](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L130)
 
 ___
 
@@ -94,7 +94,7 @@ Name of the shard associated to this Client.
 
 #### Defined in
 
-[src/pg/PgClient.ts:128](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L128)
+[src/pg/PgClient.ts:133](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L133)
 
 ___
 
@@ -110,7 +110,7 @@ An active TimelineManager for this particular Client.
 
 #### Defined in
 
-[src/pg/PgClient.ts:131](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L131)
+[src/pg/PgClient.ts:136](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L136)
 
 ## Methods
 
@@ -282,44 +282,6 @@ full-text dictionaries).
 
 ___
 
-### acquireConn
-
-▸ **acquireConn**(): `Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
-
-Called when the Client needs a connection to run a query against.
-
-#### Returns
-
-`Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
-
-#### Defined in
-
-[src/pg/PgClient.ts:136](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L136)
-
-___
-
-### releaseConn
-
-▸ **releaseConn**(`conn`): `void`
-
-Called when the Client is done with the connection.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `conn` | [`PgClientConn`](../interfaces/PgClientConn.md) |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/pg/PgClient.ts:141](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L141)
-
-___
-
 ### poolStats
 
 ▸ **poolStats**(): `Object`
@@ -338,7 +300,24 @@ Returns statistics about the connection pool.
 
 #### Defined in
 
-[src/pg/PgClient.ts:146](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L146)
+[src/pg/PgClient.ts:141](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L141)
+
+___
+
+### acquireConn
+
+▸ **acquireConn**(): `Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
+
+Called when the Client needs a connection to run a query against. Implies
+than the caller MUST call release() method on the returned object.
+
+#### Returns
+
+`Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
+
+#### Defined in
+
+[src/pg/PgClient.ts:147](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L147)
 
 ___
 
@@ -374,7 +353,7 @@ should expect that role() returns the actual master/replica role.
 
 #### Defined in
 
-[src/pg/PgClient.ts:198](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L198)
+[src/pg/PgClient.ts:199](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L199)
 
 ___
 
@@ -395,7 +374,7 @@ database.
 
 #### Defined in
 
-[src/pg/PgClient.ts:378](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L378)
+[src/pg/PgClient.ts:380](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L380)
 
 ___
 
@@ -422,7 +401,7 @@ wait for at least the provided number of milliseconds.
 
 #### Defined in
 
-[src/pg/PgClient.ts:402](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L402)
+[src/pg/PgClient.ts:404](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L404)
 
 ___
 
@@ -448,7 +427,7 @@ Extracts Shard number from an ID.
 
 #### Defined in
 
-[src/pg/PgClient.ts:420](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L420)
+[src/pg/PgClient.ts:422](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L422)
 
 ___
 
@@ -475,7 +454,7 @@ new Client will share the same connection pool with the parent's Client.
 
 #### Defined in
 
-[src/pg/PgClient.ts:476](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L476)
+[src/pg/PgClient.ts:478](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L478)
 
 ___
 
@@ -497,7 +476,7 @@ we only know the role after a query.
 
 #### Defined in
 
-[src/pg/PgClient.ts:487](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L487)
+[src/pg/PgClient.ts:489](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L489)
 
 ___
 
@@ -520,4 +499,4 @@ until e.g. the next discovery query to it (or any query) succeeds.
 
 #### Defined in
 
-[src/pg/PgClient.ts:491](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L491)
+[src/pg/PgClient.ts:493](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L493)

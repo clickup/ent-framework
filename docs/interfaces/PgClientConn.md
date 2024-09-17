@@ -2,18 +2,39 @@
 
 # Interface: PgClientConn
 
-An opened PostgreSQL connection. Only multi-queries are supported, so we
-can't use $N parameter substitutions.
+An opened low-level PostgreSQL connection.
+
+## Hierarchy
+
+- `PoolClient`
+
+  ↳ **`PgClientConn`**
 
 ## Properties
+
+### processID
+
+• `Optional` **processID**: ``null`` \| `number`
+
+Undocumented property of node-postgres, see:
+https://github.com/brianc/node-postgres/issues/2665
+
+#### Defined in
+
+[src/pg/PgClient.ts:74](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L74)
+
+___
 
 ### id
 
 • `Optional` **id**: `number`
 
+An additional property to the vanilla client: auto-incrementing ID of the
+connection for logging purposes.
+
 #### Defined in
 
-[src/pg/PgClient.ts:73](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L73)
+[src/pg/PgClient.ts:77](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L77)
 
 ___
 
@@ -21,52 +42,22 @@ ___
 
 • `Optional` **queriesSent**: `number`
 
-#### Defined in
-
-[src/pg/PgClient.ts:74](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L74)
-
-## Methods
-
-### query
-
-▸ **query**\<`R`\>(`query`): `Promise`\<`QueryResult`\<`R`\>[]\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `R` | extends `QueryResultRow` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `query` | `string` |
-
-#### Returns
-
-`Promise`\<`QueryResult`\<`R`\>[]\>
+An additional property to the vanilla client: number of queries sent
+within this connection.
 
 #### Defined in
 
-[src/pg/PgClient.ts:75](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L75)
+[src/pg/PgClient.ts:80](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L80)
 
 ___
 
-### release
+### closeAt
 
-▸ **release**(`err?`): `void`
+• `Optional` **closeAt**: `number`
 
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `err?` | `boolean` \| `Error` |
-
-#### Returns
-
-`void`
+An additional property to the vanilla client: when do we want to
+hard-close that connection.
 
 #### Defined in
 
-[src/pg/PgClient.ts:78](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L78)
+[src/pg/PgClient.ts:83](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L83)

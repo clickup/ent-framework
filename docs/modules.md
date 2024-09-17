@@ -756,20 +756,6 @@ inference, we redefine this type from scratch.
 
 ___
 
-### PgClientPoolConn
-
-Ƭ **PgClientPoolConn**: [`PgClientConn`](interfaces/PgClientConn.md) & \{ `processID?`: `number` \| ``null`` ; `closeAt?`: `number`  }
-
-Our extension to Pool connection which adds a couple props to the connection
-in on("connect") handler (persistent for the same connection objects, i.e.
-across queries in the same connection).
-
-#### Defined in
-
-[src/pg/PgClientPool.ts:38](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L38)
-
-___
-
 ### SelectInputCustom
 
 Ƭ **SelectInputCustom**: \{ `ctes?`: [`Literal`](modules.md#literal)[] ; `joins?`: [`Literal`](modules.md#literal)[] ; `from?`: [`Literal`](modules.md#literal) ; `hints?`: `Record`\<`string`, `string`\>  } \| `undefined`

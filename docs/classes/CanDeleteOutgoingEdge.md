@@ -40,7 +40,7 @@ Checks that an Ent available via a field can be deleted, or Ent doesn't exist
 
 #### Defined in
 
-src/ent/predicates/CanDeleteOutgoingEdge.ts:15
+[src/ent/predicates/CanDeleteOutgoingEdge.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanDeleteOutgoingEdge.ts#L15)
 
 ## Properties
 
@@ -54,7 +54,7 @@ src/ent/predicates/CanDeleteOutgoingEdge.ts:15
 
 #### Defined in
 
-src/ent/predicates/CanDeleteOutgoingEdge.ts:13
+[src/ent/predicates/CanDeleteOutgoingEdge.ts:13](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanDeleteOutgoingEdge.ts#L13)
 
 ___
 
@@ -64,7 +64,7 @@ ___
 
 #### Defined in
 
-src/ent/predicates/CanDeleteOutgoingEdge.ts:16
+[src/ent/predicates/CanDeleteOutgoingEdge.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanDeleteOutgoingEdge.ts#L16)
 
 ___
 
@@ -74,7 +74,7 @@ ___
 
 #### Defined in
 
-src/ent/predicates/CanDeleteOutgoingEdge.ts:17
+[src/ent/predicates/CanDeleteOutgoingEdge.ts:17](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanDeleteOutgoingEdge.ts#L17)
 
 ## Methods
 
@@ -99,4 +99,4 @@ src/ent/predicates/CanDeleteOutgoingEdge.ts:17
 
 #### Defined in
 
-src/ent/predicates/CanDeleteOutgoingEdge.ts:22
+[src/ent/predicates/CanDeleteOutgoingEdge.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanDeleteOutgoingEdge.ts#L22)

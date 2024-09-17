@@ -159,6 +159,33 @@ the query), no matter whether it was an immediate call or a deferred one.
 
 ___
 
+### shardByNo
+
+▸ **shardByNo**(`shardNo`): [`Shard`](Shard.md)\<`TClient`\>
+
+Returns a Shard if we know its number. The idea: for each Shard number
+(even for non-discovered yet Shards), we keep the corresponding Shard
+object in a Memoize cache, so Shards with the same number always resolve
+into the same Shard object. Then, an actual Island locating process happens
+when the caller wants to get a Client of that Shard (and it throws if such
+Shard hasn't been discovered actually).
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `shardNo` | `number` |
+
+#### Returns
+
+[`Shard`](Shard.md)\<`TClient`\>
+
+#### Defined in
+
+[src/abstract/Cluster.ts:266](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L266)
+
+___
+
 ### randomShard
 
 ▸ **randomShard**(`seed?`): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>\>
@@ -178,7 +205,7 @@ Returns a random Shard among the ones which are currently known
 
 #### Defined in
 
-[src/abstract/Cluster.ts:261](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L261)
+[src/abstract/Cluster.ts:276](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L276)
 
 ___
 
@@ -200,7 +227,7 @@ Returns an Island by its number.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:280](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L280)
+[src/abstract/Cluster.ts:295](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L295)
 
 ___
 
@@ -216,7 +243,7 @@ Returns all Islands in the Cluster.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:291](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L291)
+[src/abstract/Cluster.ts:306](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L306)
 
 ___
 
@@ -234,4 +261,4 @@ cluster configuration.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:301](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L301)
+[src/abstract/Cluster.ts:316](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L316)

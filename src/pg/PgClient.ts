@@ -1,5 +1,5 @@
 import defaults from "lodash/defaults";
-import type { QueryResult, QueryResultRow } from "pg";
+import type pg from "pg";
 import type {
   ClientConnectionIssue,
   ClientOptions,
@@ -66,16 +66,21 @@ export interface PgClientOptions extends ClientOptions {
 }
 
 /**
- * An opened PostgreSQL connection. Only multi-queries are supported, so we
- * can't use $N parameter substitutions.
+ * An opened low-level PostgreSQL connection.
  */
-export interface PgClientConn {
+export interface PgClientConn extends pg.PoolClient {
+  /** Undocumented property of node-postgres, see:
+   * https://github.com/brianc/node-postgres/issues/2665 */
+  processID?: number | null;
+  /** An additional property to the vanilla client: auto-incrementing ID of the
+   * connection for logging purposes. */
   id?: number;
+  /** An additional property to the vanilla client: number of queries sent
+   * within this connection. */
   queriesSent?: number;
-  query<R extends QueryResultRow>(
-    query: string,
-  ): Promise<Array<QueryResult<R>>>;
-  release(err?: Error | boolean): void;
+  /** An additional property to the vanilla client: when do we want to
+   * hard-close that connection. */
+  closeAt?: number;
 }
 
 /**
@@ -131,19 +136,15 @@ export abstract class PgClient extends Client {
   readonly timelineManager: TimelineManager;
 
   /**
-   * Called when the Client needs a connection to run a query against.
-   */
-  protected abstract acquireConn(): Promise<PgClientConn>;
-
-  /**
-   * Called when the Client is done with the connection.
-   */
-  protected abstract releaseConn(conn: PgClientConn): void;
-
-  /**
    * Returns statistics about the connection pool.
    */
-  protected abstract poolStats(): ClientQueryLoggerProps["poolStats"];
+  abstract poolStats(): ClientQueryLoggerProps["poolStats"];
+
+  /**
+   * Called when the Client needs a connection to run a query against. Implies
+   * than the caller MUST call release() method on the returned object.
+   */
+  abstract acquireConn(): Promise<PgClientConn>;
 
   /**
    * Initializes an instance of PgClient.
@@ -244,6 +245,7 @@ export abstract class PgClient extends Client {
       }
 
       conn = await this.acquireConn();
+      conn.id ??= connNo++;
       conn.queriesSent = (conn.queriesSent ?? 0) + 1;
 
       queryTime = performance.now() - startTime;
@@ -339,7 +341,7 @@ export abstract class PgClient extends Client {
       throw e;
     } finally {
       if (conn) {
-        this.releaseConn(conn);
+        conn.release();
       }
 
       const now = performance.now();
@@ -584,17 +586,19 @@ export abstract class PgClient extends Client {
     conn: PgClientConn,
     queries: string[],
     queriesRollback: string[],
-  ): Promise<QueryResult[]> {
+  ): Promise<pg.QueryResult[]> {
     const queriesStr = `/*${this.shardName}*/${queries.join("; ")}`;
 
-    const resMulti = await conn.query(queriesStr).catch(async (e) => {
+    // For multi-query, query() actually returns an array of pg.QueryResult, but
+    // it's not reflected in its TS typing, so patching this.
+    const resMulti = (await conn.query(queriesStr).catch(async (e) => {
       // We must run a ROLLBACK if we used BEGIN in the queries, because
       // otherwise the connection is released to the pool in "aborted
       // transaction" state (see the protocol link above).
       queriesRollback.length > 0 &&
         (await conn.query(queriesRollback.join("; ")).catch(() => {}));
       throw e;
-    });
+    })) as unknown as Array<pg.QueryResult<{}>>;
 
     if (resMulti.length !== queries.length) {
       throw Error(
@@ -622,3 +626,5 @@ export abstract class PgClient extends Client {
       : this.shardName;
   }
 }
+
+let connNo = 1;

@@ -37,7 +37,7 @@ connection pooling solution. They don't have to use PgClientPool.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:95](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L95)
+[src/pg/PgClientPool.ts:68](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L68)
 
 ## Properties
 
@@ -53,7 +53,7 @@ Name of the shard associated to this Client.
 
 #### Defined in
 
-[src/pg/PgClient.ts:128](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L128)
+[src/pg/PgClient.ts:133](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L133)
 
 ___
 
@@ -69,7 +69,7 @@ An active TimelineManager for this particular Client.
 
 #### Defined in
 
-[src/pg/PgClient.ts:131](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L131)
+[src/pg/PgClient.ts:136](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L136)
 
 ___
 
@@ -85,7 +85,7 @@ Default values for the constructor options.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:56](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L56)
+[src/pg/PgClientPool.ts:45](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L45)
 
 ___
 
@@ -101,7 +101,7 @@ PgClientPool configuration options.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:76](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L76)
+[src/pg/PgClientPool.ts:66](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L66)
 
 ## Methods
 
@@ -194,7 +194,7 @@ should expect that role() returns the actual master/replica role.
 
 #### Defined in
 
-[src/pg/PgClient.ts:198](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L198)
+[src/pg/PgClient.ts:199](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L199)
 
 ___
 
@@ -215,7 +215,7 @@ database.
 
 #### Defined in
 
-[src/pg/PgClient.ts:378](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L378)
+[src/pg/PgClient.ts:380](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L380)
 
 ___
 
@@ -242,7 +242,7 @@ wait for at least the provided number of milliseconds.
 
 #### Defined in
 
-[src/pg/PgClient.ts:402](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L402)
+[src/pg/PgClient.ts:404](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L404)
 
 ___
 
@@ -268,7 +268,7 @@ Extracts Shard number from an ID.
 
 #### Defined in
 
-[src/pg/PgClient.ts:420](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L420)
+[src/pg/PgClient.ts:422](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L422)
 
 ___
 
@@ -295,7 +295,7 @@ new Client will share the same connection pool with the parent's Client.
 
 #### Defined in
 
-[src/pg/PgClient.ts:476](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L476)
+[src/pg/PgClient.ts:478](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L478)
 
 ___
 
@@ -317,7 +317,7 @@ we only know the role after a query.
 
 #### Defined in
 
-[src/pg/PgClient.ts:487](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L487)
+[src/pg/PgClient.ts:489](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L489)
 
 ___
 
@@ -340,19 +340,20 @@ until e.g. the next discovery query to it (or any query) succeeds.
 
 #### Defined in
 
-[src/pg/PgClient.ts:491](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L491)
+[src/pg/PgClient.ts:493](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L493)
 
 ___
 
 ### acquireConn
 
-▸ **acquireConn**(): `Promise`\<[`PgClientPoolConn`](../modules.md#pgclientpoolconn)\>
+▸ **acquireConn**(): `Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
 
-Called when the Client needs a connection to run a query against.
+Called when the Client needs a connection to run a query against. Implies
+than the caller MUST call release() method on the returned object.
 
 #### Returns
 
-`Promise`\<[`PgClientPoolConn`](../modules.md#pgclientpoolconn)\>
+`Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
 
 #### Overrides
 
@@ -360,33 +361,7 @@ Called when the Client needs a connection to run a query against.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:78](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L78)
-
-___
-
-### releaseConn
-
-▸ **releaseConn**(`conn`): `void`
-
-Called when the Client is done with the connection.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `conn` | [`PgClientPoolConn`](../modules.md#pgclientpoolconn) |
-
-#### Returns
-
-`void`
-
-#### Overrides
-
-[PgClient](PgClient.md).[releaseConn](PgClient.md#releaseconn)
-
-#### Defined in
-
-[src/pg/PgClientPool.ts:82](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L82)
+[src/pg/PgClientPool.ts:105](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L105)
 
 ___
 
@@ -412,7 +387,7 @@ Returns statistics about the connection pool.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:87](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L87)
+[src/pg/PgClientPool.ts:118](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L118)
 
 ___
 
@@ -436,7 +411,7 @@ shardNos) based on that address.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:130](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L130)
+[src/pg/PgClientPool.ts:126](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L126)
 
 ___
 
@@ -462,7 +437,7 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:141](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L141)
+[src/pg/PgClientPool.ts:137](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L137)
 
 ___
 
@@ -484,7 +459,7 @@ unusable after calling this method: you should not send queries to it.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:147](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L147)
+[src/pg/PgClientPool.ts:143](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L143)
 
 ___
 
@@ -504,7 +479,7 @@ Returns true if the Client is ended and can't be used anymore.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:158](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L158)
+[src/pg/PgClientPool.ts:154](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L154)
 
 ___
 
@@ -527,4 +502,4 @@ full-text dictionaries).
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:162](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L162)
+[src/pg/PgClientPool.ts:158](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L158)

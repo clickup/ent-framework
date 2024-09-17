@@ -255,6 +255,21 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
   }
 
   /**
+   * Returns a Shard if we know its number. The idea: for each Shard number
+   * (even for non-discovered yet Shards), we keep the corresponding Shard
+   * object in a Memoize cache, so Shards with the same number always resolve
+   * into the same Shard object. Then, an actual Island locating process happens
+   * when the caller wants to get a Client of that Shard (and it throws if such
+   * Shard hasn't been discovered actually).
+   */
+  @Memoize()
+  shardByNo(shardNo: number): Shard<TClient> {
+    return new Shard(shardNo, async (body) =>
+      this.runWithLocatedIsland(shardNo, body),
+    );
+  }
+
+  /**
    * Returns a random Shard among the ones which are currently known
    * (discovered) in the Cluster.
    */
@@ -300,20 +315,6 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
    */
   async rediscover(): Promise<void> {
     await this.shardsDiscoverCache.waitRefresh();
-  }
-
-  /**
-   * The idea: for each Shard number (even for non-discovered yet Shard), we
-   * keep the corresponding Shard object in a Memoize cache, so Shards with the
-   * same number always resolve into the same Shard object. Then, an actual
-   * Island locating process happens when the caller wants to get a Client of
-   * that Shard (and it throws if such Shard hasn't been discovered actually).
-   */
-  @Memoize()
-  private shardByNo(shardNo: number): Shard<TClient> {
-    return new Shard(shardNo, async (body) =>
-      this.runWithLocatedIsland(shardNo, body),
-    );
   }
 
   /**

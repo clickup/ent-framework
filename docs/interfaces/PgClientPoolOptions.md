@@ -165,6 +165,18 @@ because it's used to initialize Node-Postgres Pool.
 
 ___
 
+### Pool
+
+• `Optional` **Pool**: typeof `Pool`
+
+Pool class (constructor) compatible with node-postgres Pool.
+
+#### Defined in
+
+[src/pg/PgClientPool.ts:23](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L23)
+
+___
+
 ### maxConnLifetimeMs
 
 • `Optional` **maxConnLifetimeMs**: `MaybeCallable`\<`number`\>
@@ -173,7 +185,7 @@ Close the connection after the query if it was opened long time ago.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:23](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L23)
+[src/pg/PgClientPool.ts:25](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L25)
 
 ___
 
@@ -185,7 +197,7 @@ Jitter for old connections closure.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:25](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L25)
+[src/pg/PgClientPool.ts:27](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L27)
 
 ___
 
@@ -198,7 +210,7 @@ minimal number of open connections.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:28](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L28)
+[src/pg/PgClientPool.ts:30](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L30)
 
 ___
 
@@ -210,4 +222,4 @@ What prewarm query to send.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:30](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L30)
+[src/pg/PgClientPool.ts:32](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L32)

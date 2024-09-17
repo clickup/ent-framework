@@ -24,7 +24,7 @@ import type { Literal } from "../../types";
 import { buildShape } from "../helpers/buildShape";
 import { escapeIdent } from "../helpers/escapeIdent";
 import { escapeLiteral } from "../helpers/escapeLiteral";
-import type { PgClient, PgClientOptions } from "../PgClient";
+import type { PgClient, PgClientConn, PgClientOptions } from "../PgClient";
 import { PgClientPool } from "../PgClientPool";
 
 /**
@@ -33,7 +33,7 @@ import { PgClientPool } from "../PgClientPool";
  */
 export class TestPgClient
   extends Client
-  implements Pick<PgClient, "query" | "options">
+  implements Pick<PgClient, "query" | "options" | "acquireConn">
 {
   readonly queries: string[] = [];
   override readonly options: Required<PgClientOptions>;
@@ -49,6 +49,10 @@ export class TestPgClient
 
   get timelineManager(): TimelineManager {
     return this.client.timelineManager;
+  }
+
+  async acquireConn(): Promise<PgClientConn> {
+    return this.client.acquireConn();
   }
 
   address(): string {
