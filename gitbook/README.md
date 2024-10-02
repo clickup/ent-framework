@@ -8,6 +8,8 @@ Ent Framework is an opinionated TypeScript data access library with the followin
 4. **Microsharding support out of the box.** You can split your database horizontally, and Ent Framework will take care of routing the requests to the proper shards. This includes batching/coalescing of the queries of course.
 5. **Can be plugged to an exising relational database.** If your project already uses some ORM or runs raw SQL queries, Ent Framework can be plugged in.
 
+There are other features supported, like cross-microshards foreign keys, triggers etc.
+
 <div align="left">
 
 <figure><img src="https://github.com/clickup/ent-framework/actions/workflows/ci.yml/badge.svg?branch=main" alt="" width="188"><figcaption></figcaption></figure>
