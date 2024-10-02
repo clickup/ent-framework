@@ -73,4 +73,4 @@ export class EntComment extends BaseEnt(cluster, schema) {
 ```
 {% endcode %}
 
-Since we have no microshards yet, shardAffinity basically does nothing. But if we had some, then it would tell Ent Framework, to which microshard should it save EntComment rows (in the example above, it will save them to the same microshard as the owner's EntTopic).
+Since we have no microshards yet, shardAffinity basically does nothing. But if we had some, then it would tell Ent Framework, to which microshard should it save EntComment rows when they are created (in the example above, it will save them to the same microshard as the owner's EntTopic).
