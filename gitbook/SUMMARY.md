@@ -6,3 +6,4 @@
 
 * [Preamble](getting-started/preamble.md)
 * [Connect to a Database](getting-started/connect-to-a-database.md)
+* [Create Ent Classes](getting-started/create-ent-classes.md)

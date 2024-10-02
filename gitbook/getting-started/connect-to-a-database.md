@@ -8,14 +8,17 @@ $ export PGPASSWORD=postgres
 $ createdb mytest
 
 $ psql mytest
-% CREATE TABLE topic(
+% CREATE TABLE topics(
     id bigserial PRIMARY KEY,
+    created_at timestamptz NOT NULL,
+    updated_at timestamptz NOT NULL,
+    slug varchar(64) NOT NULL UNIQUE,
     creator_id bigint NOT NULL,
-    subject text NOT NULL
+    subject text DEFAULT NULL
   );
-% CREATE TABLE comment(
+% CREATE TABLE comments(
     id bigserial PRIMARY KEY,
-    topic_id bigint REFERENCES topic,
+    topic_id bigint REFERENCES topics,
     creator_id bigint NOT NULL,
     message text NOT NULL
   );  
@@ -58,7 +61,7 @@ Terminology:
 
 1. **Cluster** consists of **Islands**. Each Island has a number.
 2. Island consists of master + replica **nodes** (in the above example, we only define one master node and no replicas).&#x20;
-3. Island also hosts **Microshards** (in the example above, we will have no microshards, aka just 1 microshard).
+3. Island also hosts **Microshards** (in the example above, we will have no microshards, aka just one global shard).
 
 Notice that we define the map of the cluster using a callback. Ent Framework will call it from time to time to refresh the view of the cluster, so in this callback, you can read the data from some configuration database. This is called "dynamic real-time reconfiguration".
 
