@@ -1,3 +1,8 @@
 # Table of contents
 
-* [Home](README.md)
+* [Overview](README.md)
+
+## Getting Started
+
+* [Preamble](getting-started/preamble.md)
+* [Connect to a Database](getting-started/connect-to-a-database.md)
