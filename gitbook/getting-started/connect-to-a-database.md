@@ -24,7 +24,7 @@ $ psql mytest
   );  
 ```
 
-To access that database, you need to create an instance of Cluster:
+To access that database, create an instance of Cluster:
 
 {% code title="core/ent.ts" fullWidth="false" %}
 ```typescript
@@ -59,10 +59,10 @@ setTimeout(() => cluster.prewarm(), 100);
 
 Terminology:
 
-1. **Cluster** consists of **Islands**. Each Island has a number.
+1. **Cluster** consists of **Islands**. Each Island has a number (there can be many islands for horizontal scaling of the cluster).
 2. Island consists of master + replica **nodes** (in the above example, we only define one master node and no replicas).&#x20;
-3. Island also hosts **Microshards** (in the example above, we will have no microshards, aka just one global shard).
+3. Island also hosts **Microshards** (in the example above, we will have no microshards, aka just one global shard). Microshards may travel from island to island during shards rebalancing process; the engine tracks this automatically ("shards discovery").
 
-Notice that we define the map of the cluster using a callback. Ent Framework will call it from time to time to refresh the view of the cluster, so in this callback, you can read the data from some configuration database. This is called "dynamic real-time reconfiguration".
+Notice that we define the layout of the cluster using a callback. Ent Framework will call it from time to time to refresh the view of the cluster, so in this callback, you can read the data from some centralized configuration database (new nodes may be added, or empty nodes may be removed with no downtime). This is called "dynamic real-time reconfiguration".
 
-[PgClientPool](../../docs/classes/PgClientPool.md) class accepts several options, one of them is the standard [node-postgtes PoolConfig](https://node-postgres.com/apis/pool) interface. For simplicity, when we define a cluster shape in `islands`, we can return a list of such configs.
+[PgClientPool](../../docs/classes/PgClientPool.md) class accepts several options, one of them is the standard [node-postgres PoolConfig](https://node-postgres.com/apis/pool) interface. For simplicity, when we define a cluster shape in `islands`, we can just return a list of such configs.
