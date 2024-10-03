@@ -17,3 +17,11 @@ Source code is at [https://github.com/clickup/ent-framework](https://github.com/
 <figure><img src="https://github.com/clickup/ent-framework/actions/workflows/ci.yml/badge.svg?branch=main" alt="" width="188"><figcaption></figcaption></figure>
 
 </div>
+
+To install in your TypeScript project:
+
+```
+npm add @clickup/ent-framework
+pnpm add @clickup/ent-framework
+yarn add @clickup/ent-framework
+```
