@@ -34,6 +34,7 @@ triggers etc.
 
 - [Getting Started and Tutorials](https://dimikot.gitbook.io/ent-framework/)
 - [API documentation](https://github.com/clickup/ent-framework/blob/master/docs/modules.md)
+- [Source code](https://github.com/clickup/ent-framework)
 
 To install in your TypeScript project:
 
