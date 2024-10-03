@@ -1,11 +1,36 @@
 # Create Ent Classes
 
-Once you have a Cluster instance, you can create EntTopic and EntComment.
+Once you have a Cluster instance, you can create Ent classes to access the data.
 
-{% code title="ents/EntTopic.ts" %}
-```typescript
-import { PgSchema } from "ent-framework/pg";
-import { ID, BaseEnt, GLOBAL_SHARD, AllowIf, OutgoingEdgePointsToVC } from "ent-framework";
+<pre class="language-typescript" data-title="ents/EntUser.ts"><code class="lang-typescript"><strong>import { PgSchema } from "ent-framework/pg";
+</strong>import { ID, BaseEnt, GLOBAL_SHARD, AllowIf, OutgoingEdgePointsToVC } from "ent-framework";
+import { cluster } from "../core/ent";
+
+const schema = new PgSchema(
+  "users",
+  {
+    id: { type: ID, autoInsert: "nextval('users_id_seq')" },
+    email: { type: String },
+  },
+  ["email"],
+);
+
+export class EntUser extends BaseEnt(cluster, schema) {
+  static override configure() {
+    return new this.Configuration({
+      shardAffinity: GLOBAL_SHARD,
+      privacyInferPrincipal: async (_vc, row) => row.id,
+      privacyLoad: [
+        new AllowIf(new OutgoingEdgePointsToVC("id")),
+      ],
+  }
+}
+</code></pre>
+
+Each Ent may also have one optional "unique key" (possible composite) which is treated by the engine in a specific optimized way. In the above example, it's `email`.
+
+<pre class="language-typescript" data-title="ents/EntTopic.ts"><code class="lang-typescript"><strong>import { PgSchema } from "ent-framework/pg";
+</strong>import { ID, BaseEnt, GLOBAL_SHARD, AllowIf, OutgoingEdgePointsToVC } from "ent-framework";
 import { cluster } from "../core/ent";
 
 const schema = new PgSchema(
@@ -31,16 +56,11 @@ export class EntTopic extends BaseEnt(cluster, schema) {
       ],
   }
 }
-```
-{% endcode %}
+</code></pre>
 
-By default, all fields are non-nullable (unless you provide allowNull option).
+By default, all fields are non-nullable (unless you provide `allowNull` option).
 
-Each Ent may also have one optional "unique key" (possible composite) which is treated by the engine in a specific optimized way. In our case, it's "slug".
-
-Disregard privacy rules for now, it's a more complicated topic which will be covered later. For now, the code should be obvious enough (except maybe "VC" which stands for "Viewer Context", or an "acting principal" - some user who runs an Ent Framework query).
-
-Now, creating EntComment.
+Disregard privacy rules for now, it's a more complicated topic which will be covered later. For now, the code should be obvious enough.
 
 {% code title="ents/EntComment.ts" %}
 ```typescript
@@ -73,4 +93,4 @@ export class EntComment extends BaseEnt(cluster, schema) {
 ```
 {% endcode %}
 
-Since we have no microshards yet, shardAffinity basically does nothing. But if we had some, then it would tell Ent Framework, to which microshard should it save EntComment rows when they are created (in the example above, it will save them to the same microshard as the owner's EntTopic).
+Since we have no microshards yet, `shardAffinity` basically does nothing. But if we had some, then it would tell Ent Framework, which microshard should it insert `EntComment` rows to when they are created (in the example above, it will save them to the same microshard as the owner's `EntTopic`).

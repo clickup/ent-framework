@@ -8,6 +8,10 @@ $ export PGPASSWORD=postgres
 $ createdb mytest
 
 $ psql mytest
+% CREATE TABLE users(
+    id bigserial PRIMARY KEY,
+    email varchar(256) NOT NULL
+  );
 % CREATE TABLE topics(
     id bigserial PRIMARY KEY,
     created_at timestamptz NOT NULL,
