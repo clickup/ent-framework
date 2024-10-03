@@ -1,6 +1,6 @@
 # VC: Viewer Context and Principal
 
-One of the most important Ent Framework traits is that it always knows, "who" is sending some read/write query to the database. Typically, that "who" is a user who opens a web page, or on behalf of whom a background worker job is running, but it can be any other **Principal**. Such mechanism is very different from the "traditional" database abstraction layers or ORMs, that typically do not know, on whose behalf all the queries are sent.
+One of the most important Ent Framework traits is that it always knows, "who" is sending some read/write query to the database, and is able to check permissions. Typically, that "who" is a user who opens a web page, or on behalf of whom a background worker job is running, but it can be any other **Principal**. This mechanism is quite different from traditional database abstraction layers or ORMs, which typically lack awareness of the specific user on whose behalf the queries are executed.
 
 To send a query, you must always have an instance of [VC](../../docs/classes/VC.md) class in hand (stands for **Viewer Context**). The most important property in a VC is `principal`, it's a string which identifies the party who's acting. Typically, we store some user ID in `vc.principal`.
 
