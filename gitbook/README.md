@@ -1,6 +1,6 @@
 # Overview
 
-Ent Framework is an opinionated TypeScript data access library with the following major features:
+[Ent Framework](https://github.com/clickup/ent-framework) is an open-source opinionated TypeScript data access library with the following major features:
 
 1. **Graph-like representation of entities.** Each Ent is represented as a TypeScipt class with immutable properties. An Ent class instance maps to one row of some table in a relational database (like PostgreSQL). In this sense, it looks similar to ORM, but has several differences explained below.
 2. **Row-level security in a graph (privacy layer).** The managed data forms a graph where node is an Ent instance, and edge is a field link (think of foreign keys) to other Ents. To be allowed to read (or update/delete) some Ent, you define a set of explicit rules like "user can read EntA if they can read EntB or EntC". And, consequently, in EntB you define its own set of rules, like "user can read EntB if they can read EntD".
@@ -9,6 +9,8 @@ Ent Framework is an opinionated TypeScript data access library with the followin
 5. **Can be plugged to an exising relational database.** If your project already uses some ORM or runs raw SQL queries, Ent Framework can be plugged in.
 
 There are other features supported, like cross-microshards foreign keys, triggers etc.
+
+Source code is at [https://github.com/clickup/ent-framework](https://github.com/clickup/ent-framework).
 
 <div align="left">
 
