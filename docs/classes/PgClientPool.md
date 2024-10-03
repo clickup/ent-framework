@@ -215,7 +215,7 @@ database.
 
 #### Defined in
 
-[src/pg/PgClient.ts:380](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L380)
+[src/pg/PgClient.ts:377](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L377)
 
 ___
 
@@ -242,7 +242,7 @@ wait for at least the provided number of milliseconds.
 
 #### Defined in
 
-[src/pg/PgClient.ts:404](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L404)
+[src/pg/PgClient.ts:401](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L401)
 
 ___
 
@@ -268,7 +268,7 @@ Extracts Shard number from an ID.
 
 #### Defined in
 
-[src/pg/PgClient.ts:422](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L422)
+[src/pg/PgClient.ts:419](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L419)
 
 ___
 
@@ -295,7 +295,7 @@ new Client will share the same connection pool with the parent's Client.
 
 #### Defined in
 
-[src/pg/PgClient.ts:478](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L478)
+[src/pg/PgClient.ts:475](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L475)
 
 ___
 
@@ -317,7 +317,7 @@ we only know the role after a query.
 
 #### Defined in
 
-[src/pg/PgClient.ts:489](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L489)
+[src/pg/PgClient.ts:486](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L486)
 
 ___
 
@@ -340,7 +340,7 @@ until e.g. the next discovery query to it (or any query) succeeds.
 
 #### Defined in
 
-[src/pg/PgClient.ts:493](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L493)
+[src/pg/PgClient.ts:490](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L490)
 
 ___
 

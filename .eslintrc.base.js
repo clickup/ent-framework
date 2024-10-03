@@ -385,6 +385,7 @@ module.exports = (projectRoot, extraRules = {}) => ({
         },
       },
     ],
+    "import/no-useless-path-segments": ["error", { noUselessIndex: true }],
     "unused-imports/no-unused-imports": "error",
     "no-restricted-imports": [
       "error",

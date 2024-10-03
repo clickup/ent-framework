@@ -1,7 +1,7 @@
 {
   "name": "@clickup/ent-framework",
-  "description": "A PostgreSQL graph database alike library with micro-sharding and row-level security",
-  "version": "2.12.0",
+  "description": "A PostgreSQL graph-database-alike library with microsharding and row-level security",
+  "version": "2.12.1",
   "license": "MIT",
   "keywords": [
     "postgresql",
@@ -22,17 +22,16 @@
     "./pg": "./pg.js"
   },
   "scripts": {
-    "barrel": "barrelsby -c barrelsby.json",
-    "build": "$npm_execpath run barrel && tsc",
-    "dev": "$npm_execpath run barrel && tsc --watch --preserveWatchOutput",
-    "lint": "bash internal/lint.sh",
-    "test": "PGPORT=54832 bash internal/with-docker-compose-up.postgres.sh 'bash ./internal/init-db.sh && jest'",
-    "psql": "PGPORT=54832 bash internal/with-docker-compose-up.postgres.sh psql",
-    "docs": "bash internal/docs.sh",
-    "clean": "bash internal/clean.sh",
+    "build": "barrelsby -c barrelsby.json && internal/build.sh",
+    "dev": "barrelsby -c barrelsby.json && internal/dev.sh",
+    "lint": "internal/lint.sh",
+    "test": "PGPORT=54832 internal/with-docker-compose-up.postgres.sh 'bash ./internal/init-db.sh && internal/test.sh'",
+    "psql": "PGPORT=54832 internal/with-docker-compose-up.postgres.sh psql",
+    "docs": "internal/docs.sh",
+    "clean": "internal/clean.sh",
     "copy-package-to-public-dir": "copy-package-to-public-dir.sh",
     "backport-package-from-public-dir": "backport-package-from-public-dir.sh",
-    "deploy": "bash internal/deploy.sh"
+    "deploy": "internal/deploy.sh"
   },
   "dependencies": {
     "delay": "^4.4.1",

@@ -5,9 +5,9 @@ REL="node_modules/@clickup/pg-id"
 LOG="db-init.log"
 
 dir="$(pwd -P)"
-while [ ! -d "$dir/$REL" ]; do
+while [[ ! -d "$dir/$REL" ]]; do
   dir=${dir%/*}
-  if [ "$dir" = "" ]; then
+  if [[ "$dir" == "" ]]; then
     echo "Cannot find $REL/ in parent directories!";
     exit 1
   fi
@@ -15,7 +15,7 @@ done
 
 dir="$dir/$REL"
 
-if [ ! -e $dir/pg-id-consts.sql ]; then
+if [[ ! -e $dir/pg-id-consts.sql ]]; then
   ln -s "$dir/pg-id-consts.sql.example" "$dir/pg-id-consts.sql"
 fi
 

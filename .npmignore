@@ -1,6 +1,6 @@
 dist/__tests__
 dist/**/__tests__
-dist/tsconfig.tsbuildinfo
+dist/*.tsbuildinfo
 .npmrc
 
 # Common in both .gitignore and .npmignore

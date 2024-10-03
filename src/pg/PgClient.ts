@@ -340,10 +340,7 @@ export abstract class PgClient extends Client {
       // Shards/Islands rediscovery.
       throw e;
     } finally {
-      if (conn) {
-        conn.release();
-      }
-
+      conn?.release();
       const now = performance.now();
       this.options.loggers?.clientQueryLogger?.({
         annotations,

@@ -2,8 +2,8 @@ import fs from "fs";
 import { dirname } from "path";
 import { threadId } from "worker_threads";
 import defaults from "lodash/defaults";
-import type { Loggers } from "../abstract/Loggers";
 import { jitter, type MaybeError, type PickPartial } from "../internal/misc";
+import type { Loggers } from "./Loggers";
 
 export interface LocalCacheOptions {
   /** Directory to store the cache in (auto-created). */
