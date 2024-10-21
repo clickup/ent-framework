@@ -1,42 +1,44 @@
 @clickup/ent-framework / [Exports](modules.md)
 
-# A PostgreSQL graph-database-alike library with microsharding and row-level security
+# Ent Framework
 
-Ent Framework is an open-source opinionated TypeScript data access library with the following major features:
-
-- **Graph-like representation of entities.** Each Ent is represented as a TypeScipt
-  class with immutable properties. An Ent class instance maps to one row of some
-  table in a relational database (like PostgreSQL). In this sense, it looks
-  similar to ORM, but has several differences explained below.
-- **Row-level security in a graph (privacy layer).** The managed data forms a graph
-  where node is an Ent instance, and edge is a field link (think of foreign
-  keys) to other Ents. To be allowed to read (or update/delete) some Ent, you
-  define a set of explicit rules like "user can read EntA if they can read EntB
-  or EntC". And, consequently, in EntB you define its own set of rules, like
-  "user can read EntB if they can read EntD".
-- **Query batching and coalescing.** Ent Framework holistically solves the "N+1
-  selects" problem commonly known in ORM world. You still write you code as if
-  you work with individual Ents and individual IDs, and the framework magically
-  takes care of sending batched requests (both read and write) to the underlying
-  relational database.
-- **Microsharding and replication lag tracking support out of the box.** You can
-  split your database horizontally, and Ent Framework will take care of routing
-  the requests to the proper shards. This includes batching/coalescing of the
-  queries of course. Also, Ent Framework knows whether a replica is "good
-  enough" for a query and automatically uses the replica when possible.
-- **Can be plugged to an existing relational database.** If your project already
-  uses some ORM or runs raw SQL queries, Ent Framework can be plugged in. There
-  are other features supported, like cross-microshards foreign keys, triggers
-  etc.
-
-There are other features supported, like cross-microshards foreign keys,
-triggers etc.
+The TypeScript library for working with microsharded PostgreSQL databases.
 
 - [Getting Started and Tutorials](https://dimikot.gitbook.io/ent-framework/)
 - [API documentation](https://github.com/clickup/ent-framework/blob/master/docs/modules.md)
 - [Source code](https://github.com/clickup/ent-framework)
+- [Ent Framework's Discord](https://discord.com/invite/QXvN6VTCKS)
 
-To install in your TypeScript project:
+## Core Features
+
+- **Graph-like representation of entities.** With Ent Framework, you represent
+  each Ent (a domain object of your business logic) as a TypeScript class with
+  immutable properties. An Ent class instance maps to one row of some table in a
+  relational database (like PostgreSQL). It may look similar to ORM, but has
+  many aspects that traditional ORMs don't have.
+- **Row-level security in a graph (privacy layer).** You manage data as a graph
+  where each node is an Ent instance, and each edge is a field link (think of
+  foreign keys) to other Ents. To be allowed to read (or update/delete) some
+  Ent, you define a set of explicit rules like "user can read EntA if they can
+  read EntB or EntC". And, consequently, in EntB you define its own set of
+  rules, like "user can read EntB if they can read EntD".
+- **Query batching and coalescing.** Ent Framework holistically solves the "N+1
+  selects" problem commonly known in ORM world. You still write you code as if
+  you work with individual Ents and individual IDs, and the framework magically
+  takes care of sending batched requests (both read and write) to the underlying
+  relational database. You do not work with lists and JOINs anymore.
+- **Microsharding and replication lag tracking support out of the box.**
+  Splitting your database horizontally is like a breeze now: Ent Framework takes
+  care of routing the requests to the proper microshards. When scaling reads,
+  Ent Framework knows whether a node is "good enough" for that particular query.
+  It automatically uses that replica when possible, falling back to master when
+  not.
+- **Pluggable to your existing relational database.** If your project already
+  uses some ORM or runs raw SQL queries, Ent Framework can be plugged in.
+- **Tens of other features.** Some examples: cross-microshards foreign keys,
+  composite fields, triggers, build-in caching etc.
+
+## Installation
 
 ```
 npm add ent-framework

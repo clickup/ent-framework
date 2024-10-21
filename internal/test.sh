@@ -2,4 +2,4 @@
 set -e
 
 internal/build.sh
-jest
+jest "$@"
