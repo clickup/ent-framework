@@ -19,14 +19,14 @@ jobs:
 
         container:
             # A Docker image with Semgrep installed. Do not change this.
-            image: returntocorp/semgrep@sha256:6c7ab81e4d1fd25a09f89f1bd52c984ce107c6ff33affef6ca3bc626a4cc479b
+            image: semgrep/semgrep@sha256:7b625711ba9b6d1a543e308967b18c01b59932490a5536a06422666474bf6ee4
 
         # Skip any PR created by dependabot to avoid permission issues:
         if: (github.actor != 'dependabot[bot]')
 
         steps:
             # Fetch project source with GitHub Actions Checkout.
-            - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+            - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
             # Run the "semgrep ci" command on the command line of the docker image.
             - run: semgrep ci
               env:
