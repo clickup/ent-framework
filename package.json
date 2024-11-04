@@ -1,7 +1,7 @@
 {
   "name": "@clickup/ent-framework",
   "description": "A PostgreSQL graph-database-alike library with microsharding and row-level security",
-  "version": "2.12.4",
+  "version": "2.12.5",
   "license": "MIT",
   "keywords": [
     "postgresql",
