@@ -1,11 +1,13 @@
-@clickup/ent-framework / [Exports](modules.md)
+**@clickup/ent-framework** • [**Docs**](globals.md)
+
+***
 
 # Ent Framework
 
 The TypeScript library for working with microsharded PostgreSQL databases.
 
 - [Getting Started and Tutorials](https://ent-framework.net)
-- [API documentation](https://github.com/clickup/ent-framework/blob/master/docs/modules.md)
+- [API documentation](https://github.com/clickup/ent-framework/blob/master/docs/globals.md)
 - [Source code](https://github.com/clickup/ent-framework)
 - [Ent Framework's Discord](https://discord.com/invite/QXvN6VTCKS)
 
@@ -30,9 +32,9 @@ The TypeScript library for working with microsharded PostgreSQL databases.
 - **Microsharding and replication lag tracking support out of the box.**
   Splitting your database horizontally is like a breeze now: Ent Framework takes
   care of routing the requests to the proper microshards. When scaling reads,
-  Ent Framework knows whether a node is "good enough" for that particular query.
-  It automatically uses that replica when possible, falling back to master when
-  not.
+  Ent Framework knows whether a replica node is "good enough" for that
+  particular query. It automatically uses the proper replica when possible,
+  falling back to master when not.
 - **Pluggable to your existing relational database.** If your project already
   uses some ORM or runs raw SQL queries, Ent Framework can be plugged in.
 - **Tens of other features.** Some examples: cross-microshards foreign keys,

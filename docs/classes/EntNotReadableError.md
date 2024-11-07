@@ -1,28 +1,30 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntNotReadableError
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / EntNotReadableError
 
 # Class: EntNotReadableError
 
 Error: thrown when an Ent cannot be read due to privacy reasons.
 
-## Hierarchy
+## Extends
 
 - [`EntAccessError`](EntAccessError.md)
 
-  ↳ **`EntNotReadableError`**
-
 ## Constructors
 
-### constructor
+### new EntNotReadableError()
 
-• **new EntNotReadableError**(`entName`, `vc`, `row`, `cause?`): [`EntNotReadableError`](EntNotReadableError.md)
+> **new EntNotReadableError**(`entName`, `vc`, `row`, `cause`): [`EntNotReadableError`](EntNotReadableError.md)
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
+| Parameter | Type | Default value |
+| ------ | ------ | ------ |
 | `entName` | `string` | `undefined` |
 | `vc` | `string` | `undefined` |
-| `row` | [`RowWithID`](../modules.md#rowwithid) | `undefined` |
+| `row` | [`RowWithID`](../type-aliases/RowWithID.md) | `undefined` |
 | `cause` | `unknown` | `null` |
 
 #### Returns
@@ -31,7 +33,7 @@ Error: thrown when an Ent cannot be read due to privacy reasons.
 
 #### Overrides
 
-[EntAccessError](EntAccessError.md).[constructor](EntAccessError.md#constructor)
+[`EntAccessError`](EntAccessError.md).[`constructor`](EntAccessError.md#constructors)
 
 #### Defined in
 
@@ -39,48 +41,9 @@ Error: thrown when an Ent cannot be read due to privacy reasons.
 
 ## Properties
 
-### cause
-
-• `Readonly` **cause**: ``null`` \| `string` \| `Error`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[cause](EntAccessError.md#cause)
-
-#### Defined in
-
-[src/ent/errors/EntAccessError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L8)
-
-___
-
-### entName
-
-• `Readonly` **entName**: `string`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[entName](EntAccessError.md#entname)
-
-#### Defined in
-
-[src/ent/errors/EntAccessError.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L11)
-
-___
-
-### vc
-
-• `Readonly` **vc**: `string`
-
-#### Defined in
-
-[src/ent/errors/EntNotReadableError.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotReadableError.ts#L11)
-
-___
-
-### row
-
-• `Readonly` **row**: [`RowWithID`](../modules.md#rowwithid)
-
-#### Defined in
-
-[src/ent/errors/EntNotReadableError.ts:12](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotReadableError.ts#L12)
+| Property | Type |
+| ------ | ------ |
+| `cause` | `null` \| `string` \| `Error` |
+| `entName` | `string` |
+| `vc` | `string` |
+| `row` | [`RowWithID`](../type-aliases/RowWithID.md) |

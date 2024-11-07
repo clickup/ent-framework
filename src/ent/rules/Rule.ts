@@ -6,12 +6,7 @@ import type { VC } from "../VC";
 /**
  * Each Rule evaluates to some Decision (or throws).
  */
-export enum RuleDecision {
-  ALLOW = "ALLOW",
-  TOLERATE = "TOLERATE",
-  SKIP = "SKIP",
-  DENY = "DENY",
-}
+export type RuleDecision = "ALLOW" | "TOLERATE" | "SKIP" | "DENY";
 
 /**
  * A full debug info about some Rule decision (which Rule produced this

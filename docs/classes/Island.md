@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Island
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / Island
 
 # Class: Island\<TClient\>
 
@@ -19,30 +23,24 @@ as Clients) that contains a single master Client and any number of replicas.
   replica() will be up to date. Shards may be just migrated to another
   Island. Master may become a replica, or vice versa.
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TClient` | extends [`Client`](Client.md) |
+| Type Parameter |
+| ------ |
+| `TClient` *extends* [`Client`](Client.md) |
 
 ## Constructors
 
-### constructor
+### new Island()
 
-• **new Island**\<`TClient`\>(`options`): [`Island`](Island.md)\<`TClient`\>
+> **new Island**\<`TClient`\>(`options`): [`Island`](Island.md)\<`TClient`\>
 
 Initializes the Island by copying the Client references into it.
 
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TClient` | extends [`Client`](Client.md) |
-
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `options` | [`IslandOptions`](../interfaces/IslandOptions.md)\<`TClient`\> |
 
 #### Returns
@@ -55,37 +53,22 @@ Initializes the Island by copying the Client references into it.
 
 ## Properties
 
-### DEFAULT\_OPTIONS
-
-▪ `Static` `Readonly` **DEFAULT\_OPTIONS**: `Required`\<`PickPartial`\<[`IslandOptions`](../interfaces/IslandOptions.md)\<[`Client`](Client.md)\>\>\>
-
-Default values for the constructor options.
-
-#### Defined in
-
-[src/abstract/Island.ts:95](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L95)
-
-___
-
-### options
-
-• `Readonly` **options**: `Required`\<[`IslandOptions`](../interfaces/IslandOptions.md)\<`TClient`\>\>
-
-Island configuration options.
-
-#### Defined in
-
-[src/abstract/Island.ts:115](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L115)
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`IslandOptions`](../interfaces/IslandOptions.md)\<[`Client`](Client.md)\>\>\> | Default values for the constructor options. |
+| `options` | `Required`\<[`IslandOptions`](../interfaces/IslandOptions.md)\<`TClient`\>\> | Island configuration options. |
 
 ## Accessors
 
 ### no
 
-• `get` **no**(): `number`
+#### Get Signature
+
+> **get** **no**(): `number`
 
 Island number.
 
-#### Returns
+##### Returns
 
 `number`
 
@@ -93,15 +76,17 @@ Island number.
 
 [src/abstract/Island.ts:132](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L132)
 
-___
+***
 
 ### clients
 
-• `get` **clients**(): readonly `TClient`[]
+#### Get Signature
+
+> **get** **clients**(): readonly `TClient`[]
 
 The list of Clients in this Island. No assumptions about the order.
 
-#### Returns
+##### Returns
 
 readonly `TClient`[]
 
@@ -111,9 +96,9 @@ readonly `TClient`[]
 
 ## Methods
 
-### rediscover
+### rediscover()
 
-▸ **rediscover**(): `Promise`\<`void`\>
+> **rediscover**(): `Promise`\<`void`\>
 
 Queries for Shards on the best available Client (preferably master, then
 replicas) and stores the result internally, available for the further
@@ -133,11 +118,11 @@ shards() call.
 
 [src/abstract/Island.ts:154](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L154)
 
-___
+***
 
-### shards
+### shards()
 
-▸ **shards**(): [`Shard`](Shard.md)\<`TClient`\>[]
+> **shards**(): [`Shard`](Shard.md)\<`TClient`\>[]
 
 Returns the currently best-known Shards on this Island. This method is
 needed only when working with cross-Shards logic; in normal situations, it
@@ -151,11 +136,11 @@ is not called much.
 
 [src/abstract/Island.ts:215](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L215)
 
-___
+***
 
-### master
+### master()
 
-▸ **master**(): `TClient`
+> **master**(): `TClient`
 
 Returns the currently best-known master Client among the Clients of this
 Island.
@@ -184,11 +169,11 @@ Island.
 
 [src/abstract/Island.ts:243](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L243)
 
-___
+***
 
-### replica
+### replica()
 
-▸ **replica**(): `TClient`
+> **replica**(): `TClient`
 
 Returns a currently best-known random replica Client. In case there are no
 replicas, returns the master Client.

@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / PgQueryExists
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / PgQueryExists
 
 # Class: PgQueryExists\<TTable\>
 
@@ -8,36 +12,28 @@ doesn't fit the QueryBase framework (like PgQueryUpdate for instance where we
 have separate Runner instances for separate set of updated fields), a Query
 is used directly instead.
 
-## Type parameters
+## Extends
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+- [`QueryBase`](QueryBase.md)\<`TTable`, [`ExistsInput`](../type-aliases/ExistsInput.md)\<`TTable`\>, `boolean`, [`PgClient`](PgClient.md)\>
 
-## Hierarchy
+## Type Parameters
 
-- [`QueryBase`](QueryBase.md)\<`TTable`, [`ExistsInput`](../modules.md#existsinput)\<`TTable`\>, `boolean`, [`PgClient`](PgClient.md)\>
-
-  ↳ **`PgQueryExists`**
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
 
 ## Constructors
 
-### constructor
+### new PgQueryExists()
 
-• **new PgQueryExists**\<`TTable`\>(`schema`, `input`): [`PgQueryExists`](PgQueryExists.md)\<`TTable`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+> **new PgQueryExists**\<`TTable`\>(`schema`, `input`): [`PgQueryExists`](PgQueryExists.md)\<`TTable`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\> |
-| `input` | [`ExistsInput`](../modules.md#existsinput)\<`TTable`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
+| `input` | [`ExistsInput`](../type-aliases/ExistsInput.md)\<`TTable`\> |
 
 #### Returns
 
@@ -45,7 +41,7 @@ is used directly instead.
 
 #### Inherited from
 
-[QueryBase](QueryBase.md).[constructor](QueryBase.md#constructor)
+[`QueryBase`](QueryBase.md).[`constructor`](QueryBase.md#constructors)
 
 #### Defined in
 
@@ -53,45 +49,26 @@ is used directly instead.
 
 ## Properties
 
-### schema
-
-• `Readonly` **schema**: [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\>
-
-#### Inherited from
-
-[QueryBase](QueryBase.md).[schema](QueryBase.md#schema)
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L29)
-
-___
-
-### input
-
-• `Readonly` **input**: [`ExistsInput`](../modules.md#existsinput)\<`TTable`\>
-
-#### Inherited from
-
-[QueryBase](QueryBase.md).[input](QueryBase.md#input)
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L30)
+| Property | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
+| `input` | [`ExistsInput`](../type-aliases/ExistsInput.md)\<`TTable`\> |
 
 ## Accessors
 
 ### IS\_WRITE
 
-• `get` **IS_WRITE**(): `boolean`
+#### Get Signature
 
-#### Returns
+> **get** **IS\_WRITE**(): `boolean`
+
+##### Returns
 
 `boolean`
 
 #### Inherited from
 
-QueryBase.IS\_WRITE
+[`QueryBase`](QueryBase.md).[`IS_WRITE`](QueryBase.md#is_write)
 
 #### Defined in
 
@@ -99,14 +76,14 @@ QueryBase.IS\_WRITE
 
 ## Methods
 
-### run
+### run()
 
-▸ **run**(`client`, `annotation`): `Promise`\<`boolean`\>
+> **run**(`client`, `annotation`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `client` | [`PgClient`](PgClient.md) |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
@@ -116,7 +93,7 @@ QueryBase.IS\_WRITE
 
 #### Inherited from
 
-[QueryBase](QueryBase.md).[run](QueryBase.md#run)
+[`QueryBase`](QueryBase.md).[`run`](QueryBase.md#run)
 
 #### Defined in
 

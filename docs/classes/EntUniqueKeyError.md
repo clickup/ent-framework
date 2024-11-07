@@ -1,26 +1,28 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntUniqueKeyError
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / EntUniqueKeyError
 
 # Class: EntUniqueKeyError
 
 Error: while inserting or updating, DB unique key was violated,
 so the Ent was not mutated.
 
-## Hierarchy
+## Extends
 
 - `Error`
 
-  ↳ **`EntUniqueKeyError`**
-
 ## Constructors
 
-### constructor
+### new EntUniqueKeyError()
 
-• **new EntUniqueKeyError**(`entName`, `input`): [`EntUniqueKeyError`](EntUniqueKeyError.md)
+> **new EntUniqueKeyError**(`entName`, `input`): [`EntUniqueKeyError`](EntUniqueKeyError.md)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `entName` | `string` |
 | `input` | `unknown` |
 
@@ -30,7 +32,7 @@ so the Ent was not mutated.
 
 #### Overrides
 
-Error.constructor
+`Error.constructor`
 
 #### Defined in
 
@@ -38,43 +40,30 @@ Error.constructor
 
 ## Properties
 
-### entName
-
-• `Readonly` **entName**: `string`
-
-#### Defined in
-
-[src/ent/errors/EntUniqueKeyError.ts:9](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L9)
-
-___
-
-### input
-
-• `Readonly` **input**: `unknown`
-
-#### Defined in
-
-[src/ent/errors/EntUniqueKeyError.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntUniqueKeyError.ts#L10)
+| Property | Type |
+| ------ | ------ |
+| `entName` | `string` |
+| `input` | `unknown` |
 
 ## Methods
 
-### ignore
+### ignore()
 
-▸ **ignore**\<`T`\>(`promise`): `Promise`\<`undefined` \| `T`\>
+> `static` **ignore**\<`T`\>(`promise`): `Promise`\<`undefined` \| `T`\>
 
 Returns a promise of T on success, and undefined in case unique key
 violation happened during the promise resolution.
 
-#### Type parameters
+#### Type Parameters
 
-| Name |
-| :------ |
+| Type Parameter |
+| ------ |
 | `T` |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `promise` | `Promise`\<`T`\> |
 
 #### Returns

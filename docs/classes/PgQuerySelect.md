@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / PgQuerySelect
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / PgQuerySelect
 
 # Class: PgQuerySelect\<TTable\>
 
@@ -8,36 +12,28 @@ doesn't fit the QueryBase framework (like PgQueryUpdate for instance where we
 have separate Runner instances for separate set of updated fields), a Query
 is used directly instead.
 
-## Type parameters
+## Extends
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+- [`QueryBase`](QueryBase.md)\<`TTable`, [`SelectInput`](../type-aliases/SelectInput.md)\<`TTable`\>, [`Row`](../type-aliases/Row.md)\<`TTable`\>[], [`PgClient`](PgClient.md)\>
 
-## Hierarchy
+## Type Parameters
 
-- [`QueryBase`](QueryBase.md)\<`TTable`, [`SelectInput`](../modules.md#selectinput)\<`TTable`\>, [`Row`](../modules.md#row)\<`TTable`\>[], [`PgClient`](PgClient.md)\>
-
-  ↳ **`PgQuerySelect`**
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
 
 ## Constructors
 
-### constructor
+### new PgQuerySelect()
 
-• **new PgQuerySelect**\<`TTable`\>(`schema`, `input`): [`PgQuerySelect`](PgQuerySelect.md)\<`TTable`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+> **new PgQuerySelect**\<`TTable`\>(`schema`, `input`): [`PgQuerySelect`](PgQuerySelect.md)\<`TTable`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\> |
-| `input` | [`SelectInput`](../modules.md#selectinput)\<`TTable`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
+| `input` | [`SelectInput`](../type-aliases/SelectInput.md)\<`TTable`\> |
 
 #### Returns
 
@@ -45,7 +41,7 @@ is used directly instead.
 
 #### Inherited from
 
-[QueryBase](QueryBase.md).[constructor](QueryBase.md#constructor)
+[`QueryBase`](QueryBase.md).[`constructor`](QueryBase.md#constructors)
 
 #### Defined in
 
@@ -53,45 +49,26 @@ is used directly instead.
 
 ## Properties
 
-### schema
-
-• `Readonly` **schema**: [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\>
-
-#### Inherited from
-
-[QueryBase](QueryBase.md).[schema](QueryBase.md#schema)
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L29)
-
-___
-
-### input
-
-• `Readonly` **input**: [`SelectInput`](../modules.md#selectinput)\<`TTable`\>
-
-#### Inherited from
-
-[QueryBase](QueryBase.md).[input](QueryBase.md#input)
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L30)
+| Property | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
+| `input` | [`SelectInput`](../type-aliases/SelectInput.md)\<`TTable`\> |
 
 ## Accessors
 
 ### IS\_WRITE
 
-• `get` **IS_WRITE**(): `boolean`
+#### Get Signature
 
-#### Returns
+> **get** **IS\_WRITE**(): `boolean`
+
+##### Returns
 
 `boolean`
 
 #### Inherited from
 
-QueryBase.IS\_WRITE
+[`QueryBase`](QueryBase.md).[`IS_WRITE`](QueryBase.md#is_write)
 
 #### Defined in
 
@@ -99,24 +76,24 @@ QueryBase.IS\_WRITE
 
 ## Methods
 
-### run
+### run()
 
-▸ **run**(`client`, `annotation`): `Promise`\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
+> **run**(`client`, `annotation`): `Promise`\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `client` | [`PgClient`](PgClient.md) |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
 #### Returns
 
-`Promise`\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
+`Promise`\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
 #### Inherited from
 
-[QueryBase](QueryBase.md).[run](QueryBase.md#run)
+[`QueryBase`](QueryBase.md).[`run`](QueryBase.md#run)
 
 #### Defined in
 

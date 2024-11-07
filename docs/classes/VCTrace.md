@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / VCTrace
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / VCTrace
 
 # Class: VCTrace
 
@@ -8,15 +12,15 @@ they're a part of VC core interface to allow faster access.
 
 ## Constructors
 
-### constructor
+### new VCTrace()
 
-• **new VCTrace**(`trace?`): [`VCTrace`](VCTrace.md)
+> **new VCTrace**(`trace`?): [`VCTrace`](VCTrace.md)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `trace?` | `string` |
+| Parameter | Type |
+| ------ | ------ |
+| `trace`? | `string` |
 
 #### Returns
 
@@ -28,10 +32,6 @@ they're a part of VC core interface to allow faster access.
 
 ## Properties
 
-### trace
-
-• `Readonly` **trace**: `string`
-
-#### Defined in
-
-[src/ent/VCTrace.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/VCTrace.ts#L16)
+| Property | Type |
+| ------ | ------ |
+| `trace` | `string` |

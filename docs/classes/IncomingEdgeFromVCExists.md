@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / IncomingEdgeFromVCExists
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / IncomingEdgeFromVCExists
 
 # Class: IncomingEdgeFromVCExists\<TEdgeTable\>
 
@@ -15,36 +19,30 @@ database.
 - entEdgeFKField = company_id in the above example
 - if an EntMember object exists, it must also match entEdgeFilter()
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TEdgeTable` | extends [`Table`](../modules.md#table) |
+| Type Parameter |
+| ------ |
+| `TEdgeTable` *extends* [`Table`](../type-aliases/Table.md) |
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)\<[`RowWithID`](../modules.md#rowwithid)\>
+- [`Predicate`](../interfaces/Predicate.md)\<[`RowWithID`](../type-aliases/RowWithID.md)\>
 
 ## Constructors
 
-### constructor
+### new IncomingEdgeFromVCExists()
 
-• **new IncomingEdgeFromVCExists**\<`TEdgeTable`\>(`EntEdge`, `entEdgeVCField`, `entEdgeFKField`, `entEdgeFilter?`): [`IncomingEdgeFromVCExists`](IncomingEdgeFromVCExists.md)\<`TEdgeTable`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEdgeTable` | extends [`Table`](../modules.md#table) |
+> **new IncomingEdgeFromVCExists**\<`TEdgeTable`\>(`EntEdge`, `entEdgeVCField`, `entEdgeFKField`, `entEdgeFilter`?): [`IncomingEdgeFromVCExists`](IncomingEdgeFromVCExists.md)\<`TEdgeTable`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `EntEdge` | [`EntClass`](../modules.md#entclass)\<`TEdgeTable`\> |
-| `entEdgeVCField` | ``"id"`` \| [`Field`](../modules.md#field)\<`TEdgeTable`\> |
-| `entEdgeFKField` | ``"id"`` \| [`Field`](../modules.md#field)\<`TEdgeTable`\> |
-| `entEdgeFilter?` | (`ent`: [`Row`](../modules.md#row)\<`TEdgeTable`\>) => `boolean` |
+| Parameter | Type |
+| ------ | ------ |
+| `EntEdge` | [`EntClass`](../interfaces/EntClass.md)\<`TEdgeTable`\> |
+| `entEdgeVCField` | `"id"` \| [`Field`](../type-aliases/Field.md)\<`TEdgeTable`\> |
+| `entEdgeFKField` | `"id"` \| [`Field`](../type-aliases/Field.md)\<`TEdgeTable`\> |
+| `entEdgeFilter`? | (`ent`) => `boolean` |
 
 #### Returns
 
@@ -56,84 +54,26 @@ database.
 
 ## Properties
 
-### name
-
-• `Readonly` **name**: `string`
-
-#### Implementation of
-
-[Predicate](../interfaces/Predicate.md).[name](../interfaces/Predicate.md#name)
-
-#### Defined in
-
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:27](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L27)
-
-___
-
-### EntEdge
-
-• `Readonly` **EntEdge**: [`EntClass`](../modules.md#entclass)\<`TEdgeTable`\>
-
-#### Defined in
-
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:30](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L30)
-
-___
-
-### entEdgeVCField
-
-• `Readonly` **entEdgeVCField**: ``"id"`` \| [`Field`](../modules.md#field)\<`TEdgeTable`\>
-
-#### Defined in
-
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L31)
-
-___
-
-### entEdgeFKField
-
-• `Readonly` **entEdgeFKField**: ``"id"`` \| [`Field`](../modules.md#field)\<`TEdgeTable`\>
-
-#### Defined in
-
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:32](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L32)
-
-___
-
-### entEdgeFilter
-
-• `Optional` `Readonly` **entEdgeFilter**: (`ent`: [`Row`](../modules.md#row)\<`TEdgeTable`\>) => `boolean`
-
-#### Type declaration
-
-▸ (`ent`): `boolean`
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `ent` | [`Row`](../modules.md#row)\<`TEdgeTable`\> |
-
-##### Returns
-
-`boolean`
-
-#### Defined in
-
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:33](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L33)
+| Property | Type |
+| ------ | ------ |
+| `name` | `string` |
+| `EntEdge` | [`EntClass`](../interfaces/EntClass.md)\<`TEdgeTable`\> |
+| `entEdgeVCField` | `"id"` \| [`Field`](../type-aliases/Field.md)\<`TEdgeTable`\> |
+| `entEdgeFKField` | `"id"` \| [`Field`](../type-aliases/Field.md)\<`TEdgeTable`\> |
+| `entEdgeFilter?` | (`ent`: [`Row`](../type-aliases/Row.md)\<`TEdgeTable`\>) => `boolean` |
 
 ## Methods
 
-### check
+### check()
 
-▸ **check**(`vc`, `row`): `Promise`\<`boolean`\>
+> **check**(`vc`, `row`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | [`RowWithID`](../modules.md#rowwithid) |
+| `row` | [`RowWithID`](../type-aliases/RowWithID.md) |
 
 #### Returns
 
@@ -141,7 +81,7 @@ ___
 
 #### Implementation of
 
-[Predicate](../interfaces/Predicate.md).[check](../interfaces/Predicate.md#check)
+[`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
 
 #### Defined in
 

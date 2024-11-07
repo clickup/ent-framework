@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Configuration
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / Configuration
 
 # Class: Configuration\<TTable\>
 
@@ -17,28 +21,22 @@ Motivation:
    type inference in return values is poor:
    https://github.com/Microsoft/TypeScript/issues/31273
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
 
 ## Constructors
 
-### constructor
+### new Configuration()
 
-• **new Configuration**\<`TTable`\>(`cfg`): [`Configuration`](Configuration.md)\<`TTable`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+> **new Configuration**\<`TTable`\>(`cfg`): [`Configuration`](Configuration.md)\<`TTable`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `cfg` | [`Configuration`](Configuration.md)\<`TTable`\> |
 
 #### Returns
@@ -51,251 +49,22 @@ Motivation:
 
 ## Properties
 
-### shardAffinity
-
-• `Readonly` **shardAffinity**: [`ShardAffinity`](../modules.md#shardaffinity)\<[`FieldOfIDType`](../modules.md#fieldofidtype)\<`TTable`\>\>
-
-Defines how to locate a Shard at Ent insert time. See ShardAffinity for
-more details.
-
-1. GLOBAL_SHARD: places the Ent in the global Shard (0).
-2. []: places the Ent in a random Shard. The "randomness" of the "random
-   Shard" is deterministic by the Ent's unique key at the moment of
-   insertion (if it's defined; otherwise completely random). This helps two
-   racy insert operations running concurrently to choose the same Shard for
-   the Ent to be created in, so only one of them will win, instead of both
-   winning and mistakenly creating the Ent duplicates. I.e. having the same
-   value in unique key forces the engine to target the same "random" Shard.
-3. ["field1", "field2", ...]: places the Ent in the Shard that is pointed
-   to by the value in field1 (if it's null, then field2 etc.).
-
-A special treatment is applied if a fieldN value in (3) points to the
-global Shard. In such a case, the Shard for the current Ent is chosen
-deterministic-randomly at insert time, as if [] is passed. This allows the
-Ent to refer other "owning" Ents of different types, some of which may be
-located in the global Shard. Keep in mind that, to locate such an Ent
-pointing to another Ent in the global Shard, an inverse for fieldN must be
-defined in most of the cases.
-
-#### Defined in
-
-[src/ent/Configuration.ts:59](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L59)
-
-___
-
-### inverses
-
-• `Optional` `Readonly` **inverses**: \{ [k in string]?: Object }
-
-Inverses allow cross-Shard foreign keys & cross-Shard selection. If a
-field points to an Ent in another Shard, and we're e.g. selecting by a
-value in this field, inverses allow to locate Shard(s) of the Ent.
-
-#### Defined in
-
-[src/ent/Configuration.ts:63](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L63)
-
-___
-
-### privacyTenantPrincipalField
-
-• `Optional` `Readonly` **privacyTenantPrincipalField**: [`InsertFieldsRequired`](../modules.md#insertfieldsrequired)\<`TTable`\> & `string`
-
-If defined, forces all Ents of this class to have the value of that field
-equal to VC's principal at load time. This is a very 1st unavoidable check
-in the privacy rules chain, thus it's bullet-proof.
-
-#### Defined in
-
-[src/ent/Configuration.ts:69](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L69)
-
-___
-
-### privacyInferPrincipal
-
-• `Readonly` **privacyInferPrincipal**: ``null`` \| `string` \| (`vc`: [`VC`](VC.md), `row`: [`Row`](../modules.md#row)\<`TTable`\>) => `Promise`\<``null`` \| `string` \| [`Ent`](../modules.md#ent)\<{}\>\>
-
-An attempt to load this Ent using an omni VC will "lower" that VC to the
-principal returned. Omni VC is always lowered.
-1. If an Ent is returned, the lowered principal will be Ent#vc.principal.
-   It is a way to delegate principal inference to another Ent.
-2. If a string is returned, then it's treated as a principal ID.
-3. If a null is returned, then a guest principal will be used.
-4. Returning an omni principal or VC will result in a run-time error.
-
-#### Defined in
-
-[src/ent/Configuration.ts:77](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L77)
-
-___
-
-### privacyLoad
-
-• `Readonly` **privacyLoad**: [`LoadRule`](../modules.md#loadrule)\<[`Row`](../modules.md#row)\<`TTable`\>\>[]
-
-Privacy rules checked on every row loaded from the DB.
-
-#### Defined in
-
-[src/ent/Configuration.ts:83](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L83)
-
-___
-
-### privacyInsert
-
-• `Readonly` **privacyInsert**: [`WriteRules`](../modules.md#writerules)\<[`InsertInput`](../modules.md#insertinput)\<`TTable`\>\>
-
-Privacy rules checked before a row is inserted to the DB.
-- It the list is empty, then only omni VC can insert; it's typically a good
-  option for Ents representing e.g. a user.
-- If no update/delete rules are defined, then privacyInsert rules are also
-  run on update/delete by default.
-- Unless empty, the rules must include at least one Require() predicate,
-  they can't entirely consist of AllowIf(). This is because for write rules
-  (privacyInsert, privacyUpdate, privacyDelete) it's important to make sure
-  that ALL rules permit the operation, not only one of them allows it; this
-  is what Require() is exactly for.
-
-#### Defined in
-
-[src/ent/Configuration.ts:94](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L94)
-
-___
-
-### privacyUpdate
-
-• `Optional` `Readonly` **privacyUpdate**: [`WriteRules`](../modules.md#writerules)\<[`Row`](../modules.md#row)\<`TTable`\>\>
-
-Privacy rules checked before a row is updated in the DB.
-- If not defined, privacyInsert rules are used.
-- The rules must include at least one Require() predicate.
-
-#### Defined in
-
-[src/ent/Configuration.ts:98](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L98)
-
-___
-
-### privacyDelete
-
-• `Optional` `Readonly` **privacyDelete**: [`WriteRules`](../modules.md#writerules)\<[`Row`](../modules.md#row)\<`TTable`\>\>
-
-Privacy rules checked before a row is deleted in the DB.
-- If not defined, privacyInsert rules are used.
-- The rules must include at least one Require() predicate.
-
-#### Defined in
-
-[src/ent/Configuration.ts:102](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L102)
-
-___
-
-### validators
-
-• `Optional` `Readonly` **validators**: [`Predicate`](../interfaces/Predicate.md)\<[`InsertInput`](../modules.md#insertinput)\<`TTable`\>\> & [`EntValidationErrorInfo`](../interfaces/EntValidationErrorInfo.md)[]
-
-Custom field values validators run before any insert/update.
-
-#### Defined in
-
-[src/ent/Configuration.ts:104](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L104)
-
-___
-
-### beforeInsert
-
-• `Optional` `Readonly` **beforeInsert**: [`InsertTrigger`](../modules.md#inserttrigger)\<`TTable`\>[]
-
-Triggers run before every insert.
-
-#### Defined in
-
-[src/ent/Configuration.ts:106](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L106)
-
-___
-
-### beforeUpdate
-
-• `Optional` `Readonly` **beforeUpdate**: ([`BeforeUpdateTrigger`](../modules.md#beforeupdatetrigger)\<`TTable`\> \| [[`DepsBuilder`](../modules.md#depsbuilder)\<`TTable`\>, [`BeforeUpdateTrigger`](../modules.md#beforeupdatetrigger)\<`TTable`\>])[]
-
-Triggers run before every update.
-
-#### Defined in
-
-[src/ent/Configuration.ts:108](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L108)
-
-___
-
-### beforeDelete
-
-• `Optional` `Readonly` **beforeDelete**: [`DeleteTrigger`](../modules.md#deletetrigger)\<`TTable`\>[]
-
-Triggers run before every delete.
-
-#### Defined in
-
-[src/ent/Configuration.ts:113](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L113)
-
-___
-
-### beforeMutation
-
-• `Optional` `Readonly` **beforeMutation**: ([`BeforeMutationTrigger`](../modules.md#beforemutationtrigger)\<`TTable`\> \| [[`DepsBuilder`](../modules.md#depsbuilder)\<`TTable`\>, [`BeforeMutationTrigger`](../modules.md#beforemutationtrigger)\<`TTable`\>])[]
-
-Triggers run before every insert/update/delete. Each trigger may also be
-passed as "React useEffect-like" tuple where the callback is executed only
-if the deps are modified.
-
-#### Defined in
-
-[src/ent/Configuration.ts:117](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L117)
-
-___
-
-### afterInsert
-
-• `Optional` `Readonly` **afterInsert**: [`InsertTrigger`](../modules.md#inserttrigger)\<`TTable`\>[]
-
-Triggers run after every delete.
-
-#### Defined in
-
-[src/ent/Configuration.ts:122](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L122)
-
-___
-
-### afterUpdate
-
-• `Optional` `Readonly` **afterUpdate**: ([`AfterUpdateTrigger`](../modules.md#afterupdatetrigger)\<`TTable`\> \| [[`DepsBuilder`](../modules.md#depsbuilder)\<`TTable`\>, [`AfterUpdateTrigger`](../modules.md#afterupdatetrigger)\<`TTable`\>])[]
-
-Triggers run after every update.
-
-#### Defined in
-
-[src/ent/Configuration.ts:124](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L124)
-
-___
-
-### afterDelete
-
-• `Optional` `Readonly` **afterDelete**: [`DeleteTrigger`](../modules.md#deletetrigger)\<`TTable`\>[]
-
-Triggers run after every delete.
-
-#### Defined in
-
-[src/ent/Configuration.ts:129](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L129)
-
-___
-
-### afterMutation
-
-• `Optional` `Readonly` **afterMutation**: ([`AfterMutationTrigger`](../modules.md#aftermutationtrigger)\<`TTable`\> \| [[`DepsBuilder`](../modules.md#depsbuilder)\<`TTable`\>, [`AfterMutationTrigger`](../modules.md#aftermutationtrigger)\<`TTable`\>])[]
-
-Triggers run after every insert/update/delete. Each trigger may also be
-passed as "React useEffect-like" tuple where the callback is executed only
-if the deps are modified.
-
-#### Defined in
-
-[src/ent/Configuration.ts:133](https://github.com/clickup/ent-framework/blob/master/src/ent/Configuration.ts#L133)
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| `shardAffinity` | [`ShardAffinity`](../type-aliases/ShardAffinity.md)\<[`FieldOfIDType`](../type-aliases/FieldOfIDType.md)\<`TTable`\>\> | Defines how to locate a Shard at Ent insert time. See ShardAffinity for more details. 1. GLOBAL_SHARD: places the Ent in the global Shard (0). 2. `[]`: places the Ent in a random Shard. The "randomness" of the "random Shard" is deterministic by the Ent's unique key at the moment of insertion (if it's defined; otherwise completely random). This helps two racy insert operations running concurrently to choose the same Shard for the Ent to be created in, so only one of them will win, instead of both winning and mistakenly creating the Ent duplicates. I.e. having the same value in unique key forces the engine to target the same "random" Shard. 3. `["field1", "field2", ...]`: places the Ent in the Shard that is pointed to by the value in field1 (if it's null, then field2 etc.). A special treatment is applied if a fieldN value in (3) points to the global Shard. In such a case, the Shard for the current Ent is chosen deterministic-randomly at insert time, as if [] is passed. This allows the Ent to refer other "owning" Ents of different types, some of which may be located in the global Shard. Keep in mind that, to locate such an Ent pointing to another Ent in the global Shard, an inverse for fieldN must be defined in most of the cases. |
+| `inverses?` | `{ [k in string]?: Object }` | Inverses allow cross-Shard foreign keys & cross-Shard selection. If a field points to an Ent in another Shard, and we're e.g. selecting by a value in this field, inverses allow to locate Shard(s) of the Ent. |
+| `privacyTenantPrincipalField?` | [`InsertFieldsRequired`](../type-aliases/InsertFieldsRequired.md)\<`TTable`\> & `string` | If defined, forces all Ents of this class to have the value of that field equal to VC's principal at load time. This is a very 1st unavoidable check in the privacy rules chain, thus it's bullet-proof. |
+| `privacyInferPrincipal` | `null` \| `string` \| (`vc`, `row`) => `Promise`\<`null` \| `string` \| [`Ent`](../interfaces/Ent.md)\<`object`\>\> | An attempt to load this Ent using an omni VC will "lower" that VC to the principal returned. Omni VC is always lowered. 1. If an Ent is returned, the lowered principal will be Ent#vc.principal. It is a way to delegate principal inference to another Ent. 2. If a string is returned, then it's treated as a principal ID. 3. If a null is returned, then a guest principal will be used. 4. Returning an omni principal or VC will result in a run-time error. |
+| `privacyLoad` | [`LoadRule`](../type-aliases/LoadRule.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>\>[] | Privacy rules checked on every row loaded from the DB. |
+| `privacyInsert` | [`WriteRules`](../type-aliases/WriteRules.md)\<[`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\>\> | Privacy rules checked before a row is inserted to the DB. - It the list is empty, then only omni VC can insert; it's typically a good option for Ents representing e.g. a user. - If no update/delete rules are defined, then privacyInsert rules are also run on update/delete by default. - Unless empty, the rules must include at least one Require() predicate, they can't entirely consist of AllowIf(). This is because for write rules (privacyInsert, privacyUpdate, privacyDelete) it's important to make sure that ALL rules permit the operation, not only one of them allows it; this is what Require() is exactly for. |
+| `privacyUpdate?` | [`WriteRules`](../type-aliases/WriteRules.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>\> | Privacy rules checked before a row is updated in the DB. - If not defined, privacyInsert rules are used. - The rules must include at least one Require() predicate. |
+| `privacyDelete?` | [`WriteRules`](../type-aliases/WriteRules.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>\> | Privacy rules checked before a row is deleted in the DB. - If not defined, privacyInsert rules are used. - The rules must include at least one Require() predicate. |
+| `validators?` | [`Predicate`](../interfaces/Predicate.md)\<[`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\>\> & [`EntValidationErrorInfo`](../interfaces/EntValidationErrorInfo.md)[] | Custom field values validators run before any insert/update. |
+| `beforeInsert?` | [`InsertTrigger`](../type-aliases/InsertTrigger.md)\<`TTable`\>[] | Triggers run before every insert. |
+| `beforeUpdate?` | ([`BeforeUpdateTrigger`](../type-aliases/BeforeUpdateTrigger.md)\<`TTable`\> \| [[`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`BeforeUpdateTrigger`](../type-aliases/BeforeUpdateTrigger.md)\<`TTable`\>])[] | Triggers run before every update. |
+| `beforeDelete?` | [`DeleteTrigger`](../type-aliases/DeleteTrigger.md)\<`TTable`\>[] | Triggers run before every delete. |
+| `beforeMutation?` | ([`BeforeMutationTrigger`](../type-aliases/BeforeMutationTrigger.md)\<`TTable`\> \| [[`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`BeforeMutationTrigger`](../type-aliases/BeforeMutationTrigger.md)\<`TTable`\>])[] | Triggers run before every insert/update/delete. Each trigger may also be passed as "React useEffect-like" tuple where the callback is executed only if the deps are modified. |
+| `afterInsert?` | [`InsertTrigger`](../type-aliases/InsertTrigger.md)\<`TTable`\>[] | Triggers run after every delete. |
+| `afterUpdate?` | ([`AfterUpdateTrigger`](../type-aliases/AfterUpdateTrigger.md)\<`TTable`\> \| [[`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`AfterUpdateTrigger`](../type-aliases/AfterUpdateTrigger.md)\<`TTable`\>])[] | Triggers run after every update. |
+| `afterDelete?` | [`DeleteTrigger`](../type-aliases/DeleteTrigger.md)\<`TTable`\>[] | Triggers run after every delete. |
+| `afterMutation?` | ([`AfterMutationTrigger`](../type-aliases/AfterMutationTrigger.md)\<`TTable`\> \| [[`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`AfterMutationTrigger`](../type-aliases/AfterMutationTrigger.md)\<`TTable`\>])[] | Triggers run after every insert/update/delete. Each trigger may also be passed as "React useEffect-like" tuple where the callback is executed only if the deps are modified. |

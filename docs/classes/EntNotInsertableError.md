@@ -1,25 +1,27 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntNotInsertableError
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / EntNotInsertableError
 
 # Class: EntNotInsertableError
 
 Error: thrown when an Ent cannot be inserted due to privacy reasons.
 
-## Hierarchy
+## Extends
 
 - [`EntAccessError`](EntAccessError.md)
 
-  ↳ **`EntNotInsertableError`**
-
 ## Constructors
 
-### constructor
+### new EntNotInsertableError()
 
-• **new EntNotInsertableError**(`entName`, `vc`, `row`, `cause?`): [`EntNotInsertableError`](EntNotInsertableError.md)
+> **new EntNotInsertableError**(`entName`, `vc`, `row`, `cause`): [`EntNotInsertableError`](EntNotInsertableError.md)
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
+| Parameter | Type | Default value |
+| ------ | ------ | ------ |
 | `entName` | `string` | `undefined` |
 | `vc` | `string` | `undefined` |
 | `row` | `object` | `undefined` |
@@ -31,7 +33,7 @@ Error: thrown when an Ent cannot be inserted due to privacy reasons.
 
 #### Overrides
 
-[EntAccessError](EntAccessError.md).[constructor](EntAccessError.md#constructor)
+[`EntAccessError`](EntAccessError.md).[`constructor`](EntAccessError.md#constructors)
 
 #### Defined in
 
@@ -39,48 +41,9 @@ Error: thrown when an Ent cannot be inserted due to privacy reasons.
 
 ## Properties
 
-### cause
-
-• `Readonly` **cause**: ``null`` \| `string` \| `Error`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[cause](EntAccessError.md#cause)
-
-#### Defined in
-
-[src/ent/errors/EntAccessError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L8)
-
-___
-
-### entName
-
-• `Readonly` **entName**: `string`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[entName](EntAccessError.md#entname)
-
-#### Defined in
-
-[src/ent/errors/EntAccessError.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L11)
-
-___
-
-### vc
-
-• `Readonly` **vc**: `string`
-
-#### Defined in
-
-[src/ent/errors/EntNotInsertableError.ts:9](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotInsertableError.ts#L9)
-
-___
-
-### row
-
-• `Readonly` **row**: `object`
-
-#### Defined in
-
-[src/ent/errors/EntNotInsertableError.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotInsertableError.ts#L10)
+| Property | Type |
+| ------ | ------ |
+| `cause` | `null` \| `string` \| `Error` |
+| `entName` | `string` |
+| `vc` | `string` |
+| `row` | `object` |

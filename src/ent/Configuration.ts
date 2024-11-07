@@ -39,14 +39,14 @@ export class Configuration<TTable extends Table> {
    * more details.
    *
    * 1. GLOBAL_SHARD: places the Ent in the global Shard (0).
-   * 2. []: places the Ent in a random Shard. The "randomness" of the "random
+   * 2. `[]`: places the Ent in a random Shard. The "randomness" of the "random
    *    Shard" is deterministic by the Ent's unique key at the moment of
    *    insertion (if it's defined; otherwise completely random). This helps two
    *    racy insert operations running concurrently to choose the same Shard for
    *    the Ent to be created in, so only one of them will win, instead of both
    *    winning and mistakenly creating the Ent duplicates. I.e. having the same
    *    value in unique key forces the engine to target the same "random" Shard.
-   * 3. ["field1", "field2", ...]: places the Ent in the Shard that is pointed
+   * 3. `["field1", "field2", ...]`: places the Ent in the Shard that is pointed
    *    to by the value in field1 (if it's null, then field2 etc.).
    *
    * A special treatment is applied if a fieldN value in (3) points to the

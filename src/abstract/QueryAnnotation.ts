@@ -1,7 +1,7 @@
 import type { TimelineCaughtUpReason } from "./Timeline";
 
 /**
- * A reason why master or replica was chosen to send the query too. The most
+ * A reason why master or replica was chosen to send the query to. The most
  * noticeable ones are:
  * - "replica-bc-master-state-unknown": 99% of cases (since writes are rare)
  * - "master-bc-replica-not-caught-up": happens immediately after each write,

@@ -1,6 +1,10 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / PgRunner
+[**@clickup/ent-framework**](../README.md) • **Docs**
 
-# Class: PgRunner\<TTable, TInput, TOutput\>
+***
+
+[@clickup/ent-framework](../globals.md) / PgRunner
+
+# Class: `abstract` PgRunner\<TTable, TInput, TOutput\>
 
 A convenient pile of helper methods usable by most of PgQuery* classes. In
 some sense it's an anti-pattern, but still reduces the boilerplate.
@@ -9,39 +13,29 @@ PgRunner is also responsible for stringifying the values passed to the
 queries and parsing values returned from the DB according to the field types
 specs.
 
-## Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TInput` | `TInput` |
-| `TOutput` | `TOutput` |
-
-## Hierarchy
+## Extends
 
 - [`Runner`](Runner.md)\<`TInput`, `TOutput`\>
 
-  ↳ **`PgRunner`**
+## Type Parameters
+
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
+| `TInput` |
+| `TOutput` |
 
 ## Constructors
 
-### constructor
+### new PgRunner()
 
-• **new PgRunner**\<`TTable`, `TInput`, `TOutput`\>(`schema`, `client`): [`PgRunner`](PgRunner.md)\<`TTable`, `TInput`, `TOutput`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TInput` | `TInput` |
-| `TOutput` | `TOutput` |
+> **new PgRunner**\<`TTable`, `TInput`, `TOutput`\>(`schema`, `client`): [`PgRunner`](PgRunner.md)\<`TTable`, `TInput`, `TOutput`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\> |
+| Parameter | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
 | `client` | [`PgClient`](PgClient.md) |
 
 #### Returns
@@ -50,7 +44,7 @@ specs.
 
 #### Overrides
 
-[Runner](Runner.md).[constructor](Runner.md#constructor)
+[`Runner`](Runner.md).[`constructor`](Runner.md#constructors)
 
 #### Defined in
 
@@ -58,116 +52,29 @@ specs.
 
 ## Properties
 
-### IS\_WRITE
-
-▪ `Static` `Readonly` **IS\_WRITE**: `boolean`
-
-If true, it's a write operation.
-
-#### Inherited from
-
-[Runner](Runner.md).[IS_WRITE](Runner.md#is_write)
-
-#### Defined in
-
-[src/abstract/Runner.ts:11](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L11)
-
-___
-
-### op
-
-• `Readonly` `Abstract` **op**: `string`
-
-Operation name for logging purposes.
-
-#### Inherited from
-
-[Runner](Runner.md).[op](Runner.md#op)
-
-#### Defined in
-
-[src/abstract/Runner.ts:17](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L17)
-
-___
-
-### maxBatchSize
-
-• `Readonly` `Abstract` **maxBatchSize**: `number`
-
-Maximum batch size for this type of operations.
-
-#### Inherited from
-
-[Runner](Runner.md).[maxBatchSize](Runner.md#maxbatchsize)
-
-#### Defined in
-
-[src/abstract/Runner.ts:20](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L20)
-
-___
-
-### default
-
-• `Readonly` `Abstract` **default**: `TOutput`
-
-In case undefined is returned from batching, this value will be returned
-instead.
-
-#### Inherited from
-
-[Runner](Runner.md).[default](Runner.md#default)
-
-#### Defined in
-
-[src/abstract/Runner.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L24)
-
-___
-
-### name
-
-• `Readonly` **name**: `string`
-
-#### Inherited from
-
-[Runner](Runner.md).[name](Runner.md#name)
-
-#### Defined in
-
-[src/abstract/Runner.ts:69](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L69)
-
-___
-
-### constructor
-
-• **constructor**: typeof [`PgRunner`](PgRunner.md)
-
-#### Defined in
-
-[src/pg/PgRunner.ts:63](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L63)
-
-___
-
-### schema
-
-• `Readonly` **schema**: [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\>
-
-#### Defined in
-
-[src/pg/PgRunner.ts:504](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L504)
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| `IS_WRITE` | `boolean` | If true, it's a write operation. |
+| `op` | `string` | Operation name for logging purposes. |
+| `maxBatchSize` | `number` | Maximum batch size for this type of operations. |
+| `default` | `TOutput` | In case undefined is returned from batching, this value will be returned instead. |
+| `name` | `string` | - |
+| `constructor` | *typeof* [`PgRunner`](PgRunner.md) | The initial value of Object.prototype.constructor is the standard built-in Object constructor. |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> | - |
 
 ## Methods
 
-### runSingle
+### runSingle()
 
-▸ **runSingle**(`input`, `annotations`): `Promise`\<`undefined` \| `TOutput`\>
+> `abstract` **runSingle**(`input`, `annotations`): `Promise`\<`undefined` \| `TOutput`\>
 
 Method runSingle is to e.g. produce simple DB requests when we have only
 one input to process, not many.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `input` | `TInput` |
 | `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
 
@@ -177,24 +84,24 @@ one input to process, not many.
 
 #### Inherited from
 
-[Runner](Runner.md).[runSingle](Runner.md#runsingle)
+[`Runner`](Runner.md).[`runSingle`](Runner.md#runsingle)
 
 #### Defined in
 
 [src/abstract/Runner.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L30)
 
-___
+***
 
-### runBatch
+### runBatch()?
 
-▸ **runBatch**(`inputs`, `annotations`): `Promise`\<`Map`\<`string`, `TOutput`\>\>
+> `abstract` `optional` **runBatch**(`inputs`, `annotations`): `Promise`\<`Map`\<`string`, `TOutput`\>\>
 
 Typically issues complex queries with magic.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `inputs` | `Map`\<`string`, `TInput`\> |
 | `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
 
@@ -204,17 +111,17 @@ Typically issues complex queries with magic.
 
 #### Inherited from
 
-[Runner](Runner.md).[runBatch](Runner.md#runbatch)
+[`Runner`](Runner.md).[`runBatch`](Runner.md#runbatch)
 
 #### Defined in
 
 [src/abstract/Runner.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L38)
 
-___
+***
 
-### key
+### key()
 
-▸ **key**(`_input`): `string`
+> **key**(`_input`): `string`
 
 Returns a batch-dedupping key for the input. By default, no dedupping is
 performed (i.e. all inputs are processed individually and not collapsed
@@ -222,8 +129,8 @@ into one input; e.g. this is needed for inserts).
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `_input` | `TInput` |
 
 #### Returns
@@ -232,32 +139,32 @@ into one input; e.g. this is needed for inserts).
 
 #### Inherited from
 
-[Runner](Runner.md).[key](Runner.md#key)
+[`Runner`](Runner.md).[`key`](Runner.md#key)
 
 #### Defined in
 
 [src/abstract/Runner.ts:76](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L76)
 
-___
+***
 
-### clientQuery
+### clientQuery()
 
-▸ **clientQuery**\<`TOutput`\>(`sql`, `annotations`, `batchFactor`, `hints?`): `Promise`\<`TOutput`[]\>
+> `protected` **clientQuery**\<`TOutput`\>(`sql`, `annotations`, `batchFactor`, `hints`?): `Promise`\<`TOutput`[]\>
 
-#### Type parameters
+#### Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TOutput` | extends `object` |
+| Type Parameter |
+| ------ |
+| `TOutput` *extends* `object` |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `sql` | `string` |
 | `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
 | `batchFactor` | `number` |
-| `hints?` | `Record`\<`string`, `string`\> |
+| `hints`? | `Record`\<`string`, `string`\> |
 
 #### Returns
 
@@ -267,23 +174,23 @@ ___
 
 [src/pg/PgRunner.ts:65](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L65)
 
-___
+***
 
-### fmt
+### fmt()
 
-▸ **fmt**(`template`, `args?`): `string`
+> `protected` **fmt**(`template`, `args`): `string`
 
 Formats prefixes/suffixes of various compound SQL clauses. Don't use on
 performance-critical path!
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `template` | `string` |
-| `args` | `Object` |
-| `args.fields?` | [`FieldAliased`](../modules.md#fieldaliased)\<`TTable`\>[] |
-| `args.normalize?` | `boolean` |
+| `args` | `object` |
+| `args.fields`? | [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\>[] |
+| `args.normalize`? | `boolean` |
 
 #### Returns
 
@@ -293,11 +200,11 @@ performance-critical path!
 
 [src/pg/PgRunner.ts:104](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L104)
 
-___
+***
 
-### escapeValue
+### escapeValue()
 
-▸ **escapeValue**(`field`, `value`): `string`
+> `protected` **escapeValue**(`field`, `value`): `string`
 
 Escapes a value at runtime using the codegen functions created above. We
 use escapers table and the codegen for the following reasons:
@@ -308,9 +215,9 @@ use escapers table and the codegen for the following reasons:
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `field` | [`Field`](../modules.md#field)\<`TTable`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `field` | [`Field`](../type-aliases/Field.md)\<`TTable`\> |
 | `value` | `unknown` |
 
 #### Returns
@@ -321,11 +228,11 @@ use escapers table and the codegen for the following reasons:
 
 [src/pg/PgRunner.ts:170](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L170)
 
-___
+***
 
-### escapeField
+### escapeField()
 
-▸ **escapeField**(`info`, `«destructured»?`): `string`
+> `protected` **escapeField**(`info`, `__namedParameters`): `string`
 
 Escapes field name identifier.
 - In case it's a composite primary key, returns its `ROW(f1,f2,...)`
@@ -336,12 +243,12 @@ Escapes field name identifier.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `info` | [`FieldAliased`](../modules.md#fieldaliased)\<`TTable`\> |
-| `«destructured»` | `Object` |
-| › `withTable?` | `string` |
-| › `normalize?` | `boolean` |
+| Parameter | Type |
+| ------ | ------ |
+| `info` | [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\> |
+| `__namedParameters` | `object` |
+| `__namedParameters.withTable`? | `string` |
+| `__namedParameters.normalize`? | `boolean` |
 
 #### Returns
 
@@ -351,11 +258,11 @@ Escapes field name identifier.
 
 [src/pg/PgRunner.ts:183](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L183)
 
-___
+***
 
-### createWithBuilder
+### createWithBuilder()
 
-▸ **createWithBuilder**(`«destructured»`): `Object`
+> `protected` **createWithBuilder**(`__namedParameters`): `object`
 
 Returns a newly created JS function which, when called with a row set,
 returns the following SQL clause:
@@ -375,31 +282,47 @@ of columns is passed in specs.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `«destructured»` | `Object` |
-| › `fields` | readonly [`FieldAliased`](../modules.md#fieldaliased)\<`TTable`\>[] |
-| › `suffix` | `string` |
+| Parameter | Type |
+| ------ | ------ |
+| `__namedParameters` | `object` |
+| `__namedParameters.fields` | readonly [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\>[] |
+| `__namedParameters.suffix` | `string` |
 
 #### Returns
 
-`Object`
+`object`
 
-| Name | Type |
-| :------ | :------ |
-| `prefix` | `string` |
-| `func` | (`entries`: `Iterable`\<[key: string, input: object]\>) => `string` |
-| `suffix` | `string` |
+##### prefix
+
+> **prefix**: `string`
+
+##### func()
+
+> **func**: (`entries`) => `string`
+
+###### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `entries` | `Iterable`\<[`string`, `object`], `any`, `any`\> |
+
+###### Returns
+
+`string`
+
+##### suffix
+
+> **suffix**: `string`
 
 #### Defined in
 
 [src/pg/PgRunner.ts:221](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L221)
 
-___
+***
 
-### createValuesBuilder
+### createValuesBuilder()
 
-▸ **createValuesBuilder**\<`TInput`\>(`«destructured»`): `Object`
+> `protected` **createValuesBuilder**\<`TInput`\>(`__namedParameters`): `object`
 
 Returns a newly created JS function which, when called with a row set,
 returns the following SQL clause (when called with withKey=true):
@@ -432,43 +355,59 @@ Notice that either a simple primary key or a composite primary key columns
 are always prepended to the list of values since it makes no sense to
 generate VALUES clause without exact identification of the destination.
 
-#### Type parameters
+#### Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TInput` | extends `object` |
+| Type Parameter |
+| ------ |
+| `TInput` *extends* `object` |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `«destructured»` | `Object` |
-| › `prefix` | `string` |
-| › `indent` | `string` |
-| › `fields` | readonly [`FieldAliased`](../modules.md#fieldaliased)\<`TTable`\>[] |
-| › `withKey?` | `boolean` |
-| › `skipSorting?` | `boolean` |
-| › `suffix` | `string` |
+| Parameter | Type |
+| ------ | ------ |
+| `__namedParameters` | `object` |
+| `__namedParameters.prefix` | `string` |
+| `__namedParameters.indent` | `string` |
+| `__namedParameters.fields` | readonly [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\>[] |
+| `__namedParameters.withKey`? | `boolean` |
+| `__namedParameters.skipSorting`? | `boolean` |
+| `__namedParameters.suffix` | `string` |
 
 #### Returns
 
-`Object`
+`object`
 
-| Name | Type |
-| :------ | :------ |
-| `prefix` | `string` |
-| `func` | (`entries`: `Iterable`\<[key: string, input: TInput]\>) => `string` |
-| `suffix` | `string` |
+##### prefix
+
+> **prefix**: `string`
+
+##### func()
+
+> **func**: (`entries`) => `string`
+
+###### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `entries` | `Iterable`\<[`string`, `TInput`], `any`, `any`\> |
+
+###### Returns
+
+`string`
+
+##### suffix
+
+> **suffix**: `string`
 
 #### Defined in
 
 [src/pg/PgRunner.ts:289](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L289)
 
-___
+***
 
-### createUpdateKVsBuilder
+### createUpdateKVsBuilder()
 
-▸ **createUpdateKVsBuilder**(`fields`): (`input`: `object`, `literal?`: [`Literal`](../modules.md#literal)) => `string`
+> `protected` **createUpdateKVsBuilder**(`fields`): (`input`, `literal`?) => `string`
 
 Returns a newly created JS function which, when called with an object,
 returns the following SQL clause:
@@ -479,22 +418,20 @@ The set of columns is passed in specs, all other columns are ignored.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `fields` | [`Field`](../modules.md#field)\<`TTable`\>[] |
+| Parameter | Type |
+| ------ | ------ |
+| `fields` | [`Field`](../type-aliases/Field.md)\<`TTable`\>[] |
 
 #### Returns
 
-`fn`
-
-▸ (`input`, `literal?`): `string`
+`Function`
 
 ##### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `input` | `object` |
-| `literal?` | [`Literal`](../modules.md#literal) |
+| `literal`? | [`Literal`](../type-aliases/Literal.md) |
 
 ##### Returns
 
@@ -504,33 +441,31 @@ The set of columns is passed in specs, all other columns are ignored.
 
 [src/pg/PgRunner.ts:360](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L360)
 
-___
+***
 
-### createOneOfBuilder
+### createOneOfBuilder()
 
-▸ **createOneOfBuilder**(`field`, `fieldValCode?`): (`values`: `Iterable`\<`unknown`\>) => `string`
+> `protected` **createOneOfBuilder**(`field`, `fieldValCode`): (`values`) => `string`
 
 Prefers to do utilize createAnyBuilder() if it can (i.e. build
 a=ANY('{...}') clause). Otherwise, builds an IN(...) clause.
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `field` | [`Field`](../modules.md#field)\<`TTable`\> | `undefined` |
+| Parameter | Type | Default value |
+| ------ | ------ | ------ |
+| `field` | [`Field`](../type-aliases/Field.md)\<`TTable`\> | `undefined` |
 | `fieldValCode` | `string` | `"$value"` |
 
 #### Returns
 
-`fn`
-
-▸ (`values`): `string`
+`Function`
 
 ##### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `values` | `Iterable`\<`unknown`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `values` | `Iterable`\<`unknown`, `any`, `any`\> |
 
 ##### Returns
 
@@ -540,11 +475,11 @@ a=ANY('{...}') clause). Otherwise, builds an IN(...) clause.
 
 [src/pg/PgRunner.ts:388](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L388)
 
-___
+***
 
-### createWhereBuildersFieldsEq
+### createWhereBuildersFieldsEq()
 
-▸ **createWhereBuildersFieldsEq**\<`TInput`\>(`args`): `Object`
+> `protected` **createWhereBuildersFieldsEq**\<`TInput`\>(`args`): `object`
 
 Given a list of fields, returns two builders:
 
@@ -566,45 +501,86 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 2. "Plain": the last one builder mentioned above (good to always use for
    non-batched queries for instance).
 
-#### Type parameters
+#### Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TInput` | extends `object` |
+| Type Parameter |
+| ------ |
+| `TInput` *extends* `object` |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `args` | `Object` |
+| Parameter | Type |
+| ------ | ------ |
+| `args` | `object` |
 | `args.prefix` | `string` |
-| `args.fields` | readonly [`Field`](../modules.md#field)\<`TTable`\>[] |
+| `args.fields` | readonly [`Field`](../type-aliases/Field.md)\<`TTable`\>[] |
 | `args.suffix` | `string` |
 
 #### Returns
 
-`Object`
+`object`
 
-| Name | Type |
-| :------ | :------ |
-| `plain` | \{ `prefix`: `string` ; `func`: (`inputs`: `Iterable`\<[key: string, input: TInput]\>) => `string` ; `suffix`: `string`  } |
-| `plain.prefix` | `string` |
-| `plain.func` | (`inputs`: `Iterable`\<[key: string, input: TInput]\>) => `string` |
-| `plain.suffix` | `string` |
-| `optimized` | \{ `prefix`: `string` ; `func`: (`inputs`: `Iterable`\<[key: string, input: TInput]\>) => `string` ; `suffix`: `string`  } |
-| `optimized.prefix` | `string` |
-| `optimized.func` | (`inputs`: `Iterable`\<[key: string, input: TInput]\>) => `string` |
-| `optimized.suffix` | `string` |
+##### plain
+
+> **plain**: `object`
+
+##### plain.prefix
+
+> **prefix**: `string`
+
+##### plain.func()
+
+> **func**: (`inputs`) => `string`
+
+###### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `inputs` | `Iterable`\<[`string`, `TInput`], `any`, `any`\> |
+
+###### Returns
+
+`string`
+
+##### plain.suffix
+
+> **suffix**: `string`
+
+##### optimized
+
+> **optimized**: `object`
+
+##### optimized.prefix
+
+> **prefix**: `string`
+
+##### optimized.func()
+
+> **func**: (`inputs`) => `string`
+
+###### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `inputs` | `Iterable`\<[`string`, `TInput`], `any`, `any`\> |
+
+###### Returns
+
+`string`
+
+##### optimized.suffix
+
+> **suffix**: `string`
 
 #### Defined in
 
 [src/pg/PgRunner.ts:422](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L422)
 
-___
+***
 
-### createWhereBuilder
+### createWhereBuilder()
 
-▸ **createWhereBuilder**(`«destructured»`): `Object`
+> `protected` **createWhereBuilder**(`__namedParameters`): `object`
 
 Returns a newly created JS function which, when called with a Where object,
 returns the generated SQL WHERE clause.
@@ -615,31 +591,47 @@ returns the generated SQL WHERE clause.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `«destructured»` | `Object` |
-| › `prefix` | `string` |
-| › `suffix` | `string` |
+| Parameter | Type |
+| ------ | ------ |
+| `__namedParameters` | `object` |
+| `__namedParameters.prefix` | `string` |
+| `__namedParameters.suffix` | `string` |
 
 #### Returns
 
-`Object`
+`object`
 
-| Name | Type |
-| :------ | :------ |
-| `prefix` | `string` |
-| `func` | (`where`: [`Where`](../modules.md#where)\<`TTable`\>) => `string` |
-| `suffix` | `string` |
+##### prefix
+
+> **prefix**: `string`
+
+##### func()
+
+> **func**: (`where`) => `string`
+
+###### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `where` | [`Where`](../type-aliases/Where.md)\<`TTable`\> |
+
+###### Returns
+
+`string`
+
+##### suffix
+
+> **suffix**: `string`
 
 #### Defined in
 
 [src/pg/PgRunner.ts:457](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L457)
 
-___
+***
 
-### addPK
+### addPK()
 
-▸ **addPK**(`fields`, `mode`): `string`[]
+> `protected` **addPK**(`fields`, `mode`): `string`[]
 
 Prepends or appends a primary key to the list of fields. In case the
 primary key is plain (i.e. "id" field), it's just added as a field;
@@ -658,10 +650,10 @@ transactions. This lowers the chances of deadlocks too.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `fields` | readonly [`Field`](../modules.md#field)\<`TTable`\>[] |
-| `mode` | ``"prepend"`` \| ``"append"`` |
+| Parameter | Type |
+| ------ | ------ |
+| `fields` | readonly [`Field`](../type-aliases/Field.md)\<`TTable`\>[] |
+| `mode` | `"prepend"` \| `"append"` |
 
 #### Returns
 
@@ -671,38 +663,38 @@ transactions. This lowers the chances of deadlocks too.
 
 [src/pg/PgRunner.ts:492](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L492)
 
-___
+***
 
-### delayForSingleQueryRetryOnError
+### delayForSingleQueryRetryOnError()
 
-▸ **delayForSingleQueryRetryOnError**(`e`): `number` \| ``"immediate_retry"`` \| ``"no_retry"``
+> **delayForSingleQueryRetryOnError**(`e`): `number` \| `"immediate_retry"` \| `"no_retry"`
 
 If the single query's error needs to be retried (e.g. it's a deadlock
 error), returns the number of milliseconds to wait before retrying.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `e` | `unknown` |
 
 #### Returns
 
-`number` \| ``"immediate_retry"`` \| ``"no_retry"``
+`number` \| `"immediate_retry"` \| `"no_retry"`
 
 #### Overrides
 
-[Runner](Runner.md).[delayForSingleQueryRetryOnError](Runner.md#delayforsinglequeryretryonerror)
+[`Runner`](Runner.md).[`delayForSingleQueryRetryOnError`](Runner.md#delayforsinglequeryretryonerror)
 
 #### Defined in
 
 [src/pg/PgRunner.ts:525](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L525)
 
-___
+***
 
-### shouldDebatchOnError
+### shouldDebatchOnError()
 
-▸ **shouldDebatchOnError**(`e`): `boolean`
+> **shouldDebatchOnError**(`e`): `boolean`
 
 If this method returns true for an error object, the batch is split back
 into sub-queries, they are executed individually, and then the response of
@@ -718,8 +710,8 @@ false.)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `e` | `unknown` |
 
 #### Returns
@@ -728,7 +720,7 @@ false.)
 
 #### Overrides
 
-[Runner](Runner.md).[shouldDebatchOnError](Runner.md#shoulddebatchonerror)
+[`Runner`](Runner.md).[`shouldDebatchOnError`](Runner.md#shoulddebatchonerror)
 
 #### Defined in
 

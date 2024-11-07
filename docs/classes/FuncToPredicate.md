@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / FuncToPredicate
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / FuncToPredicate
 
 # Class: FuncToPredicate\<TInput\>
 
@@ -8,10 +12,10 @@ and returns true or false. This class represents a Predicate which delegates
 its work to such a function. The name of the function becomes the name of the
 predicate.
 
-## Type parameters
+## Type Parameters
 
-| Name |
-| :------ |
+| Type Parameter |
+| ------ |
 | `TInput` |
 
 ## Implements
@@ -20,21 +24,15 @@ predicate.
 
 ## Constructors
 
-### constructor
+### new FuncToPredicate()
 
-• **new FuncToPredicate**\<`TInput`\>(`func`): [`FuncToPredicate`](FuncToPredicate.md)\<`TInput`\>
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `TInput` |
+> **new FuncToPredicate**\<`TInput`\>(`func`): [`FuncToPredicate`](FuncToPredicate.md)\<`TInput`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `func` | (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`\<`boolean`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `func` | (`vc`, `input`) => `Promise`\<`boolean`\> |
 
 #### Returns
 
@@ -46,28 +44,20 @@ predicate.
 
 ## Properties
 
-### name
-
-• `Readonly` **name**: `string`
-
-#### Implementation of
-
-[Predicate](../interfaces/Predicate.md).[name](../interfaces/Predicate.md#name)
-
-#### Defined in
-
-[src/ent/predicates/Predicate.ts:30](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L30)
+| Property | Type |
+| ------ | ------ |
+| `name` | `string` |
 
 ## Methods
 
-### check
+### check()
 
-▸ **check**(`vc`, `input`): `Promise`\<`boolean`\>
+> **check**(`vc`, `input`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
 | `input` | `TInput` |
 
@@ -77,7 +67,7 @@ predicate.
 
 #### Implementation of
 
-[Predicate](../interfaces/Predicate.md).[check](../interfaces/Predicate.md#check)
+[`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
 
 #### Defined in
 

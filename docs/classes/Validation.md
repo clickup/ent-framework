@@ -1,31 +1,29 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Validation
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / Validation
 
 # Class: Validation\<TTable\>
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
 
 ## Constructors
 
-### constructor
+### new Validation()
 
-• **new Validation**\<`TTable`\>(`entName`, `rules`): [`Validation`](Validation.md)\<`TTable`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+> **new Validation**\<`TTable`\>(`entName`, `rules`): [`Validation`](Validation.md)\<`TTable`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `entName` | `string` |
-| `rules` | [`ValidationRules`](../modules.md#validationrules)\<`TTable`\> |
+| `rules` | [`ValidationRules`](../type-aliases/ValidationRules.md)\<`TTable`\> |
 
 #### Returns
 
@@ -33,105 +31,32 @@
 
 #### Defined in
 
-[src/ent/Validation.ts:81](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L81)
+[src/ent/Validation.ts:80](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L80)
 
 ## Properties
 
-### tenantPrincipalField
-
-• `Optional` `Readonly` **tenantPrincipalField**: [`InsertFieldsRequired`](../modules.md#insertfieldsrequired)\<`TTable`\> & `string`
-
-#### Defined in
-
-[src/ent/Validation.ts:73](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L73)
-
-___
-
-### inferPrincipal
-
-• `Readonly` **inferPrincipal**: (`vc`: [`VC`](VC.md), `row`: [`Row`](../modules.md#row)\<`TTable`\>) => `Promise`\<[`VC`](VC.md)\>
-
-#### Type declaration
-
-▸ (`vc`, `row`): `Promise`\<[`VC`](VC.md)\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](VC.md) |
-| `row` | [`Row`](../modules.md#row)\<`TTable`\> |
-
-##### Returns
-
-`Promise`\<[`VC`](VC.md)\>
-
-#### Defined in
-
-[src/ent/Validation.ts:74](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L74)
-
-___
-
-### load
-
-• `Readonly` **load**: [`LoadRule`](../modules.md#loadrule)\<[`Row`](../modules.md#row)\<`TTable`\>\>[]
-
-#### Defined in
-
-[src/ent/Validation.ts:75](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L75)
-
-___
-
-### insert
-
-• `Readonly` **insert**: [`WriteRules`](../modules.md#writerules)\<[`InsertInput`](../modules.md#insertinput)\<`TTable`\>\>
-
-#### Defined in
-
-[src/ent/Validation.ts:76](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L76)
-
-___
-
-### update
-
-• `Readonly` **update**: [`WriteRules`](../modules.md#writerules)\<[`Row`](../modules.md#row)\<`TTable`\>\>
-
-#### Defined in
-
-[src/ent/Validation.ts:77](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L77)
-
-___
-
-### delete
-
-• `Readonly` **delete**: [`WriteRules`](../modules.md#writerules)\<[`Row`](../modules.md#row)\<`TTable`\>\>
-
-#### Defined in
-
-[src/ent/Validation.ts:78](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L78)
-
-___
-
-### validate
-
-• `Readonly` **validate**: [`Require`](Require.md)\<[`InsertInput`](../modules.md#insertinput)\<`TTable`\>\>[]
-
-#### Defined in
-
-[src/ent/Validation.ts:79](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L79)
+| Property | Type |
+| ------ | ------ |
+| `tenantPrincipalField?` | [`InsertFieldsRequired`](../type-aliases/InsertFieldsRequired.md)\<`TTable`\> & `string` |
+| `inferPrincipal` | (`vc`: [`VC`](VC.md), `row`: [`Row`](../type-aliases/Row.md)\<`TTable`\>) => `Promise`\<[`VC`](VC.md)\> |
+| `load` | [`LoadRule`](../type-aliases/LoadRule.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>\>[] |
+| `insert` | [`WriteRules`](../type-aliases/WriteRules.md)\<[`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\>\> |
+| `update` | [`WriteRules`](../type-aliases/WriteRules.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>\> |
+| `delete` | [`WriteRules`](../type-aliases/WriteRules.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>\> |
+| `validate` | [`Require`](Require.md)\<[`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\>\>[] |
 
 ## Methods
 
-### validateLoad
+### validateLoad()
 
-▸ **validateLoad**(`vc`, `row`): `Promise`\<`void`\>
+> **validateLoad**(`vc`, `row`): `Promise`\<`void`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | [`Row`](../modules.md#row)\<`TTable`\> |
+| `row` | [`Row`](../type-aliases/Row.md)\<`TTable`\> |
 
 #### Returns
 
@@ -139,20 +64,20 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:94](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L94)
+[src/ent/Validation.ts:93](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L93)
 
-___
+***
 
-### validateInsert
+### validateInsert()
 
-▸ **validateInsert**(`vc`, `input`): `Promise`\<`void`\>
+> **validateInsert**(`vc`, `input`): `Promise`\<`void`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
+| `input` | [`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\> |
 
 #### Returns
 
@@ -160,21 +85,21 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:105](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L105)
+[src/ent/Validation.ts:104](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L104)
 
-___
+***
 
-### validateUpdate
+### validateUpdate()
 
-▸ **validateUpdate**(`vc`, `old`, `input`, `privacyOnly?`): `Promise`\<`void`\>
+> **validateUpdate**(`vc`, `old`, `input`, `privacyOnly`): `Promise`\<`void`\>
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
+| Parameter | Type | Default value |
+| ------ | ------ | ------ |
 | `vc` | [`VC`](VC.md) | `undefined` |
-| `old` | [`Row`](../modules.md#row)\<`TTable`\> | `undefined` |
-| `input` | [`UpdateInput`](../modules.md#updateinput)\<`TTable`\> | `undefined` |
+| `old` | [`Row`](../type-aliases/Row.md)\<`TTable`\> | `undefined` |
+| `input` | [`UpdateInput`](../type-aliases/UpdateInput.md)\<`TTable`\> | `undefined` |
 | `privacyOnly` | `boolean` | `false` |
 
 #### Returns
@@ -183,20 +108,20 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:117](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L117)
+[src/ent/Validation.ts:116](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L116)
 
-___
+***
 
-### validateDelete
+### validateDelete()
 
-▸ **validateDelete**(`vc`, `row`): `Promise`\<`void`\>
+> **validateDelete**(`vc`, `row`): `Promise`\<`void`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | [`Row`](../modules.md#row)\<`TTable`\> |
+| `row` | [`Row`](../type-aliases/Row.md)\<`TTable`\> |
 
 #### Returns
 
@@ -204,4 +129,4 @@ ___
 
 #### Defined in
 
-[src/ent/Validation.ts:144](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L144)
+[src/ent/Validation.ts:143](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L143)

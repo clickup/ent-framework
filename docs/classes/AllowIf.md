@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / AllowIf
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / AllowIf
 
 # Class: AllowIf\<TInput\>
 
@@ -7,35 +11,27 @@ Returns ALLOW if the predicate succeeds, otherwise SKIP.
 - This rule may still throw an exception if the exception is a wild one (not
   derived from EntAccessError).
 
-## Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TInput` | extends `object` |
-
-## Hierarchy
+## Extends
 
 - [`Rule`](Rule.md)\<`TInput`\>
 
-  ↳ **`AllowIf`**
+## Type Parameters
+
+| Type Parameter |
+| ------ |
+| `TInput` *extends* `object` |
 
 ## Constructors
 
-### constructor
+### new AllowIf()
 
-• **new AllowIf**\<`TInput`\>(`predicate`): [`AllowIf`](AllowIf.md)\<`TInput`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TInput` | extends `object` |
+> **new AllowIf**\<`TInput`\>(`predicate`): [`AllowIf`](AllowIf.md)\<`TInput`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`\<`boolean`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`, `input`) => `Promise`\<`boolean`\> |
 
 #### Returns
 
@@ -43,60 +39,30 @@ Returns ALLOW if the predicate succeeds, otherwise SKIP.
 
 #### Inherited from
 
-[Rule](Rule.md).[constructor](Rule.md#constructor)
-
-#### Defined in
-
-[src/ent/rules/Rule.ts:48](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L48)
-
-## Properties
-
-### \_TAG
-
-• `Readonly` **\_TAG**: ``"AllowIf"``
-
-#### Defined in
-
-[src/ent/rules/AllowIf.ts:13](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/AllowIf.ts#L13)
-
-___
-
-### predicate
-
-• `Readonly` **predicate**: [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>
-
-#### Inherited from
-
-[Rule](Rule.md).[predicate](Rule.md#predicate)
+[`Rule`](Rule.md).[`constructor`](Rule.md#constructors)
 
 #### Defined in
 
 [src/ent/rules/Rule.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L43)
 
-___
+## Properties
 
-### name
-
-• `Readonly` **name**: `string`
-
-#### Inherited from
-
-[Rule](Rule.md).[name](Rule.md#name)
-
-#### Defined in
-
-[src/ent/rules/Rule.ts:44](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L44)
+| Property | Type |
+| ------ | ------ |
+| `_TAG` | `"AllowIf"` |
+| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> |
+| `name` | `string` |
 
 ## Methods
 
-### evaluate
+### evaluate()
 
-▸ **evaluate**(`vc`, `input`): `Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
+> **evaluate**(`vc`, `input`): `Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
 | `input` | `TInput` |
 
@@ -106,7 +72,7 @@ ___
 
 #### Overrides
 
-[Rule](Rule.md).[evaluate](Rule.md#evaluate)
+[`Rule`](Rule.md).[`evaluate`](Rule.md#evaluate)
 
 #### Defined in
 

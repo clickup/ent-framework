@@ -1,6 +1,10 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / PgClient
+[**@clickup/ent-framework**](../README.md) • **Docs**
 
-# Class: PgClient
+***
+
+[@clickup/ent-framework](../globals.md) / PgClient
+
+# Class: `abstract` PgClient
 
 An abstract PostgreSQL Client which doesn't know how to acquire an actual
 connection and send queries; these things are up to the derived classes to
@@ -14,26 +18,26 @@ Since the class is cloneable internally (using the prototype substitution
 technique), the contract of this class is that ALL its derived classes may
 only have readonly immediate properties.
 
-## Hierarchy
+## Extends
 
 - [`Client`](Client.md)
 
-  ↳ **`PgClient`**
+## Extended by
 
-  ↳↳ [`PgClientPool`](PgClientPool.md)
+- [`PgClientPool`](PgClientPool.md)
 
 ## Constructors
 
-### constructor
+### new PgClient()
 
-• **new PgClient**(`options`): [`PgClient`](PgClient.md)
+> **new PgClient**(`options`): [`PgClient`](PgClient.md)
 
 Initializes an instance of PgClient.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `options` | [`PgClientOptions`](../interfaces/PgClientOptions.md) |
 
 #### Returns
@@ -42,7 +46,7 @@ Initializes an instance of PgClient.
 
 #### Overrides
 
-[Client](Client.md).[constructor](Client.md#constructor)
+[`Client`](Client.md).[`constructor`](Client.md#constructors)
 
 #### Defined in
 
@@ -50,73 +54,18 @@ Initializes an instance of PgClient.
 
 ## Properties
 
-### DEFAULT\_OPTIONS
-
-▪ `Static` `Readonly` **DEFAULT\_OPTIONS**: `Required`\<`PickPartial`\<[`PgClientOptions`](../interfaces/PgClientOptions.md)\>\>
-
-Default values for the constructor options.
-
-#### Overrides
-
-[Client](Client.md).[DEFAULT_OPTIONS](Client.md#default_options)
-
-#### Defined in
-
-[src/pg/PgClient.ts:101](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L101)
-
-___
-
-### options
-
-• `Readonly` **options**: `Required`\<[`PgClientOptions`](../interfaces/PgClientOptions.md)\>
-
-PgClient configuration options.
-
-#### Overrides
-
-[Client](Client.md).[options](Client.md#options)
-
-#### Defined in
-
-[src/pg/PgClient.ts:130](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L130)
-
-___
-
-### shardName
-
-• `Readonly` **shardName**: `string` = `"public"`
-
-Name of the shard associated to this Client.
-
-#### Overrides
-
-[Client](Client.md).[shardName](Client.md#shardname)
-
-#### Defined in
-
-[src/pg/PgClient.ts:133](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L133)
-
-___
-
-### timelineManager
-
-• `Readonly` **timelineManager**: [`TimelineManager`](TimelineManager.md)
-
-An active TimelineManager for this particular Client.
-
-#### Overrides
-
-[Client](Client.md).[timelineManager](Client.md#timelinemanager)
-
-#### Defined in
-
-[src/pg/PgClient.ts:136](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L136)
+| Property | Type | Default value | Description |
+| ------ | ------ | ------ | ------ |
+| `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`PgClientOptions`](../interfaces/PgClientOptions.md)\>\> | `undefined` | Default values for the constructor options. |
+| `options` | `Required`\<[`PgClientOptions`](../interfaces/PgClientOptions.md)\> | `undefined` | PgClient configuration options. |
+| `shardName` | `string` | `"public"` | Name of the shard associated to this Client. |
+| `timelineManager` | [`TimelineManager`](TimelineManager.md) | `undefined` | An active TimelineManager for this particular Client. |
 
 ## Methods
 
-### address
+### address()
 
-▸ **address**(): `string`
+> `abstract` **address**(): `string`
 
 Represents the full destination address this Client is working with.
 Depending on the implementation, it may include hostname, port number,
@@ -130,17 +79,17 @@ shardNos) based on that address.
 
 #### Inherited from
 
-[Client](Client.md).[address](Client.md#address)
+[`Client`](Client.md).[`address`](Client.md#address)
 
 #### Defined in
 
 [src/abstract/Client.ts:87](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L87)
 
-___
+***
 
-### end
+### end()
 
-▸ **end**(): `Promise`\<`void`\>
+> `abstract` **end**(): `Promise`\<`void`\>
 
 Gracefully closes the connections to let the caller destroy the Client. The
 pending queries are awaited to finish before returning. The Client becomes
@@ -152,17 +101,17 @@ unusable after calling this method: you should not send queries to it.
 
 #### Inherited from
 
-[Client](Client.md).[end](Client.md#end)
+[`Client`](Client.md).[`end`](Client.md#end)
 
 #### Defined in
 
 [src/abstract/Client.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L94)
 
-___
+***
 
-### isEnded
+### isEnded()
 
-▸ **isEnded**(): `boolean`
+> `abstract` **isEnded**(): `boolean`
 
 Returns true if the Client is ended and can't be used anymore.
 
@@ -172,24 +121,24 @@ Returns true if the Client is ended and can't be used anymore.
 
 #### Inherited from
 
-[Client](Client.md).[isEnded](Client.md#isended)
+[`Client`](Client.md).[`isEnded`](Client.md#isended)
 
 #### Defined in
 
 [src/abstract/Client.ts:122](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L122)
 
-___
+***
 
-### logSwallowedError
+### logSwallowedError()
 
-▸ **logSwallowedError**(`props`): `void`
+> `protected` **logSwallowedError**(`props`): `void`
 
 Calls swallowedErrorLogger() doing some preliminary amendment.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `props` | [`SwallowedErrorLoggerProps`](../interfaces/SwallowedErrorLoggerProps.md) |
 
 #### Returns
@@ -198,17 +147,17 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 #### Inherited from
 
-[Client](Client.md).[logSwallowedError](Client.md#logswallowederror)
+[`Client`](Client.md).[`logSwallowedError`](Client.md#logswallowederror)
 
 #### Defined in
 
 [src/abstract/Client.ts:142](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L142)
 
-___
+***
 
-### batcher
+### batcher()
 
-▸ **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
+> **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
 Batcher is per-Client per-query-type per-table-name-and-shape:
 - Per-Client means that batchers are removed as soon as the Client is
@@ -228,20 +177,20 @@ the query (and are private to these queries).
 All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 1000x20x8 Batchers/Runners (assuming we have 8 different operations).
 
-#### Type parameters
+#### Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TInput` | `TInput` |
-| `TOutput` | `TOutput` |
-| `TTable` | extends [`Table`](../modules.md#table) |
+| Type Parameter |
+| ------ |
+| `TInput` |
+| `TOutput` |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `_QueryClass` | `Function` |
-| `_schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\> |
+| `_schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
 | `_additionalShape` | `string` |
 | `runnerCreator` | () => [`Runner`](Runner.md)\<`TInput`, `TOutput`\> |
 
@@ -251,17 +200,17 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 #### Inherited from
 
-[Client](Client.md).[batcher](Client.md#batcher)
+[`Client`](Client.md).[`batcher`](Client.md#batcher)
 
 #### Defined in
 
 [src/abstract/Client.ts:179](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L179)
 
-___
+***
 
-### prewarm
+### prewarm()
 
-▸ **prewarm**(): `void`
+> **prewarm**(): `void`
 
 A convenience method to put connections prewarming logic to. The idea is to
 keep the needed number of open connections and also, in each connection,
@@ -274,39 +223,52 @@ full-text dictionaries).
 
 #### Inherited from
 
-[Client](Client.md).[prewarm](Client.md#prewarm)
+[`Client`](Client.md).[`prewarm`](Client.md#prewarm)
 
 #### Defined in
 
 [src/abstract/Client.ts:199](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L199)
 
-___
+***
 
-### poolStats
+### poolStats()
 
-▸ **poolStats**(): `Object`
+> `abstract` **poolStats**(): `object`
 
 Returns statistics about the connection pool.
 
 #### Returns
 
-`Object`
+`object`
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `totalConns` | `number` | Total number of connections in the pool. |
-| `idleConns` | `number` | Connections not busy running a query. |
-| `queuedReqs` | `number` | Once all idle connections are over, requests are queued waiting for a new available connection. This is the number of such queued requests. |
+##### totalConns
+
+> **totalConns**: `number`
+
+Total number of connections in the pool.
+
+##### idleConns
+
+> **idleConns**: `number`
+
+Connections not busy running a query.
+
+##### queuedReqs
+
+> **queuedReqs**: `number`
+
+Once all idle connections are over, requests are queued waiting for a
+new available connection. This is the number of such queued requests.
 
 #### Defined in
 
 [src/pg/PgClient.ts:141](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L141)
 
-___
+***
 
-### acquireConn
+### acquireConn()
 
-▸ **acquireConn**(): `Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
+> `abstract` **acquireConn**(): `Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
 
 Called when the Client needs a connection to run a query against. Implies
 than the caller MUST call release() method on the returned object.
@@ -319,33 +281,33 @@ than the caller MUST call release() method on the returned object.
 
 [src/pg/PgClient.ts:147](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L147)
 
-___
+***
 
-### query
+### query()
 
-▸ **query**\<`TRow`\>(`«destructured»`): `Promise`\<`TRow`[]\>
+> **query**\<`TRow`\>(`__namedParameters`): `Promise`\<`TRow`[]\>
 
 Sends a query (internally, a multi-query). After the query finishes, we
 should expect that role() returns the actual master/replica role.
 
-#### Type parameters
+#### Type Parameters
 
-| Name |
-| :------ |
+| Type Parameter |
+| ------ |
 | `TRow` |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `«destructured»` | `Object` |
-| › `query` | [`Literal`](../modules.md#literal) |
-| › `hints?` | `Record`\<`string`, `string`\> |
-| › `isWrite` | `boolean` |
-| › `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
-| › `op` | `string` |
-| › `table` | `string` |
-| › `batchFactor?` | `number` |
+| Parameter | Type |
+| ------ | ------ |
+| `__namedParameters` | `object` |
+| `__namedParameters.query` | [`Literal`](../type-aliases/Literal.md) |
+| `__namedParameters.hints`? | `Record`\<`string`, `string`\> |
+| `__namedParameters.isWrite` | `boolean` |
+| `__namedParameters.annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
+| `__namedParameters.op` | `string` |
+| `__namedParameters.table` | `string` |
+| `__namedParameters.batchFactor`? | `number` |
 
 #### Returns
 
@@ -355,11 +317,11 @@ should expect that role() returns the actual master/replica role.
 
 [src/pg/PgClient.ts:199](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L199)
 
-___
+***
 
-### shardNos
+### shardNos()
 
-▸ **shardNos**(): `Promise`\<readonly `number`[]\>
+> **shardNos**(): `Promise`\<readonly `number`[]\>
 
 Returns all Shard numbers discoverable via the connection to the Client's
 database.
@@ -370,26 +332,26 @@ database.
 
 #### Overrides
 
-[Client](Client.md).[shardNos](Client.md#shardnos)
+[`Client`](Client.md).[`shardNos`](Client.md#shardnos)
 
 #### Defined in
 
 [src/pg/PgClient.ts:377](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L377)
 
-___
+***
 
-### ping
+### ping()
 
-▸ **ping**(`«destructured»`): `Promise`\<`void`\>
+> **ping**(`__namedParameters`): `Promise`\<`void`\>
 
 Sends a read or write test query to the server. Tells the server to sit and
 wait for at least the provided number of milliseconds.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `«destructured»` | [`ClientPingInput`](../interfaces/ClientPingInput.md) |
+| Parameter | Type |
+| ------ | ------ |
+| `__namedParameters` | [`ClientPingInput`](../interfaces/ClientPingInput.md) |
 
 #### Returns
 
@@ -397,24 +359,24 @@ wait for at least the provided number of milliseconds.
 
 #### Overrides
 
-[Client](Client.md).[ping](Client.md#ping)
+[`Client`](Client.md).[`ping`](Client.md#ping)
 
 #### Defined in
 
 [src/pg/PgClient.ts:401](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L401)
 
-___
+***
 
-### shardNoByID
+### shardNoByID()
 
-▸ **shardNoByID**(`id`): `number`
+> **shardNoByID**(`id`): `number`
 
 Extracts Shard number from an ID.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `id` | `string` |
 
 #### Returns
@@ -423,25 +385,25 @@ Extracts Shard number from an ID.
 
 #### Overrides
 
-[Client](Client.md).[shardNoByID](Client.md#shardnobyid)
+[`Client`](Client.md).[`shardNoByID`](Client.md#shardnobyid)
 
 #### Defined in
 
 [src/pg/PgClient.ts:419](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L419)
 
-___
+***
 
-### withShard
+### withShard()
 
-▸ **withShard**(`no`): `this`
+> **withShard**(`no`): `this`
 
 Creates a new Client which is namespaced to the provided Shard number. The
 new Client will share the same connection pool with the parent's Client.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `no` | `number` |
 
 #### Returns
@@ -450,17 +412,17 @@ new Client will share the same connection pool with the parent's Client.
 
 #### Overrides
 
-[Client](Client.md).[withShard](Client.md#withshard)
+[`Client`](Client.md).[`withShard`](Client.md#withshard)
 
 #### Defined in
 
 [src/pg/PgClient.ts:475](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L475)
 
-___
+***
 
-### role
+### role()
 
-▸ **role**(): [`ClientRole`](../modules.md#clientrole)
+> **role**(): [`ClientRole`](../type-aliases/ClientRole.md)
 
 Returns the Client's role reported after the last successful query. Master
 and replica roles may switch online unpredictably, without reconnecting, so
@@ -468,21 +430,21 @@ we only know the role after a query.
 
 #### Returns
 
-[`ClientRole`](../modules.md#clientrole)
+[`ClientRole`](../type-aliases/ClientRole.md)
 
 #### Overrides
 
-[Client](Client.md).[role](Client.md#role)
+[`Client`](Client.md).[`role`](Client.md#role)
 
 #### Defined in
 
 [src/pg/PgClient.ts:486](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L486)
 
-___
+***
 
-### connectionIssue
+### connectionIssue()
 
-▸ **connectionIssue**(): ``null`` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
+> **connectionIssue**(): `null` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
 
 Returns a non-nullable value if the Client couldn't connect to the server
 (or it could, but the load balancer reported the remote server as not
@@ -491,11 +453,11 @@ until e.g. the next discovery query to it (or any query) succeeds.
 
 #### Returns
 
-``null`` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
+`null` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
 
 #### Overrides
 
-[Client](Client.md).[connectionIssue](Client.md#connectionissue)
+[`Client`](Client.md).[`connectionIssue`](Client.md#connectionissue)
 
 #### Defined in
 

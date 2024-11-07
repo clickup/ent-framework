@@ -1,26 +1,28 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / VCWithQueryCache
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / VCWithQueryCache
 
 # Class: VCWithQueryCache
 
 If set, Ent cache is enabled for operations in this VC.
 
-## Hierarchy
+## Extends
 
 - [`VCFlavor`](VCFlavor.md)
 
-  ↳ **`VCWithQueryCache`**
-
 ## Constructors
 
-### constructor
+### new VCWithQueryCache()
 
-• **new VCWithQueryCache**(`options`): [`VCWithQueryCache`](VCWithQueryCache.md)
+> **new VCWithQueryCache**(`options`): [`VCWithQueryCache`](VCWithQueryCache.md)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `options` | `Object` |
+| Parameter | Type |
+| ------ | ------ |
+| `options` | `object` |
 | `options.maxQueries` | `number` |
 
 #### Returns
@@ -29,7 +31,7 @@ If set, Ent cache is enabled for operations in this VC.
 
 #### Overrides
 
-[VCFlavor](VCFlavor.md).[constructor](VCFlavor.md#constructor)
+[`VCFlavor`](VCFlavor.md).[`constructor`](VCFlavor.md#constructors)
 
 #### Defined in
 
@@ -37,53 +39,18 @@ If set, Ent cache is enabled for operations in this VC.
 
 ## Properties
 
-### \_tag
-
-▪ `Static` `Readonly` **\_tag**: ``"VCFlavorClass"``
-
-#### Inherited from
-
-[VCFlavor](VCFlavor.md).[_tag](VCFlavor.md#_tag)
-
-#### Defined in
-
-[src/ent/VCFlavor.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L10)
-
-___
-
-### \_tag
-
-• `Readonly` **\_tag**: ``"VCFlavorInstance"``
-
-#### Inherited from
-
-[VCFlavor](VCFlavor.md).[_tag](VCFlavor.md#_tag-1)
-
-#### Defined in
-
-[src/ent/VCFlavor.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L11)
-
-___
-
-### options
-
-• `Readonly` **options**: `Object`
-
-#### Type declaration
-
-| Name | Type |
-| :------ | :------ |
-| `maxQueries` | `number` |
-
-#### Defined in
-
-[src/ent/VCFlavor.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L31)
+| Property | Type |
+| ------ | ------ |
+| `_tag` | `"VCFlavorClass"` |
+| `_tag` | `"VCFlavorInstance"` |
+| `options` | `object` |
+| `options.maxQueries` | `number` |
 
 ## Methods
 
-### toDebugString
+### toDebugString()
 
-▸ **toDebugString**(): `string`
+> **toDebugString**(): `string`
 
 Appended to the end of VC.toString() result.
 
@@ -93,7 +60,7 @@ Appended to the end of VC.toString() result.
 
 #### Inherited from
 
-[VCFlavor](VCFlavor.md).[toDebugString](VCFlavor.md#todebugstring)
+[`VCFlavor`](VCFlavor.md).[`toDebugString`](VCFlavor.md#todebugstring)
 
 #### Defined in
 

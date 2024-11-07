@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / PgQueryLoadBy
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / PgQueryLoadBy
 
 # Class: PgQueryLoadBy\<TTable, TUniqueKey\>
 
@@ -8,38 +12,29 @@ doesn't fit the QueryBase framework (like PgQueryUpdate for instance where we
 have separate Runner instances for separate set of updated fields), a Query
 is used directly instead.
 
-## Type parameters
+## Extends
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
+- [`QueryBase`](QueryBase.md)\<`TTable`, [`LoadByInput`](../type-aliases/LoadByInput.md)\<`TTable`, `TUniqueKey`\>, [`Row`](../type-aliases/Row.md)\<`TTable`\> \| `null`, [`PgClient`](PgClient.md)\>
 
-## Hierarchy
+## Type Parameters
 
-- [`QueryBase`](QueryBase.md)\<`TTable`, [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\>, [`Row`](../modules.md#row)\<`TTable`\> \| ``null``, [`PgClient`](PgClient.md)\>
-
-  ↳ **`PgQueryLoadBy`**
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
+| `TUniqueKey` *extends* [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\> |
 
 ## Constructors
 
-### constructor
+### new PgQueryLoadBy()
 
-• **new PgQueryLoadBy**\<`TTable`, `TUniqueKey`\>(`schema`, `input`): [`PgQueryLoadBy`](PgQueryLoadBy.md)\<`TTable`, `TUniqueKey`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
+> **new PgQueryLoadBy**\<`TTable`, `TUniqueKey`\>(`schema`, `input`): [`PgQueryLoadBy`](PgQueryLoadBy.md)\<`TTable`, `TUniqueKey`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\> |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
+| `input` | [`LoadByInput`](../type-aliases/LoadByInput.md)\<`TTable`, `TUniqueKey`\> |
 
 #### Returns
 
@@ -47,7 +42,7 @@ is used directly instead.
 
 #### Inherited from
 
-[QueryBase](QueryBase.md).[constructor](QueryBase.md#constructor)
+[`QueryBase`](QueryBase.md).[`constructor`](QueryBase.md#constructors)
 
 #### Defined in
 
@@ -55,45 +50,26 @@ is used directly instead.
 
 ## Properties
 
-### schema
-
-• `Readonly` **schema**: [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\>
-
-#### Inherited from
-
-[QueryBase](QueryBase.md).[schema](QueryBase.md#schema)
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L29)
-
-___
-
-### input
-
-• `Readonly` **input**: [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\>
-
-#### Inherited from
-
-[QueryBase](QueryBase.md).[input](QueryBase.md#input)
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L30)
+| Property | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
+| `input` | [`LoadByInput`](../type-aliases/LoadByInput.md)\<`TTable`, `TUniqueKey`\> |
 
 ## Accessors
 
 ### IS\_WRITE
 
-• `get` **IS_WRITE**(): `boolean`
+#### Get Signature
 
-#### Returns
+> **get** **IS\_WRITE**(): `boolean`
+
+##### Returns
 
 `boolean`
 
 #### Inherited from
 
-QueryBase.IS\_WRITE
+[`QueryBase`](QueryBase.md).[`IS_WRITE`](QueryBase.md#is_write)
 
 #### Defined in
 
@@ -101,24 +77,24 @@ QueryBase.IS\_WRITE
 
 ## Methods
 
-### run
+### run()
 
-▸ **run**(`client`, `annotation`): `Promise`\<``null`` \| [`Row`](../modules.md#row)\<`TTable`\>\>
+> **run**(`client`, `annotation`): `Promise`\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `client` | [`PgClient`](PgClient.md) |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
 #### Returns
 
-`Promise`\<``null`` \| [`Row`](../modules.md#row)\<`TTable`\>\>
+`Promise`\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
 
 #### Inherited from
 
-[QueryBase](QueryBase.md).[run](QueryBase.md#run)
+[`QueryBase`](QueryBase.md).[`run`](QueryBase.md#run)
 
 #### Defined in
 

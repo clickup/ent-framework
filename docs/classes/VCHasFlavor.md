@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / VCHasFlavor
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / VCHasFlavor
 
 # Class: VCHasFlavor
 
@@ -10,15 +14,15 @@ Checks that the VC has some flavor.
 
 ## Constructors
 
-### constructor
+### new VCHasFlavor()
 
-• **new VCHasFlavor**(`Flavor`): [`VCHasFlavor`](VCHasFlavor.md)
+> **new VCHasFlavor**(`Flavor`): [`VCHasFlavor`](VCHasFlavor.md)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `Flavor` | (...`args`: `never`[]) => [`VCFlavor`](VCFlavor.md) |
+| Parameter | Type |
+| ------ | ------ |
+| `Flavor` | (...`args`) => [`VCFlavor`](VCFlavor.md) |
 
 #### Returns
 
@@ -30,28 +34,20 @@ Checks that the VC has some flavor.
 
 ## Properties
 
-### name
-
-• `Readonly` **name**: `string`
-
-#### Implementation of
-
-[Predicate](../interfaces/Predicate.md).[name](../interfaces/Predicate.md#name)
-
-#### Defined in
-
-[src/ent/predicates/VCHasFlavor.ts:9](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L9)
+| Property | Type |
+| ------ | ------ |
+| `name` | `string` |
 
 ## Methods
 
-### check
+### check()
 
-▸ **check**(`vc`): `Promise`\<`boolean`\>
+> **check**(`vc`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
 
 #### Returns
@@ -60,7 +56,7 @@ Checks that the VC has some flavor.
 
 #### Implementation of
 
-[Predicate](../interfaces/Predicate.md).[check](../interfaces/Predicate.md#check)
+[`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
 
 #### Defined in
 

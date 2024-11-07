@@ -1,24 +1,23 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / IDsCache
+[**@clickup/ent-framework**](../README.md) • **Docs**
 
-# Class: IDsCache
+***
 
-## Hierarchy
+[@clickup/ent-framework](../globals.md) / IDsCache
 
-- **`IDsCache`**
+# Class: `abstract` IDsCache
 
-  ↳ [`IDsCacheReadable`](IDsCacheReadable.md)
+## Extended by
 
-  ↳ [`IDsCacheUpdatable`](IDsCacheUpdatable.md)
-
-  ↳ [`IDsCacheDeletable`](IDsCacheDeletable.md)
-
-  ↳ [`IDsCacheCanReadIncomingEdge`](IDsCacheCanReadIncomingEdge.md)
+- [`IDsCacheReadable`](IDsCacheReadable.md)
+- [`IDsCacheUpdatable`](IDsCacheUpdatable.md)
+- [`IDsCacheDeletable`](IDsCacheDeletable.md)
+- [`IDsCacheCanReadIncomingEdge`](IDsCacheCanReadIncomingEdge.md)
 
 ## Constructors
 
-### constructor
+### new IDsCache()
 
-• **new IDsCache**(): [`IDsCache`](IDsCache.md)
+> **new IDsCache**(): [`IDsCache`](IDsCache.md)
 
 #### Returns
 
@@ -26,14 +25,14 @@
 
 ## Methods
 
-### has
+### has()
 
-▸ **has**(`id`): `boolean`
+> **has**(`id`): `boolean`
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `id` | `string` |
 
 #### Returns
@@ -44,16 +43,16 @@
 
 [src/ent/IDsCache.ts:6](https://github.com/clickup/ent-framework/blob/master/src/ent/IDsCache.ts#L6)
 
-___
+***
 
-### add
+### add()
 
-▸ **add**(`id`, `value?`): `void`
+> **add**(`id`, `value`): `void`
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
+| Parameter | Type | Default value |
+| ------ | ------ | ------ |
 | `id` | `string` | `undefined` |
 | `value` | `boolean` | `true` |
 
@@ -65,16 +64,16 @@ ___
 
 [src/ent/IDsCache.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/IDsCache.ts#L10)
 
-___
+***
 
-### get
+### get()
 
-▸ **get**(`id`): `undefined` \| `boolean`
+> **get**(`id`): `undefined` \| `boolean`
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `id` | `string` |
 
 #### Returns

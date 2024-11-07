@@ -2,7 +2,6 @@ import { indent, inspectCompact, mapJoin } from "../../internal/misc";
 import { EntAccessError } from "../errors/EntAccessError";
 import type { VC } from "../VC";
 import type { Rule, RuleResult } from "./Rule";
-import { RuleDecision } from "./Rule";
 
 /**
  * This is a hearth of permissions checking, a machine which evaluates the rules
@@ -69,20 +68,20 @@ export async function evaluate<TInput extends object>(
 
     lastResult = results[i];
     switch (lastResult.decision) {
-      case RuleDecision.ALLOW:
+      case "ALLOW":
         return {
           allow: true,
           results,
           cause: resultsToCause(results),
         };
-      case RuleDecision.DENY:
+      case "DENY":
         return {
           allow: false,
           results,
           cause: resultsToCause(results),
         };
-      case RuleDecision.TOLERATE:
-      case RuleDecision.SKIP:
+      case "TOLERATE":
+      case "SKIP":
         continue;
       default:
         throw Error("BUG: weird RuleResult " + inspectCompact(lastResult));
@@ -95,11 +94,11 @@ export async function evaluate<TInput extends object>(
     return { allow: false, results, cause };
   }
 
-  if (lastResult.decision === RuleDecision.SKIP) {
+  if (lastResult.decision === "SKIP") {
     return { allow: false, results, cause };
   }
 
-  if (lastResult.decision === RuleDecision.TOLERATE) {
+  if (lastResult.decision === "TOLERATE") {
     return { allow: true, results, cause };
   }
 
@@ -121,7 +120,7 @@ async function ruleEvaluate<TInput extends object>(
   } catch (error: unknown) {
     if (error instanceof EntAccessError) {
       return {
-        decision: RuleDecision.DENY,
+        decision: "DENY",
         rule,
         cause: error,
       };

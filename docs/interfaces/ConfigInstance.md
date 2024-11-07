@@ -1,9 +1,11 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ConfigInstance
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / ConfigInstance
 
 # Interface: ConfigInstance
 
-## Hierarchy
+## Extended by
 
-- **`ConfigInstance`**
-
-  ↳ [`PrimitiveInstance`](PrimitiveInstance.md)
+- [`PrimitiveInstance`](PrimitiveInstance.md)

@@ -1,39 +1,34 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / VCCaches
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / VCCaches
 
 # Class: VCCaches\<TKey, TValue\>
 
 Holds an auto-expiring map of VC caches.
 
-## Type parameters
-
-| Name |
-| :------ |
-| `TKey` |
-| `TValue` |
-
-## Hierarchy
+## Extends
 
 - `Map`\<`TKey`, `TValue`\>
 
-  ↳ **`VCCaches`**
+## Type Parameters
 
-## Constructors
-
-### constructor
-
-• **new VCCaches**\<`TKey`, `TValue`\>(`expirationMs`): [`VCCaches`](VCCaches.md)\<`TKey`, `TValue`\>
-
-#### Type parameters
-
-| Name |
-| :------ |
+| Type Parameter |
+| ------ |
 | `TKey` |
 | `TValue` |
 
+## Constructors
+
+### new VCCaches()
+
+> **new VCCaches**\<`TKey`, `TValue`\>(`expirationMs`): [`VCCaches`](VCCaches.md)\<`TKey`, `TValue`\>
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `expirationMs` | `number` |
 
 #### Returns
@@ -42,7 +37,7 @@ Holds an auto-expiring map of VC caches.
 
 #### Overrides
 
-Map\&lt;TKey, TValue\&gt;.constructor
+`Map<TKey, TValue>.constructor`
 
 #### Defined in
 
@@ -50,17 +45,17 @@ Map\&lt;TKey, TValue\&gt;.constructor
 
 ## Methods
 
-### get
+### get()
 
-▸ **get**(`key`): `undefined` \| `TValue`
+> **get**(`key`): `undefined` \| `TValue`
 
 Calls the Map's get() and defers cache clearing to the next WeakTicker
 tick (i.e. schedules clearing on inactivity).
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `key` | `TKey` |
 
 #### Returns
@@ -69,29 +64,29 @@ tick (i.e. schedules clearing on inactivity).
 
 #### Overrides
 
-Map.get
+`Map.get`
 
 #### Defined in
 
 [src/ent/VCCaches.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/VCCaches.ts#L15)
 
-___
+***
 
-### onTick
+### onTick()
 
-▸ **onTick**(`tickNoSinceScheduling`): ``"keep"`` \| ``"unschedule"``
+> **onTick**(`tickNoSinceScheduling`): `"keep"` \| `"unschedule"`
 
 Called periodically after VC#cache() was called at least once.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `tickNoSinceScheduling` | `number` |
 
 #### Returns
 
-``"keep"`` \| ``"unschedule"``
+`"keep"` \| `"unschedule"`
 
 #### Defined in
 

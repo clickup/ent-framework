@@ -1,27 +1,24 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / SchemaClass
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / SchemaClass
 
 # Interface: SchemaClass
 
 ## Constructors
 
-### constructor
+### new SchemaClass()
 
-• **new SchemaClass**\<`TTable`, `TUniqueKey`\>(`name`, `table`, `uniqueKey?`): [`Schema`](../classes/Schema.md)\<`TTable`, `TUniqueKey`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> = [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
+> **new SchemaClass**\<`TTable`, `TUniqueKey`\>(`name`, `table`, `uniqueKey`?): [`Schema`](../classes/Schema.md)\<`TTable`, `TUniqueKey`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `name` | `string` |
 | `table` | `TTable` |
-| `uniqueKey?` | `TUniqueKey` |
+| `uniqueKey`? | `TUniqueKey` |
 
 #### Returns
 

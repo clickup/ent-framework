@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / QueryCache
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / QueryCache
 
 # Class: QueryCache
 
@@ -8,17 +12,17 @@ web servers only, to deliver the fastest UI response.
 
 ## Constructors
 
-### constructor
+### new QueryCache()
 
-• **new QueryCache**(`vc`): [`QueryCache`](QueryCache.md)
+> **new QueryCache**(`vc`): [`QueryCache`](QueryCache.md)
 
 Creates the QueryCache object. It enable caching only if VCWithQueryCache
 was manually added to the VC by the user, otherwise caching is a no-op.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
 
 #### Returns
@@ -31,19 +35,15 @@ was manually added to the VC by the user, otherwise caching is a no-op.
 
 ## Properties
 
-### whyOff
-
-• `Optional` `Readonly` **whyOff**: `string`
-
-#### Defined in
-
-[src/ent/QueryCache.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L29)
+| Property | Type |
+| ------ | ------ |
+| `whyOff?` | `string` |
 
 ## Methods
 
-### set
+### set()
 
-▸ **set**(`EntClass`, `op`, `key`, `value`): `this`
+> **set**(`EntClass`, `op`, `key`, `value`): `this`
 
 Saves a Promise to the cache slot for `op`. If this Promise rejects, the
 slot will automatically be cleared (we don't cache rejected Promises to not
@@ -51,10 +51,10 @@ have a risk of caching a transient DB error).
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `EntClass` | [`AnyClass`](../modules.md#anyclass) |
-| `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` \| ``"exists"`` |
+| Parameter | Type |
+| ------ | ------ |
+| `EntClass` | [`AnyClass`](../type-aliases/AnyClass.md) |
+| `op` | `"loadNullable"` \| `"loadByNullable"` \| `"select"` \| `"count"` \| `"exists"` |
 | `key` | `string` |
 | `value` | `undefined` \| `Promise`\<`unknown`\> |
 
@@ -66,21 +66,21 @@ have a risk of caching a transient DB error).
 
 [src/ent/QueryCache.ts:56](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L56)
 
-___
+***
 
-### delete
+### delete()
 
-▸ **delete**(`EntClass`, `ops`, `key?`): `this`
+> **delete**(`EntClass`, `ops`, `key`?): `this`
 
 Deletes cache slots or keys for an Ent.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `EntClass` | [`AnyClass`](../modules.md#anyclass) |
-| `ops` | (``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` \| ``"exists"``)[] |
-| `key?` | `string` |
+| Parameter | Type |
+| ------ | ------ |
+| `EntClass` | [`AnyClass`](../type-aliases/AnyClass.md) |
+| `ops` | (`"loadNullable"` \| `"loadByNullable"` \| `"select"` \| `"count"` \| `"exists"`)[] |
+| `key`? | `string` |
 
 #### Returns
 
@@ -90,28 +90,28 @@ Deletes cache slots or keys for an Ent.
 
 [src/ent/QueryCache.ts:91](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L91)
 
-___
+***
 
-### get
+### get()
 
-▸ **get**\<`TValue`\>(`EntClass`, `op`, `key`): `undefined` \| `Promise`\<`TValue`\>
+> **get**\<`TValue`\>(`EntClass`, `op`, `key`): `undefined` \| `Promise`\<`TValue`\>
 
 This method is non-async on intent. We store Promises in the cache, not end
 values, because we want the code to join awaiting an ongoing operation in
 case it's inflight already.
 
-#### Type parameters
+#### Type Parameters
 
-| Name |
-| :------ |
+| Type Parameter |
+| ------ |
 | `TValue` |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `EntClass` | [`AnyClass`](../modules.md#anyclass) |
-| `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` \| ``"exists"`` |
+| Parameter | Type |
+| ------ | ------ |
+| `EntClass` | [`AnyClass`](../type-aliases/AnyClass.md) |
+| `op` | `"loadNullable"` \| `"loadByNullable"` \| `"select"` \| `"count"` \| `"exists"` |
 | `key` | `string` |
 
 #### Returns
@@ -122,26 +122,26 @@ case it's inflight already.
 
 [src/ent/QueryCache.ts:113](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L113)
 
-___
+***
 
-### through
+### through()
 
-▸ **through**\<`TValue`\>(`EntClass`, `op`, `key`, `creator`): `Promise`\<`TValue`\>
+> **through**\<`TValue`\>(`EntClass`, `op`, `key`, `creator`): `Promise`\<`TValue`\>
 
 Read-through caching pattern.
 
-#### Type parameters
+#### Type Parameters
 
-| Name |
-| :------ |
+| Type Parameter |
+| ------ |
 | `TValue` |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `EntClass` | [`AnyClass`](../modules.md#anyclass) |
-| `op` | ``"loadNullable"`` \| ``"loadByNullable"`` \| ``"select"`` \| ``"count"`` \| ``"exists"`` |
+| Parameter | Type |
+| ------ | ------ |
+| `EntClass` | [`AnyClass`](../type-aliases/AnyClass.md) |
+| `op` | `"loadNullable"` \| `"loadByNullable"` \| `"select"` \| `"count"` \| `"exists"` |
 | `key` | `string` |
 | `creator` | () => `Promise`\<`TValue`\> |
 

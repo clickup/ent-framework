@@ -132,24 +132,29 @@ export async function join<TRec extends Readonly<Record<string, unknown>>>(
 export async function join(promises: unknown[] | object): Promise<unknown> {
   const promisesArray =
     promises instanceof Array ? promises : Object.values(promises);
-  const errorsArray: unknown[] = [];
+  let firstError: unknown = undefined;
+  let errorCount = 0;
   const resultsArray = await Promise["all"](
     promisesArray.map(async (promise) =>
       Promise.resolve(promise).catch((err) => {
-        errorsArray.push(err);
+        if (errorCount === 0) {
+          firstError = err;
+        }
+
+        errorCount++;
         return undefined;
       }),
     ),
   );
-  if (errorsArray.length > 0) {
-    throw errorsArray[0];
-  } else {
-    return promises instanceof Array
-      ? resultsArray
-      : Object.fromEntries(
-          Object.keys(promises).map((key, i) => [key, resultsArray[i]]),
-        );
+  if (errorCount > 0) {
+    throw firstError;
   }
+
+  return promises instanceof Array
+    ? resultsArray
+    : Object.fromEntries(
+        Object.keys(promises).map((key, i) => [key, resultsArray[i]]),
+      );
 }
 
 /**

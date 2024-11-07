@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Batcher
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / Batcher
 
 # Class: Batcher\<TInput, TOutput\>
 
@@ -10,30 +14,23 @@ Batcher is similar to DataLoader, but with a few important differences:
    doesn't to any caching. Caching is delegated to some other layer (either
    above Batcher or in Runner).
 
-## Type parameters
+## Type Parameters
 
-| Name |
-| :------ |
+| Type Parameter |
+| ------ |
 | `TInput` |
 | `TOutput` |
 
 ## Constructors
 
-### constructor
+### new Batcher()
 
-• **new Batcher**\<`TInput`, `TOutput`\>(`runner`, `batchDelayMs`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `TInput` |
-| `TOutput` |
+> **new Batcher**\<`TInput`, `TOutput`\>(`runner`, `batchDelayMs`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `runner` | [`Runner`](Runner.md)\<`TInput`, `TOutput`\> |
 | `batchDelayMs` | `MaybeCallable`\<`number`\> |
 
@@ -47,9 +44,9 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 ## Methods
 
-### flushQueue
+### flushQueue()
 
-▸ **flushQueue**(): `Promise`\<`void`\>
+> `protected` **flushQueue**(): `Promise`\<`void`\>
 
 #### Returns
 
@@ -59,16 +56,16 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 [src/abstract/Batcher.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L32)
 
-___
+***
 
-### run
+### run()
 
-▸ **run**(`input`, `annotation`): `Promise`\<`TOutput`\>
+> **run**(`input`, `annotation`): `Promise`\<`TOutput`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `input` | `TInput` |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 

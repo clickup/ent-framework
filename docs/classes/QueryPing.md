@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / QueryPing
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / QueryPing
 
 # Class: QueryPing
 
@@ -10,15 +14,15 @@ A helper Query which delegates to Client#ping(execTimeMs).
 
 ## Constructors
 
-### constructor
+### new QueryPing()
 
-• **new QueryPing**(`input`): [`QueryPing`](QueryPing.md)
+> **new QueryPing**(`input`): [`QueryPing`](QueryPing.md)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `input` | `Omit`\<[`ClientPingInput`](../interfaces/ClientPingInput.md), ``"annotation"``\> |
+| Parameter | Type |
+| ------ | ------ |
+| `input` | `Omit`\<[`ClientPingInput`](../interfaces/ClientPingInput.md), `"annotation"`\> |
 
 #### Returns
 
@@ -30,27 +34,25 @@ A helper Query which delegates to Client#ping(execTimeMs).
 
 ## Properties
 
-### input
-
-• `Readonly` **input**: `Omit`\<[`ClientPingInput`](../interfaces/ClientPingInput.md), ``"annotation"``\>
-
-#### Defined in
-
-[src/abstract/QueryPing.ts:9](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryPing.ts#L9)
+| Property | Type |
+| ------ | ------ |
+| `input` | `Omit`\<[`ClientPingInput`](../interfaces/ClientPingInput.md), `"annotation"`\> |
 
 ## Accessors
 
 ### IS\_WRITE
 
-• `get` **IS_WRITE**(): `boolean`
+#### Get Signature
 
-#### Returns
+> **get** **IS\_WRITE**(): `boolean`
+
+##### Returns
 
 `boolean`
 
 #### Implementation of
 
-[Query](../interfaces/Query.md).[IS_WRITE](../interfaces/Query.md#is_write)
+[`Query`](../interfaces/Query.md).`IS_WRITE`
 
 #### Defined in
 
@@ -58,14 +60,14 @@ A helper Query which delegates to Client#ping(execTimeMs).
 
 ## Methods
 
-### run
+### run()
 
-▸ **run**(`client`, `annotation`): `Promise`\<`void`\>
+> **run**(`client`, `annotation`): `Promise`\<`void`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `client` | [`Client`](Client.md) |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
@@ -75,7 +77,7 @@ A helper Query which delegates to Client#ping(execTimeMs).
 
 #### Implementation of
 
-[Query](../interfaces/Query.md).[run](../interfaces/Query.md#run)
+[`Query`](../interfaces/Query.md).[`run`](../interfaces/Query.md#run)
 
 #### Defined in
 

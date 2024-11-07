@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / TimelineManager
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / TimelineManager
 
 # Class: TimelineManager
 
@@ -10,14 +14,14 @@ not more often than every refreshMs interval.
 
 ## Constructors
 
-### constructor
+### new TimelineManager()
 
-• **new TimelineManager**(`maxLagMs`, `refreshMs`, `triggerRefresh`): [`TimelineManager`](TimelineManager.md)
+> **new TimelineManager**(`maxLagMs`, `refreshMs`, `triggerRefresh`): [`TimelineManager`](TimelineManager.md)
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
 | `maxLagMs` | `MaybeCallable`\<`number`\> | Time interval after which a replica is declared as "caught up" even if it's not caught up. This is to not read from master forever when something has happened with the replica. |
 | `refreshMs` | `MaybeCallable`\<`number`\> | Up to how often we call triggerRefresh(). |
 | `triggerRefresh` | () => `Promise`\<`unknown`\> | This method is called time to time to refresh the data which is later returned by currentPos(). Makes sense for replica connections which execute queries rarely: for them, the framework triggers the update when the fresh data is needed. |
@@ -32,23 +36,15 @@ not more often than every refreshMs interval.
 
 ## Properties
 
-### maxLagMs
-
-• `Readonly` **maxLagMs**: `MaybeCallable`\<`number`\>
-
-Time interval after which a replica is declared as "caught up" even if
-it's not caught up. This is to not read from master forever when
-something has happened with the replica.
-
-#### Defined in
-
-[src/abstract/TimelineManager.ts:19](https://github.com/clickup/ent-framework/blob/master/src/abstract/TimelineManager.ts#L19)
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| `maxLagMs` | `MaybeCallable`\<`number`\> | Time interval after which a replica is declared as "caught up" even if it's not caught up. This is to not read from master forever when something has happened with the replica. |
 
 ## Methods
 
-### currentPos
+### currentPos()
 
-▸ **currentPos**(): `Promise`\<`bigint`\>
+> **currentPos**(): `Promise`\<`bigint`\>
 
 Returns the current Client's replication timeline position (e.g. WAL
 position).
@@ -61,19 +57,19 @@ position).
 
 [src/abstract/TimelineManager.ts:33](https://github.com/clickup/ent-framework/blob/master/src/abstract/TimelineManager.ts#L33)
 
-___
+***
 
-### setCurrentPos
+### setCurrentPos()
 
-▸ **setCurrentPos**(`pos`): `void`
+> **setCurrentPos**(`pos`): `void`
 
 Sets the actual timeline pos. Must be called by the Client after each
 interaction with the database.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `pos` | `bigint` |
 
 #### Returns

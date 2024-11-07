@@ -1,15 +1,19 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / PgQueryUpdate
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / PgQueryUpdate
 
 # Class: PgQueryUpdate\<TTable\>
 
 A very lean interface for a Query. In practice each query is so different
 that this interface is the only common part of them all.
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
 
 ## Implements
 
@@ -17,23 +21,17 @@ that this interface is the only common part of them all.
 
 ## Constructors
 
-### constructor
+### new PgQueryUpdate()
 
-• **new PgQueryUpdate**\<`TTable`\>(`schema`, `id`, `input`): [`PgQueryUpdate`](PgQueryUpdate.md)\<`TTable`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+> **new PgQueryUpdate**\<`TTable`\>(`schema`, `id`, `input`): [`PgQueryUpdate`](PgQueryUpdate.md)\<`TTable`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\> |
+| Parameter | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
 | `id` | `string` |
-| `input` | [`UpdateInput`](../modules.md#updateinput)\<`TTable`\> |
+| `input` | [`UpdateInput`](../type-aliases/UpdateInput.md)\<`TTable`\> |
 
 #### Returns
 
@@ -45,48 +43,22 @@ that this interface is the only common part of them all.
 
 ## Properties
 
-### input
-
-• `Readonly` **input**: \{ [K in string \| number \| symbol]?: Value\<TTable[K]\> } & \{ `$literal?`: [`Literal`](../modules.md#literal) ; `$cas?`: \{ [K in string \| number \| symbol]?: Value\<TTable[K]\> }  } & \{ `id`: `string`  }
-
-#### Defined in
-
-[src/pg/PgQueryUpdate.ts:13](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQueryUpdate.ts#L13)
-
-___
-
-### IS\_WRITE
-
-• `Readonly` **IS\_WRITE**: ``true``
-
-#### Implementation of
-
-[Query](../interfaces/Query.md).[IS_WRITE](../interfaces/Query.md#is_write)
-
-#### Defined in
-
-[src/pg/PgQueryUpdate.ts:14](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQueryUpdate.ts#L14)
-
-___
-
-### schema
-
-• `Readonly` **schema**: [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\>
-
-#### Defined in
-
-[src/pg/PgQueryUpdate.ts:17](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQueryUpdate.ts#L17)
+| Property | Type | Default value |
+| ------ | ------ | ------ |
+| `input` | \{ \[K in string \| number \| symbol\]?: Value\<TTable\[K\]\> \} & `object` & `object` | `undefined` |
+| `IS_WRITE` | `true` | `true` |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> | `undefined` |
 
 ## Methods
 
-### run
+### run()
 
-▸ **run**(`client`, `annotation`): `Promise`\<`boolean`\>
+> **run**(`client`, `annotation`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `client` | [`PgClient`](PgClient.md) |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
@@ -96,7 +68,7 @@ ___
 
 #### Implementation of
 
-[Query](../interfaces/Query.md).[run](../interfaces/Query.md#run)
+[`Query`](../interfaces/Query.md).[`run`](../interfaces/Query.md#run)
 
 #### Defined in
 

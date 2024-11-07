@@ -1,38 +1,36 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / CanDeleteOutgoingEdge
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / CanDeleteOutgoingEdge
 
 # Class: CanDeleteOutgoingEdge\<TField\>
 
 Checks that an Ent available via a field can be deleted, or Ent doesn't exist
 (e.g. Ent is orphaned). See CanReadOutgoingEdge comments for more details.
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TField` | extends `string` |
+| Type Parameter |
+| ------ |
+| `TField` *extends* `string` |
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)\<`Record`\<`TField`, `string` \| ``null``\>\>
+- [`Predicate`](../interfaces/Predicate.md)\<`Record`\<`TField`, `string` \| `null`\>\>
 
 ## Constructors
 
-### constructor
+### new CanDeleteOutgoingEdge()
 
-• **new CanDeleteOutgoingEdge**\<`TField`\>(`field`, `toEntClass`): [`CanDeleteOutgoingEdge`](CanDeleteOutgoingEdge.md)\<`TField`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TField` | extends `string` |
+> **new CanDeleteOutgoingEdge**\<`TField`\>(`field`, `toEntClass`): [`CanDeleteOutgoingEdge`](CanDeleteOutgoingEdge.md)\<`TField`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `field` | `TField` |
-| `toEntClass` | [`EntClass`](../modules.md#entclass) |
+| `toEntClass` | [`EntClass`](../interfaces/EntClass.md) |
 
 #### Returns
 
@@ -44,50 +42,24 @@ Checks that an Ent available via a field can be deleted, or Ent doesn't exist
 
 ## Properties
 
-### name
-
-• `Readonly` **name**: `string`
-
-#### Implementation of
-
-[Predicate](../interfaces/Predicate.md).[name](../interfaces/Predicate.md#name)
-
-#### Defined in
-
-[src/ent/predicates/CanDeleteOutgoingEdge.ts:13](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanDeleteOutgoingEdge.ts#L13)
-
-___
-
-### field
-
-• `Readonly` **field**: `TField`
-
-#### Defined in
-
-[src/ent/predicates/CanDeleteOutgoingEdge.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanDeleteOutgoingEdge.ts#L16)
-
-___
-
-### toEntClass
-
-• `Readonly` **toEntClass**: [`EntClass`](../modules.md#entclass)
-
-#### Defined in
-
-[src/ent/predicates/CanDeleteOutgoingEdge.ts:17](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanDeleteOutgoingEdge.ts#L17)
+| Property | Type |
+| ------ | ------ |
+| `name` | `string` |
+| `field` | `TField` |
+| `toEntClass` | [`EntClass`](../interfaces/EntClass.md) |
 
 ## Methods
 
-### check
+### check()
 
-▸ **check**(`vc`, `row`): `Promise`\<`boolean`\>
+> **check**(`vc`, `row`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | `Record`\<`TField`, ``null`` \| `string`\> |
+| `row` | `Record`\<`TField`, `null` \| `string`\> |
 
 #### Returns
 
@@ -95,7 +67,7 @@ ___
 
 #### Implementation of
 
-[Predicate](../interfaces/Predicate.md).[check](../interfaces/Predicate.md#check)
+[`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
 
 #### Defined in
 

@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Timeline
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / Timeline
 
 # Class: Timeline
 
@@ -19,15 +23,15 @@ user+Ent+microshard, and thus it is decoupled from IDs.
 
 ## Constructors
 
-### constructor
+### new Timeline()
 
-• **new Timeline**(`state?`): [`Timeline`](Timeline.md)
+> **new Timeline**(`state`): [`Timeline`](Timeline.md)
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `state` | \{ `pos`: `bigint` ; `expiresAt`: `number`  } \| ``"unknown"`` | `"unknown"` |
+| Parameter | Type | Default value |
+| ------ | ------ | ------ |
+| `state` | `object` \| `"unknown"` | `"unknown"` |
 
 #### Returns
 
@@ -39,16 +43,16 @@ user+Ent+microshard, and thus it is decoupled from IDs.
 
 ## Methods
 
-### deserialize
+### deserialize()
 
-▸ **deserialize**(`data`, `prevTimeline`): [`Timeline`](Timeline.md)
+> `static` **deserialize**(`data`, `prevTimeline`): [`Timeline`](Timeline.md)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `data` | `undefined` \| `string` |
-| `prevTimeline` | ``null`` \| [`Timeline`](Timeline.md) |
+| `prevTimeline` | `null` \| [`Timeline`](Timeline.md) |
 
 #### Returns
 
@@ -58,16 +62,16 @@ user+Ent+microshard, and thus it is decoupled from IDs.
 
 [src/abstract/Timeline.ts:43](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L43)
 
-___
+***
 
-### cloneMap
+### cloneMap()
 
-▸ **cloneMap**(`timelines`): `Map`\<`string`, [`Timeline`](Timeline.md)\>
+> `static` **cloneMap**(`timelines`): `Map`\<`string`, [`Timeline`](Timeline.md)\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `timelines` | `ReadonlyMap`\<`string`, [`Timeline`](Timeline.md)\> |
 
 #### Returns
@@ -78,11 +82,11 @@ ___
 
 [src/abstract/Timeline.ts:65](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L65)
 
-___
+***
 
-### serialize
+### serialize()
 
-▸ **serialize**(): `undefined` \| `string`
+> **serialize**(): `undefined` \| `string`
 
 #### Returns
 
@@ -92,16 +96,16 @@ ___
 
 [src/abstract/Timeline.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L78)
 
-___
+***
 
-### setPos
+### setPos()
 
-▸ **setPos**(`pos`, `maxLagMs`): `void`
+> **setPos**(`pos`, `maxLagMs`): `void`
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `pos` | `bigint` |
 | `maxLagMs` | `number` |
 
@@ -113,31 +117,31 @@ ___
 
 [src/abstract/Timeline.ts:85](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L85)
 
-___
+***
 
-### isCaughtUp
+### isCaughtUp()
 
-▸ **isCaughtUp**(`replicaPos`): [`TimelineCaughtUpReason`](../modules.md#timelinecaughtupreason)
+> **isCaughtUp**(`replicaPos`): [`TimelineCaughtUpReason`](../type-aliases/TimelineCaughtUpReason.md)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `replicaPos` | `bigint` |
 
 #### Returns
 
-[`TimelineCaughtUpReason`](../modules.md#timelinecaughtupreason)
+[`TimelineCaughtUpReason`](../type-aliases/TimelineCaughtUpReason.md)
 
 #### Defined in
 
 [src/abstract/Timeline.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L94)
 
-___
+***
 
-### reset
+### reset()
 
-▸ **reset**(): `void`
+> **reset**(): `void`
 
 #### Returns
 

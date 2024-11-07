@@ -1,13 +1,17 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Or
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / Or
 
 # Class: Or\<TInput\>
 
 Checks that at least one of the children predicates succeed.
 
-## Type parameters
+## Type Parameters
 
-| Name |
-| :------ |
+| Type Parameter |
+| ------ |
 | `TInput` |
 
 ## Implements
@@ -16,21 +20,15 @@ Checks that at least one of the children predicates succeed.
 
 ## Constructors
 
-### constructor
+### new Or()
 
-• **new Or**\<`TInput`\>(`...predicates`): [`Or`](Or.md)\<`TInput`\>
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `TInput` |
+> **new Or**\<`TInput`\>(...`predicates`): [`Or`](Or.md)\<`TInput`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `...predicates` | readonly ([`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`: [`VC`](VC.md), `input`: `TInput`) => `Promise`\<`boolean`\>)[] |
+| Parameter | Type |
+| ------ | ------ |
+| ...`predicates` | readonly ([`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`, `input`) => `Promise`\<`boolean`\>)[] |
 
 #### Returns
 
@@ -42,38 +40,21 @@ Checks that at least one of the children predicates succeed.
 
 ## Properties
 
-### name
-
-• `Readonly` **name**: `string`
-
-#### Implementation of
-
-[Predicate](../interfaces/Predicate.md).[name](../interfaces/Predicate.md#name)
-
-#### Defined in
-
-[src/ent/predicates/Or.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L11)
-
-___
-
-### predicates
-
-• `Readonly` **predicates**: readonly [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>[]
-
-#### Defined in
-
-[src/ent/predicates/Or.ts:12](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L12)
+| Property | Type |
+| ------ | ------ |
+| `name` | `string` |
+| `predicates` | readonly [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>[] |
 
 ## Methods
 
-### check
+### check()
 
-▸ **check**(`vc`, `input`): `Promise`\<`boolean`\>
+> **check**(`vc`, `input`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
 | `input` | `TInput` |
 
@@ -83,7 +64,7 @@ ___
 
 #### Implementation of
 
-[Predicate](../interfaces/Predicate.md).[check](../interfaces/Predicate.md#check)
+[`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
 
 #### Defined in
 

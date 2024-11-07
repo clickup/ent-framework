@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Loader
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / Loader
 
 # Class: Loader\<TLoadArgs, TReturn\>
 
@@ -25,30 +29,23 @@ In the future, Batcher may be refactored to use Loader as the underlying
 engine, but for now they're separate (Batcher is much more domain logic
 specific and Loader is completely abstract).
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TLoadArgs` | extends `unknown`[] |
-| `TReturn` | `TReturn` |
+| Type Parameter |
+| ------ |
+| `TLoadArgs` *extends* `unknown`[] |
+| `TReturn` |
 
 ## Constructors
 
-### constructor
+### new Loader()
 
-• **new Loader**\<`TLoadArgs`, `TReturn`\>(`handlerCreator`): [`Loader`](Loader.md)\<`TLoadArgs`, `TReturn`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TLoadArgs` | extends `unknown`[] |
-| `TReturn` | `TReturn` |
+> **new Loader**\<`TLoadArgs`, `TReturn`\>(`handlerCreator`): [`Loader`](Loader.md)\<`TLoadArgs`, `TReturn`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `handlerCreator` | () => [`Handler`](../interfaces/Handler.md)\<`TLoadArgs`, `TReturn`\> |
 
 #### Returns
@@ -61,15 +58,15 @@ specific and Loader is completely abstract).
 
 ## Methods
 
-### load
+### load()
 
-▸ **load**(`...args`): `Promise`\<`TReturn`\>
+> **load**(...`args`): `Promise`\<`TReturn`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `...args` | `TLoadArgs` |
+| Parameter | Type |
+| ------ | ------ |
+| ...`args` | `TLoadArgs` |
 
 #### Returns
 

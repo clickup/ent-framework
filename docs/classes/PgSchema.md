@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / PgSchema
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / PgSchema
 
 # Class: PgSchema\<TTable, TUniqueKey\>
 
@@ -12,36 +16,31 @@ The set of supported Queries is opinionated and is crafted carefully to
 support the minimal possible list of primitives, but at the same time, be not
 too limited in the queries the DB engine can execute.
 
-## Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
-
-## Hierarchy
+## Extends
 
 - [`Schema`](Schema.md)\<`TTable`, `TUniqueKey`\>
 
-  ↳ **`PgSchema`**
+## Type Parameters
+
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
+| `TUniqueKey` *extends* [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\> |
 
 ## Constructors
 
-### constructor
+### new PgSchema()
 
-• **new PgSchema**\<`TTable`, `TUniqueKey`\>(`name`, `table`, `uniqueKey`): [`PgSchema`](PgSchema.md)\<`TTable`, `TUniqueKey`\>
+> **new PgSchema**\<`TTable`, `TUniqueKey`\>(`name`, `table`, `uniqueKey`): [`PgSchema`](PgSchema.md)\<`TTable`, `TUniqueKey`\>
 
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
+Used in e.g. inverses. This casts this.constructor to SchemaClass with all
+static methods and `new` semantic (TS doesn't do it by default; for TS,
+x.constructor is Function).
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
 | `name` | `string` | For relational databases, it's likely a table name. |
 | `table` | `TTable` | Structure of the table. |
 | `uniqueKey` | `TUniqueKey` | Fields which the native unique key consists of (if any). |
@@ -52,7 +51,7 @@ too limited in the queries the DB engine can execute.
 
 #### Inherited from
 
-[Schema](Schema.md).[constructor](Schema.md#constructor-1)
+[`Schema`](Schema.md).[`constructor`](Schema.md#constructors)
 
 #### Defined in
 
@@ -60,89 +59,19 @@ too limited in the queries the DB engine can execute.
 
 ## Properties
 
-### hash
-
-• `Readonly` **hash**: `string`
-
-#### Inherited from
-
-[Schema](Schema.md).[hash](Schema.md#hash)
-
-#### Defined in
-
-[src/abstract/Schema.ts:42](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L42)
-
-___
-
-### constructor
-
-• **constructor**: [`SchemaClass`](../interfaces/SchemaClass.md)
-
-Used in e.g. inverses. This casts this.constructor to SchemaClass with all
-static methods and `new` semantic (TS doesn't do it by default; for TS,
-x.constructor is Function).
-
-#### Inherited from
-
-Schema.constructor
-
-#### Defined in
-
-[src/abstract/Schema.ts:49](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L49)
-
-___
-
-### name
-
-• `Readonly` **name**: `string`
-
-For relational databases, it's likely a table name.
-
-#### Inherited from
-
-[Schema](Schema.md).[name](Schema.md#name)
-
-#### Defined in
-
-[src/abstract/Schema.ts:121](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L121)
-
-___
-
-### table
-
-• `Readonly` **table**: `TTable`
-
-Structure of the table.
-
-#### Inherited from
-
-[Schema](Schema.md).[table](Schema.md#table)
-
-#### Defined in
-
-[src/abstract/Schema.ts:123](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L123)
-
-___
-
-### uniqueKey
-
-• `Readonly` **uniqueKey**: `TUniqueKey`
-
-Fields which the native unique key consists of (if any).
-
-#### Inherited from
-
-[Schema](Schema.md).[uniqueKey](Schema.md#uniquekey)
-
-#### Defined in
-
-[src/abstract/Schema.ts:125](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L125)
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| `hash` | `string` | - |
+| `constructor` | [`SchemaClass`](../interfaces/SchemaClass.md) | Used in e.g. inverses. This casts this.constructor to SchemaClass with all static methods and `new` semantic (TS doesn't do it by default; for TS, x.constructor is Function). |
+| `name` | `string` | For relational databases, it's likely a table name. |
+| `table` | `TTable` | Structure of the table. |
+| `uniqueKey` | `TUniqueKey` | Fields which the native unique key consists of (if any). |
 
 ## Methods
 
-### idGen
+### idGen()
 
-▸ **idGen**(): [`Query`](../interfaces/Query.md)\<`string`\>
+> **idGen**(): [`Query`](../interfaces/Query.md)\<`string`\>
 
 Generates a new ID for the row. Used when e.g. there is a beforeInsert
 trigger on the Ent which needs to know the ID beforehand.
@@ -153,52 +82,52 @@ trigger on the Ent which needs to know the ID beforehand.
 
 #### Overrides
 
-[Schema](Schema.md).[idGen](Schema.md#idgen)
+[`Schema`](Schema.md).[`idGen`](Schema.md#idgen)
 
 #### Defined in
 
 [src/pg/PgSchema.ts:31](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L31)
 
-___
+***
 
-### insert
+### insert()
 
-▸ **insert**(`input`): [`Query`](../interfaces/Query.md)\<``null`` \| `string`\>
+> **insert**(`input`): [`Query`](../interfaces/Query.md)\<`null` \| `string`\>
 
 Creates a new row. Returns null if the row violates some unique key
 constraint, otherwise returns the row ID.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `input` | [`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)\<``null`` \| `string`\>
+[`Query`](../interfaces/Query.md)\<`null` \| `string`\>
 
 #### Overrides
 
-[Schema](Schema.md).[insert](Schema.md#insert)
+[`Schema`](Schema.md).[`insert`](Schema.md#insert)
 
 #### Defined in
 
 [src/pg/PgSchema.ts:35](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L35)
 
-___
+***
 
-### upsert
+### upsert()
 
-▸ **upsert**(`input`): [`Query`](../interfaces/Query.md)\<`string`\>
+> **upsert**(`input`): [`Query`](../interfaces/Query.md)\<`string`\>
 
 Upserts a row. Always returns the row ID.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `input` | [`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\> |
 
 #### Returns
 
@@ -206,26 +135,26 @@ Upserts a row. Always returns the row ID.
 
 #### Overrides
 
-[Schema](Schema.md).[upsert](Schema.md#upsert)
+[`Schema`](Schema.md).[`upsert`](Schema.md#upsert)
 
 #### Defined in
 
 [src/pg/PgSchema.ts:39](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L39)
 
-___
+***
 
-### update
+### update()
 
-▸ **update**(`id`, `input`): [`Query`](../interfaces/Query.md)\<`boolean`\>
+> **update**(`id`, `input`): [`Query`](../interfaces/Query.md)\<`boolean`\>
 
 Updates one single row by its ID. Returns true if it actually existed.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `id` | `string` |
-| `input` | [`UpdateInput`](../modules.md#updateinput)\<`TTable`\> |
+| `input` | [`UpdateInput`](../type-aliases/UpdateInput.md)\<`TTable`\> |
 
 #### Returns
 
@@ -233,24 +162,24 @@ Updates one single row by its ID. Returns true if it actually existed.
 
 #### Overrides
 
-[Schema](Schema.md).[update](Schema.md#update)
+[`Schema`](Schema.md).[`update`](Schema.md#update)
 
 #### Defined in
 
 [src/pg/PgSchema.ts:43](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L43)
 
-___
+***
 
-### delete
+### delete()
 
-▸ **delete**(`id`): [`Query`](../interfaces/Query.md)\<`boolean`\>
+> **delete**(`id`): [`Query`](../interfaces/Query.md)\<`boolean`\>
 
 Deletes a row by id. Returns true if it actually existed.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `id` | `string` |
 
 #### Returns
@@ -259,71 +188,71 @@ Deletes a row by id. Returns true if it actually existed.
 
 #### Overrides
 
-[Schema](Schema.md).[delete](Schema.md#delete)
+[`Schema`](Schema.md).[`delete`](Schema.md#delete)
 
 #### Defined in
 
 [src/pg/PgSchema.ts:47](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L47)
 
-___
+***
 
-### load
+### load()
 
-▸ **load**(`id`): [`Query`](../interfaces/Query.md)\<``null`` \| [`Row`](../modules.md#row)\<`TTable`\>\>
+> **load**(`id`): [`Query`](../interfaces/Query.md)\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
 
 "Load" family of methods means that we load exactly one row. This one
 returns a row by its ID or null if it's not found.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `id` | `string` |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)\<``null`` \| [`Row`](../modules.md#row)\<`TTable`\>\>
+[`Query`](../interfaces/Query.md)\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
 
 #### Overrides
 
-[Schema](Schema.md).[load](Schema.md#load)
+[`Schema`](Schema.md).[`load`](Schema.md#load)
 
 #### Defined in
 
 [src/pg/PgSchema.ts:51](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L51)
 
-___
+***
 
-### loadBy
+### loadBy()
 
-▸ **loadBy**(`input`): [`Query`](../interfaces/Query.md)\<``null`` \| [`Row`](../modules.md#row)\<`TTable`\>\>
+> **loadBy**(`input`): [`Query`](../interfaces/Query.md)\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
 
 Loads one single row by its unique key ("by" denotes that it's based on an
 unique key, not on an ID). Returns null if it's not found.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `input` | [`LoadByInput`](../type-aliases/LoadByInput.md)\<`TTable`, `TUniqueKey`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)\<``null`` \| [`Row`](../modules.md#row)\<`TTable`\>\>
+[`Query`](../interfaces/Query.md)\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
 
 #### Overrides
 
-[Schema](Schema.md).[loadBy](Schema.md#loadby)
+[`Schema`](Schema.md).[`loadBy`](Schema.md#loadby)
 
 #### Defined in
 
 [src/pg/PgSchema.ts:55](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L55)
 
-___
+***
 
-### selectBy
+### selectBy()
 
-▸ **selectBy**(`input`): [`Query`](../interfaces/Query.md)\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
+> **selectBy**(`input`): [`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
 "Select" family of methods means that we load multiple rows ("by" denotes
 that it's based on an unique key, not on an arbitrary query). This one
@@ -331,61 +260,61 @@ returns all rows whose unique key prefix matches the input.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `input` | [`SelectByInput`](../modules.md#selectbyinput)\<`TTable`, `TUniqueKey`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `input` | [`SelectByInput`](../type-aliases/SelectByInput.md)\<`TTable`, `TUniqueKey`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
+[`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
 #### Overrides
 
-[Schema](Schema.md).[selectBy](Schema.md#selectby)
+[`Schema`](Schema.md).[`selectBy`](Schema.md#selectby)
 
 #### Defined in
 
 [src/pg/PgSchema.ts:59](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L59)
 
-___
+***
 
-### select
+### select()
 
-▸ **select**(`input`): [`Query`](../interfaces/Query.md)\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
+> **select**(`input`): [`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
 Returns all rows matching an arbitrary query.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `input` | [`SelectInput`](../modules.md#selectinput)\<`TTable`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `input` | [`SelectInput`](../type-aliases/SelectInput.md)\<`TTable`\> |
 
 #### Returns
 
-[`Query`](../interfaces/Query.md)\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
+[`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
 #### Overrides
 
-[Schema](Schema.md).[select](Schema.md#select)
+[`Schema`](Schema.md).[`select`](Schema.md#select)
 
 #### Defined in
 
 [src/pg/PgSchema.ts:65](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L65)
 
-___
+***
 
-### count
+### count()
 
-▸ **count**(`input`): [`Query`](../interfaces/Query.md)\<`number`\>
+> **count**(`input`): [`Query`](../interfaces/Query.md)\<`number`\>
 
 Returns the number of rows matching an arbitrary query.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `input` | [`CountInput`](../modules.md#countinput)\<`TTable`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `input` | [`CountInput`](../type-aliases/CountInput.md)\<`TTable`\> |
 
 #### Returns
 
@@ -393,26 +322,26 @@ Returns the number of rows matching an arbitrary query.
 
 #### Overrides
 
-[Schema](Schema.md).[count](Schema.md#count)
+[`Schema`](Schema.md).[`count`](Schema.md#count)
 
 #### Defined in
 
 [src/pg/PgSchema.ts:69](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L69)
 
-___
+***
 
-### exists
+### exists()
 
-▸ **exists**(`input`): [`Query`](../interfaces/Query.md)\<`boolean`\>
+> **exists**(`input`): [`Query`](../interfaces/Query.md)\<`boolean`\>
 
 An optimized version of count() for the cases where we only need to know
 whether at least one row exists, and don't need a precise count.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `input` | [`ExistsInput`](../modules.md#existsinput)\<`TTable`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `input` | [`ExistsInput`](../type-aliases/ExistsInput.md)\<`TTable`\> |
 
 #### Returns
 
@@ -420,7 +349,7 @@ whether at least one row exists, and don't need a precise count.
 
 #### Overrides
 
-[Schema](Schema.md).[exists](Schema.md#exists)
+[`Schema`](Schema.md).[`exists`](Schema.md#exists)
 
 #### Defined in
 

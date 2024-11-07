@@ -1,6 +1,10 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / QueryBase
+[**@clickup/ent-framework**](../README.md) • **Docs**
 
-# Class: QueryBase\<TTable, TInput, TOutput, TClient\>
+***
+
+[@clickup/ent-framework](../globals.md) / QueryBase
+
+# Class: `abstract` QueryBase\<TTable, TInput, TOutput, TClient\>
 
 A convenient base class for most (but not all) of the queries, where the
 Runner instance is the same for different query input shapes. If the query
@@ -8,38 +12,27 @@ doesn't fit the QueryBase framework (like PgQueryUpdate for instance where we
 have separate Runner instances for separate set of updated fields), a Query
 is used directly instead.
 
-## Type parameters
+## Extended by
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TInput` | `TInput` |
-| `TOutput` | `TOutput` |
-| `TClient` | extends [`Client`](Client.md) |
+- [`PgQueryCount`](PgQueryCount.md)
+- [`PgQueryDelete`](PgQueryDelete.md)
+- [`PgQueryDeleteWhere`](PgQueryDeleteWhere.md)
+- [`PgQueryExists`](PgQueryExists.md)
+- [`PgQueryIDGen`](PgQueryIDGen.md)
+- [`PgQueryInsert`](PgQueryInsert.md)
+- [`PgQueryLoad`](PgQueryLoad.md)
+- [`PgQueryLoadBy`](PgQueryLoadBy.md)
+- [`PgQuerySelect`](PgQuerySelect.md)
+- [`PgQueryUpsert`](PgQueryUpsert.md)
 
-## Hierarchy
+## Type Parameters
 
-- **`QueryBase`**
-
-  ↳ [`PgQueryCount`](PgQueryCount.md)
-
-  ↳ [`PgQueryDelete`](PgQueryDelete.md)
-
-  ↳ [`PgQueryDeleteWhere`](PgQueryDeleteWhere.md)
-
-  ↳ [`PgQueryExists`](PgQueryExists.md)
-
-  ↳ [`PgQueryIDGen`](PgQueryIDGen.md)
-
-  ↳ [`PgQueryInsert`](PgQueryInsert.md)
-
-  ↳ [`PgQueryLoad`](PgQueryLoad.md)
-
-  ↳ [`PgQueryLoadBy`](PgQueryLoadBy.md)
-
-  ↳ [`PgQuerySelect`](PgQuerySelect.md)
-
-  ↳ [`PgQueryUpsert`](PgQueryUpsert.md)
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
+| `TInput` |
+| `TOutput` |
+| `TClient` *extends* [`Client`](Client.md) |
 
 ## Implements
 
@@ -47,24 +40,15 @@ is used directly instead.
 
 ## Constructors
 
-### constructor
+### new QueryBase()
 
-• **new QueryBase**\<`TTable`, `TInput`, `TOutput`, `TClient`\>(`schema`, `input`): [`QueryBase`](QueryBase.md)\<`TTable`, `TInput`, `TOutput`, `TClient`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TInput` | `TInput` |
-| `TOutput` | `TOutput` |
-| `TClient` | extends [`Client`](Client.md) |
+> **new QueryBase**\<`TTable`, `TInput`, `TOutput`, `TClient`\>(`schema`, `input`): [`QueryBase`](QueryBase.md)\<`TTable`, `TInput`, `TOutput`, `TClient`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\> |
+| Parameter | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
 | `input` | `TInput` |
 
 #### Returns
@@ -77,37 +61,26 @@ is used directly instead.
 
 ## Properties
 
-### schema
-
-• `Readonly` **schema**: [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\>
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L29)
-
-___
-
-### input
-
-• `Readonly` **input**: `TInput`
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L30)
+| Property | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
+| `input` | `TInput` |
 
 ## Accessors
 
 ### IS\_WRITE
 
-• `get` **IS_WRITE**(): `boolean`
+#### Get Signature
 
-#### Returns
+> **get** **IS\_WRITE**(): `boolean`
+
+##### Returns
 
 `boolean`
 
 #### Implementation of
 
-[Query](../interfaces/Query.md).[IS_WRITE](../interfaces/Query.md#is_write)
+[`Query`](../interfaces/Query.md).`IS_WRITE`
 
 #### Defined in
 
@@ -115,14 +88,14 @@ ___
 
 ## Methods
 
-### run
+### run()
 
-▸ **run**(`client`, `annotation`): `Promise`\<`TOutput`\>
+> **run**(`client`, `annotation`): `Promise`\<`TOutput`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `client` | `TClient` |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
@@ -132,7 +105,7 @@ ___
 
 #### Implementation of
 
-[Query](../interfaces/Query.md).[run](../interfaces/Query.md#run)
+[`Query`](../interfaces/Query.md).[`run`](../interfaces/Query.md#run)
 
 #### Defined in
 

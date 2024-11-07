@@ -1,6 +1,10 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / VCFlavor
+[**@clickup/ent-framework**](../README.md) • **Docs**
 
-# Class: VCFlavor
+***
+
+[@clickup/ent-framework](../globals.md) / VCFlavor
+
+# Class: `abstract` VCFlavor
 
 VCFlavor is some piece of info which is transitively attached to a VC and is
 preserved when VC derivation (upgrade/downgrade) is happening. This piece of
@@ -9,19 +13,16 @@ boolean flag), or it can be an object with payload.
 
 For each flavor type, only a single VCFlavor object may exist.
 
-## Hierarchy
+## Extended by
 
-- **`VCFlavor`**
-
-  ↳ [`VCWithStacks`](VCWithStacks.md)
-
-  ↳ [`VCWithQueryCache`](VCWithQueryCache.md)
+- [`VCWithStacks`](VCWithStacks.md)
+- [`VCWithQueryCache`](VCWithQueryCache.md)
 
 ## Constructors
 
-### constructor
+### new VCFlavor()
 
-• **new VCFlavor**(): [`VCFlavor`](VCFlavor.md)
+> **new VCFlavor**(): [`VCFlavor`](VCFlavor.md)
 
 #### Returns
 
@@ -29,29 +30,16 @@ For each flavor type, only a single VCFlavor object may exist.
 
 ## Properties
 
-### \_tag
-
-▪ `Static` `Readonly` **\_tag**: ``"VCFlavorClass"``
-
-#### Defined in
-
-[src/ent/VCFlavor.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L10)
-
-___
-
-### \_tag
-
-• `Readonly` **\_tag**: ``"VCFlavorInstance"``
-
-#### Defined in
-
-[src/ent/VCFlavor.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L11)
+| Property | Type |
+| ------ | ------ |
+| `_tag` | `"VCFlavorClass"` |
+| `_tag` | `"VCFlavorInstance"` |
 
 ## Methods
 
-### toDebugString
+### toDebugString()
 
-▸ **toDebugString**(): `string`
+> **toDebugString**(): `string`
 
 Appended to the end of VC.toString() result.
 

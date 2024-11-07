@@ -1,40 +1,37 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / PgQuerySelectBy
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / PgQuerySelectBy
 
 # Class: PgQuerySelectBy\<TTable, TUniqueKey\>
 
 A very lean interface for a Query. In practice each query is so different
 that this interface is the only common part of them all.
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
+| `TUniqueKey` *extends* [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\> |
 
 ## Implements
 
-- [`Query`](../interfaces/Query.md)\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
+- [`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
 ## Constructors
 
-### constructor
+### new PgQuerySelectBy()
 
-• **new PgQuerySelectBy**\<`TTable`, `TUniqueKey`\>(`schema`, `input`): [`PgQuerySelectBy`](PgQuerySelectBy.md)\<`TTable`, `TUniqueKey`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
+> **new PgQuerySelectBy**\<`TTable`, `TUniqueKey`\>(`schema`, `input`): [`PgQuerySelectBy`](PgQuerySelectBy.md)\<`TTable`, `TUniqueKey`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\> |
-| `input` | [`SelectByInput`](../modules.md#selectbyinput)\<`TTable`, `TUniqueKey`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
+| `input` | [`SelectByInput`](../type-aliases/SelectByInput.md)\<`TTable`, `TUniqueKey`\> |
 
 #### Returns
 
@@ -46,58 +43,32 @@ that this interface is the only common part of them all.
 
 ## Properties
 
-### IS\_WRITE
-
-• `Readonly` **IS\_WRITE**: ``false``
-
-#### Implementation of
-
-[Query](../interfaces/Query.md).[IS_WRITE](../interfaces/Query.md#is_write)
-
-#### Defined in
-
-[src/pg/PgQuerySelectBy.ts:19](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQuerySelectBy.ts#L19)
-
-___
-
-### schema
-
-• `Readonly` **schema**: [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\>\>
-
-#### Defined in
-
-[src/pg/PgQuerySelectBy.ts:22](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQuerySelectBy.ts#L22)
-
-___
-
-### input
-
-• `Readonly` **input**: [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TuplePrefixes`\<`TUniqueKey`\>\>
-
-#### Defined in
-
-[src/pg/PgQuerySelectBy.ts:23](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQuerySelectBy.ts#L23)
+| Property | Type | Default value |
+| ------ | ------ | ------ |
+| `IS_WRITE` | `false` | `false` |
+| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> | `undefined` |
+| `input` | [`LoadByInput`](../type-aliases/LoadByInput.md)\<`TTable`, `TuplePrefixes`\<`TUniqueKey`\>\> | `undefined` |
 
 ## Methods
 
-### run
+### run()
 
-▸ **run**(`client`, `annotation`): `Promise`\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
+> **run**(`client`, `annotation`): `Promise`\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `client` | [`PgClient`](PgClient.md) |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
 #### Returns
 
-`Promise`\<[`Row`](../modules.md#row)\<`TTable`\>[]\>
+`Promise`\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
 #### Implementation of
 
-[Query](../interfaces/Query.md).[run](../interfaces/Query.md#run)
+[`Query`](../interfaces/Query.md).[`run`](../interfaces/Query.md#run)
 
 #### Defined in
 

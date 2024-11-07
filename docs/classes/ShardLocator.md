@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ShardLocator
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / ShardLocator
 
 # Class: ShardLocator\<TClient, TTable, TField\>
 
@@ -6,38 +10,30 @@ Knows how to locate Shard(s) based on various inputs. In some contexts, we
 expect exactly one Shard returned, and in other contexts, multiple Shards are
 okay.
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TClient` | extends [`Client`](Client.md) |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TField` | extends `string` |
+| Type Parameter |
+| ------ |
+| `TClient` *extends* [`Client`](Client.md) |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
+| `TField` *extends* `string` |
 
 ## Constructors
 
-### constructor
+### new ShardLocator()
 
-• **new ShardLocator**\<`TClient`, `TTable`, `TField`\>(`«destructured»`): [`ShardLocator`](ShardLocator.md)\<`TClient`, `TTable`, `TField`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TClient` | extends [`Client`](Client.md) |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TField` | extends `string` |
+> **new ShardLocator**\<`TClient`, `TTable`, `TField`\>(`__namedParameters`): [`ShardLocator`](ShardLocator.md)\<`TClient`, `TTable`, `TField`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `«destructured»` | `Object` |
-| › `cluster` | [`Cluster`](Cluster.md)\<`TClient`, `any`\> |
-| › `entName` | `string` |
-| › `shardAffinity` | [`ShardAffinity`](../modules.md#shardaffinity)\<`TField`\> |
-| › `uniqueKey` | `undefined` \| readonly `string`[] |
-| › `inverses` | readonly [`Inverse`](Inverse.md)\<`TClient`, `TTable`\>[] |
+| Parameter | Type |
+| ------ | ------ |
+| `__namedParameters` | `object` |
+| `__namedParameters.cluster` | [`Cluster`](Cluster.md)\<`TClient`, `any`\> |
+| `__namedParameters.entName` | `string` |
+| `__namedParameters.shardAffinity` | [`ShardAffinity`](../type-aliases/ShardAffinity.md)\<`TField`\> |
+| `__namedParameters.uniqueKey` | `undefined` \| readonly `string`[] |
+| `__namedParameters.inverses` | readonly [`Inverse`](Inverse.md)\<`TClient`, `TTable`\>[] |
 
 #### Returns
 
@@ -49,9 +45,9 @@ okay.
 
 ## Methods
 
-### singleShardForInsert
+### singleShardForInsert()
 
-▸ **singleShardForInsert**(`input`, `op`): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>\>
+> **singleShardForInsert**(`input`, `op`): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>\>
 
 Called in a context when we must know exactly 1 Shard to work with (e.g.
 INSERT, UPSERT etc.). If op === "insert" (fallback to random Shard), then
@@ -71,10 +67,10 @@ been changed).
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `input` | `Record`\<`string`, `unknown`\> |
-| `op` | ``"insert"`` \| ``"upsert"`` |
+| `op` | `"insert"` \| `"upsert"` |
 
 #### Returns
 
@@ -84,11 +80,11 @@ been changed).
 
 [src/ent/ShardLocator.ts:76](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L76)
 
-___
+***
 
-### multiShardsFromInput
+### multiShardsFromInput()
 
-▸ **multiShardsFromInput**(`vc`, `input`, `op`): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>[]\>
+> **multiShardsFromInput**(`vc`, `input`, `op`): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>[]\>
 
 Called in a context when multiple Shards may be involved, e.g. when
 selecting Ents referred by some Inverses. May also return the empty list of
@@ -97,8 +93,8 @@ filtering is correct), there are no Inverse rows existing in the database.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
 | `input` | `Record`\<`string`, `unknown`\> |
 | `op` | `string` |
@@ -111,11 +107,11 @@ filtering is correct), there are no Inverse rows existing in the database.
 
 [src/ent/ShardLocator.ts:110](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L110)
 
-___
+***
 
-### singleShardFromID
+### singleShardFromID()
 
-▸ **singleShardFromID**(`field`, `id`, `op`): `Promise`\<``null`` \| [`Shard`](Shard.md)\<`TClient`\>\>
+> **singleShardFromID**(`field`, `id`, `op`): `Promise`\<`null` \| [`Shard`](Shard.md)\<`TClient`\>\>
 
 A wrapper for Cluster#shard() which injects Ent name to the exception (in
 case of e.g. "Cannot locate Shard" exception). This is just a convenience
@@ -128,25 +124,25 @@ identical to the case of an Ent not existing in the database.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `field` | `string` |
-| `id` | `undefined` \| ``null`` \| `string` |
+| `id` | `undefined` \| `null` \| `string` |
 | `op` | `string` |
 
 #### Returns
 
-`Promise`\<``null`` \| [`Shard`](Shard.md)\<`TClient`\>\>
+`Promise`\<`null` \| [`Shard`](Shard.md)\<`TClient`\>\>
 
 #### Defined in
 
 [src/ent/ShardLocator.ts:182](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L182)
 
-___
+***
 
-### allShards
+### allShards()
 
-▸ **allShards**(): `Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
+> **allShards**(): `Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
 
 All shards for this particular Ent depending on its affinity.
 

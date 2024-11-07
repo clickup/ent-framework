@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / True
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / True
 
 # Class: True
 
@@ -10,9 +14,9 @@ Always passes; used for e.g. globally accessed objects.
 
 ## Constructors
 
-### constructor
+### new True()
 
-• **new True**(): [`True`](True.md)
+> **new True**(): [`True`](True.md)
 
 #### Returns
 
@@ -20,28 +24,20 @@ Always passes; used for e.g. globally accessed objects.
 
 ## Properties
 
-### name
-
-• `Readonly` **name**: `string`
-
-#### Implementation of
-
-[Predicate](../interfaces/Predicate.md).[name](../interfaces/Predicate.md#name)
-
-#### Defined in
-
-[src/ent/predicates/True.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/True.ts#L8)
+| Property | Type |
+| ------ | ------ |
+| `name` | `string` |
 
 ## Methods
 
-### check
+### check()
 
-▸ **check**(`_vc`): `Promise`\<`boolean`\>
+> **check**(`_vc`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `_vc` | [`VC`](VC.md) |
 
 #### Returns
@@ -50,7 +46,7 @@ Always passes; used for e.g. globally accessed objects.
 
 #### Implementation of
 
-[Predicate](../interfaces/Predicate.md).[check](../interfaces/Predicate.md#check)
+[`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
 
 #### Defined in
 

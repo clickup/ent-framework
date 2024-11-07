@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Predicate
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / Predicate
 
 # Interface: Predicate\<TInput\>
 
@@ -14,45 +18,28 @@ based on the previously computed results. E.g. CanReadOutgoingEdge predicate
 knows that it already returned true for some ID once, it returns true again
 immediately. This saves us lots of database operations.
 
-## Type parameters
+## Type Parameters
 
-| Name |
-| :------ |
+| Type Parameter |
+| ------ |
 | `TInput` |
-
-## Implemented by
-
-- [`CanDeleteOutgoingEdge`](../classes/CanDeleteOutgoingEdge.md)
-- [`CanReadOutgoingEdge`](../classes/CanReadOutgoingEdge.md)
-- [`CanUpdateOutgoingEdge`](../classes/CanUpdateOutgoingEdge.md)
-- [`FieldIs`](../classes/FieldIs.md)
-- [`FuncToPredicate`](../classes/FuncToPredicate.md)
-- [`IncomingEdgeFromVCExists`](../classes/IncomingEdgeFromVCExists.md)
-- [`Or`](../classes/Or.md)
-- [`OutgoingEdgePointsToVC`](../classes/OutgoingEdgePointsToVC.md)
-- [`True`](../classes/True.md)
-- [`VCHasFlavor`](../classes/VCHasFlavor.md)
 
 ## Properties
 
-### name
-
-• `Readonly` **name**: `string`
-
-#### Defined in
-
-[src/ent/predicates/Predicate.ts:18](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L18)
+| Property | Type |
+| ------ | ------ |
+| `name` | `string` |
 
 ## Methods
 
-### check
+### check()
 
-▸ **check**(`vc`, `input`): `Promise`\<`boolean`\>
+> **check**(`vc`, `input`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](../classes/VC.md) |
 | `input` | `TInput` |
 

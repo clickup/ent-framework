@@ -1,18 +1,20 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / IDsCacheUpdatable
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / IDsCacheUpdatable
 
 # Class: IDsCacheUpdatable
 
-## Hierarchy
+## Extends
 
 - [`IDsCache`](IDsCache.md)
 
-  ↳ **`IDsCacheUpdatable`**
-
 ## Constructors
 
-### constructor
+### new IDsCacheUpdatable()
 
-• **new IDsCacheUpdatable**(): [`IDsCacheUpdatable`](IDsCacheUpdatable.md)
+> **new IDsCacheUpdatable**(): [`IDsCacheUpdatable`](IDsCacheUpdatable.md)
 
 #### Returns
 
@@ -20,18 +22,18 @@
 
 #### Inherited from
 
-[IDsCache](IDsCache.md).[constructor](IDsCache.md#constructor)
+[`IDsCache`](IDsCache.md).[`constructor`](IDsCache.md#constructors)
 
 ## Methods
 
-### has
+### has()
 
-▸ **has**(`id`): `boolean`
+> **has**(`id`): `boolean`
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `id` | `string` |
 
 #### Returns
@@ -40,22 +42,22 @@
 
 #### Inherited from
 
-[IDsCache](IDsCache.md).[has](IDsCache.md#has)
+[`IDsCache`](IDsCache.md).[`has`](IDsCache.md#has)
 
 #### Defined in
 
 [src/ent/IDsCache.ts:6](https://github.com/clickup/ent-framework/blob/master/src/ent/IDsCache.ts#L6)
 
-___
+***
 
-### add
+### add()
 
-▸ **add**(`id`, `value?`): `void`
+> **add**(`id`, `value`): `void`
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
+| Parameter | Type | Default value |
+| ------ | ------ | ------ |
 | `id` | `string` | `undefined` |
 | `value` | `boolean` | `true` |
 
@@ -65,22 +67,22 @@ ___
 
 #### Inherited from
 
-[IDsCache](IDsCache.md).[add](IDsCache.md#add)
+[`IDsCache`](IDsCache.md).[`add`](IDsCache.md#add)
 
 #### Defined in
 
 [src/ent/IDsCache.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/IDsCache.ts#L10)
 
-___
+***
 
-### get
+### get()
 
-▸ **get**(`id`): `undefined` \| `boolean`
+> **get**(`id`): `undefined` \| `boolean`
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `id` | `string` |
 
 #### Returns
@@ -89,7 +91,7 @@ ___
 
 #### Inherited from
 
-[IDsCache](IDsCache.md).[get](IDsCache.md#get)
+[`IDsCache`](IDsCache.md).[`get`](IDsCache.md#get)
 
 #### Defined in
 

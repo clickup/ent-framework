@@ -18,7 +18,6 @@ import type { DenyIf } from "./rules/DenyIf";
 import { evaluate } from "./rules/evaluate";
 import { Require } from "./rules/Require";
 import type { Rule } from "./rules/Rule";
-import { RuleDecision } from "./rules/Rule";
 import { buildUpdateNewRow } from "./Triggers";
 import type { VC } from "./VC";
 
@@ -232,7 +231,7 @@ export class Validation<TTable extends Table> {
     // some field, it doesn't make sense to user-validate it.
     const touchedFields = Object.keys(pickBy(input, (v) => v !== undefined));
     const failedPredicates = results
-      .filter(({ decision }) => decision === RuleDecision.DENY)
+      .filter(({ decision }) => decision === "DENY")
       .map(({ rule }) => rule.predicate as unknown as EntValidationErrorInfo)
       .filter(({ field }) => field === null || touchedFields.includes(field));
     if (failedPredicates.length > 0) {

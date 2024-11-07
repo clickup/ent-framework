@@ -1,37 +1,35 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Triggers
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / Triggers
 
 # Class: Triggers\<TTable\>
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
 
 ## Constructors
 
-### constructor
+### new Triggers()
 
-• **new Triggers**\<`TTable`\>(`beforeInsert`, `beforeUpdate`, `beforeDelete`, `beforeMutation`, `afterInsert`, `afterUpdate`, `afterDelete`, `afterMutation`): [`Triggers`](Triggers.md)\<`TTable`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
+> **new Triggers**\<`TTable`\>(`beforeInsert`, `beforeUpdate`, `beforeDelete`, `beforeMutation`, `afterInsert`, `afterUpdate`, `afterDelete`, `afterMutation`): [`Triggers`](Triggers.md)\<`TTable`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `beforeInsert` | [`InsertTrigger`](../modules.md#inserttrigger)\<`TTable`\>[] |
-| `beforeUpdate` | [``null`` \| [`DepsBuilder`](../modules.md#depsbuilder)\<`TTable`\>, [`BeforeUpdateTrigger`](../modules.md#beforeupdatetrigger)\<`TTable`\>][] |
-| `beforeDelete` | [`DeleteTrigger`](../modules.md#deletetrigger)\<`TTable`\>[] |
-| `beforeMutation` | [``null`` \| [`DepsBuilder`](../modules.md#depsbuilder)\<`TTable`\>, [`BeforeMutationTrigger`](../modules.md#beforemutationtrigger)\<`TTable`\>][] |
-| `afterInsert` | [`InsertTrigger`](../modules.md#inserttrigger)\<`TTable`\>[] |
-| `afterUpdate` | [``null`` \| [`DepsBuilder`](../modules.md#depsbuilder)\<`TTable`\>, [`AfterUpdateTrigger`](../modules.md#afterupdatetrigger)\<`TTable`\>][] |
-| `afterDelete` | [`DeleteTrigger`](../modules.md#deletetrigger)\<`TTable`\>[] |
-| `afterMutation` | [``null`` \| [`DepsBuilder`](../modules.md#depsbuilder)\<`TTable`\>, [`AfterMutationTrigger`](../modules.md#aftermutationtrigger)\<`TTable`\>][] |
+| Parameter | Type |
+| ------ | ------ |
+| `beforeInsert` | [`InsertTrigger`](../type-aliases/InsertTrigger.md)\<`TTable`\>[] |
+| `beforeUpdate` | [`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`BeforeUpdateTrigger`](../type-aliases/BeforeUpdateTrigger.md)\<`TTable`\>][] |
+| `beforeDelete` | [`DeleteTrigger`](../type-aliases/DeleteTrigger.md)\<`TTable`\>[] |
+| `beforeMutation` | [`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`BeforeMutationTrigger`](../type-aliases/BeforeMutationTrigger.md)\<`TTable`\>][] |
+| `afterInsert` | [`InsertTrigger`](../type-aliases/InsertTrigger.md)\<`TTable`\>[] |
+| `afterUpdate` | [`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`AfterUpdateTrigger`](../type-aliases/AfterUpdateTrigger.md)\<`TTable`\>][] |
+| `afterDelete` | [`DeleteTrigger`](../type-aliases/DeleteTrigger.md)\<`TTable`\>[] |
+| `afterMutation` | [`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`AfterMutationTrigger`](../type-aliases/AfterMutationTrigger.md)\<`TTable`\>][] |
 
 #### Returns
 
@@ -43,9 +41,9 @@
 
 ## Methods
 
-### hasInsertTriggers
+### hasInsertTriggers()
 
-▸ **hasInsertTriggers**(): `boolean`
+> **hasInsertTriggers**(): `boolean`
 
 #### Returns
 
@@ -55,11 +53,11 @@
 
 [src/ent/Triggers.ts:189](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L189)
 
-___
+***
 
-### hasUpdateTriggers
+### hasUpdateTriggers()
 
-▸ **hasUpdateTriggers**(): `boolean`
+> **hasUpdateTriggers**(): `boolean`
 
 #### Returns
 
@@ -69,42 +67,42 @@ ___
 
 [src/ent/Triggers.ts:198](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L198)
 
-___
+***
 
-### wrapInsert
+### wrapInsert()
 
-▸ **wrapInsert**(`func`, `vc`, `input`): `Promise`\<``null`` \| `string`\>
+> **wrapInsert**(`func`, `vc`, `input`): `Promise`\<`null` \| `string`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `func` | (`input`: \{ [K in string \| number \| symbol]: Value\<TTable[K]\> } & \{ [K in string \| number \| symbol]?: Value\<TTable[K]\> } & [`RowWithID`](../modules.md#rowwithid)) => `Promise`\<``null`` \| `string`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `func` | (`input`) => `Promise`\<`null` \| `string`\> |
 | `vc` | [`VC`](VC.md) |
-| `input` | \{ [K in string \| number \| symbol]: Value\<TTable[K]\> } & \{ [K in string \| number \| symbol]?: Value\<TTable[K]\> } & [`RowWithID`](../modules.md#rowwithid) |
+| `input` | \{ \[K in string \| number \| symbol\]: Value\<TTable\[K\]\> \} & \{ \[K in string \| number \| symbol\]?: Value\<TTable\[K\]\> \} & [`RowWithID`](../type-aliases/RowWithID.md) |
 
 #### Returns
 
-`Promise`\<``null`` \| `string`\>
+`Promise`\<`null` \| `string`\>
 
 #### Defined in
 
 [src/ent/Triggers.ts:207](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L207)
 
-___
+***
 
-### wrapUpdate
+### wrapUpdate()
 
-▸ **wrapUpdate**(`func`, `vc`, `oldRow`, `input`): `Promise`\<`boolean`\>
+> **wrapUpdate**(`func`, `vc`, `oldRow`, `input`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `func` | (`input`: [`UpdateInput`](../modules.md#updateinput)\<`TTable`\>) => `Promise`\<`boolean`\> |
+| Parameter | Type |
+| ------ | ------ |
+| `func` | (`input`) => `Promise`\<`boolean`\> |
 | `vc` | [`VC`](VC.md) |
-| `oldRow` | \{ [P in string \| symbol]: Readonly\<RowWithID & \{ [K in string]: Value\<TTable[K]\> } & Record\<keyof TTable & symbol, never\>\>[P] } |
-| `input` | [`UpdateInput`](../modules.md#updateinput)\<`TTable`\> |
+| `oldRow` | \{ \[P in string \| symbol\]: Readonly\<RowWithID & \{ \[K in string\]: Value\<TTable\[K\]\> \} & Record\<keyof TTable & symbol, never\>\>\[P\] \} |
+| `input` | [`UpdateInput`](../type-aliases/UpdateInput.md)\<`TTable`\> |
 
 #### Returns
 
@@ -114,19 +112,19 @@ ___
 
 [src/ent/Triggers.ts:251](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L251)
 
-___
+***
 
-### wrapDelete
+### wrapDelete()
 
-▸ **wrapDelete**(`func`, `vc`, `oldRow`): `Promise`\<`boolean`\>
+> **wrapDelete**(`func`, `vc`, `oldRow`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `func` | () => `Promise`\<`boolean`\> |
 | `vc` | [`VC`](VC.md) |
-| `oldRow` | \{ [P in string \| symbol]: Readonly\<RowWithID & \{ [K in string]: Value\<TTable[K]\> } & Record\<keyof TTable & symbol, never\>\>[P] } |
+| `oldRow` | \{ \[P in string \| symbol\]: Readonly\<RowWithID & \{ \[K in string\]: Value\<TTable\[K\]\> \} & Record\<keyof TTable & symbol, never\>\>\[P\] \} |
 
 #### Returns
 

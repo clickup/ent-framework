@@ -1,42 +1,37 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / Runner
+[**@clickup/ent-framework**](../README.md) • **Docs**
 
-# Class: Runner\<TInput, TOutput\>
+***
+
+[@clickup/ent-framework](../globals.md) / Runner
+
+# Class: `abstract` Runner\<TInput, TOutput\>
 
 Knows how to translate individual strongly typed requests into DB language
 and how to parse the result back.
 
-## Type parameters
+## Extended by
 
-| Name |
-| :------ |
+- [`PgRunner`](PgRunner.md)
+
+## Type Parameters
+
+| Type Parameter |
+| ------ |
 | `TInput` |
 | `TOutput` |
-
-## Hierarchy
-
-- **`Runner`**
-
-  ↳ [`PgRunner`](PgRunner.md)
 
 ## Constructors
 
-### constructor
+### new Runner()
 
-• **new Runner**\<`TInput`, `TOutput`\>(`name`): [`Runner`](Runner.md)\<`TInput`, `TOutput`\>
+> **new Runner**\<`TInput`, `TOutput`\>(`name`): [`Runner`](Runner.md)\<`TInput`, `TOutput`\>
 
 Parameter `name` is typically a table name.
 
-#### Type parameters
-
-| Name |
-| :------ |
-| `TInput` |
-| `TOutput` |
-
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `name` | `string` |
 
 #### Returns
@@ -49,76 +44,27 @@ Parameter `name` is typically a table name.
 
 ## Properties
 
-### IS\_WRITE
-
-▪ `Static` `Readonly` **IS\_WRITE**: `boolean`
-
-If true, it's a write operation.
-
-#### Defined in
-
-[src/abstract/Runner.ts:11](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L11)
-
-___
-
-### op
-
-• `Readonly` `Abstract` **op**: `string`
-
-Operation name for logging purposes.
-
-#### Defined in
-
-[src/abstract/Runner.ts:17](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L17)
-
-___
-
-### maxBatchSize
-
-• `Readonly` `Abstract` **maxBatchSize**: `number`
-
-Maximum batch size for this type of operations.
-
-#### Defined in
-
-[src/abstract/Runner.ts:20](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L20)
-
-___
-
-### default
-
-• `Readonly` `Abstract` **default**: `TOutput`
-
-In case undefined is returned from batching, this value will be returned
-instead.
-
-#### Defined in
-
-[src/abstract/Runner.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L24)
-
-___
-
-### name
-
-• `Readonly` **name**: `string`
-
-#### Defined in
-
-[src/abstract/Runner.ts:69](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L69)
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| `IS_WRITE` | `boolean` | If true, it's a write operation. |
+| `op` | `string` | Operation name for logging purposes. |
+| `maxBatchSize` | `number` | Maximum batch size for this type of operations. |
+| `default` | `TOutput` | In case undefined is returned from batching, this value will be returned instead. |
+| `name` | `string` | - |
 
 ## Methods
 
-### runSingle
+### runSingle()
 
-▸ **runSingle**(`input`, `annotations`): `Promise`\<`undefined` \| `TOutput`\>
+> `abstract` **runSingle**(`input`, `annotations`): `Promise`\<`undefined` \| `TOutput`\>
 
 Method runSingle is to e.g. produce simple DB requests when we have only
 one input to process, not many.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `input` | `TInput` |
 | `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
 
@@ -130,18 +76,18 @@ one input to process, not many.
 
 [src/abstract/Runner.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L30)
 
-___
+***
 
-### runBatch
+### runBatch()?
 
-▸ **runBatch**(`inputs`, `annotations`): `Promise`\<`Map`\<`string`, `TOutput`\>\>
+> `abstract` `optional` **runBatch**(`inputs`, `annotations`): `Promise`\<`Map`\<`string`, `TOutput`\>\>
 
 Typically issues complex queries with magic.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `inputs` | `Map`\<`string`, `TInput`\> |
 | `annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
 
@@ -153,34 +99,34 @@ Typically issues complex queries with magic.
 
 [src/abstract/Runner.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L38)
 
-___
+***
 
-### delayForSingleQueryRetryOnError
+### delayForSingleQueryRetryOnError()
 
-▸ **delayForSingleQueryRetryOnError**(`error`): `number` \| ``"immediate_retry"`` \| ``"no_retry"``
+> `abstract` **delayForSingleQueryRetryOnError**(`error`): `number` \| `"immediate_retry"` \| `"no_retry"`
 
 If the single query's error needs to be retried (e.g. it's a deadlock
 error), returns the number of milliseconds to wait before retrying.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `error` | `unknown` |
 
 #### Returns
 
-`number` \| ``"immediate_retry"`` \| ``"no_retry"``
+`number` \| `"immediate_retry"` \| `"no_retry"`
 
 #### Defined in
 
 [src/abstract/Runner.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L47)
 
-___
+***
 
-### shouldDebatchOnError
+### shouldDebatchOnError()
 
-▸ **shouldDebatchOnError**(`error`): `boolean`
+> `abstract` **shouldDebatchOnError**(`error`): `boolean`
 
 If this method returns true for an error object, the batch is split back
 into sub-queries, they are executed individually, and then the response of
@@ -196,8 +142,8 @@ false.)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `error` | `unknown` |
 
 #### Returns
@@ -208,11 +154,11 @@ false.)
 
 [src/abstract/Runner.ts:64](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L64)
 
-___
+***
 
-### key
+### key()
 
-▸ **key**(`_input`): `string`
+> **key**(`_input`): `string`
 
 Returns a batch-dedupping key for the input. By default, no dedupping is
 performed (i.e. all inputs are processed individually and not collapsed
@@ -220,8 +166,8 @@ into one input; e.g. this is needed for inserts).
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `_input` | `TInput` |
 
 #### Returns

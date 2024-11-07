@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / CanReadOutgoingEdge
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / CanReadOutgoingEdge
 
 # Class: CanReadOutgoingEdge\<TField\>
 
@@ -12,34 +16,28 @@ to another ent with ID equals to the value of our ent's field.
 - field = user_id in the above example
 - toEntClass = EntCompany in the above example
 
-## Type parameters
+## Type Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `TField` | extends `string` |
+| Type Parameter |
+| ------ |
+| `TField` *extends* `string` |
 
 ## Implements
 
-- [`Predicate`](../interfaces/Predicate.md)\<`Record`\<`TField`, `string` \| ``null``\>\>
+- [`Predicate`](../interfaces/Predicate.md)\<`Record`\<`TField`, `string` \| `null`\>\>
 
 ## Constructors
 
-### constructor
+### new CanReadOutgoingEdge()
 
-• **new CanReadOutgoingEdge**\<`TField`\>(`field`, `toEntClass`): [`CanReadOutgoingEdge`](CanReadOutgoingEdge.md)\<`TField`\>
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TField` | extends `string` |
+> **new CanReadOutgoingEdge**\<`TField`\>(`field`, `toEntClass`): [`CanReadOutgoingEdge`](CanReadOutgoingEdge.md)\<`TField`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `field` | `TField` |
-| `toEntClass` | [`EntClass`](../modules.md#entclass) |
+| `toEntClass` | [`EntClass`](../interfaces/EntClass.md) |
 
 #### Returns
 
@@ -51,50 +49,24 @@ to another ent with ID equals to the value of our ent's field.
 
 ## Properties
 
-### name
-
-• `Readonly` **name**: `string`
-
-#### Implementation of
-
-[Predicate](../interfaces/Predicate.md).[name](../interfaces/Predicate.md#name)
-
-#### Defined in
-
-[src/ent/predicates/CanReadOutgoingEdge.ts:21](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L21)
-
-___
-
-### field
-
-• `Readonly` **field**: `TField`
-
-#### Defined in
-
-[src/ent/predicates/CanReadOutgoingEdge.ts:24](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L24)
-
-___
-
-### toEntClass
-
-• `Readonly` **toEntClass**: [`EntClass`](../modules.md#entclass)
-
-#### Defined in
-
-[src/ent/predicates/CanReadOutgoingEdge.ts:25](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L25)
+| Property | Type |
+| ------ | ------ |
+| `name` | `string` |
+| `field` | `TField` |
+| `toEntClass` | [`EntClass`](../interfaces/EntClass.md) |
 
 ## Methods
 
-### check
+### check()
 
-▸ **check**(`vc`, `row`): `Promise`\<`boolean`\>
+> **check**(`vc`, `row`): `Promise`\<`boolean`\>
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `vc` | [`VC`](VC.md) |
-| `row` | `Record`\<`TField`, ``null`` \| `string`\> |
+| `row` | `Record`\<`TField`, `null` \| `string`\> |
 
 #### Returns
 
@@ -102,7 +74,7 @@ ___
 
 #### Implementation of
 
-[Predicate](../interfaces/Predicate.md).[check](../interfaces/Predicate.md#check)
+[`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
 
 #### Defined in
 

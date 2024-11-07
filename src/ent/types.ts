@@ -23,6 +23,7 @@ import type { VC } from "./VC";
 /**
  * A very shallow interface of Ent class (as a collection of static methods).
  * Used in some places where we need the very minimum from the Ent.
+ * @interface
  */
 export type EntClass<TTable extends Table = DesperateAny> = {
   readonly SCHEMA: Schema<TTable>;
@@ -63,6 +64,7 @@ export type EntClass<TTable extends Table = DesperateAny> = {
 
 /**
  * A very shallow interface of one Ent.
+ * @interface
  */
 export type Ent<TTable extends Table = {}> = {
   readonly [ID]: string;

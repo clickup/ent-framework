@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / RuleResult
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / RuleResult
 
 # Interface: RuleResult
 
@@ -7,30 +11,8 @@ decision, what was thrown etc.).
 
 ## Properties
 
-### decision
-
-• **decision**: [`RuleDecision`](../enums/RuleDecision.md)
-
-#### Defined in
-
-[src/ent/rules/Rule.ts:21](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L21)
-
-___
-
-### rule
-
-• **rule**: [`Rule`](../classes/Rule.md)\<`object`\>
-
-#### Defined in
-
-[src/ent/rules/Rule.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L22)
-
-___
-
-### cause
-
-• **cause**: ``null`` \| [`EntAccessError`](../classes/EntAccessError.md)
-
-#### Defined in
-
-[src/ent/rules/Rule.ts:23](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L23)
+| Property | Type |
+| ------ | ------ |
+| `decision` | [`RuleDecision`](../type-aliases/RuleDecision.md) |
+| `rule` | [`Rule`](../classes/Rule.md)\<`object`\> |
+| `cause` | `null` \| [`EntAccessError`](../classes/EntAccessError.md) |

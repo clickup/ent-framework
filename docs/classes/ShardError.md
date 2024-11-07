@@ -1,28 +1,30 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ShardError
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / ShardError
 
 # Class: ShardError
 
 This non-retriable error is thrown when the system cannot detect the target
 shard to work with (e.g. a null ID or a missing field or something else).
 
-## Hierarchy
+## Extends
 
 - `Error`
 
-  ↳ **`ShardError`**
-
 ## Constructors
 
-### constructor
+### new ShardError()
 
-• **new ShardError**(`message`, `where?`): [`ShardError`](ShardError.md)
+> **new ShardError**(`message`, `where`?): [`ShardError`](ShardError.md)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `message` | `string` |
-| `where?` | `string` |
+| `where`? | `string` |
 
 #### Returns
 
@@ -30,7 +32,7 @@ shard to work with (e.g. a null ID or a missing field or something else).
 
 #### Overrides
 
-Error.constructor
+`Error.constructor`
 
 #### Defined in
 

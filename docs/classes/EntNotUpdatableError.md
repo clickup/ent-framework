@@ -1,28 +1,30 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / EntNotUpdatableError
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / EntNotUpdatableError
 
 # Class: EntNotUpdatableError
 
 Error: thrown when an Ent cannot be updated or deleted due to privacy reasons.
 
-## Hierarchy
+## Extends
 
 - [`EntAccessError`](EntAccessError.md)
 
-  ↳ **`EntNotUpdatableError`**
-
 ## Constructors
 
-### constructor
+### new EntNotUpdatableError()
 
-• **new EntNotUpdatableError**(`entName`, `vc`, `row`, `cause?`): [`EntNotUpdatableError`](EntNotUpdatableError.md)
+> **new EntNotUpdatableError**(`entName`, `vc`, `row`, `cause`): [`EntNotUpdatableError`](EntNotUpdatableError.md)
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
+| Parameter | Type | Default value |
+| ------ | ------ | ------ |
 | `entName` | `string` | `undefined` |
 | `vc` | `string` | `undefined` |
-| `row` | [`RowWithID`](../modules.md#rowwithid) | `undefined` |
+| `row` | [`RowWithID`](../type-aliases/RowWithID.md) | `undefined` |
 | `cause` | `unknown` | `null` |
 
 #### Returns
@@ -31,7 +33,7 @@ Error: thrown when an Ent cannot be updated or deleted due to privacy reasons.
 
 #### Overrides
 
-[EntAccessError](EntAccessError.md).[constructor](EntAccessError.md#constructor)
+[`EntAccessError`](EntAccessError.md).[`constructor`](EntAccessError.md#constructors)
 
 #### Defined in
 
@@ -39,48 +41,9 @@ Error: thrown when an Ent cannot be updated or deleted due to privacy reasons.
 
 ## Properties
 
-### cause
-
-• `Readonly` **cause**: ``null`` \| `string` \| `Error`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[cause](EntAccessError.md#cause)
-
-#### Defined in
-
-[src/ent/errors/EntAccessError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L8)
-
-___
-
-### entName
-
-• `Readonly` **entName**: `string`
-
-#### Inherited from
-
-[EntAccessError](EntAccessError.md).[entName](EntAccessError.md#entname)
-
-#### Defined in
-
-[src/ent/errors/EntAccessError.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L11)
-
-___
-
-### vc
-
-• `Readonly` **vc**: `string`
-
-#### Defined in
-
-[src/ent/errors/EntNotUpdatableError.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotUpdatableError.ts#L11)
-
-___
-
-### row
-
-• `Readonly` **row**: [`RowWithID`](../modules.md#rowwithid)
-
-#### Defined in
-
-[src/ent/errors/EntNotUpdatableError.ts:12](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotUpdatableError.ts#L12)
+| Property | Type |
+| ------ | ------ |
+| `cause` | `null` \| `string` \| `Error` |
+| `entName` | `string` |
+| `vc` | `string` |
+| `row` | [`RowWithID`](../type-aliases/RowWithID.md) |

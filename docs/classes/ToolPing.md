@@ -1,4 +1,8 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / ToolPing
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / ToolPing
 
 # Class: ToolPing
 
@@ -8,16 +12,16 @@ happening when a PG node goes down or experiences a failover/switchover.
 
 ## Constructors
 
-### constructor
+### new ToolPing()
 
-• **new ToolPing**(`options`): [`ToolPing`](ToolPing.md)
+> **new ToolPing**(`options`): [`ToolPing`](ToolPing.md)
 
 Initializes the instance.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Parameter | Type |
+| ------ | ------ |
 | `options` | [`ToolPingOptions`](../interfaces/ToolPingOptions.md) |
 
 #### Returns
@@ -30,40 +34,23 @@ Initializes the instance.
 
 ## Properties
 
-### DEFAULT\_OPTIONS
-
-▪ `Static` `Readonly` **DEFAULT\_OPTIONS**: `Required`\<`PickPartial`\<[`ToolPingOptions`](../interfaces/ToolPingOptions.md)\>\>
-
-Default values for the constructor options.
-
-#### Defined in
-
-[src/tools/ToolPing.ts:36](https://github.com/clickup/ent-framework/blob/master/src/tools/ToolPing.ts#L36)
-
-___
-
-### options
-
-• `Readonly` **options**: `Required`\<[`ToolPingOptions`](../interfaces/ToolPingOptions.md)\>
-
-Options of this tool.
-
-#### Defined in
-
-[src/tools/ToolPing.ts:44](https://github.com/clickup/ent-framework/blob/master/src/tools/ToolPing.ts#L44)
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`ToolPingOptions`](../interfaces/ToolPingOptions.md)\>\> | Default values for the constructor options. |
+| `options` | `Required`\<[`ToolPingOptions`](../interfaces/ToolPingOptions.md)\> | Options of this tool. |
 
 ## Methods
 
-### [asyncIterator]
+### \[asyncIterator\]()
 
-▸ **[asyncIterator]**(): `AsyncGenerator`\<`string`, `any`, `unknown`\>
+> **\[asyncIterator\]**(): `AsyncGenerator`\<`string`, `any`, `any`\>
 
 Runs an endless loop that pings a master() or replica() Client of the
 passed Island. Yields the colored output line by line.
 
 #### Returns
 
-`AsyncGenerator`\<`string`, `any`, `unknown`\>
+`AsyncGenerator`\<`string`, `any`, `any`\>
 
 #### Defined in
 

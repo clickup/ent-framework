@@ -1,37 +1,39 @@
-[@clickup/ent-framework](../README.md) / [Exports](../modules.md) / HelpersClass
+[**@clickup/ent-framework**](../README.md) • **Docs**
+
+***
+
+[@clickup/ent-framework](../globals.md) / HelpersClass
 
 # Interface: HelpersClass\<TTable, TUniqueKey, TClient\>
 
-## Type parameters
+## Extends
 
-| Name | Type |
-| :------ | :------ |
-| `TTable` | extends [`Table`](../modules.md#table) |
-| `TUniqueKey` | extends [`UniqueKey`](../modules.md#uniquekey)\<`TTable`\> |
-| `TClient` | extends [`Client`](../classes/Client.md) |
+- `OmitNew`\<[`PrimitiveClass`](../type-aliases/PrimitiveClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>\>
 
-## Hierarchy
+## Type Parameters
 
-- `OmitNew`\<[`PrimitiveClass`](../modules.md#primitiveclass)\<`TTable`, `TUniqueKey`, `TClient`\>\>
-
-  ↳ **`HelpersClass`**
+| Type Parameter |
+| ------ |
+| `TTable` *extends* [`Table`](../type-aliases/Table.md) |
+| `TUniqueKey` *extends* [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\> |
+| `TClient` *extends* [`Client`](../classes/Client.md) |
 
 ## Constructors
 
-### constructor
+### new HelpersClass()
 
-• **new HelpersClass**(): [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> & [`RowWithID`](../modules.md#rowwithid) & \{ [K in string]: Value\<TTable[K]\> }
+> **new HelpersClass**(): [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> & [`RowWithID`](../type-aliases/RowWithID.md) & `{ [K in string]: Value<TTable[K]> }`
 
 TS requires us to have a public constructor to infer instance types in
 various places. We make this constructor throw if it's called.
 
 #### Returns
 
-[`HelpersInstance`](HelpersInstance.md)\<`TTable`\> & [`RowWithID`](../modules.md#rowwithid) & \{ [K in string]: Value\<TTable[K]\> }
+[`HelpersInstance`](HelpersInstance.md)\<`TTable`\> & [`RowWithID`](../type-aliases/RowWithID.md) & `{ [K in string]: Value<TTable[K]> }`
 
 #### Inherited from
 
-OmitNew\<PrimitiveClass\<TTable, TUniqueKey, TClient\>\>.constructor
+`OmitNew<PrimitiveClass<TTable, TUniqueKey, TClient>>.constructor`
 
 #### Defined in
 
@@ -39,708 +41,37 @@ OmitNew\<PrimitiveClass\<TTable, TUniqueKey, TClient\>\>.constructor
 
 ## Properties
 
-### Configuration
-
-• `Readonly` **Configuration**: (`cfg`: [`Configuration`](../classes/Configuration.md)\<`TTable`\>) => [`Configuration`](../classes/Configuration.md)\<`TTable`\>
-
-A helper class to work-around TS weakness in return value type inference:
-https://github.com/Microsoft/TypeScript/issues/31273. It could've been just
-a function, but having a class is a little more natural.
-
-#### Type declaration
-
-• **new Configuration**(`cfg`): [`Configuration`](../classes/Configuration.md)\<`TTable`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `cfg` | [`Configuration`](../classes/Configuration.md)\<`TTable`\> |
-
-##### Returns
-
-[`Configuration`](../classes/Configuration.md)\<`TTable`\>
-
-#### Inherited from
-
-OmitNew.Configuration
-
-#### Defined in
-
-[src/ent/mixins/ConfigMixin.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L36)
-
-___
-
-### CLUSTER
-
-• `Readonly` **CLUSTER**: [`Cluster`](../classes/Cluster.md)\<`TClient`, `any`\>
-
-A Cluster where this Ent lives.
-
-#### Inherited from
-
-OmitNew.CLUSTER
-
-#### Defined in
-
-[src/ent/mixins/ConfigMixin.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L43)
-
-___
-
-### SCHEMA
-
-• `Readonly` **SCHEMA**: [`Schema`](../classes/Schema.md)\<`TTable`, `TUniqueKey`\>
-
-A schema which represents this Ent.
-
-#### Inherited from
-
-OmitNew.SCHEMA
-
-#### Defined in
-
-[src/ent/mixins/ConfigMixin.ts:48](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L48)
-
-___
-
-### SHARD\_AFFINITY
-
-• `Readonly` **SHARD\_AFFINITY**: [`ShardAffinity`](../modules.md#shardaffinity)\<[`FieldOfIDType`](../modules.md#fieldofidtype)\<`TTable`\>\>
-
-Defines how to find the right Shard during Ent insertion.
-
-#### Inherited from
-
-OmitNew.SHARD\_AFFINITY
-
-#### Defined in
-
-[src/ent/mixins/ConfigMixin.ts:53](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L53)
-
-___
-
-### SHARD\_LOCATOR
-
-• `Readonly` **SHARD\_LOCATOR**: [`ShardLocator`](../classes/ShardLocator.md)\<`TClient`, `TTable`, [`FieldOfIDType`](../modules.md#fieldofidtype)\<`TTable`\>\>
-
-Shard locator for this Ent, responsible for resolving IDs into Shard objects.
-
-#### Inherited from
-
-OmitNew.SHARD\_LOCATOR
-
-#### Defined in
-
-[src/ent/mixins/ConfigMixin.ts:58](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L58)
-
-___
-
-### VALIDATION
-
-• `Readonly` **VALIDATION**: [`Validation`](../classes/Validation.md)\<`TTable`\>
-
-Privacy rules for this Ent class.
-
-#### Inherited from
-
-OmitNew.VALIDATION
-
-#### Defined in
-
-[src/ent/mixins/ConfigMixin.ts:63](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L63)
-
-___
-
-### TRIGGERS
-
-• `Readonly` **TRIGGERS**: [`Triggers`](../classes/Triggers.md)\<`TTable`\>
-
-Triggers for this Ent class.
-
-#### Inherited from
-
-OmitNew.TRIGGERS
-
-#### Defined in
-
-[src/ent/mixins/ConfigMixin.ts:68](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L68)
-
-___
-
-### INVERSES
-
-• `Readonly` **INVERSES**: [`Inverse`](../classes/Inverse.md)\<`TClient`, `TTable`\>[]
-
-Inverse assoc managers for fields.
-
-#### Inherited from
-
-OmitNew.INVERSES
-
-#### Defined in
-
-[src/ent/mixins/ConfigMixin.ts:73](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/ConfigMixin.ts#L73)
-
-___
-
-### insert
-
-• **insert**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)\<`TTable`\>) => `Promise`\<`string`\>
-
-Same as insertIfNotExists(), but throws if the Ent violates unique key
-constraints.
-
-#### Type declaration
-
-▸ (`vc`, `input`): `Promise`\<`string`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
-
-##### Returns
-
-`Promise`\<`string`\>
-
-#### Defined in
-
-[src/ent/mixins/HelpersMixin.ts:76](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L76)
-
-___
-
-### insertReturning
-
-• **insertReturning**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)\<`TTable`\>) => `Promise`\<`TEnt`\>
-
-Same as insert(), but returns the created Ent.
-
-#### Type declaration
-
-▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `this` | () => `TEnt` |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
-
-##### Returns
-
-`Promise`\<`TEnt`\>
-
-#### Defined in
-
-[src/ent/mixins/HelpersMixin.ts:81](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L81)
-
-___
-
-### upsertReturning
-
-• **upsertReturning**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)\<`TTable`\>) => `Promise`\<`TEnt`\>
-
-Same, but returns the created/updated Ent.
-
-#### Type declaration
-
-▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `this` | () => `TEnt` |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
-
-##### Returns
-
-`Promise`\<`TEnt`\>
-
-#### Defined in
-
-[src/ent/mixins/HelpersMixin.ts:90](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L90)
-
-___
-
-### loadIfReadableNullable
-
-• **loadIfReadableNullable**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`\<``null`` \| `TEnt`\>
-
-Same as loadNullable(), but if no permissions to read, returns null and
-doesn't throw. It's more a convenience function rather than a concept.
-
-#### Type declaration
-
-▸ \<`TEnt`\>(`this`, `vc`, `id`): `Promise`\<``null`` \| `TEnt`\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `this` | () => `TEnt` |
-| `vc` | [`VC`](../classes/VC.md) |
-| `id` | `string` |
-
-##### Returns
-
-`Promise`\<``null`` \| `TEnt`\>
-
-#### Defined in
-
-[src/ent/mixins/HelpersMixin.ts:100](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L100)
-
-___
-
-### loadX
-
-• **loadX**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`\<`TEnt`\>
-
-Loads an Ent by its ID. Throws if no such Ent is found.
-This method is used VERY often.
-
-#### Type declaration
-
-▸ \<`TEnt`\>(`this`, `vc`, `id`): `Promise`\<`TEnt`\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `this` | () => `TEnt` |
-| `vc` | [`VC`](../classes/VC.md) |
-| `id` | `string` |
-
-##### Returns
-
-`Promise`\<`TEnt`\>
-
-#### Defined in
-
-[src/ent/mixins/HelpersMixin.ts:110](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L110)
-
-___
-
-### loadByX
-
-• **loadByX**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\>) => `Promise`\<`TEnt`\>
-
-Loads an Ent by its ID. Throws if no such Ent is found.
-This method is used VERY often.
-
-#### Type declaration
-
-▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`HelpersInstance`](HelpersInstance.md)\<`TTable`\> |
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `this` | () => `TEnt` |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\> |
-
-##### Returns
-
-`Promise`\<`TEnt`\>
-
-#### Defined in
-
-[src/ent/mixins/HelpersMixin.ts:120](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L120)
-
-___
-
-### insertIfNotExists
-
-• **insertIfNotExists**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)\<`TTable`\>) => `Promise`\<``null`` \| `string`\>
-
-Runs INSERT mutation for the Ent.
-- The Shard is inferred from the input fields using SHARD_AFFINITY.
-- Returns ID of the newly inserted row.
-- Returns null if the Ent violates unique key constraints.
-- If the Ent has some triggers set up, this will be translated into two
-  schema operations: idGen() and insert(), and before-triggers will run in
-  between having the ID known in advance.
-
-#### Type declaration
-
-▸ (`vc`, `input`): `Promise`\<``null`` \| `string`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
-
-##### Returns
-
-`Promise`\<``null`` \| `string`\>
-
-#### Inherited from
-
-OmitNew.insertIfNotExists
-
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:81](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L81)
-
-___
-
-### upsert
-
-• **upsert**: (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../modules.md#insertinput)\<`TTable`\>) => `Promise`\<`string`\>
-
-Inserts an Ent or updates an existing one if unique key matches.
-- Don't use upsert() too often, because upsert may still delete IDs even if
-  the object was updated, not inserted (there is no good ways to solve this
-  in some DB engines like relational DBs so far).
-- Upsert can't work if some triggers are defined for the Ent, because we
-  don't know Ent ID in advance (whether the upsert succeeds or skips on
-  duplication).
-
-#### Type declaration
-
-▸ (`vc`, `input`): `Promise`\<`string`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`InsertInput`](../modules.md#insertinput)\<`TTable`\> |
-
-##### Returns
-
-`Promise`\<`string`\>
-
-#### Inherited from
-
-OmitNew.upsert
-
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:95](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L95)
-
-___
-
-### loadNullable
-
-• **loadNullable**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`\<``null`` \| `TEnt`\>
-
-Loads an Ent by its ID. Returns null if no such Ent exists. Try to use
-loadX() instead as much as you can.
-
-#### Type declaration
-
-▸ \<`TEnt`\>(`this`, `vc`, `id`): `Promise`\<``null`` \| `TEnt`\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\> |
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `this` | () => `TEnt` |
-| `vc` | [`VC`](../classes/VC.md) |
-| `id` | `string` |
-
-##### Returns
-
-`Promise`\<``null`` \| `TEnt`\>
-
-#### Inherited from
-
-OmitNew.loadNullable
-
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:101](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L101)
-
-___
-
-### loadByNullable
-
-• **loadByNullable**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\>) => `Promise`\<``null`` \| `TEnt`\>
-
-Loads an Ent by its unique key. Returns null if no such Ent exists. Notice
-that the key must be REALLY unique, otherwise the database may return
-multiple items, and the API will break. Don't try to use this method with
-non-unique keys!
-
-#### Type declaration
-
-▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<``null`` \| `TEnt`\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\> |
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `this` | () => `TEnt` |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TUniqueKey`\> |
-
-##### Returns
-
-`Promise`\<``null`` \| `TEnt`\>
-
-#### Inherited from
-
-OmitNew.loadByNullable
-
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:113](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L113)
-
-___
-
-### selectBy
-
-• **selectBy**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TuplePrefixes`\<`TUniqueKey`\>\>) => `Promise`\<`TEnt`[]\>
-
-Selects the list of Ents by their unique key prefix. The query can span
-multiple Shards if their locations can be inferred from inverses related to
-the fields mentioned in the query. Ordering of the results is not
-guaranteed.
-
-#### Type declaration
-
-▸ \<`TEnt`\>(`this`, `vc`, `input`): `Promise`\<`TEnt`[]\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\> |
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `this` | () => `TEnt` |
-| `vc` | [`VC`](../classes/VC.md) |
-| `input` | [`LoadByInput`](../modules.md#loadbyinput)\<`TTable`, `TuplePrefixes`\<`TUniqueKey`\>\> |
-
-##### Returns
-
-`Promise`\<`TEnt`[]\>
-
-#### Inherited from
-
-OmitNew.selectBy
-
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:125](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L125)
-
-___
-
-### select
-
-• **select**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)\<`TTable`\>, `limit`: `number`, `order?`: [`Order`](../modules.md#order)\<`TTable`\>, `custom?`: {}) => `Promise`\<`TEnt`[]\>
-
-Selects the list of Ents by some predicate.
-- The query can span multiple Shards if their locations can be inferred
-  from inverses related to the fields mentioned in the query.
-- In multi-Shard case, ordering of results is not guaranteed.
-- In multi-Shard case, it may return more results than requested by limit
-  (basically, limit is applied to each Shard individually). The caller has
-  then freedom to reorder & slice the results as they wish.
-
-#### Type declaration
-
-▸ \<`TEnt`\>(`this`, `vc`, `where`, `limit`, `order?`, `custom?`): `Promise`\<`TEnt`[]\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\> |
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `this` | () => `TEnt` |
-| `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`Where`](../modules.md#where)\<`TTable`\> |
-| `limit` | `number` |
-| `order?` | [`Order`](../modules.md#order)\<`TTable`\> |
-| `custom?` | `Object` |
-
-##### Returns
-
-`Promise`\<`TEnt`[]\>
-
-#### Inherited from
-
-OmitNew.select
-
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:140](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L140)
-
-___
-
-### selectChunked
-
-• **selectChunked**: \<TEnt\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../modules.md#where)\<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom?`: {}) => `AsyncIterableIterator`\<`TEnt`[]\>
-
-Same as select(), but returns data in chunks.
-- Uses multiple select() queries under the hood.
-- The query can span multiple Shards if their locations can be inferred
-  from inverses related to the fields mentioned in the query.
-- Ents in each chunk always belong to the same Shard and are ordered by ID
-  (there is no support for custom ordering). Make sure you have the right
-  index in the database.
-
-#### Type declaration
-
-▸ \<`TEnt`\>(`this`, `vc`, `where`, `chunkSize`, `limit`, `custom?`): `AsyncIterableIterator`\<`TEnt`[]\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TEnt` | extends [`PrimitiveInstance`](PrimitiveInstance.md)\<`TTable`\> |
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `this` | () => `TEnt` |
-| `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`Where`](../modules.md#where)\<`TTable`\> |
-| `chunkSize` | `number` |
-| `limit` | `number` |
-| `custom?` | `Object` |
-
-##### Returns
-
-`AsyncIterableIterator`\<`TEnt`[]\>
-
-#### Inherited from
-
-OmitNew.selectChunked
-
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:158](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L158)
-
-___
-
-### count
-
-• **count**: (`vc`: [`VC`](../classes/VC.md), `where`: [`CountInput`](../modules.md#countinput)\<`TTable`\>) => `Promise`\<`number`\>
-
-Returns count of Ents matching a predicate. The query can span multiple
-Shards if their locations can be inferred from inverses related to the
-fields mentioned in the query.
-
-#### Type declaration
-
-▸ (`vc`, `where`): `Promise`\<`number`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`CountInput`](../modules.md#countinput)\<`TTable`\> |
-
-##### Returns
-
-`Promise`\<`number`\>
-
-#### Inherited from
-
-OmitNew.count
-
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:172](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L172)
-
-___
-
-### exists
-
-• **exists**: (`vc`: [`VC`](../classes/VC.md), `where`: [`ExistsInput`](../modules.md#existsinput)\<`TTable`\>) => `Promise`\<`boolean`\>
-
-A more optimal approach than count() when we basically just need to know
-whether we have "0 or not 0" rows.
-
-#### Type declaration
-
-▸ (`vc`, `where`): `Promise`\<`boolean`\>
-
-##### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `vc` | [`VC`](../classes/VC.md) |
-| `where` | [`ExistsInput`](../modules.md#existsinput)\<`TTable`\> |
-
-##### Returns
-
-`Promise`\<`boolean`\>
-
-#### Inherited from
-
-OmitNew.exists
-
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:178](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L178)
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| `Configuration` | (`cfg`: [`Configuration`](../classes/Configuration.md)\<`TTable`\>) => [`Configuration`](../classes/Configuration.md)\<`TTable`\> | A helper class to work-around TS weakness in return value type inference: https://github.com/Microsoft/TypeScript/issues/31273. It could've been just a function, but having a class is a little more natural. |
+| `CLUSTER` | [`Cluster`](../classes/Cluster.md)\<`TClient`, `any`\> | A Cluster where this Ent lives. |
+| `SCHEMA` | [`Schema`](../classes/Schema.md)\<`TTable`, `TUniqueKey`\> | A schema which represents this Ent. |
+| `SHARD_AFFINITY` | [`ShardAffinity`](../type-aliases/ShardAffinity.md)\<[`FieldOfIDType`](../type-aliases/FieldOfIDType.md)\<`TTable`\>\> | Defines how to find the right Shard during Ent insertion. |
+| `SHARD_LOCATOR` | [`ShardLocator`](../classes/ShardLocator.md)\<`TClient`, `TTable`, [`FieldOfIDType`](../type-aliases/FieldOfIDType.md)\<`TTable`\>\> | Shard locator for this Ent, responsible for resolving IDs into Shard objects. |
+| `VALIDATION` | [`Validation`](../classes/Validation.md)\<`TTable`\> | Privacy rules for this Ent class. |
+| `TRIGGERS` | [`Triggers`](../classes/Triggers.md)\<`TTable`\> | Triggers for this Ent class. |
+| `INVERSES` | [`Inverse`](../classes/Inverse.md)\<`TClient`, `TTable`\>[] | Inverse assoc managers for fields. |
+| `insert` | (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\>) => `Promise`\<`string`\> | Same as insertIfNotExists(), but throws if the Ent violates unique key constraints. |
+| `insertReturning` | \<`TEnt`\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\>) => `Promise`\<`TEnt`\> | Same as insert(), but returns the created Ent. |
+| `upsertReturning` | \<`TEnt`\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\>) => `Promise`\<`TEnt`\> | Same, but returns the created/updated Ent. |
+| `loadIfReadableNullable` | \<`TEnt`\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`\<`null` \| `TEnt`\> | Same as loadNullable(), but if no permissions to read, returns null and doesn't throw. It's more a convenience function rather than a concept. |
+| `loadX` | \<`TEnt`\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`\<`TEnt`\> | Loads an Ent by its ID. Throws if no such Ent is found. This method is used VERY often. |
+| `loadByX` | \<`TEnt`\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../type-aliases/LoadByInput.md)\<`TTable`, `TUniqueKey`\>) => `Promise`\<`TEnt`\> | Loads an Ent by its ID. Throws if no such Ent is found. This method is used VERY often. |
+| `insertIfNotExists` | (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\>) => `Promise`\<`null` \| `string`\> | Runs INSERT mutation for the Ent. - The Shard is inferred from the input fields using SHARD_AFFINITY. - Returns ID of the newly inserted row. - Returns null if the Ent violates unique key constraints. - If the Ent has some triggers set up, this will be translated into two schema operations: idGen() and insert(), and before-triggers will run in between having the ID known in advance. |
+| `upsert` | (`vc`: [`VC`](../classes/VC.md), `input`: [`InsertInput`](../type-aliases/InsertInput.md)\<`TTable`\>) => `Promise`\<`string`\> | Inserts an Ent or updates an existing one if unique key matches. - Don't use upsert() too often, because upsert may still delete IDs even if the object was updated, not inserted (there is no good ways to solve this in some DB engines like relational DBs so far). - Upsert can't work if some triggers are defined for the Ent, because we don't know Ent ID in advance (whether the upsert succeeds or skips on duplication). |
+| `loadNullable` | \<`TEnt`\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `id`: `string`) => `Promise`\<`null` \| `TEnt`\> | Loads an Ent by its ID. Returns null if no such Ent exists. Try to use loadX() instead as much as you can. |
+| `loadByNullable` | \<`TEnt`\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../type-aliases/LoadByInput.md)\<`TTable`, `TUniqueKey`\>) => `Promise`\<`null` \| `TEnt`\> | Loads an Ent by its unique key. Returns null if no such Ent exists. Notice that the key must be REALLY unique, otherwise the database may return multiple items, and the API will break. Don't try to use this method with non-unique keys! |
+| `selectBy` | \<`TEnt`\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `input`: [`LoadByInput`](../type-aliases/LoadByInput.md)\<`TTable`, `TuplePrefixes`\<`TUniqueKey`\>\>) => `Promise`\<`TEnt`[]\> | Selects the list of Ents by their unique key prefix. The query can span multiple Shards if their locations can be inferred from inverses related to the fields mentioned in the query. Ordering of the results is not guaranteed. |
+| `select` | \<`TEnt`\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../type-aliases/Where.md)\<`TTable`\>, `limit`: `number`, `order`?: [`Order`](../type-aliases/Order.md)\<`TTable`\>, `custom`?: `object`) => `Promise`\<`TEnt`[]\> | Selects the list of Ents by some predicate. - The query can span multiple Shards if their locations can be inferred from inverses related to the fields mentioned in the query. - In multi-Shard case, ordering of results is not guaranteed. - In multi-Shard case, it may return more results than requested by limit (basically, limit is applied to each Shard individually). The caller has then freedom to reorder & slice the results as they wish. |
+| `selectChunked` | \<`TEnt`\>(`this`: () => `TEnt`, `vc`: [`VC`](../classes/VC.md), `where`: [`Where`](../type-aliases/Where.md)\<`TTable`\>, `chunkSize`: `number`, `limit`: `number`, `custom`?: `object`) => `AsyncIterableIterator`\<`TEnt`[], `any`, `any`\> | Same as select(), but returns data in chunks. - Uses multiple select() queries under the hood. - The query can span multiple Shards if their locations can be inferred from inverses related to the fields mentioned in the query. - Ents in each chunk always belong to the same Shard and are ordered by ID (there is no support for custom ordering). Make sure you have the right index in the database. |
+| `count` | (`vc`: [`VC`](../classes/VC.md), `where`: [`CountInput`](../type-aliases/CountInput.md)\<`TTable`\>) => `Promise`\<`number`\> | Returns count of Ents matching a predicate. The query can span multiple Shards if their locations can be inferred from inverses related to the fields mentioned in the query. |
+| `exists` | (`vc`: [`VC`](../classes/VC.md), `where`: [`ExistsInput`](../type-aliases/ExistsInput.md)\<`TTable`\>) => `Promise`\<`boolean`\> | A more optimal approach than count() when we basically just need to know whether we have "0 or not 0" rows. |
 
 ## Methods
 
-### configure
+### configure()
 
-▸ **configure**(): [`Configuration`](../classes/Configuration.md)\<`TTable`\>
+> **configure**(): [`Configuration`](../classes/Configuration.md)\<`TTable`\>
 
 Some Ent parameters need to be configured lazily, on the 1st access,
 because there could be cyclic references between Ent classes (e.g. in their
@@ -754,7 +85,7 @@ abstract methods in TS yet, so making it non-abstract.
 
 #### Inherited from
 
-OmitNew.configure
+`OmitNew.configure`
 
 #### Defined in
 
