@@ -19,7 +19,7 @@ import { createVC, expectToMatchSnapshot } from "./test-utils";
 /**
  * Company
  */
-export class EntTestCompany extends BaseEnt(
+class EntTestCompany extends BaseEnt(
   testCluster,
   new PgSchema(
     'ent.generic"company',
@@ -58,7 +58,7 @@ export class EntTestCompany extends BaseEnt(
 /**
  * User -> Company
  */
-export class EntTestUser extends BaseEnt(
+class EntTestUser extends BaseEnt(
   testCluster,
   new PgSchema(
     'ent.generic"user',
@@ -110,7 +110,7 @@ export class EntTestUser extends BaseEnt(
 /**
  * Post -> User -> Company
  */
-export class EntTestPost extends BaseEnt(
+class EntTestPost extends BaseEnt(
   testCluster,
   new PgSchema(
     'ent.generic"post',
@@ -165,7 +165,7 @@ export class EntTestPost extends BaseEnt(
 /**
  * Comment -> Post -> User -> Company
  */
-export class EntTestComment extends BaseEnt(
+class EntTestComment extends BaseEnt(
   testCluster,
   new PgSchema(
     'ent.generic"comment',
@@ -210,7 +210,7 @@ export class EntTestComment extends BaseEnt(
 /**
  * Like -> Post -> User -> Company
  */
-export class EntTestLike extends BaseEnt(
+class EntTestLike extends BaseEnt(
   testCluster,
   new PgSchema(
     'ent.generic"like',

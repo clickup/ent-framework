@@ -6,6 +6,7 @@ import { VCWithQueryCache } from "./VCFlavor";
 const OPS = [
   "loadNullable",
   "loadByNullable",
+  "selectBy",
   "select",
   "count",
   "exists",
@@ -86,9 +87,14 @@ export class QueryCache {
   }
 
   /**
-   * Deletes cache slots or keys for an Ent.
+   * Deletes cache slots or keys for an Ent. If key is null, skips the deletion.
+   * If key is undefined (i.e. not passed), then deletes all slots.
    */
-  delete(EntClass: AnyClass, ops: Op[], key?: string): this {
+  delete(EntClass: AnyClass, ops: readonly Op[], key?: string | null): this {
+    if (key === null) {
+      return this;
+    }
+
     const byOp = this.byEntClass?.get(EntClass);
     if (!byOp) {
       return this;

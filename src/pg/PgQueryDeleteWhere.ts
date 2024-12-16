@@ -63,6 +63,6 @@ class PgRunnerDeleteWhere<TTable extends Table> extends PgRunner<
       annotations,
       input[ID].length,
     );
-    return rows.map((row) => row.id);
+    return rows.map((row) => row[ID]);
   }
 }

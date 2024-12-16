@@ -119,7 +119,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
       }),
     );
     if (row) {
-      await this.run(vc, this.shard(id1), this.inverseSchema.delete(row.id));
+      await this.run(vc, this.shard(id1), this.inverseSchema.delete(row[ID]));
     }
   }
 
@@ -143,7 +143,7 @@ export class Inverse<TClient extends Client, TTable extends Table> {
    * Creates an Inverse schema which derives its id field's autoInsert from the
    * passed id2 schema. The returned schema is heavily cached, so batching for
    * it works efficiently even for different id2 schemas and different Inverse
-   * types (actually, it would work the same way even without @Memoize since
+   * types (actually, it would work the same way even without `@Memoize` since
    * Runner batches by schema hash, not by schema object instance, but anyways).
    */
   @Memoize(

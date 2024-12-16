@@ -313,6 +313,7 @@ beforeEach(() => {
  */
 export const testCluster = new Cluster({
   shardsDiscoverIntervalMs: 500,
+  shardsDiscoverIntervalJitter: 0.01,
   islands: TEST_ISLANDS,
   createClient: ({ nameSuffix, isAlwaysLaggingReplica, loggers, ...config }) =>
     new TestPgClient(

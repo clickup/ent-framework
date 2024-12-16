@@ -37,10 +37,9 @@ export class IncomingEdgeFromVCExists<TEdgeTable extends Table>
       "(" +
       this.EntEdge.name +
       "[" +
-      this.entEdgeVCField +
-      "=vc, " +
-      this.entEdgeFKField +
-      "=row.id]" +
+      `${this.entEdgeVCField}=vc, ` +
+      `${this.entEdgeFKField}=row.${ID}` +
+      "]" +
       ")";
   }
 

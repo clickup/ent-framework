@@ -4,7 +4,6 @@
  * part of the trace value.
  */
 const RANDOM_BITS = 10;
-
 const RANDOM_BITS_MASK = Math.pow(2, RANDOM_BITS) - 1;
 
 /**
@@ -16,16 +15,34 @@ export class VCTrace {
   readonly trace: string;
 
   constructor(trace?: string) {
-    this.trace = trace ?? createRandomTrace();
+    this.trace = trace ?? this.createRandomTrace();
   }
-}
 
-/**
- * Returns a stringified uint63 (0 - 9223372036854775807).
- */
-function createRandomTrace(): string {
-  return (
-    (BigInt(Date.now()) << BigInt(RANDOM_BITS)) |
-    BigInt(Math.trunc(Math.random() * RANDOM_BITS_MASK) & RANDOM_BITS_MASK)
-  ).toString();
+  /**
+   * In case the trace was created by this tool, tries to extract the date of
+   * its creation. As a sanity check, verifies that this date is not too far
+   * away from the present time.
+   */
+  tryExtractCreationDate(): Date | null {
+    try {
+      const ts = BigInt(this.trace) >> BigInt(RANDOM_BITS);
+      const minTs = Date.now() - 1000 * 3600 * 24 * 365;
+      const maxTs = Date.now() + 1000 * 3600 * 24;
+      return BigInt(minTs) < ts && ts < BigInt(maxTs)
+        ? new Date(Number(ts))
+        : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Returns a stringified uint63 (0 - 9223372036854775807).
+   */
+  private createRandomTrace(): string {
+    return (
+      (BigInt(Date.now()) << BigInt(RANDOM_BITS)) |
+      BigInt(Math.trunc(Math.random() * RANDOM_BITS_MASK) & RANDOM_BITS_MASK)
+    ).toString();
+  }
 }

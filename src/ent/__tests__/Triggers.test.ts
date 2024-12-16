@@ -19,7 +19,7 @@ const $EPHEMERAL2 = Symbol("$EPHEMERAL2");
 /**
  * User
  */
-export class EntTestUser extends BaseEnt(
+class EntTestUser extends BaseEnt(
   testCluster,
   new PgSchema(
     'ent.triggers"user',
@@ -65,7 +65,7 @@ export class EntTestUser extends BaseEnt(
 /**
  * Headline -> User -> Company
  */
-export class EntTestHeadline extends BaseEnt(
+class EntTestHeadline extends BaseEnt(
   testCluster,
   new PgSchema(
     'ent.triggers"headline',
@@ -269,7 +269,7 @@ export class EntTestHeadline extends BaseEnt(
 /**
  * Country
  */
-export class EntTestCountry extends BaseEnt(
+class EntTestCountry extends BaseEnt(
   testCluster,
   new PgSchema(
     'ent.triggers"country',

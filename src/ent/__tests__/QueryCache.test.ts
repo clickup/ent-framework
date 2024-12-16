@@ -7,7 +7,7 @@ import { AllowIf } from "../rules/AllowIf";
 import { GLOBAL_SHARD } from "../ShardAffinity";
 import { createVC } from "./test-utils";
 
-export class EntTestCompany extends BaseEnt(
+class EntTestCompany extends BaseEnt(
   testCluster,
   new PgSchema(
     'query-cache"company',

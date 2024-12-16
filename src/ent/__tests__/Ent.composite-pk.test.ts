@@ -10,7 +10,7 @@ import { Require } from "../rules/Require";
 import { GLOBAL_SHARD } from "../ShardAffinity";
 import { createVC } from "./test-utils";
 
-export class EntTestUser extends BaseEnt(
+class EntTestUser extends BaseEnt(
   testCluster,
   new PgSchema(
     'ent.composite-pk"test_user',
@@ -39,7 +39,7 @@ export class EntTestUser extends BaseEnt(
   }
 }
 
-export class EntTestComposite extends BaseEnt(
+class EntTestComposite extends BaseEnt(
   testCluster,
   new PgSchema(
     'ent.composite-pk"test_composite',
