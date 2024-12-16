@@ -1,5 +1,8 @@
 import type { Client } from "../../abstract/Client";
+import { hasKey } from "../../internal/misc";
+import { ID } from "../../types";
 import type {
+  SelectByInput,
   CountInput,
   ExistsInput,
   InsertInput,
@@ -13,6 +16,14 @@ import { QueryCache } from "../QueryCache";
 import type { UpdateOriginalInput } from "../types";
 import type { VC } from "../VC";
 import type { PrimitiveClass, PrimitiveInstance } from "./PrimitiveMixin";
+
+const MULTI_ROW_AFFECTING_OPS = [
+  "loadByNullable",
+  "selectBy",
+  "select",
+  "count",
+  "exists",
+] as const;
 
 /**
  * Modifies the passed class adding VC-stored cache layer to it.
@@ -31,23 +42,22 @@ export function CacheMixin<
       vc: VC,
       input: InsertInput<TTable>,
     ): Promise<string | null> {
-      const res = await super.insertIfNotExists(vc, input);
-      vc.cache(QueryCache).delete(this, ["loadByNullable", "select", "count"]);
-      return res;
+      const resPromise = super.insertIfNotExists(vc, input);
+      vc.cache(QueryCache)
+        .delete(this, ["loadNullable"], hasKey(ID, input) ? input[ID] : null)
+        .delete(this, MULTI_ROW_AFFECTING_OPS);
+      return resPromise;
     }
 
     static override async upsert(
       vc: VC,
       input: InsertInput<TTable>,
     ): Promise<string> {
-      const res = super.upsert(vc, input);
-      vc.cache(QueryCache).delete(this, [
-        "loadNullable",
-        "loadByNullable",
-        "select",
-        "count",
-      ]);
-      return res;
+      const resPromise = super.upsert(vc, input);
+      vc.cache(QueryCache)
+        .delete(this, ["loadNullable"], hasKey(ID, input) ? input[ID] : null)
+        .delete(this, MULTI_ROW_AFFECTING_OPS);
+      return resPromise;
     }
 
     static override async loadNullable<TEnt extends PrimitiveInstance<TTable>>(
@@ -74,6 +84,18 @@ export function CacheMixin<
         .through(this, "loadByNullable", JSON.stringify(input), async () =>
           super.loadByNullable(vc, input),
         ) as Promise<TEnt | null>;
+    }
+
+    static override async selectBy<TEnt extends PrimitiveInstance<TTable>>(
+      this: new () => TEnt,
+      vc: VC,
+      input: SelectByInput<TTable, TUniqueKey>,
+    ): Promise<TEnt[]> {
+      return vc
+        .cache(QueryCache)
+        .through(this, "selectBy", JSON.stringify(input), async () =>
+          super.selectBy(vc, input),
+        ) as Promise<TEnt[]>;
     }
 
     static override async select<TEnt extends PrimitiveInstance<TTable>>(
@@ -119,21 +141,21 @@ export function CacheMixin<
     override async updateOriginal(
       input: UpdateOriginalInput<TTable>,
     ): Promise<boolean> {
-      const res = await super.updateOriginal(input);
+      const resPromise = super.updateOriginal(input);
       this.vc
         .cache(QueryCache)
-        .delete(this.constructor, ["loadNullable"], this.id)
-        .delete(this.constructor, ["loadByNullable", "select", "count"]);
-      return res;
+        .delete(this.constructor, ["loadNullable"], this[ID])
+        .delete(this.constructor, MULTI_ROW_AFFECTING_OPS);
+      return resPromise;
     }
 
     override async deleteOriginal(): Promise<boolean> {
-      const res = await super.deleteOriginal();
+      const resPromise = super.deleteOriginal();
       this.vc
         .cache(QueryCache)
-        .delete(this.constructor, ["loadNullable"], this.id)
-        .delete(this.constructor, ["loadByNullable", "select", "count"]);
-      return res;
+        .delete(this.constructor, ["loadNullable"], this[ID])
+        .delete(this.constructor, MULTI_ROW_AFFECTING_OPS);
+      return resPromise;
     }
   }
 

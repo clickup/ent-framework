@@ -65,7 +65,10 @@ export class LocalCache<TValue extends {} = never> {
     this.options = defaults({}, options, LocalCache.DEFAULT_OPTIONS);
     this.cleanupTimeout = setTimeout(
       () => this.onCleanupTimer(),
-      this.options.cleanupFirstRunDelayMs * jitter(this.options.cleanupJitter),
+      Math.round(
+        this.options.cleanupFirstRunDelayMs *
+          jitter(this.options.cleanupJitter),
+      ),
     );
   }
 
@@ -170,8 +173,10 @@ export class LocalCache<TValue extends {} = never> {
     );
     this.cleanupTimeout = setTimeout(
       () => this.onCleanupTimer(),
-      (this.options.expirationMs / this.options.cleanupRoundsPerExpiration) *
-        jitter(this.options.cleanupJitter),
+      Math.round(
+        (this.options.expirationMs / this.options.cleanupRoundsPerExpiration) *
+          jitter(this.options.cleanupJitter),
+      ),
     );
   }
 

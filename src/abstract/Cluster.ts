@@ -17,6 +17,7 @@ import {
   objectHash,
   maybeCall,
   jsonHash,
+  jitter,
 } from "../internal/misc";
 import { Registry } from "../internal/Registry";
 import type { Client } from "./Client";
@@ -45,6 +46,8 @@ export interface ClusterOptions<TClient extends Client, TNode> {
   localCache?: LocalCache | null;
   /** How often to run Shards rediscovery in normal circumstances. */
   shardsDiscoverIntervalMs?: MaybeCallable<number>;
+  /** Jitter for shardsDiscoverIntervalMs. */
+  shardsDiscoverIntervalJitter?: MaybeCallable<number>;
   /** How often to recheck for changes in options.islands (typically, often,
    * since it's assumed that options.islands calculation is cheap). If the
    * Cluster configuration is changed, then we trigger rediscovery ASAP. */
@@ -97,6 +100,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
   > = {
     localCache: null,
     shardsDiscoverIntervalMs: 10000,
+    shardsDiscoverIntervalJitter: 0.2,
     shardsDiscoverRecheckIslandsIntervalMs: 500,
     locateIslandErrorRetryCount: 2,
     locateIslandErrorRediscoverClusterDelayMs: 1000,
@@ -183,7 +187,11 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
     this.shardNoByID = client.shardNoByID.bind(client);
 
     this.shardsDiscoverCache = new CachedRefreshedValue({
-      delayMs: () => maybeCall(this.options.shardsDiscoverIntervalMs),
+      delayMs: () =>
+        Math.round(
+          maybeCall(this.options.shardsDiscoverIntervalMs) *
+            jitter(maybeCall(this.options.shardsDiscoverIntervalJitter)),
+        ),
       warningTimeoutMs: () => maybeCall(this.options.shardsDiscoverIntervalMs),
       deps: {
         delayMs: () =>
@@ -206,16 +214,38 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
    * Signals the Cluster to keep the Clients pre-warmed, e.g. open. (It's up to
    * the particular Client's implementation, what does a "pre-warmed Client"
    * mean; typically, it's keeping some minimal number of pooled connections.)
+   *
+   * Except when `randomizedDelayMs` is passed as 0, the actual prewarm (and
+   * Islands discovery) queries will run with a randomized delay between N/2 and
+   * N ms. It is better to operate in such mode: if multiple Node processes
+   * start simultaneously in the cluster, then the randomization helps to avoid
+   * new connections burst (new connections establishment is expensive for e.g.
+   * pgbouncer or when DB is accessed over SSL).
    */
-  prewarm(): void {
+  prewarm(
+    randomizedDelayMs: number = 5000,
+    onInitialPrewarm?: (delayMs: number) => void,
+  ): void {
+    if (this.prewarmEnabled) {
+      return;
+    }
+
     this.prewarmEnabled = true;
-    runInVoid(async () => {
-      for (const island of await this.islands()) {
-        for (const client of island.clients) {
-          client.prewarm();
-        }
-      }
-    });
+    const initialDelayMs = randomizedDelayMs
+      ? Math.round(random(randomizedDelayMs / 2, randomizedDelayMs))
+      : 0;
+    setTimeout(
+      () =>
+        runInVoid(async () => {
+          onInitialPrewarm?.(initialDelayMs);
+          for (const island of await this.islands()) {
+            for (const client of island.clients) {
+              client.prewarm();
+            }
+          }
+        }),
+      initialDelayMs,
+    );
   }
 
   /**
@@ -402,7 +432,11 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
     const startTime = performance.now();
     await pTimeout(
       this.shardsDiscoverCache.waitRefresh(),
-      maybeCall(this.options.shardsDiscoverIntervalMs) * 2,
+      Math.round(
+        maybeCall(this.options.shardsDiscoverIntervalMs) *
+          jitter(maybeCall(this.options.shardsDiscoverIntervalJitter)) *
+          2,
+      ),
       "Timed out while waiting for whole-Cluster Shards discovery.",
     ).catch((error) =>
       this.options.loggers.swallowedErrorLogger({
@@ -433,7 +467,11 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
     const startTime = performance.now();
     await pTimeout(
       island.rediscover(),
-      maybeCall(this.options.shardsDiscoverIntervalMs) * 2,
+      Math.round(
+        maybeCall(this.options.shardsDiscoverIntervalMs) *
+          jitter(maybeCall(this.options.shardsDiscoverIntervalJitter)) *
+          2,
+      ),
       `Timed out while waiting for Island ${island.no} Shards discovery.`,
     ).catch((error) =>
       this.options.loggers.swallowedErrorLogger({

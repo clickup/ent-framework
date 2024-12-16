@@ -23,11 +23,16 @@ export interface PgClientPoolOptions extends PgClientOptions {
   Pool?: typeof Pool;
   /** Close the connection after the query if it was opened long time ago. */
   maxConnLifetimeMs?: MaybeCallable<number>;
-  /** Jitter for old connections closure. */
+  /** Jitter for maxConnLifetimeMs. */
   maxConnLifetimeJitter?: MaybeCallable<number>;
+  /** Add not more than this number of connections in each prewarm interval. New
+   * connections are expensive to establish (especially when SSL is enabled). */
+  prewarmIntervalStep?: MaybeCallable<number>;
   /** How often to send bursts of prewarm queries to all Clients to keep the
    * minimal number of open connections. */
   prewarmIntervalMs?: MaybeCallable<number>;
+  /** Jitter for prewarmIntervalMs. */
+  prewarmIntervalJitter?: MaybeCallable<number>;
   /** What prewarm query to send. */
   prewarmQuery?: MaybeCallable<string>;
 }
@@ -48,8 +53,10 @@ export class PgClientPool extends PgClient {
     ...super.DEFAULT_OPTIONS,
     Pool,
     maxConnLifetimeMs: 0,
-    maxConnLifetimeJitter: 0.2,
+    maxConnLifetimeJitter: 0.5,
+    prewarmIntervalStep: 1,
     prewarmIntervalMs: 10000,
+    prewarmIntervalJitter: 0.5,
     prewarmQuery: 'SELECT 1 AS "prewarmQuery"',
   };
 
@@ -81,8 +88,10 @@ export class PgClientPool extends PgClient {
         if (maxConnLifetimeMs > 0) {
           client.closeAt =
             Date.now() +
-            maxConnLifetimeMs *
-              jitter(maybeCall(this.options.maxConnLifetimeJitter));
+            Math.round(
+              maxConnLifetimeMs *
+                jitter(maybeCall(this.options.maxConnLifetimeJitter)),
+            );
         }
 
         // Sets a "default error" handler to not let errors leak to e.g. Jest
@@ -168,6 +177,7 @@ export class PgClientPool extends PgClient {
     const min = Math.min(
       this.options.config.min,
       this.options.config.max ?? Infinity,
+      this.pool.totalCount + (maybeCall(this.options.prewarmIntervalStep) || 1),
     );
     const toPrewarm = min - this.pool.waitingCount;
     if (toPrewarm > 0) {
@@ -186,9 +196,15 @@ export class PgClientPool extends PgClient {
       );
     }
 
-    this.prewarmTimeout.current = setTimeout(() => {
-      this.prewarmTimeout.current = null;
-      this.prewarm();
-    }, maybeCall(this.options.prewarmIntervalMs));
+    this.prewarmTimeout.current = setTimeout(
+      () => {
+        this.prewarmTimeout.current = null;
+        this.prewarm();
+      },
+      Math.round(
+        maybeCall(this.options.prewarmIntervalMs) *
+          jitter(maybeCall(this.options.prewarmIntervalJitter)),
+      ),
+    );
   }
 }

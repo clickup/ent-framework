@@ -66,7 +66,7 @@ interface ToolScoreboardQueryError {
 }
 
 const ROTATING_CHARS = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
-const FACES = ["▲", "⏺", "◼"];
+const FACES = ["➀", "➁", "➂", "➃", "➄", "➅", "➆", "➇", "➈"];
 
 /**
  * A tool which plays the role of Linux `top` command, but for the Cluster.
@@ -88,6 +88,7 @@ export class ToolScoreboard {
 
   private launchedPollers: Set<string> = new Set();
   private renderCallCount = 0;
+  private renderCallFirstAt?: number;
   private queryPollDefers: Array<pDefer.DeferredPromise<void>> = [];
 
   /** Options of this tool. */
@@ -302,6 +303,7 @@ export class ToolScoreboard {
    */
   render(): string {
     this.renderCallCount++;
+    this.renderCallFirstAt ??= Date.now();
     const queriesWidth = this.options.maxQueries * 2;
 
     const rows: string[][] = [];
@@ -311,7 +313,7 @@ export class ToolScoreboard {
       "Client",
       "Role",
       "Pool Conns",
-      `Queries (ms or ${FACES[0]} - pings; D - discovery; red - error)`,
+      "Queries (ms or Ⓝ ×10 - pings; D - discovery; red - error)",
       "Health",
     ]);
     for (const [islandNo, { clients }] of this.islands) {
@@ -377,7 +379,14 @@ export class ToolScoreboard {
 
     const lines: string[] = [];
 
-    lines.push(`[${formatTimeWithMs(new Date())}]`);
+    lines.push(
+      "[" +
+        formatTimeWithMs(new Date()) +
+        (this.renderCallFirstAt
+          ? `, ${((Date.now() - this.renderCallFirstAt) / 1000).toFixed(1)} sec elapsed`
+          : "") +
+        "]",
+    );
 
     lines.push(
       table(rows, {
