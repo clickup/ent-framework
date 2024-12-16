@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -55,7 +55,7 @@ Naming convention for trigger arguments:
 | Parameter | Type |
 | ------ | ------ |
 | `vc` | [`VC`](../classes/VC.md) |
-| `args` | `object` |
+| `args` | \{ `input`: [`TriggerInsertInput`](TriggerInsertInput.md)\<`TTable`\>; \} |
 | `args.input` | [`TriggerInsertInput`](TriggerInsertInput.md)\<`TTable`\> |
 
 ## Returns

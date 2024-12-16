@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -180,7 +180,7 @@ Used in some places where we need the very minimum from the Ent.
 | `where` | [`Where`](../type-aliases/Where.md)\<`TTable`\> |
 | `chunkSize` | `number` |
 | `limit` | `number` |
-| `custom`? | `object` |
+| `custom`? | \{\} |
 
 #### Returns
 

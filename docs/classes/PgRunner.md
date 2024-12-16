@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -188,7 +188,7 @@ performance-critical path!
 | Parameter | Type |
 | ------ | ------ |
 | `template` | `string` |
-| `args` | `object` |
+| `args` | \{ `fields`: [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\>[]; `normalize`: `boolean`; \} |
 | `args.fields`? | [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\>[] |
 | `args.normalize`? | `boolean` |
 
@@ -246,7 +246,7 @@ Escapes field name identifier.
 | Parameter | Type |
 | ------ | ------ |
 | `info` | [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\> |
-| `__namedParameters` | `object` |
+| `__namedParameters` | \{ `withTable`: `string`; `normalize`: `boolean`; \} |
 | `__namedParameters.withTable`? | `string` |
 | `__namedParameters.normalize`? | `boolean` |
 
@@ -284,7 +284,7 @@ of columns is passed in specs.
 
 | Parameter | Type |
 | ------ | ------ |
-| `__namedParameters` | `object` |
+| `__namedParameters` | \{ `fields`: readonly [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\>[]; `suffix`: `string`; \} |
 | `__namedParameters.fields` | readonly [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\>[] |
 | `__namedParameters.suffix` | `string` |
 
@@ -365,7 +365,7 @@ generate VALUES clause without exact identification of the destination.
 
 | Parameter | Type |
 | ------ | ------ |
-| `__namedParameters` | `object` |
+| `__namedParameters` | \{ `prefix`: `string`; `indent`: `string`; `fields`: readonly [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\>[]; `withKey`: `boolean`; `skipSorting`: `boolean`; `suffix`: `string`; \} |
 | `__namedParameters.prefix` | `string` |
 | `__namedParameters.indent` | `string` |
 | `__namedParameters.fields` | readonly [`FieldAliased`](../type-aliases/FieldAliased.md)\<`TTable`\>[] |
@@ -511,7 +511,7 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 
 | Parameter | Type |
 | ------ | ------ |
-| `args` | `object` |
+| `args` | \{ `prefix`: `string`; `fields`: readonly [`Field`](../type-aliases/Field.md)\<`TTable`\>[]; `suffix`: `string`; \} |
 | `args.prefix` | `string` |
 | `args.fields` | readonly [`Field`](../type-aliases/Field.md)\<`TTable`\>[] |
 | `args.suffix` | `string` |
@@ -524,11 +524,11 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 
 > **plain**: `object`
 
-##### plain.prefix
+###### plain.prefix
 
 > **prefix**: `string`
 
-##### plain.func()
+###### plain.func()
 
 > **func**: (`inputs`) => `string`
 
@@ -542,7 +542,7 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 
 `string`
 
-##### plain.suffix
+###### plain.suffix
 
 > **suffix**: `string`
 
@@ -550,11 +550,11 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 
 > **optimized**: `object`
 
-##### optimized.prefix
+###### optimized.prefix
 
 > **prefix**: `string`
 
-##### optimized.func()
+###### optimized.func()
 
 > **func**: (`inputs`) => `string`
 
@@ -568,7 +568,7 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 
 `string`
 
-##### optimized.suffix
+###### optimized.suffix
 
 > **suffix**: `string`
 
@@ -593,7 +593,7 @@ returns the generated SQL WHERE clause.
 
 | Parameter | Type |
 | ------ | ------ |
-| `__namedParameters` | `object` |
+| `__namedParameters` | \{ `prefix`: `string`; `suffix`: `string`; \} |
 | `__namedParameters.prefix` | `string` |
 | `__namedParameters.suffix` | `string` |
 

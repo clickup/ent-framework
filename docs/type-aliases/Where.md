@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Type Alias: Where\<TTable\>
 
-> **Where**\<`TTable`\>: `object` & `object` & \{ \[K in Field\<TTable\>\]?: Value\<TTable\[K\]\> \| ReadonlyArray\<Value\<TTable\[K\]\>\> \| Object \| Object \| Object \| Object \| Object \| Object \| Object \}
+> **Where**\<`TTable`\>: `object` & `object` & \{ \[K in Field\<TTable\>\]?: Value\<TTable\[K\]\> \| ReadonlyArray\<Value\<TTable\[K\]\>\> \| \{ $lte: NonNullable\<Value\<TTable\[K\]\>\> \} \| \{ $lt: NonNullable\<Value\<TTable\[K\]\>\> \} \| \{ $gte: NonNullable\<Value\<TTable\[K\]\>\> \} \| \{ $gt: NonNullable\<Value\<TTable\[K\]\>\> \} \| \{ $overlap: NonNullable\<Value\<TTable\[K\]\>\> \} \| \{ $ne: Value\<TTable\[K\]\> \| ReadonlyArray\<Value\<TTable\[K\]\>\> \} \| \{ $isDistinctFrom: Value\<TTable\[K\]\> \} \}
 
 Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 

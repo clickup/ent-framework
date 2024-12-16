@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -31,7 +31,7 @@ user+Ent+microshard, and thus it is decoupled from IDs.
 
 | Parameter | Type | Default value |
 | ------ | ------ | ------ |
-| `state` | `object` \| `"unknown"` | `"unknown"` |
+| `state` | \{ `pos`: `bigint`; `expiresAt`: `number`; \} \| `"unknown"` | `"unknown"` |
 
 #### Returns
 

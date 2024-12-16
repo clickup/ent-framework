@@ -71,9 +71,9 @@
     "prettier": "3.2.1",
     "streaming-iterables": "^7.1.0",
     "ts-jest": "^29.1.1",
-    "typedoc-plugin-markdown": "^4.2.10",
-    "typedoc-plugin-merge-modules": "^6.0.3",
-    "typedoc": "0.26.11",
+    "typedoc-plugin-markdown": "^4.3.2",
+    "typedoc-plugin-merge-modules": "^6.1.0",
+    "typedoc": "0.27.5",
     "typescript": "^5.2.2",
     "wait-for-expect": "^3.0.2"
   },

@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Type Alias: FieldAliased\<TTable\>
 
-> **FieldAliased**\<`TTable`\>: [`Field`](Field.md)\<`TTable`\> \| `object`
+> **FieldAliased**\<`TTable`\>: [`Field`](Field.md)\<`TTable`\> \| \{ `field`: [`Field`](Field.md)\<`TTable`\>; `alias`: `string`; \}
 
 Same as Field, but may optionally hold information about of "alias value
 source" for a field name (e.g. `{ field: "abc", alias: "$cas.abc" }`).

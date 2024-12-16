@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -67,7 +67,7 @@ Ends the instance lifecycle (e.g. garbage recheck interval).
 
 #### Defined in
 
-[src/abstract/LocalCache.ts:75](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L75)
+[src/abstract/LocalCache.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L78)
 
 ***
 
@@ -89,7 +89,7 @@ Returns the value for the given key, or null if the key does not exist.
 
 #### Defined in
 
-[src/abstract/LocalCache.ts:83](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L83)
+[src/abstract/LocalCache.ts:86](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L86)
 
 ***
 
@@ -112,4 +112,4 @@ Sets the value for the given key.
 
 #### Defined in
 
-[src/abstract/LocalCache.ts:102](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L102)
+[src/abstract/LocalCache.ts:105](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L105)

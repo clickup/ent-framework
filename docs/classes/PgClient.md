@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -300,7 +300,7 @@ should expect that role() returns the actual master/replica role.
 
 | Parameter | Type |
 | ------ | ------ |
-| `__namedParameters` | `object` |
+| `__namedParameters` | \{ `query`: [`Literal`](../type-aliases/Literal.md); `hints`: `Record`\<`string`, `string`\>; `isWrite`: `boolean`; `annotations`: [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[]; `op`: `string`; `table`: `string`; `batchFactor`: `number`; \} |
 | `__namedParameters.query` | [`Literal`](../type-aliases/Literal.md) |
 | `__namedParameters.hints`? | `Record`\<`string`, `string`\> |
 | `__namedParameters.isWrite` | `boolean` |

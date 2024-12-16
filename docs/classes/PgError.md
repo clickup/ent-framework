@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -23,7 +23,7 @@ carries suggestions, what to do next.
 
 | Parameter | Type |
 | ------ | ------ |
-| `cause` | `undefined` \| `null` \| `object` |
+| `cause` | `undefined` \| `null` \| \{\} |
 | `where` | `string` |
 | `sql` | `string` |
 

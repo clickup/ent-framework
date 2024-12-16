@@ -1,4 +1,4 @@
-**@clickup/ent-framework** • [**Docs**](globals.md)
+**@clickup/ent-framework**
 
 ***
 

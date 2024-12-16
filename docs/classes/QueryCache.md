@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -31,7 +31,7 @@ was manually added to the VC by the user, otherwise caching is a no-op.
 
 #### Defined in
 
-[src/ent/QueryCache.ts:35](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L35)
+[src/ent/QueryCache.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L36)
 
 ## Properties
 
@@ -54,7 +54,7 @@ have a risk of caching a transient DB error).
 | Parameter | Type |
 | ------ | ------ |
 | `EntClass` | [`AnyClass`](../type-aliases/AnyClass.md) |
-| `op` | `"loadNullable"` \| `"loadByNullable"` \| `"select"` \| `"count"` \| `"exists"` |
+| `op` | `"loadNullable"` \| `"loadByNullable"` \| `"selectBy"` \| `"select"` \| `"count"` \| `"exists"` |
 | `key` | `string` |
 | `value` | `undefined` \| `Promise`\<`unknown`\> |
 
@@ -64,7 +64,7 @@ have a risk of caching a transient DB error).
 
 #### Defined in
 
-[src/ent/QueryCache.ts:56](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L56)
+[src/ent/QueryCache.ts:57](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L57)
 
 ***
 
@@ -72,15 +72,16 @@ have a risk of caching a transient DB error).
 
 > **delete**(`EntClass`, `ops`, `key`?): `this`
 
-Deletes cache slots or keys for an Ent.
+Deletes cache slots or keys for an Ent. If key is null, skips the deletion.
+If key is undefined (i.e. not passed), then deletes all slots.
 
 #### Parameters
 
 | Parameter | Type |
 | ------ | ------ |
 | `EntClass` | [`AnyClass`](../type-aliases/AnyClass.md) |
-| `ops` | (`"loadNullable"` \| `"loadByNullable"` \| `"select"` \| `"count"` \| `"exists"`)[] |
-| `key`? | `string` |
+| `ops` | readonly (`"loadNullable"` \| `"loadByNullable"` \| `"selectBy"` \| `"select"` \| `"count"` \| `"exists"`)[] |
+| `key`? | `null` \| `string` |
 
 #### Returns
 
@@ -88,7 +89,7 @@ Deletes cache slots or keys for an Ent.
 
 #### Defined in
 
-[src/ent/QueryCache.ts:91](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L91)
+[src/ent/QueryCache.ts:93](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L93)
 
 ***
 
@@ -111,7 +112,7 @@ case it's inflight already.
 | Parameter | Type |
 | ------ | ------ |
 | `EntClass` | [`AnyClass`](../type-aliases/AnyClass.md) |
-| `op` | `"loadNullable"` \| `"loadByNullable"` \| `"select"` \| `"count"` \| `"exists"` |
+| `op` | `"loadNullable"` \| `"loadByNullable"` \| `"selectBy"` \| `"select"` \| `"count"` \| `"exists"` |
 | `key` | `string` |
 
 #### Returns
@@ -120,7 +121,7 @@ case it's inflight already.
 
 #### Defined in
 
-[src/ent/QueryCache.ts:113](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L113)
+[src/ent/QueryCache.ts:119](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L119)
 
 ***
 
@@ -141,7 +142,7 @@ Read-through caching pattern.
 | Parameter | Type |
 | ------ | ------ |
 | `EntClass` | [`AnyClass`](../type-aliases/AnyClass.md) |
-| `op` | `"loadNullable"` \| `"loadByNullable"` \| `"select"` \| `"count"` \| `"exists"` |
+| `op` | `"loadNullable"` \| `"loadByNullable"` \| `"selectBy"` \| `"select"` \| `"count"` \| `"exists"` |
 | `key` | `string` |
 | `creator` | () => `Promise`\<`TValue`\> |
 
@@ -151,4 +152,4 @@ Read-through caching pattern.
 
 #### Defined in
 
-[src/ent/QueryCache.ts:129](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L129)
+[src/ent/QueryCache.ts:135](https://github.com/clickup/ent-framework/blob/master/src/ent/QueryCache.ts#L135)

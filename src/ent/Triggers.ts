@@ -350,6 +350,7 @@ export class Triggers<TTable extends Table> {
 
 /**
  * Simulates an update for a row, as if it's applied to the Ent.
+ * @ignore
  */
 export function buildUpdateNewRow<TTable extends Table>(
   oldRow: Row<TTable>,

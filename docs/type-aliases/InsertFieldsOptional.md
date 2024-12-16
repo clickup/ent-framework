@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Type Alias: InsertFieldsOptional\<TTable\>
 
-> **InsertFieldsOptional**\<`TTable`\>: `{ [K in keyof TTable]: TTable[K] extends Object ? K : TTable[K] extends Object ? K : never }`\[keyof `TTable`\]
+> **InsertFieldsOptional**\<`TTable`\>: `{ [K in keyof TTable]: TTable[K] extends { autoInsert: unknown } ? K : TTable[K] extends { autoUpdate: unknown } ? K : never }`\[keyof `TTable`\]
 
 Insert: Table -> "created_at" | "field2" |  ... deduction (optional fields).
 

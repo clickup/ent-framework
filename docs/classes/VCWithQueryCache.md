@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -22,7 +22,7 @@ If set, Ent cache is enabled for operations in this VC.
 
 | Parameter | Type |
 | ------ | ------ |
-| `options` | `object` |
+| `options` | \{ `maxQueries`: `number`; \} |
 | `options.maxQueries` | `number` |
 
 #### Returns

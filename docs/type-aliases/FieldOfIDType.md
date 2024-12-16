@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Type Alias: FieldOfIDType\<TTable\>
 
-> **FieldOfIDType**\<`TTable`\>: `{ [K in Field<TTable>]: K extends string ? TTable[K] extends Object ? K : never : never }`\[[`Field`](Field.md)\<`TTable`\>\]
+> **FieldOfIDType**\<`TTable`\>: `{ [K in Field<TTable>]: K extends string ? TTable[K] extends { type: typeof ID } ? K : never : never }`\[[`Field`](Field.md)\<`TTable`\>\]
 
 Table -> "user_id" | "some_id" | ...
 

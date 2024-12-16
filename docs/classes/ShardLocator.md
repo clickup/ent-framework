@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -28,7 +28,7 @@ okay.
 
 | Parameter | Type |
 | ------ | ------ |
-| `__namedParameters` | `object` |
+| `__namedParameters` | \{ `cluster`: [`Cluster`](Cluster.md)\<`TClient`, `any`\>; `entName`: `string`; `shardAffinity`: [`ShardAffinity`](../type-aliases/ShardAffinity.md)\<`TField`\>; `uniqueKey`: `undefined` \| readonly `string`[]; `inverses`: readonly [`Inverse`](Inverse.md)\<`TClient`, `TTable`\>[]; \} |
 | `__namedParameters.cluster` | [`Cluster`](Cluster.md)\<`TClient`, `any`\> |
 | `__namedParameters.entName` | `string` |
 | `__namedParameters.shardAffinity` | [`ShardAffinity`](../type-aliases/ShardAffinity.md)\<`TField`\> |

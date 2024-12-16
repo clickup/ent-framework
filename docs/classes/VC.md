@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -41,7 +41,7 @@ of calls and reasons, why some object was accessed.
 
 | Parameter | Type |
 | ------ | ------ |
-| `__namedParameters` | `object` |
+| `__namedParameters` | \{ `trace`: `string`; `cachesExpirationMs`: `number`; \} |
 | `__namedParameters.trace`? | `string` |
 | `__namedParameters.cachesExpirationMs`? | `number` |
 
@@ -73,7 +73,7 @@ This is to show VCs in console.log() and inspect() nicely.
 
 ### cache()
 
-#### cache(Class)
+#### Call Signature
 
 > **cache**\<`TInstance`\>(`Class`): `TInstance`
 
@@ -100,7 +100,7 @@ this VC an admin VC?). Also, people may define their own VC-local caches.
 
 [src/ent/VC.ts:100](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L100)
 
-#### cache(tag, creator)
+#### Call Signature
 
 > **cache**\<`TInstance`\>(`tag`, `creator`): `TInstance`
 
@@ -314,7 +314,7 @@ history of the VC, but for e.g. tests or benchmarks, it's fine.
 
 ### withFlavor()
 
-#### withFlavor(prepend, flavors)
+#### Call Signature
 
 > **withFlavor**(`prepend`, ...`flavors`): `this`
 
@@ -336,9 +336,12 @@ it. If no flavors were added, returns the same VC (`this`).
 
 [src/ent/VC.ts:305](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L305)
 
-#### withFlavor(flavors)
+#### Call Signature
 
 > **withFlavor**(...`flavors`): `this`
+
+Returns a new VC derived from the current one adding some more flavors to
+it. If no flavors were added, returns the same VC (`this`).
 
 ##### Parameters
 
@@ -388,7 +391,7 @@ Derives the VC with the provided heartbeater injected.
 
 | Parameter | Type |
 | ------ | ------ |
-| `heartbeater` | `object` |
+| `heartbeater` | \{ `heartbeat`: () => `Promise`\<`void`\>; `delay`: (`ms`) => `Promise`\<`void`\>; \} |
 | `heartbeater.heartbeat` | () => `Promise`\<`void`\> |
 | `heartbeater.delay` | (`ms`) => `Promise`\<`void`\> |
 

@@ -3,7 +3,12 @@ const { basename } = require("path");
 
 module.exports = {
   entryPoints: ["src"],
-  exclude: ["**/internal/**", "**/__tests__/**", "**/node_modules/**"],
+  exclude: [
+    "**/internal/**",
+    "**/__tests__/**",
+    "**/__benchmarks__/**",
+    "**/node_modules/**",
+  ],
   entryPointStrategy: "expand",
   mergeModulesMergeMode: "project",
   sort: ["source-order"],

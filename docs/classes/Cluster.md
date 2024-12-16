@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -42,7 +42,7 @@ queries (also, no implicit prewarming).
 
 #### Defined in
 
-[src/abstract/Cluster.ts:133](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L133)
+[src/abstract/Cluster.ts:137](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L137)
 
 ## Properties
 
@@ -55,11 +55,25 @@ queries (also, no implicit prewarming).
 
 ### prewarm()
 
-> **prewarm**(): `void`
+> **prewarm**(`randomizedDelayMs`, `onInitialPrewarm`?): `void`
 
 Signals the Cluster to keep the Clients pre-warmed, e.g. open. (It's up to
 the particular Client's implementation, what does a "pre-warmed Client"
 mean; typically, it's keeping some minimal number of pooled connections.)
+
+Except when `randomizedDelayMs` is passed as 0, the actual prewarm (and
+Islands discovery) queries will run with a randomized delay between N/2 and
+N ms. It is better to operate in such mode: if multiple Node processes
+start simultaneously in the cluster, then the randomization helps to avoid
+new connections burst (new connections establishment is expensive for e.g.
+pgbouncer or when DB is accessed over SSL).
+
+#### Parameters
+
+| Parameter | Type | Default value |
+| ------ | ------ | ------ |
+| `randomizedDelayMs` | `number` | `5000` |
+| `onInitialPrewarm`? | (`delayMs`) => `void` | `undefined` |
 
 #### Returns
 
@@ -67,7 +81,7 @@ mean; typically, it's keeping some minimal number of pooled connections.)
 
 #### Defined in
 
-[src/abstract/Cluster.ts:210](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L210)
+[src/abstract/Cluster.ts:225](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L225)
 
 ***
 
@@ -85,7 +99,7 @@ actual query.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:226](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L226)
+[src/abstract/Cluster.ts:256](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L256)
 
 ***
 
@@ -101,7 +115,7 @@ Returns all currently known (discovered) non-global Shards in the Cluster.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:233](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L233)
+[src/abstract/Cluster.ts:263](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L263)
 
 ***
 
@@ -135,7 +149,7 @@ the query), no matter whether it was an immediate call or a deferred one.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:253](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L253)
+[src/abstract/Cluster.ts:283](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L283)
 
 ***
 
@@ -162,7 +176,7 @@ Shard hasn't been discovered actually).
 
 #### Defined in
 
-[src/abstract/Cluster.ts:266](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L266)
+[src/abstract/Cluster.ts:296](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L296)
 
 ***
 
@@ -185,7 +199,7 @@ Returns a random Shard among the ones which are currently known
 
 #### Defined in
 
-[src/abstract/Cluster.ts:276](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L276)
+[src/abstract/Cluster.ts:306](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L306)
 
 ***
 
@@ -207,7 +221,7 @@ Returns an Island by its number.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:295](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L295)
+[src/abstract/Cluster.ts:325](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L325)
 
 ***
 
@@ -223,7 +237,7 @@ Returns all Islands in the Cluster.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:306](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L306)
+[src/abstract/Cluster.ts:336](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L336)
 
 ***
 
@@ -241,4 +255,4 @@ cluster configuration.
 
 #### Defined in
 
-[src/abstract/Cluster.ts:316](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L316)
+[src/abstract/Cluster.ts:346](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L346)
