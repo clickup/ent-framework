@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Function: evaluate()
 
-> **evaluate**\<`TInput`\>(`vc`, `input`, `rules`, `fashion`): `Promise`\<`object`\>
+> **evaluate**\<`TInput`\>(`vc`, `input`, `rules`, `fashion`): `Promise`\<\{ `allow`: `boolean`; `results`: [`RuleResult`](../interfaces/RuleResult.md)[]; `cause`: `string`; \}\>
 
 This is a hearth of permissions checking, a machine which evaluates the rules
 chain from top to bottom (one after another) and makes the decision based on
@@ -67,19 +67,7 @@ Example of a chain:
 
 ## Returns
 
-`Promise`\<`object`\>
-
-### allow
-
-> **allow**: `boolean`
-
-### results
-
-> **results**: [`RuleResult`](../interfaces/RuleResult.md)[]
-
-### cause
-
-> **cause**: `string`
+`Promise`\<\{ `allow`: `boolean`; `results`: [`RuleResult`](../interfaces/RuleResult.md)[]; `cause`: `string`; \}\>
 
 ## Defined in
 

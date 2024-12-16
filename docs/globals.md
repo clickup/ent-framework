@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](README.md) • **Docs**
+[**@clickup/ent-framework**](README.md)
 
 ***
 
@@ -178,14 +178,12 @@
 ## Functions
 
 - [BaseEnt](functions/BaseEnt.md)
-- [buildUpdateNewRow](functions/buildUpdateNewRow.md)
 - [CacheMixin](functions/CacheMixin.md)
 - [ConfigMixin](functions/ConfigMixin.md)
 - [HelpersMixin](functions/HelpersMixin.md)
 - [PrimitiveMixin](functions/PrimitiveMixin.md)
 - [evaluate](functions/evaluate.md)
 - [isBigintStr](functions/isBigintStr.md)
-- [default](functions/default.md)
 - [buildShape](functions/buildShape.md)
 - [escapeIdent](functions/escapeIdent.md)
 - [escapeLiteral](functions/escapeLiteral.md)

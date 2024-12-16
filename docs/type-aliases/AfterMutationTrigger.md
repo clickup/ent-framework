@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -19,7 +19,7 @@
 | Parameter | Type |
 | ------ | ------ |
 | `vc` | [`VC`](../classes/VC.md) |
-| `args` | `object` \| `object` \| `object` |
+| `args` | \{ `op`: `"INSERT"`; `newOrOldRow`: `Readonly`\<[`TriggerInsertInput`](TriggerInsertInput.md)\<`TTable`\>\>; \} \| \{ `op`: `"UPDATE"`; `newOrOldRow`: [`TriggerUpdateNewRow`](TriggerUpdateNewRow.md)\<`TTable`\>; \} \| \{ `op`: `"DELETE"`; `newOrOldRow`: [`TriggerUpdateOrDeleteOldRow`](TriggerUpdateOrDeleteOldRow.md)\<`TTable`\>; \} |
 
 ## Returns
 

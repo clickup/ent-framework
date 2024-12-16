@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -24,6 +24,7 @@ Options for Cluster constructor.
 | `loggers` | [`Loggers`](Loggers.md) | Loggers to be injected into all Clients returned by createClient(). |
 | `localCache?` | `null` \| [`LocalCache`](../classes/LocalCache.md)\<`never`\> | An instance of LocalCache which may be used for auxillary purposes when discovering Shards/Clients. |
 | `shardsDiscoverIntervalMs?` | `MaybeCallable`\<`number`\> | How often to run Shards rediscovery in normal circumstances. |
+| `shardsDiscoverIntervalJitter?` | `MaybeCallable`\<`number`\> | Jitter for shardsDiscoverIntervalMs. |
 | `shardsDiscoverRecheckIslandsIntervalMs?` | `MaybeCallable`\<`number`\> | How often to recheck for changes in options.islands (typically, often, since it's assumed that options.islands calculation is cheap). If the Cluster configuration is changed, then we trigger rediscovery ASAP. |
 | `locateIslandErrorRetryCount?` | `MaybeCallable`\<`number`\> | Used in the following situations: 1. If we think that we know Island of a particular Shard, but an attempt to access it fails, this means that maybe the Shard is migrating to another Island. In this case, we wait a bit and retry that many times. We should not do it too many times though, because all DB requests will be blocked waiting for the resolution. 2. If we sent a write request to a Client, but it appeared that this Client is a replica, and the master moved to some other Client. In this case, we wait a bit and ping all Clients of the Island to refresh, who is master and who is replica. |
 | `locateIslandErrorRediscoverClusterDelayMs?` | `MaybeCallable`\<`number`\> | How much time to wait before we retry rediscovering the entire Cluster. The time here should be just enough to wait for switching the Shard from one Island to another (typically quick). |

@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -39,7 +39,7 @@ connection pooling solution. They don't have to use PgClientPool.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:68](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L68)
+[src/pg/PgClientPool.ts:75](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L75)
 
 ## Properties
 
@@ -122,7 +122,7 @@ should expect that role() returns the actual master/replica role.
 
 | Parameter | Type |
 | ------ | ------ |
-| `__namedParameters` | `object` |
+| `__namedParameters` | \{ `query`: [`Literal`](../type-aliases/Literal.md); `hints`: `Record`\<`string`, `string`\>; `isWrite`: `boolean`; `annotations`: [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[]; `op`: `string`; `table`: `string`; `batchFactor`: `number`; \} |
 | `__namedParameters.query` | [`Literal`](../type-aliases/Literal.md) |
 | `__namedParameters.hints`? | `Record`\<`string`, `string`\> |
 | `__namedParameters.isWrite` | `boolean` |
@@ -308,7 +308,7 @@ than the caller MUST call release() method on the returned object.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:105](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L105)
+[src/pg/PgClientPool.ts:114](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L114)
 
 ***
 
@@ -347,7 +347,7 @@ new available connection. This is the number of such queued requests.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:118](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L118)
+[src/pg/PgClientPool.ts:127](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L127)
 
 ***
 
@@ -371,7 +371,7 @@ shardNos) based on that address.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:126](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L126)
+[src/pg/PgClientPool.ts:135](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L135)
 
 ***
 
@@ -397,7 +397,7 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:137](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L137)
+[src/pg/PgClientPool.ts:146](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L146)
 
 ***
 
@@ -419,7 +419,7 @@ unusable after calling this method: you should not send queries to it.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:143](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L143)
+[src/pg/PgClientPool.ts:152](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L152)
 
 ***
 
@@ -439,7 +439,7 @@ Returns true if the Client is ended and can't be used anymore.
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:154](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L154)
+[src/pg/PgClientPool.ts:163](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L163)
 
 ***
 
@@ -462,4 +462,4 @@ full-text dictionaries).
 
 #### Defined in
 
-[src/pg/PgClientPool.ts:158](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L158)
+[src/pg/PgClientPool.ts:167](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L167)

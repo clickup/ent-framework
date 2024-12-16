@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -30,4 +30,4 @@ Modifies the passed class adding VC-stored cache layer to it.
 
 ## Defined in
 
-[src/ent/mixins/CacheMixin.ts:20](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/CacheMixin.ts#L20)
+[src/ent/mixins/CacheMixin.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/CacheMixin.ts#L31)

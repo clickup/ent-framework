@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Type Alias: SelectInputCustom
 
-> **SelectInputCustom**: `object` \| `undefined`
+> **SelectInputCustom**: \{ `ctes`: [`Literal`](Literal.md)[]; `joins`: [`Literal`](Literal.md)[]; `from`: [`Literal`](Literal.md); `hints`: `Record`\<`string`, `string`\>; \} \| `undefined`
 
 This is mostly to do hacks in PostgreSQL queries. Not even exposed by Ent
 framework, but can be used by PG-dependent code.

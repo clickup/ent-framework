@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -29,7 +29,7 @@ EntUser refers an EntOrg row).
 
 | Parameter | Type |
 | ------ | ------ |
-| `__namedParameters` | `object` |
+| `__namedParameters` | \{ `cluster`: [`Cluster`](Cluster.md)\<`TClient`, `any`\>; `shardAffinity`: [`ShardAffinity`](../type-aliases/ShardAffinity.md)\<`string`\>; `id2Schema`: [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\>; `id2Field`: [`FieldOfIDTypeRequired`](../type-aliases/FieldOfIDTypeRequired.md)\<`TTable`\>; `name`: `string`; `type`: `string`; \} |
 | `__namedParameters.cluster` | [`Cluster`](Cluster.md)\<`TClient`, `any`\> |
 | `__namedParameters.shardAffinity` | [`ShardAffinity`](../type-aliases/ShardAffinity.md)\<`string`\> |
 | `__namedParameters.id2Schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |

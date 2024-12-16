@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Type Alias: InsertFieldsRequired\<TTable\>
 
-> **InsertFieldsRequired**\<`TTable`\>: `{ [K in keyof TTable]: TTable[K] extends Object ? never : TTable[K] extends Object ? never : K }`\[keyof `TTable`\]
+> **InsertFieldsRequired**\<`TTable`\>: `{ [K in keyof TTable]: TTable[K] extends { autoInsert: unknown } ? never : TTable[K] extends { autoUpdate: unknown } ? never : K }`\[keyof `TTable`\]
 
 Insert: Table -> "field1" | "field2" |  ... deduction (required).
 

@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -29,7 +29,7 @@ Initializes the instance.
 
 #### Defined in
 
-[src/tools/ToolScoreboard.ts:126](https://github.com/clickup/ent-framework/blob/master/src/tools/ToolScoreboard.ts#L126)
+[src/tools/ToolScoreboard.ts:127](https://github.com/clickup/ent-framework/blob/master/src/tools/ToolScoreboard.ts#L127)
 
 ## Properties
 
@@ -37,9 +37,9 @@ Initializes the instance.
 | ------ | ------ | ------ | ------ |
 | `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`ToolScoreboardOptions`](../interfaces/ToolScoreboardOptions.md)\>\> | `undefined` | Default values for the constructor options. |
 | `options` | `Required`\<[`ToolScoreboardOptions`](../interfaces/ToolScoreboardOptions.md)\> | `undefined` | Options of this tool. |
-| `islands` | `Map`\<`number`, `object`\> | `undefined` | Registry of all Islands with Clients. |
+| `islands` | `Map`\<`number`, \{ `shards`: `number`; `clients`: `Map`\<`ClientIdent`, [`Client`](Client.md)\>; \}\> | `undefined` | Registry of all Islands with Clients. |
 | `queries` | `DefaultMap`\<`number`, `DefaultMap`\<`ClientIdent`, `ToolScoreboardQuery`[]\>\> | `undefined` | Log of queries sent (ping, discovery, tick). |
-| `poolStats` | `DefaultMap`\<`number`, `Map`\<`ClientIdent`, `object`\>\> | `undefined` | Pool stats of Clients. |
+| `poolStats` | `DefaultMap`\<`number`, `Map`\<`ClientIdent`, \{ `totalConns`: `number`; `idleConns`: `number`; `queuedReqs`: `number`; \}\>\> | `undefined` | Pool stats of Clients. |
 | `swallowedErrors` | `ToolScoreboardSwallowedError`[] | `[]` | Registry of the recent swallowed errors (pings-independent). |
 | `queryErrors` | `ToolScoreboardQueryError`[] | `[]` | Errors extracted from the queries log. |
 
@@ -58,7 +58,7 @@ the Cluster and yields back on every refreshMs tick.
 
 #### Defined in
 
-[src/tools/ToolScoreboard.ts:134](https://github.com/clickup/ent-framework/blob/master/src/tools/ToolScoreboard.ts#L134)
+[src/tools/ToolScoreboard.ts:135](https://github.com/clickup/ent-framework/blob/master/src/tools/ToolScoreboard.ts#L135)
 
 ***
 
@@ -74,4 +74,4 @@ Renders the current state of the Scoreboard as a string.
 
 #### Defined in
 
-[src/tools/ToolScoreboard.ts:303](https://github.com/clickup/ent-framework/blob/master/src/tools/ToolScoreboard.ts#L303)
+[src/tools/ToolScoreboard.ts:304](https://github.com/clickup/ent-framework/blob/master/src/tools/ToolScoreboard.ts#L304)

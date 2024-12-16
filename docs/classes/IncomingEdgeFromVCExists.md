@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -85,4 +85,4 @@ database.
 
 #### Defined in
 
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:47](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L47)
+[src/ent/predicates/IncomingEdgeFromVCExists.ts:46](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L46)

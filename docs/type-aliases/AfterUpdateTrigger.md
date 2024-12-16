@@ -1,4 +1,4 @@
-[**@clickup/ent-framework**](../README.md) • **Docs**
+[**@clickup/ent-framework**](../README.md)
 
 ***
 
@@ -19,7 +19,7 @@
 | Parameter | Type |
 | ------ | ------ |
 | `vc` | [`VC`](../classes/VC.md) |
-| `args` | `object` |
+| `args` | \{ `newRow`: [`TriggerUpdateNewRow`](TriggerUpdateNewRow.md)\<`TTable`\>; `oldRow`: [`TriggerUpdateOrDeleteOldRow`](TriggerUpdateOrDeleteOldRow.md)\<`TTable`\>; \} |
 | `args.newRow` | [`TriggerUpdateNewRow`](TriggerUpdateNewRow.md)\<`TTable`\> |
 | `args.oldRow` | [`TriggerUpdateOrDeleteOldRow`](TriggerUpdateOrDeleteOldRow.md)\<`TTable`\> |
 
