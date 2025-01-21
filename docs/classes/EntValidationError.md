@@ -6,6 +6,8 @@
 
 # Class: EntValidationError
 
+Defined in: [src/ent/errors/EntValidationError.ts:7](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntValidationError.ts#L7)
+
 Error: thrown after all validators are executed, and some of them think that
 the row is invalid.
 
@@ -18,6 +20,8 @@ the row is invalid.
 ### new EntValidationError()
 
 > **new EntValidationError**(`entName`, `errors`): [`EntValidationError`](EntValidationError.md)
+
+Defined in: [src/ent/errors/EntValidationError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntValidationError.ts#L8)
 
 #### Parameters
 
@@ -34,14 +38,10 @@ the row is invalid.
 
 [`EntAccessError`](EntAccessError.md).[`constructor`](EntAccessError.md#constructors)
 
-#### Defined in
-
-[src/ent/errors/EntValidationError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntValidationError.ts#L8)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `cause` | `null` \| `string` \| `Error` |
-| `entName` | `string` |
-| `errors` | readonly [`EntValidationErrorInfo`](../interfaces/EntValidationErrorInfo.md)[] |
+| <a id="cause"></a> `cause` | `null` \| `string` \| `Error` |
+| <a id="entname-1"></a> `entName` | `string` |
+| <a id="errors-1"></a> `errors` | readonly [`EntValidationErrorInfo`](../interfaces/EntValidationErrorInfo.md)[] |

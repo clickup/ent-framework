@@ -27,6 +27,8 @@ module.exports = {
   excludeInternal: true,
   excludePrivate: true,
   categorizeByGroup: true,
+  blockTags: ["@file"], // added by e.g. barrelsby
+  excludeTags: ["@file"], // added by e.g. barrelsby
   gitRevision: "master",
   sourceLinkTemplate: `https://github.com/clickup/${basename(__dirname)}/blob/master/{path}#L{line}`,
   basePath: ".",

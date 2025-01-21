@@ -19,8 +19,10 @@ const vc = createVC();
 class EntTestUniverse extends BaseEnt(
   testCluster,
   new PgSchema(
-    'ent.discover"universe',
-    { id: { type: ID, autoInsert: "id_gen()" } },
+    'ent.shards"universe',
+    {
+      id: { type: ID, autoInsert: "id_gen()" },
+    },
     [],
   ),
 ) {
@@ -43,7 +45,7 @@ class EntTestUniverse extends BaseEnt(
 class EntTestHuman extends BaseEnt(
   testCluster,
   new PgSchema(
-    'ent.discover"human',
+    'ent.shards"human',
     {
       id: { type: ID, autoInsert: "id_gen()" },
       parent_id: { type: ID },

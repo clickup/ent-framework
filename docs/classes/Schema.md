@@ -6,6 +6,8 @@
 
 # Class: `abstract` Schema\<TTable, TUniqueKey\>
 
+Defined in: [src/abstract/Schema.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L38)
+
 Schema is like a "table" in some database (sharded, but it's beyond the scope
 of Schema). It is also a factory of Query: it knows how to build runnable
 Query objects. This 2nd role is database engine specific (e.g. there might be
@@ -33,6 +35,8 @@ too limited in the queries the DB engine can execute.
 
 > **new Schema**\<`TTable`, `TUniqueKey`\>(`name`, `table`, `uniqueKey`): [`Schema`](Schema.md)\<`TTable`, `TUniqueKey`\>
 
+Defined in: [src/abstract/Schema.ts:119](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L119)
+
 #### Parameters
 
 | Parameter | Type | Description |
@@ -45,25 +49,23 @@ too limited in the queries the DB engine can execute.
 
 [`Schema`](Schema.md)\<`TTable`, `TUniqueKey`\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:119](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L119)
-
 ## Properties
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| `hash` | `string` | - |
-| `constructor` | [`SchemaClass`](../interfaces/SchemaClass.md) | Used in e.g. inverses. This casts this.constructor to SchemaClass with all static methods and `new` semantic (TS doesn't do it by default; for TS, x.constructor is Function). |
-| `name` | `string` | For relational databases, it's likely a table name. |
-| `table` | `TTable` | Structure of the table. |
-| `uniqueKey` | `TUniqueKey` | Fields which the native unique key consists of (if any). |
+| <a id="hash"></a> `hash` | `string` | - |
+| <a id="constructor"></a> `constructor` | [`SchemaClass`](../interfaces/SchemaClass.md) | Used in e.g. inverses. This casts this.constructor to SchemaClass with all static methods and `new` semantic (TS doesn't do it by default; for TS, x.constructor is Function). |
+| <a id="name-1"></a> `name` | `string` | For relational databases, it's likely a table name. |
+| <a id="table-1"></a> `table` | `TTable` | Structure of the table. |
+| <a id="uniquekey-1"></a> `uniqueKey` | `TUniqueKey` | Fields which the native unique key consists of (if any). |
 
 ## Methods
 
 ### idGen()
 
 > `abstract` **idGen**(): [`Query`](../interfaces/Query.md)\<`string`\>
+
+Defined in: [src/abstract/Schema.ts:57](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L57)
 
 Generates a new ID for the row. Used when e.g. there is a beforeInsert
 trigger on the Ent which needs to know the ID beforehand.
@@ -72,15 +74,13 @@ trigger on the Ent which needs to know the ID beforehand.
 
 [`Query`](../interfaces/Query.md)\<`string`\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:57](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L57)
-
 ***
 
 ### insert()
 
 > `abstract` **insert**(`input`): [`Query`](../interfaces/Query.md)\<`null` \| `string`\>
+
+Defined in: [src/abstract/Schema.ts:63](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L63)
 
 Creates a new row. Returns null if the row violates some unique key
 constraint, otherwise returns the row ID.
@@ -95,15 +95,13 @@ constraint, otherwise returns the row ID.
 
 [`Query`](../interfaces/Query.md)\<`null` \| `string`\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:63](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L63)
-
 ***
 
 ### upsert()
 
 > `abstract` **upsert**(`input`): [`Query`](../interfaces/Query.md)\<`string`\>
+
+Defined in: [src/abstract/Schema.ts:68](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L68)
 
 Upserts a row. Always returns the row ID.
 
@@ -117,15 +115,13 @@ Upserts a row. Always returns the row ID.
 
 [`Query`](../interfaces/Query.md)\<`string`\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:68](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L68)
-
 ***
 
 ### update()
 
 > `abstract` **update**(`id`, `input`): [`Query`](../interfaces/Query.md)\<`boolean`\>
+
+Defined in: [src/abstract/Schema.ts:73](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L73)
 
 Updates one single row by its ID. Returns true if it actually existed.
 
@@ -140,15 +136,13 @@ Updates one single row by its ID. Returns true if it actually existed.
 
 [`Query`](../interfaces/Query.md)\<`boolean`\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:73](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L73)
-
 ***
 
 ### delete()
 
 > `abstract` **delete**(`id`): [`Query`](../interfaces/Query.md)\<`boolean`\>
+
+Defined in: [src/abstract/Schema.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L78)
 
 Deletes a row by id. Returns true if it actually existed.
 
@@ -162,15 +156,13 @@ Deletes a row by id. Returns true if it actually existed.
 
 [`Query`](../interfaces/Query.md)\<`boolean`\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L78)
-
 ***
 
 ### load()
 
 > `abstract` **load**(`id`): [`Query`](../interfaces/Query.md)\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
+
+Defined in: [src/abstract/Schema.ts:84](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L84)
 
 "Load" family of methods means that we load exactly one row. This one
 returns a row by its ID or null if it's not found.
@@ -185,15 +177,13 @@ returns a row by its ID or null if it's not found.
 
 [`Query`](../interfaces/Query.md)\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:84](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L84)
-
 ***
 
 ### loadBy()
 
 > `abstract` **loadBy**(`input`): [`Query`](../interfaces/Query.md)\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
+
+Defined in: [src/abstract/Schema.ts:90](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L90)
 
 Loads one single row by its unique key ("by" denotes that it's based on an
 unique key, not on an ID). Returns null if it's not found.
@@ -208,15 +198,13 @@ unique key, not on an ID). Returns null if it's not found.
 
 [`Query`](../interfaces/Query.md)\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:90](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L90)
-
 ***
 
 ### selectBy()
 
 > `abstract` **selectBy**(`input`): [`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
+
+Defined in: [src/abstract/Schema.ts:99](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L99)
 
 "Select" family of methods means that we load multiple rows ("by" denotes
 that it's based on an unique key, not on an arbitrary query). This one
@@ -232,15 +220,13 @@ returns all rows whose unique key prefix matches the input.
 
 [`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:99](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L99)
-
 ***
 
 ### select()
 
 > `abstract` **select**(`input`): [`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
+
+Defined in: [src/abstract/Schema.ts:106](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L106)
 
 Returns all rows matching an arbitrary query.
 
@@ -254,15 +240,13 @@ Returns all rows matching an arbitrary query.
 
 [`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:106](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L106)
-
 ***
 
 ### count()
 
 > `abstract` **count**(`input`): [`Query`](../interfaces/Query.md)\<`number`\>
+
+Defined in: [src/abstract/Schema.ts:111](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L111)
 
 Returns the number of rows matching an arbitrary query.
 
@@ -276,15 +260,13 @@ Returns the number of rows matching an arbitrary query.
 
 [`Query`](../interfaces/Query.md)\<`number`\>
 
-#### Defined in
-
-[src/abstract/Schema.ts:111](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L111)
-
 ***
 
 ### exists()
 
 > `abstract` **exists**(`input`): [`Query`](../interfaces/Query.md)\<`boolean`\>
+
+Defined in: [src/abstract/Schema.ts:117](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L117)
 
 An optimized version of count() for the cases where we only need to know
 whether at least one row exists, and don't need a precise count.
@@ -298,7 +280,3 @@ whether at least one row exists, and don't need a precise count.
 #### Returns
 
 [`Query`](../interfaces/Query.md)\<`boolean`\>
-
-#### Defined in
-
-[src/abstract/Schema.ts:117](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L117)

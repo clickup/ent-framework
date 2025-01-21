@@ -6,6 +6,8 @@
 
 # Class: QueryPing
 
+Defined in: [src/abstract/QueryPing.ts:8](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryPing.ts#L8)
+
 A helper Query which delegates to Client#ping(execTimeMs).
 
 ## Implements
@@ -18,6 +20,8 @@ A helper Query which delegates to Client#ping(execTimeMs).
 
 > **new QueryPing**(`input`): [`QueryPing`](QueryPing.md)
 
+Defined in: [src/abstract/QueryPing.ts:9](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryPing.ts#L9)
+
 #### Parameters
 
 | Parameter | Type |
@@ -28,15 +32,11 @@ A helper Query which delegates to Client#ping(execTimeMs).
 
 [`QueryPing`](QueryPing.md)
 
-#### Defined in
-
-[src/abstract/QueryPing.ts:9](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryPing.ts#L9)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `input` | `Omit`\<[`ClientPingInput`](../interfaces/ClientPingInput.md), `"annotation"`\> |
+| <a id="input-1"></a> `input` | `Omit`\<[`ClientPingInput`](../interfaces/ClientPingInput.md), `"annotation"`\> |
 
 ## Accessors
 
@@ -46,23 +46,23 @@ A helper Query which delegates to Client#ping(execTimeMs).
 
 > **get** **IS\_WRITE**(): `boolean`
 
+Defined in: [src/abstract/QueryPing.ts:11](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryPing.ts#L11)
+
 ##### Returns
 
 `boolean`
 
 #### Implementation of
 
-[`Query`](../interfaces/Query.md).`IS_WRITE`
-
-#### Defined in
-
-[src/abstract/QueryPing.ts:11](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryPing.ts#L11)
+[`Query`](../interfaces/Query.md).[`IS_WRITE`](../interfaces/Query.md#is_write)
 
 ## Methods
 
 ### run()
 
 > **run**(`client`, `annotation`): `Promise`\<`void`\>
+
+Defined in: [src/abstract/QueryPing.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryPing.ts#L15)
 
 #### Parameters
 
@@ -78,7 +78,3 @@ A helper Query which delegates to Client#ping(execTimeMs).
 #### Implementation of
 
 [`Query`](../interfaces/Query.md).[`run`](../interfaces/Query.md#run)
-
-#### Defined in
-
-[src/abstract/QueryPing.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryPing.ts#L15)

@@ -8,9 +8,7 @@
 
 > `const` **GUEST\_ID**: `"guest"` = `"guest"`
 
+Defined in: [src/ent/VC.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L22)
+
 Guest VC: has minimum permissions. Typically if the user is not logged in,
 this VC is used.
-
-## Defined in
-
-[src/ent/VC.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/VC.ts#L22)

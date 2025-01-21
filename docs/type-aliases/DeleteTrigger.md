@@ -8,6 +8,8 @@
 
 > **DeleteTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
 
+Defined in: [src/ent/Triggers.ts:116](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L116)
+
 ## Type Parameters
 
 | Type Parameter |
@@ -25,7 +27,3 @@
 ## Returns
 
 `Promise`\<`unknown`\>
-
-## Defined in
-
-[src/ent/Triggers.ts:116](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L116)

@@ -8,6 +8,8 @@
 
 > **BaseEnt**\<`TTable`, `TUniqueKey`, `TClient`\>(`cluster`, `schema`): [`HelpersClass`](../interfaces/HelpersClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
 
+Defined in: [src/ent/BaseEnt.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/BaseEnt.ts#L29)
+
 This is a helper function to create new Ent classes. Run once per each
 Ent+Cluster on app boot. See examples in __tests__/TestObjects.ts and
 EntTest.ts.
@@ -43,7 +45,3 @@ to debug and develop.
 ## Returns
 
 [`HelpersClass`](../interfaces/HelpersClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
-
-## Defined in
-
-[src/ent/BaseEnt.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/BaseEnt.ts#L29)

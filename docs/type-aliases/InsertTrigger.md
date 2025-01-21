@@ -8,6 +8,8 @@
 
 > **InsertTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
 
+Defined in: [src/ent/Triggers.ts:94](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L94)
+
 Triggers could be used to simulate "transactional best-effort behavior" in a
 non-transactional combination of some services. Imagine we have a relational
 database and a queue service; each time we change something in the query, we
@@ -61,7 +63,3 @@ Naming convention for trigger arguments:
 ## Returns
 
 `Promise`\<`unknown`\>
-
-## Defined in
-
-[src/ent/Triggers.ts:94](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L94)

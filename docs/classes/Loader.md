@@ -6,6 +6,8 @@
 
 # Class: Loader\<TLoadArgs, TReturn\>
 
+Defined in: [src/abstract/Loader.ts:42](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L42)
+
 Loader allows to batch single-item requests into batches. It uses a different
 architecture than Facebook's DataLoader:
 
@@ -42,6 +44,8 @@ specific and Loader is completely abstract).
 
 > **new Loader**\<`TLoadArgs`, `TReturn`\>(`handlerCreator`): [`Loader`](Loader.md)\<`TLoadArgs`, `TReturn`\>
 
+Defined in: [src/abstract/Loader.ts:45](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L45)
+
 #### Parameters
 
 | Parameter | Type |
@@ -52,15 +56,13 @@ specific and Loader is completely abstract).
 
 [`Loader`](Loader.md)\<`TLoadArgs`, `TReturn`\>
 
-#### Defined in
-
-[src/abstract/Loader.ts:45](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L45)
-
 ## Methods
 
 ### load()
 
 > **load**(...`args`): `Promise`\<`TReturn`\>
+
+Defined in: [src/abstract/Loader.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L47)
 
 #### Parameters
 
@@ -71,7 +73,3 @@ specific and Loader is completely abstract).
 #### Returns
 
 `Promise`\<`TReturn`\>
-
-#### Defined in
-
-[src/abstract/Loader.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L47)

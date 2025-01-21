@@ -8,6 +8,8 @@
 
 > **ValidationRules**\<`TTable`\>: `object`
 
+Defined in: [src/ent/Validation.ts:59](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L59)
+
 ## Type Parameters
 
 | Type Parameter |
@@ -54,7 +56,3 @@
 ### validate?
 
 > `readonly` `optional` **validate**: [`Predicate`](../interfaces/Predicate.md)\<[`InsertInput`](InsertInput.md)\<`TTable`\>\> & [`EntValidationErrorInfo`](../interfaces/EntValidationErrorInfo.md)[]
-
-## Defined in
-
-[src/ent/Validation.ts:59](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L59)

@@ -2,15 +2,15 @@
 
 exports[`unknown shard failure, multiShardsFromInput, no inverses 1`] = `
 "EntTestHuman not found: universe_id=511119999999, because:
-  ShardError: Shard 1111 is not discoverable (no such Shard in the Cluster? some Islands are down? connections limit?)"
+  ShardIsNotDiscoverableError: Shard 1111 is not discoverable: no such Shard in the Cluster? some Islands are down? connections limit?"
 `;
 
 exports[`unknown shard failure, singleShardForInsert 1`] = `
 "EntTestHuman not found: parent_id=511117654321, because:
-  ShardError: Shard 1111 is not discoverable (no such Shard in the Cluster? some Islands are down? connections limit?)"
+  ShardIsNotDiscoverableError: Shard 1111 is not discoverable: no such Shard in the Cluster? some Islands are down? connections limit?"
 `;
 
 exports[`unknown shard failure, singleShardFromID 1`] = `
 "EntTestHuman not found: id=511110000000, because:
-  ShardError: Shard 1111 is not discoverable (no such Shard in the Cluster? some Islands are down? connections limit?)"
+  ShardIsNotDiscoverableError: Shard 1111 is not discoverable: no such Shard in the Cluster? some Islands are down? connections limit?"
 `;

@@ -6,6 +6,8 @@
 
 # Class: Or\<TInput\>
 
+Defined in: [src/ent/predicates/Or.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L10)
+
 Checks that at least one of the children predicates succeed.
 
 ## Type Parameters
@@ -24,6 +26,8 @@ Checks that at least one of the children predicates succeed.
 
 > **new Or**\<`TInput`\>(...`predicates`): [`Or`](Or.md)\<`TInput`\>
 
+Defined in: [src/ent/predicates/Or.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L14)
+
 #### Parameters
 
 | Parameter | Type |
@@ -34,22 +38,20 @@ Checks that at least one of the children predicates succeed.
 
 [`Or`](Or.md)\<`TInput`\>
 
-#### Defined in
-
-[src/ent/predicates/Or.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L14)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `name` | `string` |
-| `predicates` | readonly [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>[] |
+| <a id="name"></a> `name` | `string` |
+| <a id="predicates-1"></a> `predicates` | readonly [`Predicate`](../interfaces/Predicate.md)\<`TInput`\>[] |
 
 ## Methods
 
 ### check()
 
 > **check**(`vc`, `input`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/predicates/Or.ts:26](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L26)
 
 #### Parameters
 
@@ -65,7 +67,3 @@ Checks that at least one of the children predicates succeed.
 #### Implementation of
 
 [`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
-
-#### Defined in
-
-[src/ent/predicates/Or.ts:26](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L26)

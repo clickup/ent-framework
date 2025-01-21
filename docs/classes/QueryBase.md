@@ -6,6 +6,8 @@
 
 # Class: `abstract` QueryBase\<TTable, TInput, TOutput, TClient\>
 
+Defined in: [src/abstract/QueryBase.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L15)
+
 A convenient base class for most (but not all) of the queries, where the
 Runner instance is the same for different query input shapes. If the query
 doesn't fit the QueryBase framework (like PgQueryUpdate for instance where we
@@ -44,6 +46,8 @@ is used directly instead.
 
 > **new QueryBase**\<`TTable`, `TInput`, `TOutput`, `TClient`\>(`schema`, `input`): [`QueryBase`](QueryBase.md)\<`TTable`, `TInput`, `TOutput`, `TClient`\>
 
+Defined in: [src/abstract/QueryBase.ts:28](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L28)
+
 #### Parameters
 
 | Parameter | Type |
@@ -55,16 +59,12 @@ is used directly instead.
 
 [`QueryBase`](QueryBase.md)\<`TTable`, `TInput`, `TOutput`, `TClient`\>
 
-#### Defined in
-
-[src/abstract/QueryBase.ts:28](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L28)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
-| `input` | `TInput` |
+| <a id="schema-1"></a> `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
+| <a id="input-1"></a> `input` | `TInput` |
 
 ## Accessors
 
@@ -74,23 +74,23 @@ is used directly instead.
 
 > **get** **IS\_WRITE**(): `boolean`
 
+Defined in: [src/abstract/QueryBase.ts:33](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L33)
+
 ##### Returns
 
 `boolean`
 
 #### Implementation of
 
-[`Query`](../interfaces/Query.md).`IS_WRITE`
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:33](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L33)
+[`Query`](../interfaces/Query.md).[`IS_WRITE`](../interfaces/Query.md#is_write)
 
 ## Methods
 
 ### run()
 
 > **run**(`client`, `annotation`): `Promise`\<`TOutput`\>
+
+Defined in: [src/abstract/QueryBase.ts:37](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L37)
 
 #### Parameters
 
@@ -106,7 +106,3 @@ is used directly instead.
 #### Implementation of
 
 [`Query`](../interfaces/Query.md).[`run`](../interfaces/Query.md#run)
-
-#### Defined in
-
-[src/abstract/QueryBase.ts:37](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L37)

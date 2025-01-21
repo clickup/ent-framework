@@ -8,6 +8,8 @@
 
 > **TriggerInsertInput**\<`TTable`\>: `Flatten`\<[`InsertInput`](InsertInput.md)\<`TTable`\> & [`RowWithID`](RowWithID.md)\>
 
+Defined in: [src/ent/Triggers.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L22)
+
 Table -> trigger's before- and after-insert input. Below, we use InsertInput
 and not Row, because before and even after some INSERT, we may still not know
 some values of the row (they can be filled by the DB in e.g. autoInsert
@@ -20,7 +22,3 @@ autoInsert), it will always be required in InsertInput too.
 | Type Parameter |
 | ------ |
 | `TTable` *extends* [`Table`](Table.md) |
-
-## Defined in
-
-[src/ent/Triggers.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L22)

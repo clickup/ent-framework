@@ -19,6 +19,7 @@
 - [Schema](classes/Schema.md)
 - [Shard](classes/Shard.md)
 - [ShardError](classes/ShardError.md)
+- [ShardIsNotDiscoverableError](classes/ShardIsNotDiscoverableError.md)
 - [Timeline](classes/Timeline.md)
 - [TimelineManager](classes/TimelineManager.md)
 - [Configuration](classes/Configuration.md)

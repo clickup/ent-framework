@@ -6,6 +6,8 @@
 
 # Interface: Predicate\<TInput\>
 
+Defined in: [src/ent/predicates/Predicate.ts:17](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L17)
+
 A predicate evaluates against some input (typically a row) and returns true
 or false (or throws which is considering the similar way as returning false).
 
@@ -28,13 +30,15 @@ immediately. This saves us lots of database operations.
 
 | Property | Type |
 | ------ | ------ |
-| `name` | `string` |
+| <a id="name"></a> `name` | `string` |
 
 ## Methods
 
 ### check()
 
 > **check**(`vc`, `input`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/predicates/Predicate.ts:19](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L19)
 
 #### Parameters
 
@@ -46,7 +50,3 @@ immediately. This saves us lots of database operations.
 #### Returns
 
 `Promise`\<`boolean`\>
-
-#### Defined in
-
-[src/ent/predicates/Predicate.ts:19](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L19)

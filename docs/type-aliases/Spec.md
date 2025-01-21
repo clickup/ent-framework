@@ -8,6 +8,8 @@
 
 > **Spec**: `object`
 
+Defined in: [src/types.ts:78](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L78)
+
 { type: ..., ... } - one attribute spec.
 
 ## Type declaration
@@ -27,7 +29,3 @@
 ### autoUpdate?
 
 > `optional` **autoUpdate**: `string`
-
-## Defined in
-
-[src/types.ts:78](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L78)

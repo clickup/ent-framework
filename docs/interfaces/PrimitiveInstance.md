@@ -6,6 +6,8 @@
 
 # Interface: PrimitiveInstance\<TTable\>
 
+Defined in: [src/ent/mixins/PrimitiveMixin.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L31)
+
 ## Extends
 
 - [`ConfigInstance`](ConfigInstance.md)
@@ -24,14 +26,16 @@
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| `vc` | [`VC`](../classes/VC.md) | VC of this Ent. |
-| `id` | `string` | For simplicity, every Ent has an ID field name hardcoded to "id". |
+| <a id="vc"></a> `vc` | [`VC`](../classes/VC.md) | VC of this Ent. |
+| <a id="id"></a> `id` | `string` | For simplicity, every Ent has an ID field name hardcoded to "id". |
 
 ## Methods
 
 ### updateOriginal()
 
 > **updateOriginal**(`input`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/mixins/PrimitiveMixin.ts:58](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L58)
 
 Updates the object in the DB, but doesn't update the Ent itself (since it's
 immutable).
@@ -57,15 +61,13 @@ immutable).
 
 `Promise`\<`boolean`\>
 
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:58](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L58)
-
 ***
 
 ### deleteOriginal()
 
 > **deleteOriginal**(): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/mixins/PrimitiveMixin.ts:64](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L64)
 
 Deletes the object in the DB. Returns true if the object was found. Keeps
 the current object untouched (since it's immutable).
@@ -73,7 +75,3 @@ the current object untouched (since it's immutable).
 #### Returns
 
 `Promise`\<`boolean`\>
-
-#### Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:64](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L64)

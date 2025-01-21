@@ -6,6 +6,8 @@
 
 # Class: `abstract` PgClient
 
+Defined in: [src/pg/PgClient.ts:101](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L101)
+
 An abstract PostgreSQL Client which doesn't know how to acquire an actual
 connection and send queries; these things are up to the derived classes to
 implement.
@@ -32,6 +34,8 @@ only have readonly immediate properties.
 
 > **new PgClient**(`options`): [`PgClient`](PgClient.md)
 
+Defined in: [src/pg/PgClient.ts:154](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L154)
+
 Initializes an instance of PgClient.
 
 #### Parameters
@@ -48,24 +52,22 @@ Initializes an instance of PgClient.
 
 [`Client`](Client.md).[`constructor`](Client.md#constructors)
 
-#### Defined in
-
-[src/pg/PgClient.ts:152](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L152)
-
 ## Properties
 
 | Property | Type | Default value | Description |
 | ------ | ------ | ------ | ------ |
-| `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`PgClientOptions`](../interfaces/PgClientOptions.md)\>\> | `undefined` | Default values for the constructor options. |
-| `options` | `Required`\<[`PgClientOptions`](../interfaces/PgClientOptions.md)\> | `undefined` | PgClient configuration options. |
-| `shardName` | `string` | `"public"` | Name of the shard associated to this Client. |
-| `timelineManager` | [`TimelineManager`](TimelineManager.md) | `undefined` | An active TimelineManager for this particular Client. |
+| <a id="default_options"></a> `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`PgClientOptions`](../interfaces/PgClientOptions.md)\>\> | `undefined` | Default values for the constructor options. |
+| <a id="options-1"></a> `options` | `Required`\<[`PgClientOptions`](../interfaces/PgClientOptions.md)\> | `undefined` | PgClient configuration options. |
+| <a id="shardname"></a> `shardName` | `string` | `"public"` | Name of the shard associated to this Client. |
+| <a id="timelinemanager"></a> `timelineManager` | [`TimelineManager`](TimelineManager.md) | `undefined` | An active TimelineManager for this particular Client. |
 
 ## Methods
 
 ### address()
 
 > `abstract` **address**(): `string`
+
+Defined in: [src/abstract/Client.ts:87](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L87)
 
 Represents the full destination address this Client is working with.
 Depending on the implementation, it may include hostname, port number,
@@ -81,15 +83,13 @@ shardNos) based on that address.
 
 [`Client`](Client.md).[`address`](Client.md#address)
 
-#### Defined in
-
-[src/abstract/Client.ts:87](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L87)
-
 ***
 
 ### end()
 
 > `abstract` **end**(): `Promise`\<`void`\>
+
+Defined in: [src/abstract/Client.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L94)
 
 Gracefully closes the connections to let the caller destroy the Client. The
 pending queries are awaited to finish before returning. The Client becomes
@@ -103,15 +103,13 @@ unusable after calling this method: you should not send queries to it.
 
 [`Client`](Client.md).[`end`](Client.md#end)
 
-#### Defined in
-
-[src/abstract/Client.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L94)
-
 ***
 
 ### isEnded()
 
 > `abstract` **isEnded**(): `boolean`
+
+Defined in: [src/abstract/Client.ts:122](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L122)
 
 Returns true if the Client is ended and can't be used anymore.
 
@@ -123,15 +121,13 @@ Returns true if the Client is ended and can't be used anymore.
 
 [`Client`](Client.md).[`isEnded`](Client.md#isended)
 
-#### Defined in
-
-[src/abstract/Client.ts:122](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L122)
-
 ***
 
 ### logSwallowedError()
 
 > `protected` **logSwallowedError**(`props`): `void`
+
+Defined in: [src/abstract/Client.ts:142](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L142)
 
 Calls swallowedErrorLogger() doing some preliminary amendment.
 
@@ -149,15 +145,13 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 [`Client`](Client.md).[`logSwallowedError`](Client.md#logswallowederror)
 
-#### Defined in
-
-[src/abstract/Client.ts:142](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L142)
-
 ***
 
 ### batcher()
 
 > **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
+
+Defined in: [src/abstract/Client.ts:179](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L179)
 
 Batcher is per-Client per-query-type per-table-name-and-shape:
 - Per-Client means that batchers are removed as soon as the Client is
@@ -202,15 +196,13 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 [`Client`](Client.md).[`batcher`](Client.md#batcher)
 
-#### Defined in
-
-[src/abstract/Client.ts:179](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L179)
-
 ***
 
 ### prewarm()
 
 > **prewarm**(): `void`
+
+Defined in: [src/abstract/Client.ts:199](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L199)
 
 A convenience method to put connections prewarming logic to. The idea is to
 keep the needed number of open connections and also, in each connection,
@@ -225,15 +217,13 @@ full-text dictionaries).
 
 [`Client`](Client.md).[`prewarm`](Client.md#prewarm)
 
-#### Defined in
-
-[src/abstract/Client.ts:199](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L199)
-
 ***
 
 ### poolStats()
 
 > `abstract` **poolStats**(): `object`
+
+Defined in: [src/pg/PgClient.ts:143](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L143)
 
 Returns statistics about the connection pool.
 
@@ -260,15 +250,13 @@ Connections not busy running a query.
 Once all idle connections are over, requests are queued waiting for a
 new available connection. This is the number of such queued requests.
 
-#### Defined in
-
-[src/pg/PgClient.ts:141](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L141)
-
 ***
 
 ### acquireConn()
 
 > `abstract` **acquireConn**(): `Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
+
+Defined in: [src/pg/PgClient.ts:149](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L149)
 
 Called when the Client needs a connection to run a query against. Implies
 than the caller MUST call release() method on the returned object.
@@ -277,15 +265,13 @@ than the caller MUST call release() method on the returned object.
 
 `Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
 
-#### Defined in
-
-[src/pg/PgClient.ts:147](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L147)
-
 ***
 
 ### query()
 
 > **query**\<`TRow`\>(`__namedParameters`): `Promise`\<`TRow`[]\>
+
+Defined in: [src/pg/PgClient.ts:209](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L209)
 
 Sends a query (internally, a multi-query). After the query finishes, we
 should expect that role() returns the actual master/replica role.
@@ -313,15 +299,13 @@ should expect that role() returns the actual master/replica role.
 
 `Promise`\<`TRow`[]\>
 
-#### Defined in
-
-[src/pg/PgClient.ts:199](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L199)
-
 ***
 
 ### shardNos()
 
 > **shardNos**(): `Promise`\<readonly `number`[]\>
+
+Defined in: [src/pg/PgClient.ts:401](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L401)
 
 Returns all Shard numbers discoverable via the connection to the Client's
 database.
@@ -334,15 +318,13 @@ database.
 
 [`Client`](Client.md).[`shardNos`](Client.md#shardnos)
 
-#### Defined in
-
-[src/pg/PgClient.ts:377](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L377)
-
 ***
 
 ### ping()
 
 > **ping**(`__namedParameters`): `Promise`\<`void`\>
+
+Defined in: [src/pg/PgClient.ts:425](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L425)
 
 Sends a read or write test query to the server. Tells the server to sit and
 wait for at least the provided number of milliseconds.
@@ -361,15 +343,13 @@ wait for at least the provided number of milliseconds.
 
 [`Client`](Client.md).[`ping`](Client.md#ping)
 
-#### Defined in
-
-[src/pg/PgClient.ts:401](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L401)
-
 ***
 
 ### shardNoByID()
 
 > **shardNoByID**(`id`): `number`
+
+Defined in: [src/pg/PgClient.ts:443](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L443)
 
 Extracts Shard number from an ID.
 
@@ -387,15 +367,13 @@ Extracts Shard number from an ID.
 
 [`Client`](Client.md).[`shardNoByID`](Client.md#shardnobyid)
 
-#### Defined in
-
-[src/pg/PgClient.ts:419](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L419)
-
 ***
 
 ### withShard()
 
 > **withShard**(`no`): `this`
+
+Defined in: [src/pg/PgClient.ts:499](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L499)
 
 Creates a new Client which is namespaced to the provided Shard number. The
 new Client will share the same connection pool with the parent's Client.
@@ -414,15 +392,13 @@ new Client will share the same connection pool with the parent's Client.
 
 [`Client`](Client.md).[`withShard`](Client.md#withshard)
 
-#### Defined in
-
-[src/pg/PgClient.ts:475](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L475)
-
 ***
 
 ### role()
 
 > **role**(): [`ClientRole`](../type-aliases/ClientRole.md)
+
+Defined in: [src/pg/PgClient.ts:510](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L510)
 
 Returns the Client's role reported after the last successful query. Master
 and replica roles may switch online unpredictably, without reconnecting, so
@@ -436,15 +412,13 @@ we only know the role after a query.
 
 [`Client`](Client.md).[`role`](Client.md#role)
 
-#### Defined in
-
-[src/pg/PgClient.ts:486](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L486)
-
 ***
 
 ### connectionIssue()
 
 > **connectionIssue**(): `null` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
+
+Defined in: [src/pg/PgClient.ts:514](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L514)
 
 Returns a non-nullable value if the Client couldn't connect to the server
 (or it could, but the load balancer reported the remote server as not
@@ -458,7 +432,3 @@ until e.g. the next discovery query to it (or any query) succeeds.
 #### Overrides
 
 [`Client`](Client.md).[`connectionIssue`](Client.md#connectionissue)
-
-#### Defined in
-
-[src/pg/PgClient.ts:490](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L490)

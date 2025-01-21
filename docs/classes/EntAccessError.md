@@ -6,6 +6,8 @@
 
 # Class: EntAccessError
 
+Defined in: [src/ent/errors/EntAccessError.ts:7](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L7)
+
 A base class for errors which trigger the validation framework to process
 them as a DENY/SKIP.
 
@@ -27,6 +29,8 @@ them as a DENY/SKIP.
 
 > **new EntAccessError**(`entName`, `message`, `cause`): [`EntAccessError`](EntAccessError.md)
 
+Defined in: [src/ent/errors/EntAccessError.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L10)
+
 #### Parameters
 
 | Parameter | Type | Default value |
@@ -43,13 +47,9 @@ them as a DENY/SKIP.
 
 `Error.constructor`
 
-#### Defined in
-
-[src/ent/errors/EntAccessError.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntAccessError.ts#L10)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `cause` | `null` \| `string` \| `Error` |
-| `entName` | `string` |
+| <a id="cause-1"></a> `cause` | `null` \| `string` \| `Error` |
+| <a id="entname-1"></a> `entName` | `string` |

@@ -8,6 +8,8 @@
 
 > **HelpersMixin**\<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`HelpersClass`](../interfaces/HelpersClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
 
+Defined in: [src/ent/mixins/HelpersMixin.ts:138](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L138)
+
 Modifies the passed class adding convenience methods (like loadX() which
 throws when an Ent can't be loaded instead of returning null as it's done in
 the primitive operations).
@@ -29,7 +31,3 @@ the primitive operations).
 ## Returns
 
 [`HelpersClass`](../interfaces/HelpersClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
-
-## Defined in
-
-[src/ent/mixins/HelpersMixin.ts:138](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/HelpersMixin.ts#L138)

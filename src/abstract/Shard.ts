@@ -21,6 +21,11 @@ export const STALE_REPLICA = Symbol("STALE_REPLICA");
 export class Shard<TClient extends Client> {
   private shardClients = new WeakMap<TClient, TClient>();
 
+  /** The last known Island number where this Shard was discovered. It may be
+   * out of date after the Shard is moved, and also it may be null in case there
+   * was no discovery happened yet. */
+  public readonly lastKnownIslandNo: number | null = null;
+
   constructor(
     /** Shard number. */
     public readonly no: number,

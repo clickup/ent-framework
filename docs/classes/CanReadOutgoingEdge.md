@@ -6,6 +6,8 @@
 
 # Class: CanReadOutgoingEdge\<TField\>
 
+Defined in: [src/ent/predicates/CanReadOutgoingEdge.ts:18](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L18)
+
 Checks that an ent which a field is pointing to is readable:
 
 EntOur[company_id] ---> EntCompany[id]
@@ -32,6 +34,8 @@ to another ent with ID equals to the value of our ent's field.
 
 > **new CanReadOutgoingEdge**\<`TField`\>(`field`, `toEntClass`): [`CanReadOutgoingEdge`](CanReadOutgoingEdge.md)\<`TField`\>
 
+Defined in: [src/ent/predicates/CanReadOutgoingEdge.ts:23](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L23)
+
 #### Parameters
 
 | Parameter | Type |
@@ -43,23 +47,21 @@ to another ent with ID equals to the value of our ent's field.
 
 [`CanReadOutgoingEdge`](CanReadOutgoingEdge.md)\<`TField`\>
 
-#### Defined in
-
-[src/ent/predicates/CanReadOutgoingEdge.ts:23](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L23)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `name` | `string` |
-| `field` | `TField` |
-| `toEntClass` | [`EntClass`](../interfaces/EntClass.md) |
+| <a id="name"></a> `name` | `string` |
+| <a id="field-1"></a> `field` | `TField` |
+| <a id="toentclass-1"></a> `toEntClass` | [`EntClass`](../interfaces/EntClass.md) |
 
 ## Methods
 
 ### check()
 
 > **check**(`vc`, `row`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/predicates/CanReadOutgoingEdge.ts:30](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L30)
 
 #### Parameters
 
@@ -75,7 +77,3 @@ to another ent with ID equals to the value of our ent's field.
 #### Implementation of
 
 [`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
-
-#### Defined in
-
-[src/ent/predicates/CanReadOutgoingEdge.ts:30](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanReadOutgoingEdge.ts#L30)

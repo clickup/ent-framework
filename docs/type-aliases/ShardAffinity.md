@@ -6,7 +6,9 @@
 
 # Type Alias: ShardAffinity\<TField, TF\>
 
-> **ShardAffinity**\<`TField`, `TF`\>: *typeof* [`GLOBAL_SHARD`](../variables/GLOBAL_SHARD.md) \| `TField` *extends* *typeof* [`ID`](../variables/ID.md) ? readonly `TF`[] : readonly [`TF`, `...TF[]`]
+> **ShardAffinity**\<`TField`, `TF`\>: *typeof* [`GLOBAL_SHARD`](../variables/GLOBAL_SHARD.md) \| `TField` *extends* *typeof* [`ID`](../variables/ID.md) ? readonly `TF`[] : readonly \[`TF`, `...TF[]`\]
+
+Defined in: [src/ent/ShardAffinity.ts:19](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardAffinity.ts#L19)
 
 Defines Ent Shard collocation to some Ent's field when this Ent is inserted.
 - The Shard can always be Shard 0 ("global Shard"), be inferred based on the
@@ -24,7 +26,3 @@ Defines Ent Shard collocation to some Ent's field when this Ent is inserted.
 | ------ | ------ |
 | `TField` *extends* `string` | - |
 | `TF` | `Exclude`\<`TField`, *typeof* [`ID`](../variables/ID.md)\> |
-
-## Defined in
-
-[src/ent/ShardAffinity.ts:19](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardAffinity.ts#L19)

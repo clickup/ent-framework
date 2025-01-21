@@ -6,6 +6,8 @@
 
 # Class: DenyIf\<TInput\>
 
+Defined in: [src/ent/rules/DenyIf.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/DenyIf.ts#L14)
+
 Returns DENY if the predicate succeeds, otherwise SKIP.
 - Used mostly to early block some read/write access.
 - EntAccessError exception will be treated as a DENY signal (so it will abort
@@ -29,6 +31,8 @@ Returns DENY if the predicate succeeds, otherwise SKIP.
 
 > **new DenyIf**\<`TInput`\>(`predicate`): [`DenyIf`](DenyIf.md)\<`TInput`\>
 
+Defined in: [src/ent/rules/Rule.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L43)
+
 #### Parameters
 
 | Parameter | Type |
@@ -43,23 +47,21 @@ Returns DENY if the predicate succeeds, otherwise SKIP.
 
 [`Rule`](Rule.md).[`constructor`](Rule.md#constructors)
 
-#### Defined in
-
-[src/ent/rules/Rule.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L43)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `_TAG` | `"DenyIf"` |
-| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> |
-| `name` | `string` |
+| <a id="_tag"></a> `_TAG` | `"DenyIf"` |
+| <a id="predicate-1"></a> `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> |
+| <a id="name"></a> `name` | `string` |
 
 ## Methods
 
 ### evaluate()
 
 > **evaluate**(`vc`, `input`): `Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
+
+Defined in: [src/ent/rules/DenyIf.ts:17](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/DenyIf.ts#L17)
 
 #### Parameters
 
@@ -75,7 +77,3 @@ Returns DENY if the predicate succeeds, otherwise SKIP.
 #### Overrides
 
 [`Rule`](Rule.md).[`evaluate`](Rule.md#evaluate)
-
-#### Defined in
-
-[src/ent/rules/DenyIf.ts:17](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/DenyIf.ts#L17)

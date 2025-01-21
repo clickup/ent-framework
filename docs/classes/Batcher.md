@@ -6,6 +6,8 @@
 
 # Class: Batcher\<TInput, TOutput\>
 
+Defined in: [src/abstract/Batcher.ts:19](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L19)
+
 Batcher is similar to DataLoader, but with a few important differences:
 1. It's strongly typed not only for the output, but for input too. And input
    can be arbitrary, not only strings (e.g. rows).
@@ -27,6 +29,8 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 > **new Batcher**\<`TInput`, `TOutput`\>(`runner`, `batchDelayMs`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
+Defined in: [src/abstract/Batcher.ts:90](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L90)
+
 #### Parameters
 
 | Parameter | Type |
@@ -38,29 +42,25 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
-#### Defined in
-
-[src/abstract/Batcher.ts:90](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L90)
-
 ## Methods
 
 ### flushQueue()
 
 > `protected` **flushQueue**(): `Promise`\<`void`\>
 
+Defined in: [src/abstract/Batcher.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L32)
+
 #### Returns
 
 `Promise`\<`void`\>
-
-#### Defined in
-
-[src/abstract/Batcher.ts:32](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L32)
 
 ***
 
 ### run()
 
 > **run**(`input`, `annotation`): `Promise`\<`TOutput`\>
+
+Defined in: [src/abstract/Batcher.ts:95](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L95)
 
 #### Parameters
 
@@ -72,7 +72,3 @@ Batcher is similar to DataLoader, but with a few important differences:
 #### Returns
 
 `Promise`\<`TOutput`\>
-
-#### Defined in
-
-[src/abstract/Batcher.ts:95](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L95)

@@ -6,6 +6,8 @@
 
 # Interface: Loggers
 
+Defined in: [src/abstract/Loggers.ts:10](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L10)
+
 Loggers are called at different stages of the query lifecycle. We do not use
 EventEmitter for several reasons:
 1. It is not friendly to mocking in Jest.
@@ -15,6 +17,6 @@ EventEmitter for several reasons:
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| `clientQueryLogger?` | (`props`: [`ClientQueryLoggerProps`](ClientQueryLoggerProps.md)) => `void` | Logs actual queries to the database (after batching). |
-| `swallowedErrorLogger` | (`props`: [`SwallowedErrorLoggerProps`](SwallowedErrorLoggerProps.md)) => `void` | Logs errors which did not throw through (typically recoverable). |
-| `locateIslandErrorLogger?` | (`props`: [`LocateIslandErrorLoggerProps`](LocateIslandErrorLoggerProps.md)) => `void` | Called when Island-from-Shard location fails (on every retry). |
+| <a id="clientquerylogger"></a> `clientQueryLogger?` | (`props`: [`ClientQueryLoggerProps`](ClientQueryLoggerProps.md)) => `void` | Logs actual queries to the database (after batching). |
+| <a id="swallowederrorlogger"></a> `swallowedErrorLogger` | (`props`: [`SwallowedErrorLoggerProps`](SwallowedErrorLoggerProps.md)) => `void` | Logs errors which did not throw through (typically recoverable). |
+| <a id="locateislanderrorlogger"></a> `locateIslandErrorLogger?` | (`props`: [`LocateIslandErrorLoggerProps`](LocateIslandErrorLoggerProps.md)) => `void` | Called when Island-from-Shard location fails (on every retry). |

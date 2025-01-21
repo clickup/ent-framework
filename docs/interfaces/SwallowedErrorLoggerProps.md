@@ -6,11 +6,13 @@
 
 # Interface: SwallowedErrorLoggerProps
 
+Defined in: [src/abstract/Loggers.ts:50](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L50)
+
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `where` | `string` |
-| `error` | `unknown` |
-| `elapsed` | `null` \| `number` |
-| `importance` | `"low"` \| `"normal"` |
+| <a id="where"></a> `where` | `string` |
+| <a id="error"></a> `error` | `unknown` |
+| <a id="elapsed"></a> `elapsed` | `null` \| `number` |
+| <a id="importance"></a> `importance` | `"low"` \| `"normal"` |

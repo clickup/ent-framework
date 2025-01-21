@@ -6,6 +6,8 @@
 
 # Class: PgQueryUpdate\<TTable\>
 
+Defined in: [src/pg/PgQueryUpdate.ts:11](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQueryUpdate.ts#L11)
+
 A very lean interface for a Query. In practice each query is so different
 that this interface is the only common part of them all.
 
@@ -25,6 +27,8 @@ that this interface is the only common part of them all.
 
 > **new PgQueryUpdate**\<`TTable`\>(`schema`, `id`, `input`): [`PgQueryUpdate`](PgQueryUpdate.md)\<`TTable`\>
 
+Defined in: [src/pg/PgQueryUpdate.ts:16](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQueryUpdate.ts#L16)
+
 #### Parameters
 
 | Parameter | Type |
@@ -37,23 +41,21 @@ that this interface is the only common part of them all.
 
 [`PgQueryUpdate`](PgQueryUpdate.md)\<`TTable`\>
 
-#### Defined in
-
-[src/pg/PgQueryUpdate.ts:16](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQueryUpdate.ts#L16)
-
 ## Properties
 
 | Property | Type | Default value |
 | ------ | ------ | ------ |
-| `input` | \{ \[K in string \| number \| symbol\]?: Value\<TTable\[K\]\> \} & `object` & `object` | `undefined` |
-| `IS_WRITE` | `true` | `true` |
-| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> | `undefined` |
+| <a id="input-1"></a> `input` | \{ \[K in string \| number \| symbol\]?: Value\<TTable\[K\]\> \} & `object` & `object` | `undefined` |
+| <a id="is_write"></a> `IS_WRITE` | `true` | `true` |
+| <a id="schema-1"></a> `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> | `undefined` |
 
 ## Methods
 
 ### run()
 
 > **run**(`client`, `annotation`): `Promise`\<`boolean`\>
+
+Defined in: [src/pg/PgQueryUpdate.ts:26](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQueryUpdate.ts#L26)
 
 #### Parameters
 
@@ -69,7 +71,3 @@ that this interface is the only common part of them all.
 #### Implementation of
 
 [`Query`](../interfaces/Query.md).[`run`](../interfaces/Query.md#run)
-
-#### Defined in
-
-[src/pg/PgQueryUpdate.ts:26](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQueryUpdate.ts#L26)

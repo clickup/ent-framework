@@ -8,6 +8,8 @@
 
 > **Field**\<`TTable`\>: keyof `TTable` & `string`
 
+Defined in: [src/types.ts:102](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L102)
+
 A database table's field (no symbols). In regards to some table structure,
 there can be 3 options:
 1. Field<TTable>: only DB-stored attributes, no ephemeral symbols
@@ -22,7 +24,3 @@ fields.
 | Type Parameter |
 | ------ |
 | `TTable` *extends* [`Table`](Table.md) |
-
-## Defined in
-
-[src/types.ts:102](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L102)

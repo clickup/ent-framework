@@ -6,6 +6,8 @@
 
 # Class: PgError
 
+Defined in: [src/pg/PgError.ts:3](https://github.com/clickup/ent-framework/blob/master/src/pg/PgError.ts#L3)
+
 Encapsulates the error thrown when running a Client query. The object also
 carries suggestions, what to do next.
 
@@ -18,6 +20,8 @@ carries suggestions, what to do next.
 ### new PgError()
 
 > **new PgError**(`cause`, `where`, `sql`): [`PgError`](PgError.md)
+
+Defined in: [src/pg/PgError.ts:4](https://github.com/clickup/ent-framework/blob/master/src/pg/PgError.ts#L4)
 
 #### Parameters
 
@@ -35,26 +39,24 @@ carries suggestions, what to do next.
 
 [`ClientError`](ClientError.md).[`constructor`](ClientError.md#constructors)
 
-#### Defined in
-
-[src/pg/PgError.ts:4](https://github.com/clickup/ent-framework/blob/master/src/pg/PgError.ts#L4)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `cause` | `MaybeError` |
-| `postAction` | [`ClientErrorPostAction`](../type-aliases/ClientErrorPostAction.md) |
-| `kind` | [`ClientErrorKind`](../type-aliases/ClientErrorKind.md) |
-| `abbreviation` | `string` |
-| `comment?` | `string` |
-| `sql` | `string` |
+| <a id="cause-1"></a> `cause` | `MaybeError` |
+| <a id="postaction"></a> `postAction` | [`ClientErrorPostAction`](../type-aliases/ClientErrorPostAction.md) |
+| <a id="kind"></a> `kind` | [`ClientErrorKind`](../type-aliases/ClientErrorKind.md) |
+| <a id="abbreviation"></a> `abbreviation` | `string` |
+| <a id="comment"></a> `comment?` | `string` |
+| <a id="sql-1"></a> `sql` | `string` |
 
 ## Methods
 
 ### isFKError()
 
 > **isFKError**(`fkName`?): `boolean`
+
+Defined in: [src/pg/PgError.ts:20](https://github.com/clickup/ent-framework/blob/master/src/pg/PgError.ts#L20)
 
 #### Parameters
 
@@ -65,7 +67,3 @@ carries suggestions, what to do next.
 #### Returns
 
 `boolean`
-
-#### Defined in
-
-[src/pg/PgError.ts:20](https://github.com/clickup/ent-framework/blob/master/src/pg/PgError.ts#L20)

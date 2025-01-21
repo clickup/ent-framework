@@ -8,6 +8,8 @@
 
 > **UpdateField**\<`TTable`\>: `Exclude`\<keyof `TTable`, keyof [`RowWithID`](RowWithID.md)\>
 
+Defined in: [src/types.ts:216](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L216)
+
 Update: Table -> "field1" | "created_at" | "updated_at" | ... deduction.
 
 ## Type Parameters
@@ -15,7 +17,3 @@ Update: Table -> "field1" | "created_at" | "updated_at" | ... deduction.
 | Type Parameter |
 | ------ |
 | `TTable` *extends* [`Table`](Table.md) |
-
-## Defined in
-
-[src/types.ts:216](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L216)

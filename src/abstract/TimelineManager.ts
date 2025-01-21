@@ -53,8 +53,8 @@ export class TimelineManager {
    * Sets the actual timeline pos. Must be called by the Client after each
    * interaction with the database.
    */
-  setCurrentPos(pos: bigint): void {
-    this.pos = pos > this.pos ? pos : this.pos;
+  setCurrentPos(pos: bigint, force?: boolean): void {
+    this.pos = pos > this.pos || force ? pos : this.pos;
     this.changeTime = performance.now();
   }
 }

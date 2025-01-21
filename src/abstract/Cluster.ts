@@ -5,6 +5,7 @@ import random from "lodash/random";
 import pTimeout from "p-timeout";
 import { CachedRefreshedValue } from "../internal/CachedRefreshedValue";
 import type {
+  Writeable,
   DesperateAny,
   MaybeCallable,
   MaybeError,
@@ -24,9 +25,9 @@ import type { Client } from "./Client";
 import { ClientError } from "./ClientError";
 import { Island } from "./Island";
 import type { LocalCache } from "./LocalCache";
-import type { Loggers } from "./Loggers";
+import type { Loggers, SwallowedErrorLoggerProps } from "./Loggers";
 import { Shard } from "./Shard";
-import { ShardError } from "./ShardError";
+import { ShardIsNotDiscoverableError } from "./ShardIsNotDiscoverableError";
 
 /**
  * Options for Cluster constructor.
@@ -77,11 +78,15 @@ export interface ClusterOptions<TClient extends Client, TNode> {
 /**
  * Holds the complete auto-discovered and non-contradictory snapshot of Islands
  * and a map of Shards to figure out, which Island each Shard is located on.
+ * Also, includes all errors which caused some Islands to be completely
+ * undiscoverable (i.e. if we could not locate Shards on master and all
+ * replicas, so we gave up for that Island till the next rediscovery).
  */
 interface ShardsDiscovered<TClient extends Client> {
   islandNoToIsland: Map<number, Island<TClient>>;
   shardNoToIslandNo: ReadonlyMap<number, number>;
   nonGlobalShardNos: readonly number[];
+  errors: SwallowedErrorLoggerProps[];
 }
 
 /**
@@ -316,7 +321,12 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
       index = random(0, nonGlobalShardNos.length - 1);
     }
 
-    return this.shardByNo(nonGlobalShardNos[index]);
+    return this.shardByNo(
+      nullthrows(
+        nonGlobalShardNos[index],
+        () => "There are no non-global Shards in the Cluster",
+      ),
+    );
   }
 
   /**
@@ -360,21 +370,19 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
       try {
         // Re-read Islands map on every retry, because it might change.
         const startTime = performance.now();
-        const { shardNoToIslandNo, islandNoToIsland } =
+        const { shardNoToIslandNo, islandNoToIsland, errors } =
           await this.shardsDiscoverCache.cached();
         const islandNo = shardNoToIslandNo.get(shardNo);
         if (islandNo === undefined) {
-          // Notice that we don't retry ShardError below (it's not a
-          // ClientError) it to avoid DoS, since it could be e.g. a fake ID
-          // passed to us by a user in some URL or something else. We still want
-          // to log it through locateIslandErrorLogger() though.
-          throw new ShardError(
-            `Shard ${shardNo} is not discoverable (no such Shard in the Cluster? some Islands are down? connections limit?)`,
-            "Islands " +
-              [...islandNoToIsland.entries()]
-                .map(([no, { clients }]) => `${no}@${clients[0].options.name}`)
-                .join(", ") +
-              `; cached discovery took ${Math.round(performance.now() - startTime)} ms`,
+          // Notice that we don't retry ShardIsNotDiscoverableError below (it's
+          // not a ClientError) to avoid DoS, since it could be e.g. a fake ID
+          // passed to us in some URL or something else. We still want to log it
+          // through locateIslandErrorLogger() though.
+          throw new ShardIsNotDiscoverableError(
+            shardNo,
+            errors,
+            [...islandNoToIsland.values()],
+            Math.round(performance.now() - startTime),
           );
         }
 
@@ -385,9 +393,10 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
         const error = cause as MaybeError | ClientError;
         this.options.loggers.locateIslandErrorLogger?.({ attempt, error });
 
-        if (typeof error?.stack === "string" && attempt > 0) {
+        if (typeof error?.stack === "string") {
           error.stack =
-            error.stack.trimEnd() + `\n    after ${attempt + 1} attempts`;
+            error.stack.trimEnd() +
+            `\n    after ${attempt + 1} attempt${attempt > 0 ? "s" : ""}`;
         }
 
         if (
@@ -440,7 +449,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
       "Timed out while waiting for whole-Cluster Shards discovery.",
     ).catch((error) =>
       this.options.loggers.swallowedErrorLogger({
-        where: `${this.constructor.name}: waitRefresh`,
+        where: `${this.constructor.name}.rediscoverCluster`,
         error,
         elapsed: performance.now() - startTime,
         importance: "normal",
@@ -475,7 +484,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
       `Timed out while waiting for Island ${island.no} Shards discovery.`,
     ).catch((error) =>
       this.options.loggers.swallowedErrorLogger({
-        where: `${this.constructor.name}: Island.rediscover`,
+        where: `${this.constructor.name}.rediscoverIsland(${island.no})`,
         error,
         elapsed: performance.now() - startTime,
         importance: "normal",
@@ -511,12 +520,14 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
 
     const shardNoToIslandNo = new Map<number, number>();
     const nonGlobalShardNos: number[] = [];
-
+    const errors: SwallowedErrorLoggerProps[] = [];
+    const shards: Array<Shard<TClient>> = [];
     await mapJoin(
       [...islandNoToIsland.entries()],
       async ([islandNo, island]) => {
-        await island.rediscover();
+        errors.push(...(await island.rediscover()));
         for (const shard of island.shards()) {
+          shards.push(shard);
           const otherIslandNo = shardNoToIslandNo.get(shard.no);
           if (otherIslandNo !== undefined) {
             throw Error(
@@ -537,6 +548,12 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
       },
     );
 
+    // Assign the last known Island number to all Shards synchronously.
+    for (const shard of shards) {
+      (shard as Writeable<Shard<TClient>>).lastKnownIslandNo =
+        shardNoToIslandNo.get(shard.no) ?? null;
+    }
+
     // Gracefully delete and disconnect the Clients which didn't correspond to
     // the list of nodes mentioned in this.options.islands, and also, delete
     // leftover Islands which are not used anymore. In case we don't reach this
@@ -551,6 +568,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
       islandNoToIsland,
       shardNoToIslandNo,
       nonGlobalShardNos: nonGlobalShardNos.sort((a, b) => a - b),
+      errors,
     };
   }
 }

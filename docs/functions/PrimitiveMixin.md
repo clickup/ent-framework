@@ -8,6 +8,8 @@
 
 > **PrimitiveMixin**\<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`PrimitiveClass`](../type-aliases/PrimitiveClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
 
+Defined in: [src/ent/mixins/PrimitiveMixin.ts:196](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L196)
+
 Modifies the passed class adding support for the minimal number of basic Ent
 operations. Internally, uses Schema abstractions to run them.
 
@@ -28,7 +30,3 @@ operations. Internally, uses Schema abstractions to run them.
 ## Returns
 
 [`PrimitiveClass`](../type-aliases/PrimitiveClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
-
-## Defined in
-
-[src/ent/mixins/PrimitiveMixin.ts:196](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/PrimitiveMixin.ts#L196)

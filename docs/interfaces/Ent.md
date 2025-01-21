@@ -6,6 +6,8 @@
 
 # Interface: Ent\<TTable\>
 
+Defined in: [src/ent/types.ts:69](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L69)
+
 A very shallow interface of one Ent.
 
 ## Type Parameters
@@ -18,8 +20,8 @@ A very shallow interface of one Ent.
 
 | Property | Type |
 | ------ | ------ |
-| `id` | `string` |
-| `vc` | [`VC`](../classes/VC.md) |
+| <a id="id"></a> `id` | `string` |
+| <a id="vc"></a> `vc` | [`VC`](../classes/VC.md) |
 
 ## Methods
 
@@ -27,19 +29,19 @@ A very shallow interface of one Ent.
 
 > **deleteOriginal**(): `Promise`\<`boolean`\>
 
+Defined in: [src/ent/types.ts:72](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L72)
+
 #### Returns
 
 `Promise`\<`boolean`\>
-
-#### Defined in
-
-[src/ent/types.ts:72](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L72)
 
 ***
 
 ### updateOriginal()
 
 > **updateOriginal**(`input`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/types.ts:73](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L73)
 
 #### Parameters
 
@@ -50,7 +52,3 @@ A very shallow interface of one Ent.
 #### Returns
 
 `Promise`\<`boolean`\>
-
-#### Defined in
-
-[src/ent/types.ts:73](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L73)

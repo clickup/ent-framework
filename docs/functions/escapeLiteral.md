@@ -8,6 +8,8 @@
 
 > **escapeLiteral**(`literal`): `string`
 
+Defined in: [src/pg/helpers/escapeLiteral.ts:15](https://github.com/clickup/ent-framework/blob/master/src/pg/helpers/escapeLiteral.ts#L15)
+
 Builds a part of SQL query using ?-placeholders to prevent SQL Injection.
 Everywhere where we want to accept a piece of SQL, we should instead accept a
 Literal tuple.
@@ -25,7 +27,3 @@ placeholder for the replacing value.
 ## Returns
 
 `string`
-
-## Defined in
-
-[src/pg/helpers/escapeLiteral.ts:15](https://github.com/clickup/ent-framework/blob/master/src/pg/helpers/escapeLiteral.ts#L15)

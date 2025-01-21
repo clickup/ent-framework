@@ -6,6 +6,8 @@
 
 # Class: Island\<TClient\>
 
+Defined in: [src/abstract/Island.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L94)
+
 Island is a moderately short-lived collection of DB connections (represented
 as Clients) that contains a single master Client and any number of replicas.
 
@@ -35,6 +37,8 @@ as Clients) that contains a single master Client and any number of replicas.
 
 > **new Island**\<`TClient`\>(`options`): [`Island`](Island.md)\<`TClient`\>
 
+Defined in: [src/abstract/Island.ts:121](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L121)
+
 Initializes the Island by copying the Client references into it.
 
 #### Parameters
@@ -47,16 +51,12 @@ Initializes the Island by copying the Client references into it.
 
 [`Island`](Island.md)\<`TClient`\>
 
-#### Defined in
-
-[src/abstract/Island.ts:120](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L120)
-
 ## Properties
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`IslandOptions`](../interfaces/IslandOptions.md)\<[`Client`](Client.md)\>\>\> | Default values for the constructor options. |
-| `options` | `Required`\<[`IslandOptions`](../interfaces/IslandOptions.md)\<`TClient`\>\> | Island configuration options. |
+| <a id="default_options"></a> `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`IslandOptions`](../interfaces/IslandOptions.md)\<[`Client`](Client.md)\>\>\> | Default values for the constructor options. |
+| <a id="options-1"></a> `options` | `Required`\<[`IslandOptions`](../interfaces/IslandOptions.md)\<`TClient`\>\> | Island configuration options. |
 
 ## Accessors
 
@@ -66,15 +66,13 @@ Initializes the Island by copying the Client references into it.
 
 > **get** **no**(): `number`
 
+Defined in: [src/abstract/Island.ts:133](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L133)
+
 Island number.
 
 ##### Returns
 
 `number`
-
-#### Defined in
-
-[src/abstract/Island.ts:132](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L132)
 
 ***
 
@@ -84,21 +82,21 @@ Island number.
 
 > **get** **clients**(): readonly `TClient`[]
 
+Defined in: [src/abstract/Island.ts:140](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L140)
+
 The list of Clients in this Island. No assumptions about the order.
 
 ##### Returns
 
 readonly `TClient`[]
 
-#### Defined in
-
-[src/abstract/Island.ts:139](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L139)
-
 ## Methods
 
 ### rediscover()
 
-> **rediscover**(): `Promise`\<`void`\>
+> **rediscover**(): `Promise`\<[`SwallowedErrorLoggerProps`](../interfaces/SwallowedErrorLoggerProps.md)[]\>
+
+Defined in: [src/abstract/Island.ts:157](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L157)
 
 Queries for Shards on the best available Client (preferably master, then
 replicas) and stores the result internally, available for the further
@@ -109,20 +107,20 @@ shards() call.
   anyways needs to know, who's master and who's replica, as a side effect
   of the very 1st query after the Client creation. We infer that as a piggy
   back after calling Client#shardNos().
+- In case we could not discover shards, returns the list of errors happened
+  during the discovery.
 
 #### Returns
 
-`Promise`\<`void`\>
-
-#### Defined in
-
-[src/abstract/Island.ts:154](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L154)
+`Promise`\<[`SwallowedErrorLoggerProps`](../interfaces/SwallowedErrorLoggerProps.md)[]\>
 
 ***
 
 ### shards()
 
 > **shards**(): [`Shard`](Shard.md)\<`TClient`\>[]
+
+Defined in: [src/abstract/Island.ts:224](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L224)
 
 Returns the currently best-known Shards on this Island. This method is
 needed only when working with cross-Shards logic; in normal situations, it
@@ -132,15 +130,13 @@ is not called much.
 
 [`Shard`](Shard.md)\<`TClient`\>[]
 
-#### Defined in
-
-[src/abstract/Island.ts:215](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L215)
-
 ***
 
 ### master()
 
 > **master**(): `TClient`
+
+Defined in: [src/abstract/Island.ts:252](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L252)
 
 Returns the currently best-known master Client among the Clients of this
 Island.
@@ -165,15 +161,13 @@ Island.
 
 `TClient`
 
-#### Defined in
-
-[src/abstract/Island.ts:243](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L243)
-
 ***
 
 ### replica()
 
 > **replica**(): `TClient`
+
+Defined in: [src/abstract/Island.ts:279](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L279)
 
 Returns a currently best-known random replica Client. In case there are no
 replicas, returns the master Client.
@@ -181,7 +175,3 @@ replicas, returns the master Client.
 #### Returns
 
 `TClient`
-
-#### Defined in
-
-[src/abstract/Island.ts:270](https://github.com/clickup/ent-framework/blob/master/src/abstract/Island.ts#L270)

@@ -8,6 +8,8 @@
 
 > **evaluate**\<`TInput`\>(`vc`, `input`, `rules`, `fashion`): `Promise`\<\{ `allow`: `boolean`; `results`: [`RuleResult`](../interfaces/RuleResult.md)[]; `cause`: `string`; \}\>
 
+Defined in: [src/ent/rules/evaluate.ts:49](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/evaluate.ts#L49)
+
 This is a hearth of permissions checking, a machine which evaluates the rules
 chain from top to bottom (one after another) and makes the decision based on
 the following logic:
@@ -68,7 +70,3 @@ Example of a chain:
 ## Returns
 
 `Promise`\<\{ `allow`: `boolean`; `results`: [`RuleResult`](../interfaces/RuleResult.md)[]; `cause`: `string`; \}\>
-
-## Defined in
-
-[src/ent/rules/evaluate.ts:49](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/evaluate.ts#L49)

@@ -6,6 +6,8 @@
 
 # Class: TimelineManager
 
+Defined in: [src/abstract/TimelineManager.ts:10](https://github.com/clickup/ent-framework/blob/master/src/abstract/TimelineManager.ts#L10)
+
 A side effect based container which holds the current master or replica
 timeline position. For master, the expectation is that the pos will be
 updated after each query only, so no need to use refreshMs. For replica, it's
@@ -17,6 +19,8 @@ not more often than every refreshMs interval.
 ### new TimelineManager()
 
 > **new TimelineManager**(`maxLagMs`, `refreshMs`, `triggerRefresh`): [`TimelineManager`](TimelineManager.md)
+
+Defined in: [src/abstract/TimelineManager.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/TimelineManager.ts#L15)
 
 #### Parameters
 
@@ -30,21 +34,19 @@ not more often than every refreshMs interval.
 
 [`TimelineManager`](TimelineManager.md)
 
-#### Defined in
-
-[src/abstract/TimelineManager.ts:15](https://github.com/clickup/ent-framework/blob/master/src/abstract/TimelineManager.ts#L15)
-
 ## Properties
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| `maxLagMs` | `MaybeCallable`\<`number`\> | Time interval after which a replica is declared as "caught up" even if it's not caught up. This is to not read from master forever when something has happened with the replica. |
+| <a id="maxlagms-1"></a> `maxLagMs` | `MaybeCallable`\<`number`\> | Time interval after which a replica is declared as "caught up" even if it's not caught up. This is to not read from master forever when something has happened with the replica. |
 
 ## Methods
 
 ### currentPos()
 
 > **currentPos**(): `Promise`\<`bigint`\>
+
+Defined in: [src/abstract/TimelineManager.ts:33](https://github.com/clickup/ent-framework/blob/master/src/abstract/TimelineManager.ts#L33)
 
 Returns the current Client's replication timeline position (e.g. WAL
 position).
@@ -53,15 +55,13 @@ position).
 
 `Promise`\<`bigint`\>
 
-#### Defined in
-
-[src/abstract/TimelineManager.ts:33](https://github.com/clickup/ent-framework/blob/master/src/abstract/TimelineManager.ts#L33)
-
 ***
 
 ### setCurrentPos()
 
-> **setCurrentPos**(`pos`): `void`
+> **setCurrentPos**(`pos`, `force`?): `void`
+
+Defined in: [src/abstract/TimelineManager.ts:56](https://github.com/clickup/ent-framework/blob/master/src/abstract/TimelineManager.ts#L56)
 
 Sets the actual timeline pos. Must be called by the Client after each
 interaction with the database.
@@ -71,11 +71,8 @@ interaction with the database.
 | Parameter | Type |
 | ------ | ------ |
 | `pos` | `bigint` |
+| `force`? | `boolean` |
 
 #### Returns
 
 `void`
-
-#### Defined in
-
-[src/abstract/TimelineManager.ts:56](https://github.com/clickup/ent-framework/blob/master/src/abstract/TimelineManager.ts#L56)

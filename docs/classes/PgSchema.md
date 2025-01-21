@@ -6,6 +6,8 @@
 
 # Class: PgSchema\<TTable, TUniqueKey\>
 
+Defined in: [src/pg/PgSchema.ts:27](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L27)
+
 Schema is like a "table" in some database (sharded, but it's beyond the scope
 of Schema). It is also a factory of Query: it knows how to build runnable
 Query objects. This 2nd role is database engine specific (e.g. there might be
@@ -33,6 +35,8 @@ too limited in the queries the DB engine can execute.
 
 > **new PgSchema**\<`TTable`, `TUniqueKey`\>(`name`, `table`, `uniqueKey`): [`PgSchema`](PgSchema.md)\<`TTable`, `TUniqueKey`\>
 
+Defined in: [src/abstract/Schema.ts:119](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L119)
+
 Used in e.g. inverses. This casts this.constructor to SchemaClass with all
 static methods and `new` semantic (TS doesn't do it by default; for TS,
 x.constructor is Function).
@@ -53,25 +57,23 @@ x.constructor is Function).
 
 [`Schema`](Schema.md).[`constructor`](Schema.md#constructors)
 
-#### Defined in
-
-[src/abstract/Schema.ts:119](https://github.com/clickup/ent-framework/blob/master/src/abstract/Schema.ts#L119)
-
 ## Properties
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| `hash` | `string` | - |
-| `constructor` | [`SchemaClass`](../interfaces/SchemaClass.md) | Used in e.g. inverses. This casts this.constructor to SchemaClass with all static methods and `new` semantic (TS doesn't do it by default; for TS, x.constructor is Function). |
-| `name` | `string` | For relational databases, it's likely a table name. |
-| `table` | `TTable` | Structure of the table. |
-| `uniqueKey` | `TUniqueKey` | Fields which the native unique key consists of (if any). |
+| <a id="hash"></a> `hash` | `string` | - |
+| <a id="constructor"></a> `constructor` | [`SchemaClass`](../interfaces/SchemaClass.md) | Used in e.g. inverses. This casts this.constructor to SchemaClass with all static methods and `new` semantic (TS doesn't do it by default; for TS, x.constructor is Function). |
+| <a id="name-1"></a> `name` | `string` | For relational databases, it's likely a table name. |
+| <a id="table-1"></a> `table` | `TTable` | Structure of the table. |
+| <a id="uniquekey-1"></a> `uniqueKey` | `TUniqueKey` | Fields which the native unique key consists of (if any). |
 
 ## Methods
 
 ### idGen()
 
 > **idGen**(): [`Query`](../interfaces/Query.md)\<`string`\>
+
+Defined in: [src/pg/PgSchema.ts:31](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L31)
 
 Generates a new ID for the row. Used when e.g. there is a beforeInsert
 trigger on the Ent which needs to know the ID beforehand.
@@ -84,15 +86,13 @@ trigger on the Ent which needs to know the ID beforehand.
 
 [`Schema`](Schema.md).[`idGen`](Schema.md#idgen)
 
-#### Defined in
-
-[src/pg/PgSchema.ts:31](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L31)
-
 ***
 
 ### insert()
 
 > **insert**(`input`): [`Query`](../interfaces/Query.md)\<`null` \| `string`\>
+
+Defined in: [src/pg/PgSchema.ts:35](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L35)
 
 Creates a new row. Returns null if the row violates some unique key
 constraint, otherwise returns the row ID.
@@ -111,15 +111,13 @@ constraint, otherwise returns the row ID.
 
 [`Schema`](Schema.md).[`insert`](Schema.md#insert)
 
-#### Defined in
-
-[src/pg/PgSchema.ts:35](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L35)
-
 ***
 
 ### upsert()
 
 > **upsert**(`input`): [`Query`](../interfaces/Query.md)\<`string`\>
+
+Defined in: [src/pg/PgSchema.ts:39](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L39)
 
 Upserts a row. Always returns the row ID.
 
@@ -137,15 +135,13 @@ Upserts a row. Always returns the row ID.
 
 [`Schema`](Schema.md).[`upsert`](Schema.md#upsert)
 
-#### Defined in
-
-[src/pg/PgSchema.ts:39](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L39)
-
 ***
 
 ### update()
 
 > **update**(`id`, `input`): [`Query`](../interfaces/Query.md)\<`boolean`\>
+
+Defined in: [src/pg/PgSchema.ts:43](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L43)
 
 Updates one single row by its ID. Returns true if it actually existed.
 
@@ -164,15 +160,13 @@ Updates one single row by its ID. Returns true if it actually existed.
 
 [`Schema`](Schema.md).[`update`](Schema.md#update)
 
-#### Defined in
-
-[src/pg/PgSchema.ts:43](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L43)
-
 ***
 
 ### delete()
 
 > **delete**(`id`): [`Query`](../interfaces/Query.md)\<`boolean`\>
+
+Defined in: [src/pg/PgSchema.ts:47](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L47)
 
 Deletes a row by id. Returns true if it actually existed.
 
@@ -190,15 +184,13 @@ Deletes a row by id. Returns true if it actually existed.
 
 [`Schema`](Schema.md).[`delete`](Schema.md#delete)
 
-#### Defined in
-
-[src/pg/PgSchema.ts:47](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L47)
-
 ***
 
 ### load()
 
 > **load**(`id`): [`Query`](../interfaces/Query.md)\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
+
+Defined in: [src/pg/PgSchema.ts:51](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L51)
 
 "Load" family of methods means that we load exactly one row. This one
 returns a row by its ID or null if it's not found.
@@ -217,15 +209,13 @@ returns a row by its ID or null if it's not found.
 
 [`Schema`](Schema.md).[`load`](Schema.md#load)
 
-#### Defined in
-
-[src/pg/PgSchema.ts:51](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L51)
-
 ***
 
 ### loadBy()
 
 > **loadBy**(`input`): [`Query`](../interfaces/Query.md)\<`null` \| [`Row`](../type-aliases/Row.md)\<`TTable`\>\>
+
+Defined in: [src/pg/PgSchema.ts:55](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L55)
 
 Loads one single row by its unique key ("by" denotes that it's based on an
 unique key, not on an ID). Returns null if it's not found.
@@ -244,15 +234,13 @@ unique key, not on an ID). Returns null if it's not found.
 
 [`Schema`](Schema.md).[`loadBy`](Schema.md#loadby)
 
-#### Defined in
-
-[src/pg/PgSchema.ts:55](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L55)
-
 ***
 
 ### selectBy()
 
 > **selectBy**(`input`): [`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
+
+Defined in: [src/pg/PgSchema.ts:59](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L59)
 
 "Select" family of methods means that we load multiple rows ("by" denotes
 that it's based on an unique key, not on an arbitrary query). This one
@@ -272,15 +260,13 @@ returns all rows whose unique key prefix matches the input.
 
 [`Schema`](Schema.md).[`selectBy`](Schema.md#selectby)
 
-#### Defined in
-
-[src/pg/PgSchema.ts:59](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L59)
-
 ***
 
 ### select()
 
 > **select**(`input`): [`Query`](../interfaces/Query.md)\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
+
+Defined in: [src/pg/PgSchema.ts:65](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L65)
 
 Returns all rows matching an arbitrary query.
 
@@ -298,15 +284,13 @@ Returns all rows matching an arbitrary query.
 
 [`Schema`](Schema.md).[`select`](Schema.md#select)
 
-#### Defined in
-
-[src/pg/PgSchema.ts:65](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L65)
-
 ***
 
 ### count()
 
 > **count**(`input`): [`Query`](../interfaces/Query.md)\<`number`\>
+
+Defined in: [src/pg/PgSchema.ts:69](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L69)
 
 Returns the number of rows matching an arbitrary query.
 
@@ -324,15 +308,13 @@ Returns the number of rows matching an arbitrary query.
 
 [`Schema`](Schema.md).[`count`](Schema.md#count)
 
-#### Defined in
-
-[src/pg/PgSchema.ts:69](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L69)
-
 ***
 
 ### exists()
 
 > **exists**(`input`): [`Query`](../interfaces/Query.md)\<`boolean`\>
+
+Defined in: [src/pg/PgSchema.ts:73](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L73)
 
 An optimized version of count() for the cases where we only need to know
 whether at least one row exists, and don't need a precise count.
@@ -350,7 +332,3 @@ whether at least one row exists, and don't need a precise count.
 #### Overrides
 
 [`Schema`](Schema.md).[`exists`](Schema.md#exists)
-
-#### Defined in
-
-[src/pg/PgSchema.ts:73](https://github.com/clickup/ent-framework/blob/master/src/pg/PgSchema.ts#L73)

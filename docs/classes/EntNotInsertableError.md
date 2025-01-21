@@ -6,6 +6,8 @@
 
 # Class: EntNotInsertableError
 
+Defined in: [src/ent/errors/EntNotInsertableError.ts:6](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotInsertableError.ts#L6)
+
 Error: thrown when an Ent cannot be inserted due to privacy reasons.
 
 ## Extends
@@ -17,6 +19,8 @@ Error: thrown when an Ent cannot be inserted due to privacy reasons.
 ### new EntNotInsertableError()
 
 > **new EntNotInsertableError**(`entName`, `vc`, `row`, `cause`): [`EntNotInsertableError`](EntNotInsertableError.md)
+
+Defined in: [src/ent/errors/EntNotInsertableError.ts:7](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotInsertableError.ts#L7)
 
 #### Parameters
 
@@ -35,15 +39,11 @@ Error: thrown when an Ent cannot be inserted due to privacy reasons.
 
 [`EntAccessError`](EntAccessError.md).[`constructor`](EntAccessError.md#constructors)
 
-#### Defined in
-
-[src/ent/errors/EntNotInsertableError.ts:7](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotInsertableError.ts#L7)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `cause` | `null` \| `string` \| `Error` |
-| `entName` | `string` |
-| `vc` | `string` |
-| `row` | `object` |
+| <a id="cause-1"></a> `cause` | `null` \| `string` \| `Error` |
+| <a id="entname-1"></a> `entName` | `string` |
+| <a id="vc-1"></a> `vc` | `string` |
+| <a id="row-1"></a> `row` | `object` |

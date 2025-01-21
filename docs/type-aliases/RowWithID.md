@@ -8,6 +8,8 @@
 
 > **RowWithID**: `object`
 
+Defined in: [src/types.ts:33](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L33)
+
 { id: string }
 
 ## Type declaration
@@ -15,7 +17,3 @@
 ### id
 
 > **id**: `string`
-
-## Defined in
-
-[src/types.ts:33](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L33)

@@ -6,6 +6,8 @@
 
 # Class: `abstract` Runner\<TInput, TOutput\>
 
+Defined in: [src/abstract/Runner.ts:9](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L9)
+
 Knows how to translate individual strongly typed requests into DB language
 and how to parse the result back.
 
@@ -26,6 +28,8 @@ and how to parse the result back.
 
 > **new Runner**\<`TInput`, `TOutput`\>(`name`): [`Runner`](Runner.md)\<`TInput`, `TOutput`\>
 
+Defined in: [src/abstract/Runner.ts:69](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L69)
+
 Parameter `name` is typically a table name.
 
 #### Parameters
@@ -38,25 +42,23 @@ Parameter `name` is typically a table name.
 
 [`Runner`](Runner.md)\<`TInput`, `TOutput`\>
 
-#### Defined in
-
-[src/abstract/Runner.ts:69](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L69)
-
 ## Properties
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| `IS_WRITE` | `boolean` | If true, it's a write operation. |
-| `op` | `string` | Operation name for logging purposes. |
-| `maxBatchSize` | `number` | Maximum batch size for this type of operations. |
-| `default` | `TOutput` | In case undefined is returned from batching, this value will be returned instead. |
-| `name` | `string` | - |
+| <a id="is_write"></a> `IS_WRITE` | `boolean` | If true, it's a write operation. |
+| <a id="op"></a> `op` | `string` | Operation name for logging purposes. |
+| <a id="maxbatchsize"></a> `maxBatchSize` | `number` | Maximum batch size for this type of operations. |
+| <a id="default"></a> `default` | `TOutput` | In case undefined is returned from batching, this value will be returned instead. |
+| <a id="name-1"></a> `name` | `string` | - |
 
 ## Methods
 
 ### runSingle()
 
 > `abstract` **runSingle**(`input`, `annotations`): `Promise`\<`undefined` \| `TOutput`\>
+
+Defined in: [src/abstract/Runner.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L30)
 
 Method runSingle is to e.g. produce simple DB requests when we have only
 one input to process, not many.
@@ -72,15 +74,13 @@ one input to process, not many.
 
 `Promise`\<`undefined` \| `TOutput`\>
 
-#### Defined in
-
-[src/abstract/Runner.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L30)
-
 ***
 
 ### runBatch()?
 
 > `abstract` `optional` **runBatch**(`inputs`, `annotations`): `Promise`\<`Map`\<`string`, `TOutput`\>\>
+
+Defined in: [src/abstract/Runner.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L38)
 
 Typically issues complex queries with magic.
 
@@ -95,15 +95,13 @@ Typically issues complex queries with magic.
 
 `Promise`\<`Map`\<`string`, `TOutput`\>\>
 
-#### Defined in
-
-[src/abstract/Runner.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L38)
-
 ***
 
 ### delayForSingleQueryRetryOnError()
 
 > `abstract` **delayForSingleQueryRetryOnError**(`error`): `number` \| `"immediate_retry"` \| `"no_retry"`
+
+Defined in: [src/abstract/Runner.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L47)
 
 If the single query's error needs to be retried (e.g. it's a deadlock
 error), returns the number of milliseconds to wait before retrying.
@@ -118,15 +116,13 @@ error), returns the number of milliseconds to wait before retrying.
 
 `number` \| `"immediate_retry"` \| `"no_retry"`
 
-#### Defined in
-
-[src/abstract/Runner.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L47)
-
 ***
 
 ### shouldDebatchOnError()
 
 > `abstract` **shouldDebatchOnError**(`error`): `boolean`
+
+Defined in: [src/abstract/Runner.ts:64](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L64)
 
 If this method returns true for an error object, the batch is split back
 into sub-queries, they are executed individually, and then the response of
@@ -150,15 +146,13 @@ false.)
 
 `boolean`
 
-#### Defined in
-
-[src/abstract/Runner.ts:64](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L64)
-
 ***
 
 ### key()
 
 > **key**(`_input`): `string`
+
+Defined in: [src/abstract/Runner.ts:76](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L76)
 
 Returns a batch-dedupping key for the input. By default, no dedupping is
 performed (i.e. all inputs are processed individually and not collapsed
@@ -173,7 +167,3 @@ into one input; e.g. this is needed for inserts).
 #### Returns
 
 `string`
-
-#### Defined in
-
-[src/abstract/Runner.ts:76](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L76)

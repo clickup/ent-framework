@@ -6,6 +6,8 @@
 
 # Interface: PgClientConn
 
+Defined in: [src/pg/PgClient.ts:73](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L73)
+
 An opened low-level PostgreSQL connection.
 
 ## Extends
@@ -16,7 +18,7 @@ An opened low-level PostgreSQL connection.
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| `processID?` | `null` \| `number` | Undocumented property of node-postgres, see: https://github.com/brianc/node-postgres/issues/2665 |
-| `id?` | `number` | An additional property to the vanilla client: auto-incrementing ID of the connection for logging purposes. |
-| `queriesSent?` | `number` | An additional property to the vanilla client: number of queries sent within this connection. |
-| `closeAt?` | `number` | An additional property to the vanilla client: when do we want to hard-close that connection. |
+| <a id="processid"></a> `processID?` | `null` \| `number` | Undocumented property of node-postgres, see: https://github.com/brianc/node-postgres/issues/2665 |
+| <a id="id"></a> `id?` | `number` | An additional property to the vanilla client: auto-incrementing ID of the connection for logging purposes. |
+| <a id="queriessent"></a> `queriesSent?` | `number` | An additional property to the vanilla client: number of queries sent within this connection. |
+| <a id="closeat"></a> `closeAt?` | `number` | An additional property to the vanilla client: when do we want to hard-close that connection. |

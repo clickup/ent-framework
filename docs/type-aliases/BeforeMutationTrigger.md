@@ -8,6 +8,8 @@
 
 > **BeforeMutationTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
 
+Defined in: [src/ent/Triggers.ts:123](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L123)
+
 ## Type Parameters
 
 | Type Parameter |
@@ -24,7 +26,3 @@
 ## Returns
 
 `Promise`\<`unknown`\>
-
-## Defined in
-
-[src/ent/Triggers.ts:123](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L123)

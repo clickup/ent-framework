@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Shard is not discoverable error when connection got stuck 1`] = `
+"ShardIsNotDiscoverableError: Shard 0 is not discoverable: no such Shard in the Cluster? some Islands are down? connections limit?
+- TestPgClient(test-pool(replica=false)-0).shardNos (took NNN ms): Error: Connection terminated due to connection timeout
+- TestPgClient(test-pool(replica=false)-1).shardNos (took NNN ms): Error: Connection terminated due to connection timeout
+- TestPgClient(test-pool(replica=true)-0).shardNos (took NNN ms): Error: Connection terminated due to connection timeout"
+`;
+
+exports[`Shard is not discoverable error when connection got stuck 2`] = `
+"ShardIsNotDiscoverableError: Shard 0 is not discoverable: no such Shard in the Cluster? some Islands are down? connections limit?
+- TestPgClient(test-pool(replica=false)-0).shardNos (took NNN ms): Error: Connection terminated due to connection timeout
+- TestPgClient(test-pool(replica=false)-1).shardNos (took NNN ms): Error: Connection terminated due to connection timeout
+- TestPgClient(test-pool(replica=true)-0).shardNos (took NNN ms): Error: Connection terminated due to connection timeout"
+`;

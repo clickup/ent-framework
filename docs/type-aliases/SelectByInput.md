@@ -8,6 +8,8 @@
 
 > **SelectByInput**\<`TTable`, `TUniqueKey`\>: [`LoadByInput`](LoadByInput.md)\<`TTable`, `TuplePrefixes`\<`TUniqueKey`\>\>
 
+Defined in: [src/types.ts:262](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L262)
+
 (Table, UniqueKey) -> { field1: number [, field2: number [, ...] ] }.
 selectBy operation is allowed for unique key PREFIX attributes only.
 
@@ -17,7 +19,3 @@ selectBy operation is allowed for unique key PREFIX attributes only.
 | ------ |
 | `TTable` *extends* [`Table`](Table.md) |
 | `TUniqueKey` *extends* [`UniqueKey`](UniqueKey.md)\<`TTable`\> |
-
-## Defined in
-
-[src/types.ts:262](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L262)

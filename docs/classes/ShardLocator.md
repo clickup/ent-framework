@@ -6,6 +6,8 @@
 
 # Class: ShardLocator\<TClient, TTable, TField\>
 
+Defined in: [src/ent/ShardLocator.ts:21](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L21)
+
 Knows how to locate Shard(s) based on various inputs. In some contexts, we
 expect exactly one Shard returned, and in other contexts, multiple Shards are
 okay.
@@ -24,6 +26,8 @@ okay.
 
 > **new ShardLocator**\<`TClient`, `TTable`, `TField`\>(`__namedParameters`): [`ShardLocator`](ShardLocator.md)\<`TClient`, `TTable`, `TField`\>
 
+Defined in: [src/ent/ShardLocator.ts:34](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L34)
+
 #### Parameters
 
 | Parameter | Type |
@@ -39,15 +43,13 @@ okay.
 
 [`ShardLocator`](ShardLocator.md)\<`TClient`, `TTable`, `TField`\>
 
-#### Defined in
-
-[src/ent/ShardLocator.ts:34](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L34)
-
 ## Methods
 
 ### singleShardForInsert()
 
 > **singleShardForInsert**(`input`, `op`): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>\>
+
+Defined in: [src/ent/ShardLocator.ts:76](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L76)
 
 Called in a context when we must know exactly 1 Shard to work with (e.g.
 INSERT, UPSERT etc.). If op === "insert" (fallback to random Shard), then
@@ -76,15 +78,13 @@ been changed).
 
 `Promise`\<[`Shard`](Shard.md)\<`TClient`\>\>
 
-#### Defined in
-
-[src/ent/ShardLocator.ts:76](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L76)
-
 ***
 
 ### multiShardsFromInput()
 
 > **multiShardsFromInput**(`vc`, `input`, `op`): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>[]\>
+
+Defined in: [src/ent/ShardLocator.ts:110](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L110)
 
 Called in a context when multiple Shards may be involved, e.g. when
 selecting Ents referred by some Inverses. May also return the empty list of
@@ -103,15 +103,13 @@ filtering is correct), there are no Inverse rows existing in the database.
 
 `Promise`\<[`Shard`](Shard.md)\<`TClient`\>[]\>
 
-#### Defined in
-
-[src/ent/ShardLocator.ts:110](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L110)
-
 ***
 
 ### singleShardFromID()
 
 > **singleShardFromID**(`field`, `id`, `op`): `Promise`\<`null` \| [`Shard`](Shard.md)\<`TClient`\>\>
+
+Defined in: [src/ent/ShardLocator.ts:182](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L182)
 
 A wrapper for Cluster#shard() which injects Ent name to the exception (in
 case of e.g. "Cannot locate Shard" exception). This is just a convenience
@@ -134,22 +132,16 @@ identical to the case of an Ent not existing in the database.
 
 `Promise`\<`null` \| [`Shard`](Shard.md)\<`TClient`\>\>
 
-#### Defined in
-
-[src/ent/ShardLocator.ts:182](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L182)
-
 ***
 
 ### allShards()
 
 > **allShards**(): `Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
 
+Defined in: [src/ent/ShardLocator.ts:239](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L239)
+
 All shards for this particular Ent depending on its affinity.
 
 #### Returns
 
 `Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
-
-#### Defined in
-
-[src/ent/ShardLocator.ts:239](https://github.com/clickup/ent-framework/blob/master/src/ent/ShardLocator.ts#L239)

@@ -8,6 +8,8 @@
 
 > **isBigintStr**(`str`): `boolean`
 
+Defined in: [src/helpers/isBigintStr.ts:8](https://github.com/clickup/ent-framework/blob/master/src/helpers/isBigintStr.ts#L8)
+
 It's hard to support PG bigint type in JS, so people use strings instead.
 This function checks that a string can be passed to PG as a bigint.
 
@@ -20,7 +22,3 @@ This function checks that a string can be passed to PG as a bigint.
 ## Returns
 
 `boolean`
-
-## Defined in
-
-[src/helpers/isBigintStr.ts:8](https://github.com/clickup/ent-framework/blob/master/src/helpers/isBigintStr.ts#L8)

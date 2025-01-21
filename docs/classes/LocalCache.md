@@ -6,6 +6,8 @@
 
 # Class: LocalCache\<TValue\>
 
+Defined in: [src/abstract/LocalCache.ts:45](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L45)
+
 A simple key-value cache stored on the local machine.
 
 - The expectation is that there will be not too many keys stored, since the
@@ -30,6 +32,8 @@ A simple key-value cache stored on the local machine.
 
 > **new LocalCache**\<`TValue`\>(`options`): [`LocalCache`](LocalCache.md)\<`TValue`\>
 
+Defined in: [src/abstract/LocalCache.ts:64](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L64)
+
 Initializes the instance.
 
 #### Parameters
@@ -42,16 +46,12 @@ Initializes the instance.
 
 [`LocalCache`](LocalCache.md)\<`TValue`\>
 
-#### Defined in
-
-[src/abstract/LocalCache.ts:64](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L64)
-
 ## Properties
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`LocalCacheOptions`](../interfaces/LocalCacheOptions.md)\>\> | Default values for the constructor options. |
-| `options` | `Required`\<[`LocalCacheOptions`](../interfaces/LocalCacheOptions.md)\> | LocalCache configuration options. |
+| <a id="default_options"></a> `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`LocalCacheOptions`](../interfaces/LocalCacheOptions.md)\>\> | Default values for the constructor options. |
+| <a id="options-1"></a> `options` | `Required`\<[`LocalCacheOptions`](../interfaces/LocalCacheOptions.md)\> | LocalCache configuration options. |
 
 ## Methods
 
@@ -59,21 +59,21 @@ Initializes the instance.
 
 > **end**(): `void`
 
+Defined in: [src/abstract/LocalCache.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L78)
+
 Ends the instance lifecycle (e.g. garbage recheck interval).
 
 #### Returns
 
 `void`
 
-#### Defined in
-
-[src/abstract/LocalCache.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L78)
-
 ***
 
 ### get()
 
 > **get**(`key`): `Promise`\<`null` \| `TValue`\>
+
+Defined in: [src/abstract/LocalCache.ts:86](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L86)
 
 Returns the value for the given key, or null if the key does not exist.
 
@@ -87,15 +87,13 @@ Returns the value for the given key, or null if the key does not exist.
 
 `Promise`\<`null` \| `TValue`\>
 
-#### Defined in
-
-[src/abstract/LocalCache.ts:86](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L86)
-
 ***
 
 ### set()
 
 > **set**(`key`, `value`): `Promise`\<`void`\>
+
+Defined in: [src/abstract/LocalCache.ts:105](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L105)
 
 Sets the value for the given key.
 
@@ -109,7 +107,3 @@ Sets the value for the given key.
 #### Returns
 
 `Promise`\<`void`\>
-
-#### Defined in
-
-[src/abstract/LocalCache.ts:105](https://github.com/clickup/ent-framework/blob/master/src/abstract/LocalCache.ts#L105)

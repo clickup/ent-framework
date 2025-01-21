@@ -6,6 +6,8 @@
 
 # Class: `abstract` Rule\<TInput\>
 
+Defined in: [src/ent/rules/Rule.ts:37](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L37)
+
 A base class which can e.g. accept not only a predicate, but also a plain JS
 lambda function as a predicate. Also has a logic of "glueing" the rule name
 with the predicate name.
@@ -39,6 +41,8 @@ interpret the result.
 
 > **new Rule**\<`TInput`\>(`predicate`): [`Rule`](Rule.md)\<`TInput`\>
 
+Defined in: [src/ent/rules/Rule.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L43)
+
 #### Parameters
 
 | Parameter | Type |
@@ -49,22 +53,20 @@ interpret the result.
 
 [`Rule`](Rule.md)\<`TInput`\>
 
-#### Defined in
-
-[src/ent/rules/Rule.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L43)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> |
-| `name` | `string` |
+| <a id="predicate-1"></a> `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> |
+| <a id="name"></a> `name` | `string` |
 
 ## Methods
 
 ### evaluate()
 
 > `abstract` **evaluate**(`vc`, `input`): `Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
+
+Defined in: [src/ent/rules/Rule.ts:41](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L41)
 
 #### Parameters
 
@@ -76,7 +78,3 @@ interpret the result.
 #### Returns
 
 `Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
-
-#### Defined in
-
-[src/ent/rules/Rule.ts:41](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L41)

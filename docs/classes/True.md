@@ -6,6 +6,8 @@
 
 # Class: True
 
+Defined in: [src/ent/predicates/True.ts:7](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/True.ts#L7)
+
 Always passes; used for e.g. globally accessed objects.
 
 ## Implements
@@ -26,13 +28,15 @@ Always passes; used for e.g. globally accessed objects.
 
 | Property | Type |
 | ------ | ------ |
-| `name` | `string` |
+| <a id="name"></a> `name` | `string` |
 
 ## Methods
 
 ### check()
 
 > **check**(`_vc`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/predicates/True.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/True.ts#L10)
 
 #### Parameters
 
@@ -47,7 +51,3 @@ Always passes; used for e.g. globally accessed objects.
 #### Implementation of
 
 [`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
-
-#### Defined in
-
-[src/ent/predicates/True.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/True.ts#L10)

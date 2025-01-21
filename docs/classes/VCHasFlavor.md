@@ -6,6 +6,8 @@
 
 # Class: VCHasFlavor
 
+Defined in: [src/ent/predicates/VCHasFlavor.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L8)
+
 Checks that the VC has some flavor.
 
 ## Implements
@@ -18,6 +20,8 @@ Checks that the VC has some flavor.
 
 > **new VCHasFlavor**(`Flavor`): [`VCHasFlavor`](VCHasFlavor.md)
 
+Defined in: [src/ent/predicates/VCHasFlavor.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L11)
+
 #### Parameters
 
 | Parameter | Type |
@@ -28,21 +32,19 @@ Checks that the VC has some flavor.
 
 [`VCHasFlavor`](VCHasFlavor.md)
 
-#### Defined in
-
-[src/ent/predicates/VCHasFlavor.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L11)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `name` | `string` |
+| <a id="name"></a> `name` | `string` |
 
 ## Methods
 
 ### check()
 
 > **check**(`vc`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/predicates/VCHasFlavor.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L15)
 
 #### Parameters
 
@@ -57,7 +59,3 @@ Checks that the VC has some flavor.
 #### Implementation of
 
 [`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
-
-#### Defined in
-
-[src/ent/predicates/VCHasFlavor.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/VCHasFlavor.ts#L15)

@@ -1,5 +1,7 @@
 import { Timeline } from "../Timeline";
 
+jest.useFakeTimers({ advanceTimers: true });
+
 test("serialize and deserialize", async () => {
   const timeline = new Timeline();
 
@@ -33,4 +35,12 @@ test("cloneMap", () => {
   const prevP1Ser = map.get("p1")!.serialize();
   map.get("p1")!.setPos(BigInt(42), 42);
   expect(copy.get("p1")!.serialize()).toEqual(prevP1Ser);
+});
+
+test("isCaughtUp pos expiration", async () => {
+  const timeline = new Timeline();
+  timeline.setPos(BigInt(1), 20000);
+  expect(timeline.isCaughtUp(BigInt(0))).toEqual(false);
+  jest.advanceTimersByTime(30000);
+  expect(timeline.isCaughtUp(BigInt(0))).toEqual("replica-bc-pos-expired");
 });

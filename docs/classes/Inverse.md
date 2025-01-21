@@ -6,6 +6,8 @@
 
 # Class: Inverse\<TClient, TTable\>
 
+Defined in: [src/ent/Inverse.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L29)
+
 Represents an Inverse assoc manager which knows how to modify/query Inverses.
 Parameter `name` is the Inverse's schema name (in relational databases, most
 likely a table name), and `type` holds both the name of the "parent" entity
@@ -25,6 +27,8 @@ EntUser refers an EntOrg row).
 
 > **new Inverse**\<`TClient`, `TTable`\>(`__namedParameters`): [`Inverse`](Inverse.md)\<`TClient`, `TTable`\>
 
+Defined in: [src/ent/Inverse.ts:37](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L37)
+
 #### Parameters
 
 | Parameter | Type |
@@ -41,22 +45,20 @@ EntUser refers an EntOrg row).
 
 [`Inverse`](Inverse.md)\<`TClient`, `TTable`\>
 
-#### Defined in
-
-[src/ent/Inverse.ts:37](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L37)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `id2Field` | [`FieldOfIDTypeRequired`](../type-aliases/FieldOfIDTypeRequired.md)\<`TTable`\> |
-| `type` | `string` |
+| <a id="id2field-1"></a> `id2Field` | [`FieldOfIDTypeRequired`](../type-aliases/FieldOfIDTypeRequired.md)\<`TTable`\> |
+| <a id="type-1"></a> `type` | `string` |
 
 ## Methods
 
 ### beforeInsert()
 
 > **beforeInsert**(`vc`, `id1`, `id2`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/Inverse.ts:64](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L64)
 
 Runs before a row with a pre-generated id2 was inserted to the main schema.
 Returns true if the Inverse row was actually inserted in the DB.
@@ -73,15 +75,13 @@ Returns true if the Inverse row was actually inserted in the DB.
 
 `Promise`\<`boolean`\>
 
-#### Defined in
-
-[src/ent/Inverse.ts:64](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L64)
-
 ***
 
 ### afterUpdate()
 
 > **afterUpdate**(`vc`, `id1`, `id2`, `oldID1`): `Promise`\<`void`\>
+
+Defined in: [src/ent/Inverse.ts:88](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L88)
 
 Runs after a row was updated in the main schema.
 
@@ -98,15 +98,13 @@ Runs after a row was updated in the main schema.
 
 `Promise`\<`void`\>
 
-#### Defined in
-
-[src/ent/Inverse.ts:88](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L88)
-
 ***
 
 ### afterDelete()
 
 > **afterDelete**(`vc`, `id1`, `id2`): `Promise`\<`void`\>
+
+Defined in: [src/ent/Inverse.ts:107](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L107)
 
 Runs after a row was deleted in the main schema.
 
@@ -122,15 +120,13 @@ Runs after a row was deleted in the main schema.
 
 `Promise`\<`void`\>
 
-#### Defined in
-
-[src/ent/Inverse.ts:107](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L107)
-
 ***
 
 ### id2s()
 
 > **id2s**(`vc`, `id1`): `Promise`\<`string`[]\>
+
+Defined in: [src/ent/Inverse.ts:130](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L130)
 
 Returns all id2s by a particular (id1, type) pair. The number of resulting
 rows is limited to not overload the database.
@@ -145,7 +141,3 @@ rows is limited to not overload the database.
 #### Returns
 
 `Promise`\<`string`[]\>
-
-#### Defined in
-
-[src/ent/Inverse.ts:130](https://github.com/clickup/ent-framework/blob/master/src/ent/Inverse.ts#L130)

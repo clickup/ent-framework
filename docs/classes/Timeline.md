@@ -6,6 +6,8 @@
 
 # Class: Timeline
 
+Defined in: [src/abstract/Timeline.ts:36](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L36)
+
 Tracks replication lag timeline position at master per "user" and Ent.
 - serialization format: "pos:expiresAt"
 - wipes expired records (expiration is calculated at assignment moment)
@@ -27,6 +29,8 @@ user+Ent+microshard, and thus it is decoupled from IDs.
 
 > **new Timeline**(`state`): [`Timeline`](Timeline.md)
 
+Defined in: [src/abstract/Timeline.ts:37](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L37)
+
 #### Parameters
 
 | Parameter | Type | Default value |
@@ -37,15 +41,13 @@ user+Ent+microshard, and thus it is decoupled from IDs.
 
 [`Timeline`](Timeline.md)
 
-#### Defined in
-
-[src/abstract/Timeline.ts:37](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L37)
-
 ## Methods
 
 ### deserialize()
 
 > `static` **deserialize**(`data`, `prevTimeline`): [`Timeline`](Timeline.md)
+
+Defined in: [src/abstract/Timeline.ts:43](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L43)
 
 #### Parameters
 
@@ -58,15 +60,13 @@ user+Ent+microshard, and thus it is decoupled from IDs.
 
 [`Timeline`](Timeline.md)
 
-#### Defined in
-
-[src/abstract/Timeline.ts:43](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L43)
-
 ***
 
 ### cloneMap()
 
 > `static` **cloneMap**(`timelines`): `Map`\<`string`, [`Timeline`](Timeline.md)\>
+
+Defined in: [src/abstract/Timeline.ts:65](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L65)
 
 #### Parameters
 
@@ -78,29 +78,25 @@ user+Ent+microshard, and thus it is decoupled from IDs.
 
 `Map`\<`string`, [`Timeline`](Timeline.md)\>
 
-#### Defined in
-
-[src/abstract/Timeline.ts:65](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L65)
-
 ***
 
 ### serialize()
 
 > **serialize**(): `undefined` \| `string`
 
+Defined in: [src/abstract/Timeline.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L78)
+
 #### Returns
 
 `undefined` \| `string`
-
-#### Defined in
-
-[src/abstract/Timeline.ts:78](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L78)
 
 ***
 
 ### setPos()
 
 > **setPos**(`pos`, `maxLagMs`): `void`
+
+Defined in: [src/abstract/Timeline.ts:85](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L85)
 
 #### Parameters
 
@@ -113,15 +109,13 @@ user+Ent+microshard, and thus it is decoupled from IDs.
 
 `void`
 
-#### Defined in
-
-[src/abstract/Timeline.ts:85](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L85)
-
 ***
 
 ### isCaughtUp()
 
 > **isCaughtUp**(`replicaPos`): [`TimelineCaughtUpReason`](../type-aliases/TimelineCaughtUpReason.md)
+
+Defined in: [src/abstract/Timeline.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L94)
 
 #### Parameters
 
@@ -133,20 +127,14 @@ user+Ent+microshard, and thus it is decoupled from IDs.
 
 [`TimelineCaughtUpReason`](../type-aliases/TimelineCaughtUpReason.md)
 
-#### Defined in
-
-[src/abstract/Timeline.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L94)
-
 ***
 
 ### reset()
 
 > **reset**(): `void`
 
+Defined in: [src/abstract/Timeline.ts:104](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L104)
+
 #### Returns
 
 `void`
-
-#### Defined in
-
-[src/abstract/Timeline.ts:104](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L104)

@@ -6,6 +6,8 @@
 
 # Class: OutgoingEdgePointsToVC\<TField\>
 
+Defined in: [src/ent/predicates/OutgoingEdgePointsToVC.ts:9](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L9)
+
 Checks that the field's value is the same as VC's principal:
 
 EntOur[user_id] ---> vc.principal
@@ -26,6 +28,8 @@ EntOur[user_id] ---> vc.principal
 
 > **new OutgoingEdgePointsToVC**\<`TField`\>(`field`): [`OutgoingEdgePointsToVC`](OutgoingEdgePointsToVC.md)\<`TField`\>
 
+Defined in: [src/ent/predicates/OutgoingEdgePointsToVC.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L14)
+
 #### Parameters
 
 | Parameter | Type |
@@ -36,22 +40,20 @@ EntOur[user_id] ---> vc.principal
 
 [`OutgoingEdgePointsToVC`](OutgoingEdgePointsToVC.md)\<`TField`\>
 
-#### Defined in
-
-[src/ent/predicates/OutgoingEdgePointsToVC.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L14)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `name` | `string` |
-| `field` | `TField` |
+| <a id="name"></a> `name` | `string` |
+| <a id="field-1"></a> `field` | `TField` |
 
 ## Methods
 
 ### check()
 
 > **check**(`vc`, `row`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/predicates/OutgoingEdgePointsToVC.ts:18](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L18)
 
 #### Parameters
 
@@ -67,7 +69,3 @@ EntOur[user_id] ---> vc.principal
 #### Implementation of
 
 [`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
-
-#### Defined in
-
-[src/ent/predicates/OutgoingEdgePointsToVC.ts:18](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/OutgoingEdgePointsToVC.ts#L18)

@@ -22,7 +22,6 @@ import type { MaybeCallable, MaybeError, PickPartial } from "../internal/misc";
 import {
   addSentenceSuffixes,
   maybeCall,
-  nullthrows,
   sanitizeIDForDebugPrinting,
 } from "../internal/misc";
 import { Ref } from "../internal/Ref";
@@ -52,17 +51,20 @@ export interface PgClientOptions extends ClientOptions {
    * statement_timeout TO ..." before each query in multi-query mode. */
   hints?: MaybeCallable<Record<string, string | undefined>> | null;
   /** After how many milliseconds we give up waiting for the replica to catch up
-   * with the master. */
+   * with the master. When role="replica", then this option is the only way to
+   * "unlatch" the reads from the master node after a write. */
   maxReplicationLagMs?: MaybeCallable<number>;
+  /** Sometimes, the role of this Client is known statically, e.g. when pointing
+   * to AWS Aurora writer and reader endpoints. If "master" or "replica" are
+   * provided, then no attempt is made to use functions like
+   * pg_current_wal_insert_lsn() etc. (they are barely supported in e.g. AWS
+   * Aurora). Instead, for "replica" role, it is treated as "always lagging up
+   * until maxReplicationLagMs after the last write". If role="unknown", then
+   * auto-detection and automatic lag tracking is performed using
+   * pg_current_wal_insert_lsn() and other built-in PostgreSQL functions. */
+  role?: ClientRole;
   /** Up to how often we call TimelineManager#triggerRefresh(). */
   replicaTimelinePosRefreshMs?: MaybeCallable<number>;
-  /** If true, this Client pretends to be an "always lagging" replica. It is
-   * helpful while testing replication lag code (typically done by just manually
-   * creating a copy of the database and declaring it as a replica, and then
-   * setting isAlwaysLaggingReplica=true for it). For such cases, we treat such
-   * "replica" as always lagging, i.e. having pos=0 which is less than any known
-   * master's pos. */
-  isAlwaysLaggingReplica?: boolean;
 }
 
 /**
@@ -104,9 +106,9 @@ export abstract class PgClient extends Client {
     ...super.DEFAULT_OPTIONS,
     shards: null,
     hints: null,
+    role: "unknown",
     maxReplicationLagMs: 60000,
     replicaTimelinePosRefreshMs: 1000,
-    isAlwaysLaggingReplica: false,
   };
 
   /** Number of decimal digits in an ID allocated for shard number. Calculated
@@ -119,7 +121,7 @@ export abstract class PgClient extends Client {
    * reconnecting the Client, so we need to refresh it after each request and be
    * ready for a fallback. The expectation is that the initial value is
    * populated during the very first shardNos() call. */
-  private readonly reportedRoleAfterLastQuery = new Ref<ClientRole>("unknown");
+  private readonly reportedRoleAfterLastQuery: Ref<ClientRole>;
 
   /** This value is non-null if there was an unsuccessful connection attempt
    * (i.e. the PG is down), and there were no successful queries since then. */
@@ -155,8 +157,16 @@ export abstract class PgClient extends Client {
       {},
       options,
       (this as Client).options,
+      {
+        maxReplicationLagMs:
+          options.role === "master" || options.role === "replica"
+            ? 2000 // e.g. AWS Aurora, assuming it always "catches up" fast
+            : undefined,
+      },
       PgClient.DEFAULT_OPTIONS,
     );
+
+    this.reportedRoleAfterLastQuery = new Ref(this.options.role);
 
     this.timelineManager = new TimelineManager(
       this.options.maxReplicationLagMs,
@@ -175,7 +185,7 @@ export abstract class PgClient extends Client {
           this.logSwallowedError({
             where: OP_TIMELINE_POS_REFRESH,
             error,
-            elapsed: performance.now() - startTime,
+            elapsed: Math.round(performance.now() - startTime),
             importance: "normal",
           });
         }
@@ -217,12 +227,14 @@ export abstract class PgClient extends Client {
       this.buildMultiQuery(
         hints,
         queryLiteral,
-        // For master, we read its WAL LSN (pg_current_wal_insert_lsn) after
-        // each query (notice that, when run on a replica,
-        // pg_current_wal_insert_lsn() throws, so we call it only if
-        // pg_is_in_recovery() returns false). For replica, we read its WAL LSN
-        // (pg_last_wal_replay_lsn).
-        "SELECT CASE WHEN pg_is_in_recovery() THEN NULL ELSE pg_current_wal_insert_lsn() END AS pg_current_wal_insert_lsn, pg_last_wal_replay_lsn()",
+        this.options.role === "unknown"
+          ? // For master, we read its WAL LSN (pg_current_wal_insert_lsn) after
+            // each query (notice that, when run on a replica,
+            // pg_current_wal_insert_lsn() throws, so we call it only if
+            // pg_is_in_recovery() returns false). For replica, we read its WAL
+            // LSN (pg_last_wal_replay_lsn).
+            "SELECT CASE WHEN pg_is_in_recovery() THEN NULL ELSE pg_current_wal_insert_lsn() END AS pg_current_wal_insert_lsn, pg_last_wal_replay_lsn()"
+          : undefined,
         isWrite,
       );
 
@@ -248,7 +260,7 @@ export abstract class PgClient extends Client {
       conn.id ??= connNo++;
       conn.queriesSent = (conn.queriesSent ?? 0) + 1;
 
-      queryTime = performance.now() - startTime;
+      queryTime = Math.round(performance.now() - startTime);
       const resMulti = await this.sendMultiQuery(
         conn,
         queries,
@@ -258,26 +270,37 @@ export abstract class PgClient extends Client {
 
       res = resMulti[resultPos].rows;
 
-      const lsns = resMulti[resMulti.length - 1].rows[0] as {
-        pg_current_wal_insert_lsn: string | null;
-        pg_last_wal_replay_lsn: string | null;
-      };
-      this.reportedRoleAfterLastQuery.current = this.options
-        .isAlwaysLaggingReplica
-        ? "replica"
-        : lsns.pg_current_wal_insert_lsn !== null
-          ? "master"
-          : "replica";
-      this.timelineManager.setCurrentPos(
-        this.options.isAlwaysLaggingReplica
-          ? // For debugging, we pretend that the replica is always lagging.
-            BigInt(0)
-          : lsns.pg_current_wal_insert_lsn
-            ? // Master always has pg_current_wal_insert_lsn defined.
-              nullthrows(parseLsn(lsns.pg_current_wal_insert_lsn))
-            : // This is a replica, so pg_last_wal_replay_lsn must be non-null.
-              nullthrows(parseLsn(lsns.pg_last_wal_replay_lsn)),
-      );
+      if (this.options.role === "unknown") {
+        const lsns = resMulti[resMulti.length - 1].rows[0] as {
+          pg_current_wal_insert_lsn: string | null;
+          pg_last_wal_replay_lsn: string | null;
+        };
+        if (lsns.pg_current_wal_insert_lsn !== null) {
+          this.reportedRoleAfterLastQuery.current = "master";
+          this.timelineManager.setCurrentPos(
+            parseLsn(lsns.pg_current_wal_insert_lsn)!,
+          );
+        } else if (lsns.pg_last_wal_replay_lsn !== null) {
+          this.reportedRoleAfterLastQuery.current = "replica";
+          this.timelineManager.setCurrentPos(
+            parseLsn(lsns.pg_last_wal_replay_lsn),
+          );
+        } else {
+          throw Error(
+            "BUG: both pg_current_wal_insert_lsn() and pg_last_wal_replay_lsn() returned null",
+          );
+        }
+      } else if (this.options.role === "master") {
+        this.reportedRoleAfterLastQuery.current = "master";
+        // In this mode, master pos is always =1 constant.
+        this.timelineManager.setCurrentPos(BigInt(1), true);
+      } else {
+        this.reportedRoleAfterLastQuery.current = "replica";
+        // In this mode, replica pos is always =0 constant (i.e. always behind
+        // the master), and we solely rely on maxReplicationLagMs timeline data
+        // expiration in Timeline object.
+        this.timelineManager.setCurrentPos(BigInt(0), true);
+      }
 
       return res;
     } catch (cause: unknown) {
@@ -351,8 +374,9 @@ export abstract class PgClient extends Client {
         msg: debugQueryWithHints,
         output: res ? res : undefined,
         elapsed: {
-          total: now - startTime,
-          acquire: (queryTime ?? now) - startTime,
+          total: Math.round(now - startTime),
+          acquire:
+            queryTime !== undefined ? queryTime : Math.round(now - startTime),
         },
         connStats: {
           id: conn ? "" + (conn.id ?? 0) : "?",
@@ -497,7 +521,7 @@ export abstract class PgClient extends Client {
   private buildMultiQuery(
     hints: Record<string, string> | undefined,
     literal: Literal,
-    epilogue: string,
+    epilogue: string | undefined,
     isWrite: boolean,
   ): {
     queries: string[];
@@ -551,15 +575,17 @@ export abstract class PgClient extends Client {
       `SET LOCAL search_path TO ${this.shardName}, public`,
     );
 
-    // Why wrapping with BEGIN...COMMIT for write queries? See here:
-    // https://www.postgresql.org/message-id/20220803.163217.1789690807623885906.horikyota.ntt%40gmail.com
-    if (isWrite) {
-      queriesPrologue.unshift("BEGIN");
-      queriesRollback.push("ROLLBACK");
-      queriesEpilogue.push("COMMIT");
+    if (epilogue) {
+      queriesEpilogue.push(epilogue);
     }
 
-    queriesEpilogue.push(epilogue);
+    // Why wrapping with BEGIN...COMMIT for write queries? See here:
+    // https://www.postgresql.org/message-id/20220803.163217.1789690807623885906.horikyota.ntt%40gmail.com
+    if (isWrite && queriesEpilogue.length > 0) {
+      queriesPrologue.unshift("BEGIN");
+      queriesRollback.unshift("ROLLBACK");
+      queriesEpilogue.unshift("COMMIT");
+    }
 
     return {
       queries: [...queriesPrologue, query, ...queriesEpilogue],

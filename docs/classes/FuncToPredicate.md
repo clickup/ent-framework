@@ -6,6 +6,8 @@
 
 # Class: FuncToPredicate\<TInput\>
 
+Defined in: [src/ent/predicates/Predicate.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L29)
+
 Sometimes, instead of passing a well-known predicate like OutgoingEdgePointsToVC
 or CanUpdateOutgoingEdge, we want to pass just a function which accepts a row
 and returns true or false. This class represents a Predicate which delegates
@@ -28,6 +30,8 @@ predicate.
 
 > **new FuncToPredicate**\<`TInput`\>(`func`): [`FuncToPredicate`](FuncToPredicate.md)\<`TInput`\>
 
+Defined in: [src/ent/predicates/Predicate.ts:32](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L32)
+
 #### Parameters
 
 | Parameter | Type |
@@ -38,21 +42,19 @@ predicate.
 
 [`FuncToPredicate`](FuncToPredicate.md)\<`TInput`\>
 
-#### Defined in
-
-[src/ent/predicates/Predicate.ts:32](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L32)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `name` | `string` |
+| <a id="name"></a> `name` | `string` |
 
 ## Methods
 
 ### check()
 
 > **check**(`vc`, `input`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/predicates/Predicate.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L36)
 
 #### Parameters
 
@@ -68,7 +70,3 @@ predicate.
 #### Implementation of
 
 [`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
-
-#### Defined in
-
-[src/ent/predicates/Predicate.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L36)

@@ -6,6 +6,8 @@
 
 # Class: Triggers\<TTable\>
 
+Defined in: [src/ent/Triggers.ts:169](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L169)
+
 ## Type Parameters
 
 | Type Parameter |
@@ -18,26 +20,24 @@
 
 > **new Triggers**\<`TTable`\>(`beforeInsert`, `beforeUpdate`, `beforeDelete`, `beforeMutation`, `afterInsert`, `afterUpdate`, `afterDelete`, `afterMutation`): [`Triggers`](Triggers.md)\<`TTable`\>
 
+Defined in: [src/ent/Triggers.ts:170](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L170)
+
 #### Parameters
 
 | Parameter | Type |
 | ------ | ------ |
 | `beforeInsert` | [`InsertTrigger`](../type-aliases/InsertTrigger.md)\<`TTable`\>[] |
-| `beforeUpdate` | [`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`BeforeUpdateTrigger`](../type-aliases/BeforeUpdateTrigger.md)\<`TTable`\>][] |
+| `beforeUpdate` | \[`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`BeforeUpdateTrigger`](../type-aliases/BeforeUpdateTrigger.md)\<`TTable`\>\][] |
 | `beforeDelete` | [`DeleteTrigger`](../type-aliases/DeleteTrigger.md)\<`TTable`\>[] |
-| `beforeMutation` | [`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`BeforeMutationTrigger`](../type-aliases/BeforeMutationTrigger.md)\<`TTable`\>][] |
+| `beforeMutation` | \[`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`BeforeMutationTrigger`](../type-aliases/BeforeMutationTrigger.md)\<`TTable`\>\][] |
 | `afterInsert` | [`InsertTrigger`](../type-aliases/InsertTrigger.md)\<`TTable`\>[] |
-| `afterUpdate` | [`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`AfterUpdateTrigger`](../type-aliases/AfterUpdateTrigger.md)\<`TTable`\>][] |
+| `afterUpdate` | \[`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`AfterUpdateTrigger`](../type-aliases/AfterUpdateTrigger.md)\<`TTable`\>\][] |
 | `afterDelete` | [`DeleteTrigger`](../type-aliases/DeleteTrigger.md)\<`TTable`\>[] |
-| `afterMutation` | [`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`AfterMutationTrigger`](../type-aliases/AfterMutationTrigger.md)\<`TTable`\>][] |
+| `afterMutation` | \[`null` \| [`DepsBuilder`](../type-aliases/DepsBuilder.md)\<`TTable`\>, [`AfterMutationTrigger`](../type-aliases/AfterMutationTrigger.md)\<`TTable`\>\][] |
 
 #### Returns
 
 [`Triggers`](Triggers.md)\<`TTable`\>
-
-#### Defined in
-
-[src/ent/Triggers.ts:170](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L170)
 
 ## Methods
 
@@ -45,13 +45,11 @@
 
 > **hasInsertTriggers**(): `boolean`
 
+Defined in: [src/ent/Triggers.ts:189](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L189)
+
 #### Returns
 
 `boolean`
-
-#### Defined in
-
-[src/ent/Triggers.ts:189](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L189)
 
 ***
 
@@ -59,19 +57,19 @@
 
 > **hasUpdateTriggers**(): `boolean`
 
+Defined in: [src/ent/Triggers.ts:198](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L198)
+
 #### Returns
 
 `boolean`
-
-#### Defined in
-
-[src/ent/Triggers.ts:198](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L198)
 
 ***
 
 ### wrapInsert()
 
 > **wrapInsert**(`func`, `vc`, `input`): `Promise`\<`null` \| `string`\>
+
+Defined in: [src/ent/Triggers.ts:207](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L207)
 
 #### Parameters
 
@@ -85,15 +83,13 @@
 
 `Promise`\<`null` \| `string`\>
 
-#### Defined in
-
-[src/ent/Triggers.ts:207](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L207)
-
 ***
 
 ### wrapUpdate()
 
 > **wrapUpdate**(`func`, `vc`, `oldRow`, `input`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/Triggers.ts:251](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L251)
 
 #### Parameters
 
@@ -108,15 +104,13 @@
 
 `Promise`\<`boolean`\>
 
-#### Defined in
-
-[src/ent/Triggers.ts:251](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L251)
-
 ***
 
 ### wrapDelete()
 
 > **wrapDelete**(`func`, `vc`, `oldRow`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/Triggers.ts:312](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L312)
 
 #### Parameters
 
@@ -129,7 +123,3 @@
 #### Returns
 
 `Promise`\<`boolean`\>
-
-#### Defined in
-
-[src/ent/Triggers.ts:312](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L312)

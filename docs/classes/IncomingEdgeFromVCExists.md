@@ -6,6 +6,8 @@
 
 # Class: IncomingEdgeFromVCExists\<TEdgeTable\>
 
+Defined in: [src/ent/predicates/IncomingEdgeFromVCExists.ts:23](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L23)
+
 An ent may represent not necessarily a node in the graph, but also an edge
 between two nodes. Consider EntMember in the below example:
 
@@ -35,6 +37,8 @@ database.
 
 > **new IncomingEdgeFromVCExists**\<`TEdgeTable`\>(`EntEdge`, `entEdgeVCField`, `entEdgeFKField`, `entEdgeFilter`?): [`IncomingEdgeFromVCExists`](IncomingEdgeFromVCExists.md)\<`TEdgeTable`\>
 
+Defined in: [src/ent/predicates/IncomingEdgeFromVCExists.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L29)
+
 #### Parameters
 
 | Parameter | Type |
@@ -48,25 +52,23 @@ database.
 
 [`IncomingEdgeFromVCExists`](IncomingEdgeFromVCExists.md)\<`TEdgeTable`\>
 
-#### Defined in
-
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L29)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `name` | `string` |
-| `EntEdge` | [`EntClass`](../interfaces/EntClass.md)\<`TEdgeTable`\> |
-| `entEdgeVCField` | `"id"` \| [`Field`](../type-aliases/Field.md)\<`TEdgeTable`\> |
-| `entEdgeFKField` | `"id"` \| [`Field`](../type-aliases/Field.md)\<`TEdgeTable`\> |
-| `entEdgeFilter?` | (`ent`: [`Row`](../type-aliases/Row.md)\<`TEdgeTable`\>) => `boolean` |
+| <a id="name"></a> `name` | `string` |
+| <a id="entedge-1"></a> `EntEdge` | [`EntClass`](../interfaces/EntClass.md)\<`TEdgeTable`\> |
+| <a id="entedgevcfield-1"></a> `entEdgeVCField` | `"id"` \| [`Field`](../type-aliases/Field.md)\<`TEdgeTable`\> |
+| <a id="entedgefkfield-1"></a> `entEdgeFKField` | `"id"` \| [`Field`](../type-aliases/Field.md)\<`TEdgeTable`\> |
+| <a id="entedgefilter-1"></a> `entEdgeFilter?` | (`ent`: [`Row`](../type-aliases/Row.md)\<`TEdgeTable`\>) => `boolean` |
 
 ## Methods
 
 ### check()
 
 > **check**(`vc`, `row`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/predicates/IncomingEdgeFromVCExists.ts:46](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L46)
 
 #### Parameters
 
@@ -82,7 +84,3 @@ database.
 #### Implementation of
 
 [`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
-
-#### Defined in
-
-[src/ent/predicates/IncomingEdgeFromVCExists.ts:46](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/IncomingEdgeFromVCExists.ts#L46)

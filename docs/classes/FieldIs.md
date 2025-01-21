@@ -6,6 +6,8 @@
 
 # Class: FieldIs\<TField, TRow\>
 
+Defined in: [src/ent/predicates/FieldIs.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L8)
+
 Checks that the validator function returns true for the value in some field.
 
 ## Type Parameters
@@ -26,6 +28,8 @@ Checks that the validator function returns true for the value in some field.
 
 > **new FieldIs**\<`TField`, `TRow`\>(`field`, `validator`, `message`): [`FieldIs`](FieldIs.md)\<`TField`, `TRow`\>
 
+Defined in: [src/ent/predicates/FieldIs.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L16)
+
 #### Parameters
 
 | Parameter | Type |
@@ -38,24 +42,22 @@ Checks that the validator function returns true for the value in some field.
 
 [`FieldIs`](FieldIs.md)\<`TField`, `TRow`\>
 
-#### Defined in
-
-[src/ent/predicates/FieldIs.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L16)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `name` | `string` |
-| `field` | `TField` |
-| `validator` | (`fieldValue`: `TRow`\[`TField`\], `row`: `TRow`, `vc`: [`VC`](VC.md)) => `boolean` \| `Promise`\<`boolean`\> |
-| `message` | `string` |
+| <a id="name"></a> `name` | `string` |
+| <a id="field-1"></a> `field` | `TField` |
+| <a id="validator-1"></a> `validator` | (`fieldValue`: `TRow`\[`TField`\], `row`: `TRow`, `vc`: [`VC`](VC.md)) => `boolean` \| `Promise`\<`boolean`\> |
+| <a id="message-1"></a> `message` | `string` |
 
 ## Methods
 
 ### check()
 
 > **check**(`vc`, `row`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/predicates/FieldIs.ts:28](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L28)
 
 #### Parameters
 
@@ -71,7 +73,3 @@ Checks that the validator function returns true for the value in some field.
 #### Implementation of
 
 [`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
-
-#### Defined in
-
-[src/ent/predicates/FieldIs.ts:28](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/FieldIs.ts#L28)

@@ -8,6 +8,8 @@
 
 > **CacheMixin**\<`TTable`, `TUniqueKey`, `TClient`\>(`Base`): [`PrimitiveClass`](../type-aliases/PrimitiveClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
 
+Defined in: [src/ent/mixins/CacheMixin.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/CacheMixin.ts#L31)
+
 Modifies the passed class adding VC-stored cache layer to it.
 
 ## Type Parameters
@@ -27,7 +29,3 @@ Modifies the passed class adding VC-stored cache layer to it.
 ## Returns
 
 [`PrimitiveClass`](../type-aliases/PrimitiveClass.md)\<`TTable`, `TUniqueKey`, `TClient`\>
-
-## Defined in
-
-[src/ent/mixins/CacheMixin.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/mixins/CacheMixin.ts#L31)

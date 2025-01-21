@@ -6,6 +6,8 @@
 
 # Interface: EntClass\<TTable\>
 
+Defined in: [src/ent/types.ts:28](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L28)
+
 A very shallow interface of Ent class (as a collection of static methods).
 Used in some places where we need the very minimum from the Ent.
 
@@ -21,28 +23,28 @@ Used in some places where we need the very minimum from the Ent.
 
 > **new EntClass**(): [`Ent`](Ent.md)\<`TTable`\>
 
+Defined in: [src/ent/types.ts:34](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L34)
+
 #### Returns
 
 [`Ent`](Ent.md)\<`TTable`\>
-
-#### Defined in
-
-[src/ent/types.ts:34](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L34)
 
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `SCHEMA` | [`Schema`](../classes/Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
-| `VALIDATION` | [`Validation`](../classes/Validation.md)\<`TTable`\> |
-| `SHARD_LOCATOR` | [`ShardLocator`](../classes/ShardLocator.md)\<[`Client`](../classes/Client.md), `TTable`, `string`\> |
-| `name` | `string` |
+| <a id="schema"></a> `SCHEMA` | [`Schema`](../classes/Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
+| <a id="validation"></a> `VALIDATION` | [`Validation`](../classes/Validation.md)\<`TTable`\> |
+| <a id="shard_locator"></a> `SHARD_LOCATOR` | [`ShardLocator`](../classes/ShardLocator.md)\<[`Client`](../classes/Client.md), `TTable`, `string`\> |
+| <a id="name"></a> `name` | `string` |
 
 ## Methods
 
 ### loadX()
 
 > **loadX**(`vc`, `id`): `Promise`\<[`Ent`](Ent.md)\<`TTable`\>\>
+
+Defined in: [src/ent/types.ts:35](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L35)
 
 #### Parameters
 
@@ -55,15 +57,13 @@ Used in some places where we need the very minimum from the Ent.
 
 `Promise`\<[`Ent`](Ent.md)\<`TTable`\>\>
 
-#### Defined in
-
-[src/ent/types.ts:35](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L35)
-
 ***
 
 ### loadNullable()
 
 > **loadNullable**(`vc`, `id`): `Promise`\<`null` \| [`Ent`](Ent.md)\<`TTable`\>\>
+
+Defined in: [src/ent/types.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L36)
 
 #### Parameters
 
@@ -75,10 +75,6 @@ Used in some places where we need the very minimum from the Ent.
 #### Returns
 
 `Promise`\<`null` \| [`Ent`](Ent.md)\<`TTable`\>\>
-
-#### Defined in
-
-[src/ent/types.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L36)
 
 ***
 
@@ -86,6 +82,8 @@ Used in some places where we need the very minimum from the Ent.
 
 > **loadIfReadableNullable**(`vc`, `id`): `Promise`\<`null` \| [`Ent`](Ent.md)\<`TTable`\>\>
 
+Defined in: [src/ent/types.ts:37](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L37)
+
 #### Parameters
 
 | Parameter | Type |
@@ -97,15 +95,13 @@ Used in some places where we need the very minimum from the Ent.
 
 `Promise`\<`null` \| [`Ent`](Ent.md)\<`TTable`\>\>
 
-#### Defined in
-
-[src/ent/types.ts:37](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L37)
-
 ***
 
 ### count()
 
 > **count**(`vc`, `where`): `Promise`\<`number`\>
+
+Defined in: [src/ent/types.ts:38](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L38)
 
 #### Parameters
 
@@ -118,15 +114,13 @@ Used in some places where we need the very minimum from the Ent.
 
 `Promise`\<`number`\>
 
-#### Defined in
-
-[src/ent/types.ts:38](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L38)
-
 ***
 
 ### exists()
 
 > **exists**(`vc`, `where`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/types.ts:39](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L39)
 
 #### Parameters
 
@@ -139,15 +133,13 @@ Used in some places where we need the very minimum from the Ent.
 
 `Promise`\<`boolean`\>
 
-#### Defined in
-
-[src/ent/types.ts:39](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L39)
-
 ***
 
 ### select()
 
 > **select**(`vc`, `where`, `limit`, `order`?): `Promise`\<[`Ent`](Ent.md)\<`TTable`\>[]\>
+
+Defined in: [src/ent/types.ts:40](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L40)
 
 #### Parameters
 
@@ -162,15 +154,13 @@ Used in some places where we need the very minimum from the Ent.
 
 `Promise`\<[`Ent`](Ent.md)\<`TTable`\>[]\>
 
-#### Defined in
-
-[src/ent/types.ts:40](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L40)
-
 ***
 
 ### selectChunked()
 
 > **selectChunked**(`vc`, `where`, `chunkSize`, `limit`, `custom`?): `AsyncIterableIterator`\<[`Ent`](Ent.md)\<`TTable`\>[], `any`, `any`\>
+
+Defined in: [src/ent/types.ts:46](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L46)
 
 #### Parameters
 
@@ -186,15 +176,13 @@ Used in some places where we need the very minimum from the Ent.
 
 `AsyncIterableIterator`\<[`Ent`](Ent.md)\<`TTable`\>[], `any`, `any`\>
 
-#### Defined in
-
-[src/ent/types.ts:46](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L46)
-
 ***
 
 ### loadByX()
 
 > **loadByX**(`vc`, `keys`): `Promise`\<[`Ent`](Ent.md)\<`TTable`\>\>
+
+Defined in: [src/ent/types.ts:53](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L53)
 
 #### Parameters
 
@@ -207,15 +195,13 @@ Used in some places where we need the very minimum from the Ent.
 
 `Promise`\<[`Ent`](Ent.md)\<`TTable`\>\>
 
-#### Defined in
-
-[src/ent/types.ts:53](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L53)
-
 ***
 
 ### loadByNullable()
 
 > **loadByNullable**(`vc`, `input`): `Promise`\<`null` \| [`Ent`](Ent.md)\<`TTable`\>\>
+
+Defined in: [src/ent/types.ts:57](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L57)
 
 #### Parameters
 
@@ -228,15 +214,13 @@ Used in some places where we need the very minimum from the Ent.
 
 `Promise`\<`null` \| [`Ent`](Ent.md)\<`TTable`\>\>
 
-#### Defined in
-
-[src/ent/types.ts:57](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L57)
-
 ***
 
 ### insert()
 
 > **insert**(`vc`, `input`): `Promise`\<`string`\>
+
+Defined in: [src/ent/types.ts:61](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L61)
 
 #### Parameters
 
@@ -248,10 +232,6 @@ Used in some places where we need the very minimum from the Ent.
 #### Returns
 
 `Promise`\<`string`\>
-
-#### Defined in
-
-[src/ent/types.ts:61](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L61)
 
 ***
 
@@ -259,6 +239,8 @@ Used in some places where we need the very minimum from the Ent.
 
 > **upsert**(`vc`, `input`): `Promise`\<`string`\>
 
+Defined in: [src/ent/types.ts:62](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L62)
+
 #### Parameters
 
 | Parameter | Type |
@@ -269,7 +251,3 @@ Used in some places where we need the very minimum from the Ent.
 #### Returns
 
 `Promise`\<`string`\>
-
-#### Defined in
-
-[src/ent/types.ts:62](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L62)

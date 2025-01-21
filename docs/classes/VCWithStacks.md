@@ -6,6 +6,8 @@
 
 # Class: VCWithStacks
 
+Defined in: [src/ent/VCFlavor.ts:25](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L25)
+
 If turned on, the debug logs will contain caller stack traces for each Ent
 query. This is expensive, use in dev mode only!
 
@@ -31,14 +33,16 @@ query. This is expensive, use in dev mode only!
 
 | Property | Type |
 | ------ | ------ |
-| `_tag` | `"VCFlavorClass"` |
-| `_tag` | `"VCFlavorInstance"` |
+| <a id="_tag"></a> `_tag` | `"VCFlavorClass"` |
+| <a id="_tag-1"></a> `_tag` | `"VCFlavorInstance"` |
 
 ## Methods
 
 ### toDebugString()
 
 > **toDebugString**(): `string`
+
+Defined in: [src/ent/VCFlavor.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L16)
 
 Appended to the end of VC.toString() result.
 
@@ -49,7 +53,3 @@ Appended to the end of VC.toString() result.
 #### Inherited from
 
 [`VCFlavor`](VCFlavor.md).[`toDebugString`](VCFlavor.md#todebugstring)
-
-#### Defined in
-
-[src/ent/VCFlavor.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L16)

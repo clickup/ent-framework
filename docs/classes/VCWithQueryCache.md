@@ -6,6 +6,8 @@
 
 # Class: VCWithQueryCache
 
+Defined in: [src/ent/VCFlavor.ts:30](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L30)
+
 If set, Ent cache is enabled for operations in this VC.
 
 ## Extends
@@ -17,6 +19,8 @@ If set, Ent cache is enabled for operations in this VC.
 ### new VCWithQueryCache()
 
 > **new VCWithQueryCache**(`options`): [`VCWithQueryCache`](VCWithQueryCache.md)
+
+Defined in: [src/ent/VCFlavor.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L31)
 
 #### Parameters
 
@@ -33,17 +37,13 @@ If set, Ent cache is enabled for operations in this VC.
 
 [`VCFlavor`](VCFlavor.md).[`constructor`](VCFlavor.md#constructors)
 
-#### Defined in
-
-[src/ent/VCFlavor.ts:31](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L31)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `_tag` | `"VCFlavorClass"` |
-| `_tag` | `"VCFlavorInstance"` |
-| `options` | `object` |
+| <a id="_tag"></a> `_tag` | `"VCFlavorClass"` |
+| <a id="_tag-1"></a> `_tag` | `"VCFlavorInstance"` |
+| <a id="options-1"></a> `options` | `object` |
 | `options.maxQueries` | `number` |
 
 ## Methods
@@ -51,6 +51,8 @@ If set, Ent cache is enabled for operations in this VC.
 ### toDebugString()
 
 > **toDebugString**(): `string`
+
+Defined in: [src/ent/VCFlavor.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L16)
 
 Appended to the end of VC.toString() result.
 
@@ -61,7 +63,3 @@ Appended to the end of VC.toString() result.
 #### Inherited from
 
 [`VCFlavor`](VCFlavor.md).[`toDebugString`](VCFlavor.md#todebugstring)
-
-#### Defined in
-
-[src/ent/VCFlavor.ts:16](https://github.com/clickup/ent-framework/blob/master/src/ent/VCFlavor.ts#L16)

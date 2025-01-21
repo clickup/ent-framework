@@ -6,12 +6,14 @@
 
 # Interface: ClientPingInput
 
+Defined in: [src/abstract/Client.ts:49](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L49)
+
 Input for Client#ping().
 
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `execTimeMs` | `number` |
-| `isWrite` | `boolean` |
-| `annotation` | [`QueryAnnotation`](QueryAnnotation.md) |
+| <a id="exectimems"></a> `execTimeMs` | `number` |
+| <a id="iswrite"></a> `isWrite` | `boolean` |
+| <a id="annotation"></a> `annotation` | [`QueryAnnotation`](QueryAnnotation.md) |

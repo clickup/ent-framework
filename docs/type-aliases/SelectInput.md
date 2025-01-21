@@ -8,6 +8,8 @@
 
 > **SelectInput**\<`TTable`\>: `object`
 
+Defined in: [src/types.ts:311](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L311)
+
 Table -> { where: ..., order?: ..., ... }
 
 ## Type Parameters
@@ -33,7 +35,3 @@ Table -> { where: ..., order?: ..., ... }
 ### limit
 
 > **limit**: `number`
-
-## Defined in
-
-[src/types.ts:311](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L311)

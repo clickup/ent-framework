@@ -8,6 +8,8 @@
 
 > **SpecType**: *typeof* `Boolean` \| *typeof* `Date` \| *typeof* [`ID`](../variables/ID.md) \| *typeof* `Number` \| *typeof* `String` \| \{ `dbValueToJs`: (`dbValue`) => `unknown`; `stringify`: (`jsValue`) => `string`; `parse`: (`str`) => `unknown`; \}
 
+Defined in: [src/types.ts:40](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L40)
+
 Spec (metadata) of some field.
 
 ## Type declaration
@@ -91,7 +93,3 @@ dbValueToJs), but it's still here for completeness of the interface.
 #### Returns
 
 `unknown`
-
-## Defined in
-
-[src/types.ts:40](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L40)

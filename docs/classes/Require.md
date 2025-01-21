@@ -6,6 +6,8 @@
 
 # Class: Require\<TInput\>
 
+Defined in: [src/ent/rules/Require.ts:11](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Require.ts#L11)
+
 Returns TOLERATE if the predicate succeeds, otherwise DENY.
 - Used mostly for write permission checks.
 - This rule may still throw an exception if it's a wild one (i.e. not derived
@@ -27,6 +29,8 @@ Returns TOLERATE if the predicate succeeds, otherwise DENY.
 
 > **new Require**\<`TInput`\>(`predicate`): [`Require`](Require.md)\<`TInput`\>
 
+Defined in: [src/ent/rules/Rule.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L43)
+
 #### Parameters
 
 | Parameter | Type |
@@ -41,23 +45,21 @@ Returns TOLERATE if the predicate succeeds, otherwise DENY.
 
 [`Rule`](Rule.md).[`constructor`](Rule.md#constructors)
 
-#### Defined in
-
-[src/ent/rules/Rule.ts:43](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Rule.ts#L43)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `_TAG` | `"Require"` |
-| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> |
-| `name` | `string` |
+| <a id="_tag"></a> `_TAG` | `"Require"` |
+| <a id="predicate-1"></a> `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> |
+| <a id="name"></a> `name` | `string` |
 
 ## Methods
 
 ### evaluate()
 
 > **evaluate**(`vc`, `input`): `Promise`\<[`RuleResult`](../interfaces/RuleResult.md)\>
+
+Defined in: [src/ent/rules/Require.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Require.ts#L14)
 
 #### Parameters
 
@@ -73,7 +75,3 @@ Returns TOLERATE if the predicate succeeds, otherwise DENY.
 #### Overrides
 
 [`Rule`](Rule.md).[`evaluate`](Rule.md#evaluate)
-
-#### Defined in
-
-[src/ent/rules/Require.ts:14](https://github.com/clickup/ent-framework/blob/master/src/ent/rules/Require.ts#L14)

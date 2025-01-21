@@ -6,6 +6,8 @@
 
 # Class: EntNotFoundError
 
+Defined in: [src/ent/errors/EntNotFoundError.ts:7](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotFoundError.ts#L7)
+
 Error: non-existing ID in the database.
 
 ## Extends
@@ -17,6 +19,8 @@ Error: non-existing ID in the database.
 ### new EntNotFoundError()
 
 > **new EntNotFoundError**(`entName`, `where`, `cause`): [`EntNotFoundError`](EntNotFoundError.md)
+
+Defined in: [src/ent/errors/EntNotFoundError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotFoundError.ts#L8)
 
 #### Parameters
 
@@ -34,14 +38,10 @@ Error: non-existing ID in the database.
 
 [`EntAccessError`](EntAccessError.md).[`constructor`](EntAccessError.md#constructors)
 
-#### Defined in
-
-[src/ent/errors/EntNotFoundError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotFoundError.ts#L8)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `cause` | `null` \| `string` \| `Error` |
-| `entName` | `string` |
-| `where` | `Record`\<`string`, `unknown`\> |
+| <a id="cause-1"></a> `cause` | `null` \| `string` \| `Error` |
+| <a id="entname-1"></a> `entName` | `string` |
+| <a id="where-1"></a> `where` | `Record`\<`string`, `unknown`\> |

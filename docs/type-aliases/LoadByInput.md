@@ -6,7 +6,9 @@
 
 # Type Alias: LoadByInput\<TTable, TUniqueKey\>
 
-> **LoadByInput**\<`TTable`, `TUniqueKey`\>: `TUniqueKey` *extends* [] ? `never` : `{ [K in TUniqueKey[number]]: Value<TTable[K]> }`
+> **LoadByInput**\<`TTable`, `TUniqueKey`\>: `TUniqueKey` *extends* \[\] ? `never` : `{ [K in TUniqueKey[number]]: Value<TTable[K]> }`
+
+Defined in: [src/types.ts:251](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L251)
 
 (Table, UniqueKey) -> { field1: number, field2: number, field3: number }.
 loadBy operation is allowed for exact unique key attributes only.
@@ -17,7 +19,3 @@ loadBy operation is allowed for exact unique key attributes only.
 | ------ |
 | `TTable` *extends* [`Table`](Table.md) |
 | `TUniqueKey` *extends* [`UniqueKey`](UniqueKey.md)\<`TTable`\> |
-
-## Defined in
-
-[src/types.ts:251](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L251)

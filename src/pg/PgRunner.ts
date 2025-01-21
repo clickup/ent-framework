@@ -894,19 +894,21 @@ export abstract class PgRunner<
     //   This is to gain the generated SQL queries some more readability.
     //
     // Also one more thing. Imagine we have a `btree(a, b)` index. Compare two
-    // queries for one-element use case;
+    // queries for one-element use case:
     //
     //   1. `a='aaa' AND b=ANY('{bbb}')`
     //   2. `a='aaa' AND b IN('bbb')`
     //
-    // They may produce different plans: IN() always coalesces to `field='aaa'`
-    // in the plan, whilst =ANY() always remains =ANY(). This causes PG to
-    // choose a "post-filtering" plan sometimes:
+    // They may produce different plans: IN() always coalesces to `b='bbb'` in
+    // the plan (and thus, to an btree index scan), whilst =ANY() always remains
+    // =ANY(). This causes PG to choose a "post-filtering" plan for one-element
+    // use case sometimes:
     //
-    //   1. For =ANY: Index Cond: (a='aaa'); Filter: b=ANY('{bbb}')
+    //   1. For =ANY: Index Cond: (a='aaa'); Filter: b=ANY('{bbb}') - BAD!
     //   2. For IN(): Index Cond: (a='aaa') AND (b='bbb')
     //
-    // So to be on a safe side, we never emit a 1-element =ANY().
+    // So to be on a safe side, we never emit a one-element =ANY(); instead, we
+    // turn `b=ANY('{bbb}')` into `b='bbb'`.
     //
     const escapedFieldCode = JSON.stringify(this.escapeField(field));
     const body = `

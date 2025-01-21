@@ -24,7 +24,8 @@ import type { Literal } from "../../types";
 import { buildShape } from "../helpers/buildShape";
 import { escapeIdent } from "../helpers/escapeIdent";
 import { escapeLiteral } from "../helpers/escapeLiteral";
-import type { PgClient, PgClientConn, PgClientOptions } from "../PgClient";
+import type { PgClient, PgClientConn } from "../PgClient";
+import type { PgClientPoolOptions } from "../PgClientPool";
 import { PgClientPool } from "../PgClientPool";
 
 /**
@@ -36,9 +37,9 @@ export class TestPgClient
   implements Pick<PgClient, "query" | "options" | "acquireConn">
 {
   readonly queries: string[] = [];
-  override readonly options: Required<PgClientOptions>;
+  override readonly options: Required<PgClientPoolOptions>;
 
-  constructor(public readonly client: PgClient) {
+  constructor(public readonly client: PgClientPool) {
     super(client.options);
     this.options = client.options;
   }
@@ -322,7 +323,9 @@ export const testCluster = new Cluster({
           `test-pool(replica=${isAlwaysLaggingReplica})` +
           (nameSuffix ? `-${nameSuffix}` : ""),
         loggers,
-        isAlwaysLaggingReplica,
+        ...(isAlwaysLaggingReplica
+          ? { role: "replica", maxReplicationLagMs: 1e10 }
+          : {}),
         shards: {
           nameFormat: "sh%04d",
           discoverQuery:

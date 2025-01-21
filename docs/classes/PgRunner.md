@@ -6,6 +6,8 @@
 
 # Class: `abstract` PgRunner\<TTable, TInput, TOutput\>
 
+Defined in: [src/pg/PgRunner.ts:51](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L51)
+
 A convenient pile of helper methods usable by most of PgQuery* classes. In
 some sense it's an anti-pattern, but still reduces the boilerplate.
 
@@ -31,6 +33,8 @@ specs.
 
 > **new PgRunner**\<`TTable`, `TInput`, `TOutput`\>(`schema`, `client`): [`PgRunner`](PgRunner.md)\<`TTable`, `TInput`, `TOutput`\>
 
+Defined in: [src/pg/PgRunner.ts:503](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L503)
+
 #### Parameters
 
 | Parameter | Type |
@@ -46,27 +50,25 @@ specs.
 
 [`Runner`](Runner.md).[`constructor`](Runner.md#constructors)
 
-#### Defined in
-
-[src/pg/PgRunner.ts:503](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L503)
-
 ## Properties
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| `IS_WRITE` | `boolean` | If true, it's a write operation. |
-| `op` | `string` | Operation name for logging purposes. |
-| `maxBatchSize` | `number` | Maximum batch size for this type of operations. |
-| `default` | `TOutput` | In case undefined is returned from batching, this value will be returned instead. |
-| `name` | `string` | - |
-| `constructor` | *typeof* [`PgRunner`](PgRunner.md) | The initial value of Object.prototype.constructor is the standard built-in Object constructor. |
-| `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> | - |
+| <a id="is_write"></a> `IS_WRITE` | `boolean` | If true, it's a write operation. |
+| <a id="op"></a> `op` | `string` | Operation name for logging purposes. |
+| <a id="maxbatchsize"></a> `maxBatchSize` | `number` | Maximum batch size for this type of operations. |
+| <a id="default"></a> `default` | `TOutput` | In case undefined is returned from batching, this value will be returned instead. |
+| <a id="name"></a> `name` | `string` | - |
+| <a id="constructor"></a> `constructor` | *typeof* [`PgRunner`](PgRunner.md) | The initial value of Object.prototype.constructor is the standard built-in Object constructor. |
+| <a id="schema-1"></a> `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> | - |
 
 ## Methods
 
 ### runSingle()
 
 > `abstract` **runSingle**(`input`, `annotations`): `Promise`\<`undefined` \| `TOutput`\>
+
+Defined in: [src/abstract/Runner.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L30)
 
 Method runSingle is to e.g. produce simple DB requests when we have only
 one input to process, not many.
@@ -86,15 +88,13 @@ one input to process, not many.
 
 [`Runner`](Runner.md).[`runSingle`](Runner.md#runsingle)
 
-#### Defined in
-
-[src/abstract/Runner.ts:30](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L30)
-
 ***
 
 ### runBatch()?
 
 > `abstract` `optional` **runBatch**(`inputs`, `annotations`): `Promise`\<`Map`\<`string`, `TOutput`\>\>
+
+Defined in: [src/abstract/Runner.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L38)
 
 Typically issues complex queries with magic.
 
@@ -113,15 +113,13 @@ Typically issues complex queries with magic.
 
 [`Runner`](Runner.md).[`runBatch`](Runner.md#runbatch)
 
-#### Defined in
-
-[src/abstract/Runner.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L38)
-
 ***
 
 ### key()
 
 > **key**(`_input`): `string`
+
+Defined in: [src/abstract/Runner.ts:76](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L76)
 
 Returns a batch-dedupping key for the input. By default, no dedupping is
 performed (i.e. all inputs are processed individually and not collapsed
@@ -141,15 +139,13 @@ into one input; e.g. this is needed for inserts).
 
 [`Runner`](Runner.md).[`key`](Runner.md#key)
 
-#### Defined in
-
-[src/abstract/Runner.ts:76](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L76)
-
 ***
 
 ### clientQuery()
 
 > `protected` **clientQuery**\<`TOutput`\>(`sql`, `annotations`, `batchFactor`, `hints`?): `Promise`\<`TOutput`[]\>
+
+Defined in: [src/pg/PgRunner.ts:65](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L65)
 
 #### Type Parameters
 
@@ -170,15 +166,13 @@ into one input; e.g. this is needed for inserts).
 
 `Promise`\<`TOutput`[]\>
 
-#### Defined in
-
-[src/pg/PgRunner.ts:65](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L65)
-
 ***
 
 ### fmt()
 
 > `protected` **fmt**(`template`, `args`): `string`
+
+Defined in: [src/pg/PgRunner.ts:104](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L104)
 
 Formats prefixes/suffixes of various compound SQL clauses. Don't use on
 performance-critical path!
@@ -196,15 +190,13 @@ performance-critical path!
 
 `string`
 
-#### Defined in
-
-[src/pg/PgRunner.ts:104](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L104)
-
 ***
 
 ### escapeValue()
 
 > `protected` **escapeValue**(`field`, `value`): `string`
+
+Defined in: [src/pg/PgRunner.ts:170](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L170)
 
 Escapes a value at runtime using the codegen functions created above. We
 use escapers table and the codegen for the following reasons:
@@ -224,15 +216,13 @@ use escapers table and the codegen for the following reasons:
 
 `string`
 
-#### Defined in
-
-[src/pg/PgRunner.ts:170](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L170)
-
 ***
 
 ### escapeField()
 
 > `protected` **escapeField**(`info`, `__namedParameters`): `string`
+
+Defined in: [src/pg/PgRunner.ts:183](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L183)
 
 Escapes field name identifier.
 - In case it's a composite primary key, returns its `ROW(f1,f2,...)`
@@ -254,15 +244,13 @@ Escapes field name identifier.
 
 `string`
 
-#### Defined in
-
-[src/pg/PgRunner.ts:183](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L183)
-
 ***
 
 ### createWithBuilder()
 
 > `protected` **createWithBuilder**(`__namedParameters`): `object`
+
+Defined in: [src/pg/PgRunner.ts:221](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L221)
 
 Returns a newly created JS function which, when called with a row set,
 returns the following SQL clause:
@@ -304,7 +292,7 @@ of columns is passed in specs.
 
 | Parameter | Type |
 | ------ | ------ |
-| `entries` | `Iterable`\<[`string`, `object`], `any`, `any`\> |
+| `entries` | `Iterable`\<\[`string`, `object`\], `any`, `any`\> |
 
 ###### Returns
 
@@ -314,15 +302,13 @@ of columns is passed in specs.
 
 > **suffix**: `string`
 
-#### Defined in
-
-[src/pg/PgRunner.ts:221](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L221)
-
 ***
 
 ### createValuesBuilder()
 
 > `protected` **createValuesBuilder**\<`TInput`\>(`__namedParameters`): `object`
+
+Defined in: [src/pg/PgRunner.ts:289](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L289)
 
 Returns a newly created JS function which, when called with a row set,
 returns the following SQL clause (when called with withKey=true):
@@ -389,7 +375,7 @@ generate VALUES clause without exact identification of the destination.
 
 | Parameter | Type |
 | ------ | ------ |
-| `entries` | `Iterable`\<[`string`, `TInput`], `any`, `any`\> |
+| `entries` | `Iterable`\<\[`string`, `TInput`\], `any`, `any`\> |
 
 ###### Returns
 
@@ -399,15 +385,13 @@ generate VALUES clause without exact identification of the destination.
 
 > **suffix**: `string`
 
-#### Defined in
-
-[src/pg/PgRunner.ts:289](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L289)
-
 ***
 
 ### createUpdateKVsBuilder()
 
 > `protected` **createUpdateKVsBuilder**(`fields`): (`input`, `literal`?) => `string`
+
+Defined in: [src/pg/PgRunner.ts:360](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L360)
 
 Returns a newly created JS function which, when called with an object,
 returns the following SQL clause:
@@ -437,15 +421,13 @@ The set of columns is passed in specs, all other columns are ignored.
 
 `string`
 
-#### Defined in
-
-[src/pg/PgRunner.ts:360](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L360)
-
 ***
 
 ### createOneOfBuilder()
 
 > `protected` **createOneOfBuilder**(`field`, `fieldValCode`): (`values`) => `string`
+
+Defined in: [src/pg/PgRunner.ts:388](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L388)
 
 Prefers to do utilize createAnyBuilder() if it can (i.e. build
 a=ANY('{...}') clause). Otherwise, builds an IN(...) clause.
@@ -471,15 +453,13 @@ a=ANY('{...}') clause). Otherwise, builds an IN(...) clause.
 
 `string`
 
-#### Defined in
-
-[src/pg/PgRunner.ts:388](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L388)
-
 ***
 
 ### createWhereBuildersFieldsEq()
 
 > `protected` **createWhereBuildersFieldsEq**\<`TInput`\>(`args`): `object`
+
+Defined in: [src/pg/PgRunner.ts:422](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L422)
 
 Given a list of fields, returns two builders:
 
@@ -536,7 +516,7 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 
 | Parameter | Type |
 | ------ | ------ |
-| `inputs` | `Iterable`\<[`string`, `TInput`], `any`, `any`\> |
+| `inputs` | `Iterable`\<\[`string`, `TInput`\], `any`, `any`\> |
 
 ###### Returns
 
@@ -562,7 +542,7 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 
 | Parameter | Type |
 | ------ | ------ |
-| `inputs` | `Iterable`\<[`string`, `TInput`], `any`, `any`\> |
+| `inputs` | `Iterable`\<\[`string`, `TInput`\], `any`, `any`\> |
 
 ###### Returns
 
@@ -572,15 +552,13 @@ WHERE (field1='a' AND field2='b' AND field3 IN('a', 'b', 'c', ...)) OR (...)
 
 > **suffix**: `string`
 
-#### Defined in
-
-[src/pg/PgRunner.ts:422](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L422)
-
 ***
 
 ### createWhereBuilder()
 
 > `protected` **createWhereBuilder**(`__namedParameters`): `object`
+
+Defined in: [src/pg/PgRunner.ts:457](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L457)
 
 Returns a newly created JS function which, when called with a Where object,
 returns the generated SQL WHERE clause.
@@ -623,15 +601,13 @@ returns the generated SQL WHERE clause.
 
 > **suffix**: `string`
 
-#### Defined in
-
-[src/pg/PgRunner.ts:457](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L457)
-
 ***
 
 ### addPK()
 
 > `protected` **addPK**(`fields`, `mode`): `string`[]
+
+Defined in: [src/pg/PgRunner.ts:492](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L492)
 
 Prepends or appends a primary key to the list of fields. In case the
 primary key is plain (i.e. "id" field), it's just added as a field;
@@ -659,15 +635,13 @@ transactions. This lowers the chances of deadlocks too.
 
 `string`[]
 
-#### Defined in
-
-[src/pg/PgRunner.ts:492](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L492)
-
 ***
 
 ### delayForSingleQueryRetryOnError()
 
 > **delayForSingleQueryRetryOnError**(`e`): `number` \| `"immediate_retry"` \| `"no_retry"`
+
+Defined in: [src/pg/PgRunner.ts:525](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L525)
 
 If the single query's error needs to be retried (e.g. it's a deadlock
 error), returns the number of milliseconds to wait before retrying.
@@ -686,15 +660,13 @@ error), returns the number of milliseconds to wait before retrying.
 
 [`Runner`](Runner.md).[`delayForSingleQueryRetryOnError`](Runner.md#delayforsinglequeryretryonerror)
 
-#### Defined in
-
-[src/pg/PgRunner.ts:525](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L525)
-
 ***
 
 ### shouldDebatchOnError()
 
 > **shouldDebatchOnError**(`e`): `boolean`
+
+Defined in: [src/pg/PgRunner.ts:538](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L538)
 
 If this method returns true for an error object, the batch is split back
 into sub-queries, they are executed individually, and then the response of
@@ -721,7 +693,3 @@ false.)
 #### Overrides
 
 [`Runner`](Runner.md).[`shouldDebatchOnError`](Runner.md#shoulddebatchonerror)
-
-#### Defined in
-
-[src/pg/PgRunner.ts:538](https://github.com/clickup/ent-framework/blob/master/src/pg/PgRunner.ts#L538)

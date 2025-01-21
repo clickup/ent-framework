@@ -60,6 +60,7 @@ test("query retries on new master when switchover happens", async () => {
       // query(), it will choose the right master (islandClient2).
       jest.spyOn(islandClient1, "role").mockReturnValue("replica");
       jest.spyOn(islandClient2, "role").mockReturnValue("master");
+      return [];
     });
 
   // Produce a burst of erroring queries.

@@ -8,6 +8,8 @@
 
 > **DepsBuilder**\<`TTable`\>: (`vc`, `row`) => `unknown`[] \| `Promise`\<`unknown`[]\>
 
+Defined in: [src/ent/Triggers.ts:164](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L164)
+
 ## Type Parameters
 
 | Type Parameter |
@@ -24,7 +26,3 @@
 ## Returns
 
 `unknown`[] \| `Promise`\<`unknown`[]\>
-
-## Defined in
-
-[src/ent/Triggers.ts:164](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L164)

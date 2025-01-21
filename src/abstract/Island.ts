@@ -8,6 +8,7 @@ import type { PickPartial } from "../internal/misc";
 import { mapJoin, nullthrows } from "../internal/misc";
 import type { Client, ClientRole } from "./Client";
 import type { LocalCache } from "./LocalCache";
+import type { SwallowedErrorLoggerProps } from "./Loggers";
 import type { Shard } from "./Shard";
 
 /**
@@ -150,8 +151,10 @@ export class Island<TClient extends Client> {
    *   anyways needs to know, who's master and who's replica, as a side effect
    *   of the very 1st query after the Client creation. We infer that as a piggy
    *   back after calling Client#shardNos().
+   * - In case we could not discover shards, returns the list of errors happened
+   *   during the discovery.
    */
-  async rediscover(): Promise<void> {
+  async rediscover(): Promise<SwallowedErrorLoggerProps[]> {
     // Load fallback roles as early as possible (since shardNo() queries below
     // may take a lot of time in case they time out).
     await mapJoin(this.clients, async (client) => {
@@ -168,6 +171,7 @@ export class Island<TClient extends Client> {
     // used Promise.race(), then timing out Clients could've been requested by
     // the caller logic concurrently over and over, so the number of pending
     // requests to them would grow. We want to control that parallelism.
+    const errors: SwallowedErrorLoggerProps[] = [];
     const res = sortBy(
       compact(
         await mapJoin(this.clients, async (client) => {
@@ -180,12 +184,15 @@ export class Island<TClient extends Client> {
             this.fallbackRoles.set(client, role);
             return { role, shardNos };
           } catch (error: unknown) {
-            client.options.loggers?.swallowedErrorLogger({
-              where: `${client.constructor.name}(${client.options.name}): shardNos`,
+            errors.push({
+              where: `${client.constructor.name}(${client.options.name}).shardNos`,
               error,
               elapsed: performance.now() - startTime,
               importance: "low",
             });
+            client.options.loggers?.swallowedErrorLogger(
+              errors[errors.length - 1],
+            );
             return null;
           }
         }),
@@ -197,6 +204,7 @@ export class Island<TClient extends Client> {
 
     if (res.length > 0) {
       this.shardNos = [...res[0].shardNos].sort((a, b) => a - b);
+      return [];
     } else {
       // Being unable to access all DB Clients is not a critical error here,
       // we'll just miss some Shards (and other Shards will work). DO NOT throw
@@ -204,6 +212,7 @@ export class Island<TClient extends Client> {
       // careful retries. Also, we have Shards rediscovery every N seconds, so a
       // missing Island will self-heal eventually.
       this.shardNos = [];
+      return errors;
     }
   }
 

@@ -6,6 +6,8 @@
 
 # Class: CanUpdateOutgoingEdge\<TField\>
 
+Defined in: [src/ent/predicates/CanUpdateOutgoingEdge.ts:10](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L10)
+
 Checks that an Ent available via a field is updatable. See
 CanReadOutgoingEdge comments for more details.
 
@@ -25,6 +27,8 @@ CanReadOutgoingEdge comments for more details.
 
 > **new CanUpdateOutgoingEdge**\<`TField`\>(`field`, `toEntClass`): [`CanUpdateOutgoingEdge`](CanUpdateOutgoingEdge.md)\<`TField`\>
 
+Defined in: [src/ent/predicates/CanUpdateOutgoingEdge.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L15)
+
 #### Parameters
 
 | Parameter | Type |
@@ -36,23 +40,21 @@ CanReadOutgoingEdge comments for more details.
 
 [`CanUpdateOutgoingEdge`](CanUpdateOutgoingEdge.md)\<`TField`\>
 
-#### Defined in
-
-[src/ent/predicates/CanUpdateOutgoingEdge.ts:15](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L15)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `name` | `string` |
-| `field` | `TField` |
-| `toEntClass` | [`EntClass`](../interfaces/EntClass.md) |
+| <a id="name"></a> `name` | `string` |
+| <a id="field-1"></a> `field` | `TField` |
+| <a id="toentclass-1"></a> `toEntClass` | [`EntClass`](../interfaces/EntClass.md) |
 
 ## Methods
 
 ### check()
 
 > **check**(`vc`, `row`): `Promise`\<`boolean`\>
+
+Defined in: [src/ent/predicates/CanUpdateOutgoingEdge.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L22)
 
 #### Parameters
 
@@ -68,7 +70,3 @@ CanReadOutgoingEdge comments for more details.
 #### Implementation of
 
 [`Predicate`](../interfaces/Predicate.md).[`check`](../interfaces/Predicate.md#check)
-
-#### Defined in
-
-[src/ent/predicates/CanUpdateOutgoingEdge.ts:22](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/CanUpdateOutgoingEdge.ts#L22)

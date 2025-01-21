@@ -6,6 +6,8 @@
 
 # Interface: Handler\<TLoadArgs, TReturn\>
 
+Defined in: [src/abstract/Loader.ts:4](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loader.ts#L4)
+
 ## Type Parameters
 
 | Type Parameter |
@@ -17,7 +19,7 @@
 
 | Property | Type |
 | ------ | ------ |
-| `onCollect` | (...`args`: `TLoadArgs`) => `void` \| `"flush"` \| `"wait"` |
-| `onWait?` | () => `Promise`\<`void`\> |
-| `onFlush` | (`collected`: `number`) => `Promise`\<`void`\> |
-| `onReturn` | (...`args`: `TLoadArgs`) => `TReturn` |
+| <a id="oncollect"></a> `onCollect` | (...`args`: `TLoadArgs`) => `void` \| `"flush"` \| `"wait"` |
+| <a id="onwait"></a> `onWait?` | () => `Promise`\<`void`\> |
+| <a id="onflush"></a> `onFlush` | (`collected`: `number`) => `Promise`\<`void`\> |
+| <a id="onreturn"></a> `onReturn` | (...`args`: `TLoadArgs`) => `TReturn` |

@@ -8,6 +8,8 @@
 
 > **AfterUpdateTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
 
+Defined in: [src/ent/Triggers.ts:108](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L108)
+
 ## Type Parameters
 
 | Type Parameter |
@@ -26,7 +28,3 @@
 ## Returns
 
 `Promise`\<`unknown`\>
-
-## Defined in
-
-[src/ent/Triggers.ts:108](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L108)

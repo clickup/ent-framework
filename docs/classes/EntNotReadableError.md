@@ -6,6 +6,8 @@
 
 # Class: EntNotReadableError
 
+Defined in: [src/ent/errors/EntNotReadableError.ts:8](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotReadableError.ts#L8)
+
 Error: thrown when an Ent cannot be read due to privacy reasons.
 
 ## Extends
@@ -17,6 +19,8 @@ Error: thrown when an Ent cannot be read due to privacy reasons.
 ### new EntNotReadableError()
 
 > **new EntNotReadableError**(`entName`, `vc`, `row`, `cause`): [`EntNotReadableError`](EntNotReadableError.md)
+
+Defined in: [src/ent/errors/EntNotReadableError.ts:9](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotReadableError.ts#L9)
 
 #### Parameters
 
@@ -35,15 +39,11 @@ Error: thrown when an Ent cannot be read due to privacy reasons.
 
 [`EntAccessError`](EntAccessError.md).[`constructor`](EntAccessError.md#constructors)
 
-#### Defined in
-
-[src/ent/errors/EntNotReadableError.ts:9](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntNotReadableError.ts#L9)
-
 ## Properties
 
 | Property | Type |
 | ------ | ------ |
-| `cause` | `null` \| `string` \| `Error` |
-| `entName` | `string` |
-| `vc` | `string` |
-| `row` | [`RowWithID`](../type-aliases/RowWithID.md) |
+| <a id="cause-1"></a> `cause` | `null` \| `string` \| `Error` |
+| <a id="entname-1"></a> `entName` | `string` |
+| <a id="vc-1"></a> `vc` | `string` |
+| <a id="row-1"></a> `row` | [`RowWithID`](../type-aliases/RowWithID.md) |

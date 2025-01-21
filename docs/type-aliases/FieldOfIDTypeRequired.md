@@ -8,6 +8,8 @@
 
 > **FieldOfIDTypeRequired**\<`TTable`\>: [`InsertFieldsRequired`](InsertFieldsRequired.md)\<`TTable`\> & [`FieldOfIDType`](FieldOfIDType.md)\<`TTable`\>
 
+Defined in: [src/types.ts:139](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L139)
+
 Table -> "user_id" | "some_id" | ...
 
 ## Type Parameters
@@ -15,7 +17,3 @@ Table -> "user_id" | "some_id" | ...
 | Type Parameter |
 | ------ |
 | `TTable` *extends* [`Table`](Table.md) |
-
-## Defined in
-
-[src/types.ts:139](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L139)

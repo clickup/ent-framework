@@ -8,6 +8,8 @@
 
 > **UpdateOriginalInput**\<`TTable`\>: `{ [K in UpdateField<TTable>]?: Value<TTable[K]> }` & `object`
 
+Defined in: [src/ent/types.ts:81](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L81)
+
 The input of updateOriginal() method. It supports some additional syntax
 sugar for $cas property, so to work-around TS weakness of Omit<> & type
 inference, we redefine this type from scratch.
@@ -27,7 +29,3 @@ inference, we redefine this type from scratch.
 | Type Parameter |
 | ------ |
 | `TTable` *extends* [`Table`](Table.md) |
-
-## Defined in
-
-[src/ent/types.ts:81](https://github.com/clickup/ent-framework/blob/master/src/ent/types.ts#L81)

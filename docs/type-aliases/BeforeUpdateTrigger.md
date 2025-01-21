@@ -8,6 +8,8 @@
 
 > **BeforeUpdateTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
 
+Defined in: [src/ent/Triggers.ts:99](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L99)
+
 ## Type Parameters
 
 | Type Parameter |
@@ -27,7 +29,3 @@
 ## Returns
 
 `Promise`\<`unknown`\>
-
-## Defined in
-
-[src/ent/Triggers.ts:99](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L99)

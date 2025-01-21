@@ -8,6 +8,8 @@
 
 > **Where**\<`TTable`\>: `object` & `object` & \{ \[K in Field\<TTable\>\]?: Value\<TTable\[K\]\> \| ReadonlyArray\<Value\<TTable\[K\]\>\> \| \{ $lte: NonNullable\<Value\<TTable\[K\]\>\> \} \| \{ $lt: NonNullable\<Value\<TTable\[K\]\>\> \} \| \{ $gte: NonNullable\<Value\<TTable\[K\]\>\> \} \| \{ $gt: NonNullable\<Value\<TTable\[K\]\>\> \} \| \{ $overlap: NonNullable\<Value\<TTable\[K\]\>\> \} \| \{ $ne: Value\<TTable\[K\]\> \| ReadonlyArray\<Value\<TTable\[K\]\>\> \} \| \{ $isDistinctFrom: Value\<TTable\[K\]\> \} \}
 
+Defined in: [src/types.ts:270](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L270)
+
 Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 
 ## Type declaration
@@ -43,7 +45,3 @@ Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 | Type Parameter |
 | ------ |
 | `TTable` *extends* [`Table`](Table.md) |
-
-## Defined in
-
-[src/types.ts:270](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L270)
