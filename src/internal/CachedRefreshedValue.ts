@@ -122,10 +122,10 @@ export class CachedRefreshedValue<TValue> {
               `${this.constructor.name}.refreshLoop: Warning: ` +
                 `resolverFn did not complete in ${warningDelayMs} ms!`,
             ),
-            performance.now() - startTime,
+            Math.round(performance.now() - startTime),
           ),
         warningDelayMs,
-      );
+      ).unref();
       try {
         this.resolverFnCallCount++;
         this.latestValue = await this.options.resolverFn();
@@ -133,7 +133,7 @@ export class CachedRefreshedValue<TValue> {
         this.nextValue = pDefer();
         oldNextValue.resolve(this.latestValue);
       } catch (e: unknown) {
-        this.onErrorNothrow(e, performance.now() - startTime);
+        this.onErrorNothrow(e, Math.round(performance.now() - startTime));
       } finally {
         clearTimeout(warningTimeout);
       }
@@ -145,7 +145,7 @@ export class CachedRefreshedValue<TValue> {
         if (this.options.deps.handler() !== depsPrev) {
           delayDefer.resolve();
         }
-      }, depsDelayMs);
+      }, depsDelayMs).unref();
       try {
         this.options
           .delay(maybeCall(this.options.delayMs))

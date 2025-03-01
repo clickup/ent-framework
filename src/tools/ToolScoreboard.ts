@@ -172,7 +172,7 @@ export class ToolScoreboard {
               });
             }
           }
-        }, this.options.tickMs)
+        }, this.options.tickMs).unref()
       : undefined;
 
     const queryPollTimeouts: NodeJS.Timeout[] = [];
@@ -185,10 +185,10 @@ export class ToolScoreboard {
               setInterval(() => {
                 nullthrows(this.queryPollDefers.at(i)).resolve();
                 this.queryPollDefers[i] = pDefer();
-              }, this.options.pingPollMs),
+              }, this.options.pingPollMs).unref(),
             ),
           i * (this.options.pingPollMs / this.options.pingParallelism),
-        ),
+        ).unref(),
       );
     }
 

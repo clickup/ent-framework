@@ -56,7 +56,7 @@ class EntTestComposite extends BaseEnt(
       user_id bigint NOT NULL,
       some_id bigint NOT NULL,
       name text,
-      UNIQUE(user_id, some_id)
+      PRIMARY KEY (user_id, some_id)
     )`,
   ];
 

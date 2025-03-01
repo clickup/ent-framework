@@ -187,7 +187,7 @@ export class Island<TClient extends Client> {
             errors.push({
               where: `${client.constructor.name}(${client.options.name}).shardNos`,
               error,
-              elapsed: performance.now() - startTime,
+              elapsed: Math.round(performance.now() - startTime),
               importance: "low",
             });
             client.options.loggers?.swallowedErrorLogger(

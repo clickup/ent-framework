@@ -17,4 +17,8 @@ export PGPASSWORD=postgres
 # properly quoted arguments to it.
 cmd="$1"
 shift
-eval "$cmd \"\$@\""
+if [[ "$*" == "" ]]; then
+  eval "$cmd"
+else
+  eval "$cmd \"\$@\""
+fi

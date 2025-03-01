@@ -1,3 +1,5 @@
+pg-id-consts.sql
+
 dist/__tests__
 dist/**/__tests__
 dist/*.tsbuildinfo
@@ -7,6 +9,7 @@ dist/*.tsbuildinfo
 node_modules
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
 .DS_Store
 *.log
 *.tmp

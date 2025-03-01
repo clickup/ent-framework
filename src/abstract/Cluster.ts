@@ -165,7 +165,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
           this.options.loggers.swallowedErrorLogger({
             where: `${this.constructor.name}.clientRegistry`,
             error,
-            elapsed: performance.now() - startTime,
+            elapsed: Math.round(performance.now() - startTime),
             importance: "normal",
           }),
         );
@@ -204,7 +204,11 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
         handler: () => jsonHash(maybeCall(this.options.islands)),
       },
       resolverFn: async () => this.shardsDiscoverExpensive(),
-      delay: async (ms) => delay(ms),
+      delay: async (ms) =>
+        delay.createWithTimers({
+          setTimeout: (...args) => setTimeout(...args).unref(),
+          clearTimeout: (...args) => clearTimeout(...args),
+        })(ms),
       onError: (error, elapsed) =>
         this.options.loggers.swallowedErrorLogger({
           where: `${this.constructor.name}.shardsDiscoverCache`,
@@ -250,7 +254,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
           }
         }),
       initialDelayMs,
-    );
+    ).unref();
   }
 
   /**
@@ -394,9 +398,10 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
         this.options.loggers.locateIslandErrorLogger?.({ attempt, error });
 
         if (typeof error?.stack === "string") {
-          error.stack =
-            error.stack.trimEnd() +
-            `\n    after ${attempt + 1} attempt${attempt > 0 ? "s" : ""}`;
+          const suffix = `\n    after ${attempt + 1} attempt${attempt > 0 ? "s" : ""}`;
+          if (!error.stack.endsWith(suffix)) {
+            error.stack = error.stack.trimEnd() + suffix;
+          }
         }
 
         if (
@@ -451,7 +456,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
       this.options.loggers.swallowedErrorLogger({
         where: `${this.constructor.name}.rediscoverCluster`,
         error,
-        elapsed: performance.now() - startTime,
+        elapsed: Math.round(performance.now() - startTime),
         importance: "normal",
       }),
     );
@@ -486,7 +491,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
       this.options.loggers.swallowedErrorLogger({
         where: `${this.constructor.name}.rediscoverIsland(${island.no})`,
         error,
-        elapsed: performance.now() - startTime,
+        elapsed: Math.round(performance.now() - startTime),
         importance: "normal",
       }),
     );

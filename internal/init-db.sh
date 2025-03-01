@@ -16,7 +16,7 @@ done
 dir="$dir/$REL"
 
 if [[ ! -e $dir/pg-id-consts.sql ]]; then
-  ln -s "$dir/pg-id-consts.sql.example" "$dir/pg-id-consts.sql"
+  ln -s "$dir/pg-id.config.sql.example" "$dir/pg-id.config.sql"
 fi
 
 rm -f $LOG

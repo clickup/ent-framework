@@ -33,7 +33,7 @@ export class ShardIsNotDiscoverableError extends ShardError {
         islands
           .map(({ no, clients }) => `${no}@${clients[0].options.name}`)
           .join(", ") +
-        `; cached discovery took ${Math.round(elapsed)} ms`,
+        `; cached discovery took ${elapsed} ms`,
     );
   }
 }

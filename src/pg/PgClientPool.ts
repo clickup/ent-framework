@@ -81,7 +81,10 @@ export class PgClientPool extends PgClient {
       PgClientPool.DEFAULT_OPTIONS,
     );
 
-    this.pool = new this.options.Pool(this.options.config)
+    this.pool = new this.options.Pool({
+      allowExitOnIdle: true,
+      ...this.options.config,
+    })
       .on("connect", (client: PgClientConn) => {
         // Called only once, after the connection is 1st created.
         const maxConnLifetimeMs = maybeCall(this.options.maxConnLifetimeMs);
@@ -188,7 +191,7 @@ export class PgClientPool extends PgClient {
             this.logSwallowedError({
               where: `${this.constructor.name}.prewarm`,
               error,
-              elapsed: performance.now() - startTime,
+              elapsed: Math.round(performance.now() - startTime),
               importance: "normal",
             }),
           ),
@@ -205,6 +208,6 @@ export class PgClientPool extends PgClient {
         maybeCall(this.options.prewarmIntervalMs) *
           jitter(maybeCall(this.options.prewarmIntervalJitter)),
       ),
-    );
+    ).unref();
   }
 }

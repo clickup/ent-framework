@@ -57,7 +57,7 @@ class EntTestHuman extends BaseEnt(
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
-      id bigint NOT NULL,
+      id bigint NOT NULL PRIMARY KEY,
       parent_id bigint NOT NULL,
       universe_id bigint,
       name text

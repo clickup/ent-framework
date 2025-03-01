@@ -69,7 +69,7 @@ export class LocalCache<TValue extends {} = never> {
         this.options.cleanupFirstRunDelayMs *
           jitter(this.options.cleanupJitter),
       ),
-    );
+    ).unref();
   }
 
   /**
@@ -177,7 +177,7 @@ export class LocalCache<TValue extends {} = never> {
         (this.options.expirationMs / this.options.cleanupRoundsPerExpiration) *
           jitter(this.options.cleanupJitter),
       ),
-    );
+    ).unref();
   }
 
   /**

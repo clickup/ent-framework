@@ -6,7 +6,7 @@
 
 # Class: ShardIsNotDiscoverableError
 
-Defined in: src/abstract/ShardIsNotDiscoverableError.ts:10
+Defined in: [src/abstract/ShardIsNotDiscoverableError.ts:10](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardIsNotDiscoverableError.ts#L10)
 
 This non-retriable error is thrown when shardsDiscoverCache.cached() returns
 no shard with the requested number.
@@ -21,7 +21,7 @@ no shard with the requested number.
 
 > **new ShardIsNotDiscoverableError**(`shardNo`, `errors`, `islands`, `elapsed`): [`ShardIsNotDiscoverableError`](ShardIsNotDiscoverableError.md)
 
-Defined in: src/abstract/ShardIsNotDiscoverableError.ts:11
+Defined in: [src/abstract/ShardIsNotDiscoverableError.ts:11](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardIsNotDiscoverableError.ts#L11)
 
 #### Parameters
 
