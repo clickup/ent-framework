@@ -10,6 +10,7 @@ import { hasKey } from "../internal/misc";
 import type {
   Field,
   FieldAliased,
+  Hints,
   Literal,
   Table,
   Value,
@@ -66,7 +67,7 @@ export abstract class PgRunner<
     sql: string,
     annotations: QueryAnnotation[],
     batchFactor: number,
-    hints?: Record<string, string>,
+    hints?: Hints,
   ): Promise<TOutput[]> {
     const rows = await this.client.query<TOutput>({
       query: [sql],

@@ -8,7 +8,7 @@
 
 > **Row**\<`TTable`\>: [`RowWithID`](RowWithID.md) & `{ [K in Field<TTable>]: Value<TTable[K]> }`
 
-Defined in: [src/types.ts:177](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L177)
+Defined in: [src/types.ts:183](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L183)
 
 Table -> Row deduction (no symbols).
 

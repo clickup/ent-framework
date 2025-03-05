@@ -8,7 +8,7 @@
 
 > **SelectInput**\<`TTable`\>: `object`
 
-Defined in: [src/types.ts:311](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L311)
+Defined in: [src/types.ts:317](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L317)
 
 Table -> { where: ..., order?: ..., ... }
 

@@ -107,7 +107,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 > **query**\<`TRow`\>(`__namedParameters`): `Promise`\<`TRow`[]\>
 
-Defined in: [src/pg/PgClient.ts:209](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L209)
+Defined in: [src/pg/PgClient.ts:210](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L210)
 
 Sends a query (internally, a multi-query). After the query finishes, we
 should expect that role() returns the actual master/replica role.
@@ -122,9 +122,9 @@ should expect that role() returns the actual master/replica role.
 
 | Parameter | Type |
 | ------ | ------ |
-| `__namedParameters` | \{ `query`: [`Literal`](../type-aliases/Literal.md); `hints`: `Record`\<`string`, `string`\>; `isWrite`: `boolean`; `annotations`: [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[]; `op`: `string`; `table`: `string`; `batchFactor`: `number`; \} |
+| `__namedParameters` | \{ `query`: [`Literal`](../type-aliases/Literal.md); `hints`: [`Hints`](../type-aliases/Hints.md); `isWrite`: `boolean`; `annotations`: [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[]; `op`: `string`; `table`: `string`; `batchFactor`: `number`; \} |
 | `__namedParameters.query` | [`Literal`](../type-aliases/Literal.md) |
-| `__namedParameters.hints`? | `Record`\<`string`, `string`\> |
+| `__namedParameters.hints`? | [`Hints`](../type-aliases/Hints.md) |
 | `__namedParameters.isWrite` | `boolean` |
 | `__namedParameters.annotations` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md)[] |
 | `__namedParameters.op` | `string` |
@@ -145,7 +145,7 @@ should expect that role() returns the actual master/replica role.
 
 > **shardNos**(): `Promise`\<readonly `number`[]\>
 
-Defined in: [src/pg/PgClient.ts:401](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L401)
+Defined in: [src/pg/PgClient.ts:402](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L402)
 
 Returns all Shard numbers discoverable via the connection to the Client's
 database.
@@ -164,7 +164,7 @@ database.
 
 > **ping**(`__namedParameters`): `Promise`\<`void`\>
 
-Defined in: [src/pg/PgClient.ts:425](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L425)
+Defined in: [src/pg/PgClient.ts:426](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L426)
 
 Sends a read or write test query to the server. Tells the server to sit and
 wait for at least the provided number of milliseconds.
@@ -189,7 +189,7 @@ wait for at least the provided number of milliseconds.
 
 > **shardNoByID**(`id`): `number`
 
-Defined in: [src/pg/PgClient.ts:443](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L443)
+Defined in: [src/pg/PgClient.ts:444](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L444)
 
 Extracts Shard number from an ID.
 
@@ -213,7 +213,7 @@ Extracts Shard number from an ID.
 
 > **withShard**(`no`): `this`
 
-Defined in: [src/pg/PgClient.ts:499](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L499)
+Defined in: [src/pg/PgClient.ts:500](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L500)
 
 Creates a new Client which is namespaced to the provided Shard number. The
 new Client will share the same connection pool with the parent's Client.
@@ -238,7 +238,7 @@ new Client will share the same connection pool with the parent's Client.
 
 > **role**(): [`ClientRole`](../type-aliases/ClientRole.md)
 
-Defined in: [src/pg/PgClient.ts:510](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L510)
+Defined in: [src/pg/PgClient.ts:511](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L511)
 
 Returns the Client's role reported after the last successful query. Master
 and replica roles may switch online unpredictably, without reconnecting, so
@@ -258,7 +258,7 @@ we only know the role after a query.
 
 > **connectionIssue**(): `null` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
 
-Defined in: [src/pg/PgClient.ts:514](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L514)
+Defined in: [src/pg/PgClient.ts:515](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L515)
 
 Returns a non-nullable value if the Client couldn't connect to the server
 (or it could, but the load balancer reported the remote server as not

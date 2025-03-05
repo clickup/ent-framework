@@ -2,7 +2,7 @@ import { collect } from "streaming-iterables";
 import { join } from "../../internal/misc";
 import { recreateTestTables, testCluster } from "../../pg/__tests__/test-utils";
 import { PgSchema } from "../../pg/PgSchema";
-import { ID } from "../../types";
+import { Enum, ID } from "../../types";
 import { BaseEnt } from "../BaseEnt";
 import { CanDeleteOutgoingEdge } from "../predicates/CanDeleteOutgoingEdge";
 import { CanReadOutgoingEdge } from "../predicates/CanReadOutgoingEdge";
@@ -16,6 +16,16 @@ import { GLOBAL_SHARD } from "../ShardAffinity";
 import type { VC } from "../VC";
 import { createVC, expectToMatchSnapshot } from "./test-utils";
 
+enum Industry {
+  IT = "it",
+  HEALTH = "health",
+}
+
+enum Size {
+  ONE = 1,
+  TWO = 2,
+}
+
 /**
  * Company
  */
@@ -25,15 +35,19 @@ class EntTestCompany extends BaseEnt(
     'ent.generic"company',
     {
       id: { type: String, autoInsert: "id_gen()" },
-      name: { type: String },
+      name: { type: Enum<"some" | "other">() },
+      industry: { type: Enum<Industry>() },
+      size: { type: Enum<Size>() },
     },
-    ["name"],
+    ["name", "industry"],
   ),
 ) {
   static readonly CREATE = [
     `CREATE TABLE %T(
       id bigint NOT NULL PRIMARY KEY,
-      name text NOT NULL
+      name text NOT NULL,
+      industry text NOT NULL,
+      size integer NOT NULL
     )`,
   ];
 
@@ -258,8 +272,11 @@ beforeEach(async () => {
 
   const company = await EntTestCompany.insertReturning(
     createVC().toOmniDangerous(),
-    { name: "some" },
+    { name: "some", industry: Industry.IT, size: Size.ONE },
   );
+  expect(company.name).toEqual("some");
+  expect(company.industry).toEqual(Industry.IT);
+  expect(company.size).toEqual(Size.ONE);
 
   const user = await EntTestUser.insertReturning(company.vc.toOmniDangerous(), {
     company_id: company.id,

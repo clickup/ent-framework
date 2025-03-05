@@ -166,6 +166,7 @@
 - [CountInput](type-aliases/CountInput.md)
 - [ExistsInput](type-aliases/ExistsInput.md)
 - [DeleteWhereInput](type-aliases/DeleteWhereInput.md)
+- [Hints](type-aliases/Hints.md)
 
 ## Variables
 

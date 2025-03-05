@@ -115,7 +115,13 @@ export type FieldAliased<TTable extends Table> =
  */
 export type FieldOfPotentialUniqueKey<TTable extends Table> = {
   [K in Field<TTable>]: TTable[K] extends {
-    type: typeof Number | typeof String | typeof Boolean | typeof ID;
+    type:
+      | typeof Number
+      | typeof String
+      | typeof Boolean
+      | typeof ID
+      | typeof Date
+      | { dbValueToJs: (dbValue: never) => string | number };
     // allows nullable fields too!
   }
     ? K
@@ -332,3 +338,46 @@ export type DeleteWhereInput<TTable extends Table> = { [ID]: string[] } & Omit<
   Where<TTable>,
   typeof ID
 >;
+
+/**
+ * Planner hints. Null means "reset to the engine's default", and "undefined"
+ * means the same as "no key mentioned at all".
+ */
+export type Hints = Record<string, string | null | undefined>;
+
+/**
+ * A wrapper for literal union types, suitable for the following Spec:
+ * - { type: Enum<"a" | "b" | "c">() }
+ * - { type: Enum<1 | 2 | 3>() }
+ */
+export function Enum<TValue extends string | number>(): {
+  dbValueToJs: (dbValue: string | number) => TValue;
+  stringify: (jsValue: TValue) => string;
+  parse: (str: string) => TValue;
+};
+
+/**
+ * A wrapper for literal union types, suitable for the following Spec:
+ * ```
+ * enum MyEnum {
+ *   A = "a",
+ *   B = "b",
+ * }
+ * ...
+ * { type: Enum<MyEnum>() }
+ * ```
+ */
+export function Enum<TEnum extends Record<string, string | number>>(): {
+  dbValueToJs: (dbValue: string | number) => TEnum[keyof TEnum];
+  stringify: (jsValue: TEnum[keyof TEnum]) => string;
+  parse: (str: string) => TEnum[keyof TEnum];
+};
+
+/** @ignore */
+export function Enum(): unknown {
+  return {
+    dbValueToJs: (dbValue: string | number) => dbValue,
+    stringify: (jsValue: never) => jsValue as string,
+    parse: (str: string) => str,
+  } as const;
+}

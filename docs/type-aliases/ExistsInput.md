@@ -8,7 +8,7 @@
 
 > **ExistsInput**\<`TTable`\>: [`Where`](Where.md)\<`TTable`\>
 
-Defined in: [src/types.ts:326](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L326)
+Defined in: [src/types.ts:332](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L332)
 
 Table -> { f: 10, [$or]: [ { f2: "a }, { f3: "b""} ], $literal: ["x=?", 1] }
 

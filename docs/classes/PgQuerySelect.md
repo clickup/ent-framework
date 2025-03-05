@@ -6,7 +6,7 @@
 
 # Class: PgQuerySelect\<TTable\>
 
-Defined in: [src/pg/PgQuerySelect.ts:11](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQuerySelect.ts#L11)
+Defined in: [src/pg/PgQuerySelect.ts:12](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQuerySelect.ts#L12)
 
 A convenient base class for most (but not all) of the queries, where the
 Runner instance is the same for different query input shapes. If the query

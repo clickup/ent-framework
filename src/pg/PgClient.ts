@@ -25,8 +25,9 @@ import {
   sanitizeIDForDebugPrinting,
 } from "../internal/misc";
 import { Ref } from "../internal/Ref";
-import type { Literal } from "../types";
+import type { Hints, Literal } from "../types";
 import { escapeLiteral } from "./helpers/escapeLiteral";
+import { buildHintQueries } from "./internal/buildHintQueries";
 import { CLIENT_ERROR_PREDICATES } from "./internal/misc";
 import { parseCompositeRow } from "./internal/parseCompositeRow";
 import { parseLsn } from "./internal/parseLsn";
@@ -49,7 +50,7 @@ export interface PgClientOptions extends ClientOptions {
    * per-connection statement timeout in transaction pooling mode: it throws
    * "unsupported startup parameter" error. I.e. we may want to emit "SET
    * statement_timeout TO ..." before each query in multi-query mode. */
-  hints?: MaybeCallable<Record<string, string | undefined>> | null;
+  hints?: MaybeCallable<Hints> | null;
   /** After how many milliseconds we give up waiting for the replica to catch up
    * with the master. When role="replica", then this option is the only way to
    * "unlatch" the reads from the master node after a write. */
@@ -216,7 +217,7 @@ export abstract class PgClient extends Client {
     batchFactor,
   }: {
     query: Literal;
-    hints?: Record<string, string>;
+    hints?: Hints;
     isWrite: boolean;
     annotations: QueryAnnotation[];
     op: string;
@@ -519,7 +520,7 @@ export abstract class PgClient extends Client {
    * Prepares a PG Client multi-query from the query literal and hints.
    */
   private buildMultiQuery(
-    hints: Record<string, string> | undefined,
+    hints: Hints | undefined,
     literal: Literal,
     epilogue: string | undefined,
     isWrite: boolean,
@@ -538,12 +539,13 @@ export abstract class PgClient extends Client {
     const queriesEpilogue: string[] = [];
     const queriesRollback: string[] = [];
 
+    const [hintQueriesDefault, hintQueries] = buildHintQueries(
+      this.options.hints ? maybeCall(this.options.hints) : undefined,
+      hints,
+    );
+
     // Prepend per-query hints to the prologue (if any); they will be logged.
-    if (hints) {
-      queriesPrologue.unshift(
-        ...Object.entries(hints).map(([k, v]) => `SET LOCAL ${k} TO ${v}`),
-      );
-    }
+    queriesPrologue.unshift(...hintQueries);
 
     // The query which is logged to the logging infra. For more brief messages,
     // we don't log internal hints (this.hints) and search_path; see below.
@@ -551,17 +553,7 @@ export abstract class PgClient extends Client {
       `/*${this.shardName}*/` + [...queriesPrologue, query].join("; ").trim();
 
     // Prepend internal per-Client hints to the prologue.
-    if (this.options.hints) {
-      queriesPrologue.unshift(
-        ...Object.entries(maybeCall(this.options.hints))
-          .filter(([_, v]) => v !== undefined)
-          .map(([k, v]) =>
-            k.toLowerCase() === "transaction"
-              ? `SET LOCAL ${k} ${v}`
-              : `SET LOCAL ${k} TO ${v}`,
-          ),
-      );
-    }
+    queriesPrologue.unshift(...hintQueriesDefault);
 
     // We must always have "public" in search_path, because extensions are by
     // default installed in "public" schema. Some extensions may expose

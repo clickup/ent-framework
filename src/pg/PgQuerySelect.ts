@@ -1,8 +1,9 @@
+import pickBy from "lodash/pickBy";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { QueryBase } from "../abstract/QueryBase";
 import type { Schema } from "../abstract/Schema";
 import { stringHash, hasKey, inspectCompact } from "../internal/misc";
-import type { Literal, Order, Row, SelectInput, Table } from "../types";
+import type { Hints, Literal, Order, Row, SelectInput, Table } from "../types";
 import { escapeLiteral } from "./helpers/escapeLiteral";
 import { escapeString } from "./internal/escapeString";
 import type { PgClient } from "./PgClient";
@@ -36,7 +37,7 @@ export type SelectInputCustom =
       ctes?: Literal[];
       joins?: Literal[];
       from?: Literal;
-      hints?: Record<string, string>;
+      hints?: Hints;
     }
   | undefined;
 
@@ -93,7 +94,7 @@ class PgRunnerSelect<TTable extends Table> extends PgRunner<
     //    UNION ALL
     // SELECT '...' AS _key, ... FROM ... WHERE ...
     const pieces: string[] = [];
-    let allHints: Record<string, string> = {};
+    let allHints: Hints = {};
     for (const [key, input] of inputs.entries()) {
       const { sql, hints } = this.buildCustom(
         input,
@@ -107,7 +108,7 @@ class PgRunnerSelect<TTable extends Table> extends PgRunner<
           this.buildLimit(input.limit),
       );
       pieces.push("(" + sql + ")");
-      allHints = { ...allHints, ...hints };
+      allHints = { ...allHints, ...pickBy(hints, (v) => v !== undefined) };
     }
 
     const unionRows = await this.clientQuery<{ _key: string } & Row<TTable>>(
@@ -136,7 +137,7 @@ class PgRunnerSelect<TTable extends Table> extends PgRunner<
     sql: string,
   ): {
     sql: string;
-    hints: Record<string, string> | undefined;
+    hints: Hints | undefined;
   } {
     const custom = input.custom as SelectInputCustom;
     if (custom?.joins?.length) {

@@ -8,7 +8,7 @@
 
 > **UpdateInput**\<`TTable`\>: `{ [K in UpdateField<TTable>]?: Value<TTable[K]> }` & `object`
 
-Defined in: [src/types.ts:229](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L229)
+Defined in: [src/types.ts:235](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L235)
 
 Update: Table -> { field?: string, created_at?: Date, updated_at?: Date }.
 - Excludes id Spec entirely and makes all fields optional.

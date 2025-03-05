@@ -6,7 +6,7 @@
 
 # Type Alias: FieldOfPotentialUniqueKey\<TTable\>
 
-> **FieldOfPotentialUniqueKey**\<`TTable`\>: \{ \[K in Field\<TTable\>\]: TTable\[K\] extends \{ type: typeof Number \| typeof String \| typeof Boolean \| typeof ID \} ? K : never \}\[[`Field`](Field.md)\<`TTable`\>\]
+> **FieldOfPotentialUniqueKey**\<`TTable`\>: \{ \[K in Field\<TTable\>\]: TTable\[K\] extends \{ type: typeof Number \| typeof String \| typeof Boolean \| typeof ID \| typeof Date \| \{ dbValueToJs: (dbValue: never) =\> string \| number \} \} ? K : never \}\[[`Field`](Field.md)\<`TTable`\>\]
 
 Defined in: [src/types.ts:116](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L116)
 

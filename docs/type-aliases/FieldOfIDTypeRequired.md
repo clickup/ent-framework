@@ -8,7 +8,7 @@
 
 > **FieldOfIDTypeRequired**\<`TTable`\>: [`InsertFieldsRequired`](InsertFieldsRequired.md)\<`TTable`\> & [`FieldOfIDType`](FieldOfIDType.md)\<`TTable`\>
 
-Defined in: [src/types.ts:139](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L139)
+Defined in: [src/types.ts:145](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L145)
 
 Table -> "user_id" | "some_id" | ...
 
