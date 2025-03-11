@@ -75,7 +75,10 @@ export class Configuration<TTable extends Table> {
    * 3. If a null is returned, then a guest principal will be used.
    * 4. Returning an omni principal or VC will result in a run-time error. */
   readonly privacyInferPrincipal!:
-    | ((vc: VC, row: Row<TTable>) => Promise<Ent<{}> | string | null>)
+    | ((
+        vc: VC,
+        row: Row<TTable>,
+      ) => Promise<Ent<{}> | string | null> | string | null)
     | string
     | null;
 
