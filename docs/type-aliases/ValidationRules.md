@@ -55,4 +55,4 @@ Defined in: [src/ent/Validation.ts:59](https://github.com/clickup/ent-framework/
 
 ### validate?
 
-> `readonly` `optional` **validate**: [`Predicate`](../interfaces/Predicate.md)\<[`InsertInput`](InsertInput.md)\<`TTable`\>\> & [`EntValidationErrorInfo`](../interfaces/EntValidationErrorInfo.md)[]
+> `readonly` `optional` **validate**: [`AbstractIs`](../interfaces/AbstractIs.md)\<[`InsertInput`](InsertInput.md)\<`TTable`\>\>[]

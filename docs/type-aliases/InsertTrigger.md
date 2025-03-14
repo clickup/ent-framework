@@ -6,7 +6,7 @@
 
 # Type Alias: InsertTrigger()\<TTable\>
 
-> **InsertTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
+> **InsertTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\> \| `unknown`
 
 Defined in: [src/ent/Triggers.ts:94](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L94)
 
@@ -62,4 +62,4 @@ Naming convention for trigger arguments:
 
 ## Returns
 
-`Promise`\<`unknown`\>
+`Promise`\<`unknown`\> \| `unknown`

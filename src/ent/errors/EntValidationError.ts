@@ -21,7 +21,7 @@ export class EntValidationError extends EntAccessError {
 }
 
 /**
- * Auxillary information which every validation predicate should have.
+ * Auxiliary information which every validation predicate should emit.
  */
 export interface EntValidationErrorInfo {
   field: string | null; // it null, the message relates to the whole row

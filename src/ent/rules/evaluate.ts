@@ -119,6 +119,7 @@ async function ruleEvaluate<TInput extends object>(
     return await rule.evaluate(vc, input);
   } catch (error: unknown) {
     if (error instanceof EntAccessError) {
+      // This includes e.g. derived EntValidationError class.
       return {
         decision: "DENY",
         rule,

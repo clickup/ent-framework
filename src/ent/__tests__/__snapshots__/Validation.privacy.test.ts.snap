@@ -14,7 +14,7 @@ exports[`0010: load succeeds when any rule allows 1`] = `
 `;
 
 exports[`0020: load fails when first rule throws 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 Error: wild
 --- (what actually happened) ---
@@ -24,12 +24,12 @@ Error: wild
 exports[`0030: insert succeeds when all require allow 1`] = `
 "OK
 --- (what actually happened) ---
-[First { id: '123', tenant_id: '42' } returned] true
-[Second { id: '123', tenant_id: '42' } returned] true"
+[First { id: '123', tenant_id: '42', name: 'hi' } returned] true
+[Second { id: '123', tenant_id: '42', name: 'hi' } returned] true"
 `;
 
 exports[`0040: insert fails when any require denies 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotInsertableError: table: cannot insert in vc:guest:master, because:
   Rule Require:First returned TOLERATE
@@ -40,7 +40,7 @@ EntNotInsertableError: table: cannot insert in vc:guest:master, because:
 `;
 
 exports[`0041: update fails when any require denies 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotUpdatableError: table:123 is not updatable/deletable in vc:42, because:
   Rule Require:First returned TOLERATE
@@ -51,7 +51,7 @@ EntNotUpdatableError: table:123 is not updatable/deletable in vc:42, because:
 `;
 
 exports[`0042: delete fails when any require denies 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotUpdatableError: table:123 is not updatable/deletable in vc:42, because:
   Rule Require:First returned TOLERATE
@@ -61,22 +61,8 @@ EntNotUpdatableError: table:123 is not updatable/deletable in vc:42, because:
 [Second returned] false"
 `;
 
-exports[`0043: update fails when user errors 1`] = `
-"Failure
---- (error returned to client) ---
-EntValidationError: table: tenant_id: "some one", tenant_id: "some two"
---- (what actually happened) ---
-"
-`;
-
-exports[`0044: update succeeds user validation when field untouched 1`] = `
-"OK
---- (what actually happened) ---
-"
-`;
-
 exports[`0050: insert fails when any require throws 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 Error: wild
 --- (what actually happened) ---
@@ -93,7 +79,7 @@ exports[`0060: load succeeds when any rule allows even if another rule throws En
 `;
 
 exports[`0070: load fails when any rule allows but another rule throws any wild exception 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 Error: wild
 --- (what actually happened) ---
@@ -101,7 +87,7 @@ Error: wild
 `;
 
 exports[`0080: validations fail when no rules defined 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotReadableError: table:123 is not readable in vc:guest:master, because:
   No "load" rules defined
@@ -110,7 +96,7 @@ EntNotReadableError: table:123 is not readable in vc:guest:master, because:
 `;
 
 exports[`0080: validations fail when no rules defined 2`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotInsertableError: table: cannot insert in vc:guest:master, because:
   No "insert" rules defined
@@ -119,7 +105,7 @@ EntNotInsertableError: table: cannot insert in vc:guest:master, because:
 `;
 
 exports[`0090: load fails with nice error message if only one rule 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 Error: wild
 --- (what actually happened) ---
@@ -127,7 +113,7 @@ Error: wild
 `;
 
 exports[`0090: load fails with nice error message if only one rule 2`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotReadableError: table:123 is not readable in vc:guest:master, because:
   Rule AllowIf:First returned SKIP
@@ -137,7 +123,7 @@ EntNotReadableError: table:123 is not readable in vc:guest:master, because:
 `;
 
 exports[`0100: insert fails with nice error message if only one rule 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 Error: wild
 --- (what actually happened) ---
@@ -145,7 +131,7 @@ Error: wild
 `;
 
 exports[`0100: insert fails with nice error message if only one rule 2`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotInsertableError: table: cannot insert in vc:guest:master, because:
   Rule Require:First returned DENY
@@ -161,7 +147,7 @@ exports[`0110: insert succeeds when DenyIf rule evaluates 1`] = `
 `;
 
 exports[`0120: load fails when DenyIf rule throws 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotReadableError: table:123 is not readable in vc:guest:master, because:
   Rule DenyIf:First returned DENY, because:
@@ -173,7 +159,7 @@ EntNotReadableError: table:123 is not readable in vc:guest:master, because:
 `;
 
 exports[`0130: fail when tenant user id mismatches 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotReadableError: table:123 is not readable in vc:999, because:
   tenant_id is expected to be "999", but got "42"
@@ -182,7 +168,7 @@ EntNotReadableError: table:123 is not readable in vc:999, because:
 `;
 
 exports[`0130: fail when tenant user id mismatches 2`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotInsertableError: table: cannot insert in vc:999, because:
   tenant_id is expected to be "999", but got "42"
@@ -191,7 +177,7 @@ EntNotInsertableError: table: cannot insert in vc:999, because:
 `;
 
 exports[`0130: fail when tenant user id mismatches 3`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotInsertableError: table: cannot insert in vc:999, because:
   tenant_id is expected to be "999", but got undefined
@@ -200,7 +186,7 @@ EntNotInsertableError: table: cannot insert in vc:999, because:
 `;
 
 exports[`0130: fail when tenant user id mismatches 4`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotUpdatableError: table:123 is not updatable/deletable in vc:999, because:
   tenant_id is expected to be "999", but got "42"
@@ -209,7 +195,7 @@ EntNotUpdatableError: table:123 is not updatable/deletable in vc:999, because:
 `;
 
 exports[`0130: fail when tenant user id mismatches 5`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotUpdatableError: table:123 is not updatable/deletable in vc:999, because:
   tenant_id is expected to be "999", but got "42"
@@ -226,7 +212,7 @@ exports[`0140: load succeeds when some of Or predicates succeed 1`] = `
 `;
 
 exports[`0150: load fails with nice error when all of Or predicates fail 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 EntNotInsertableError: table: cannot insert in vc:guest:master, because:
   Rule Require:Or returned DENY, because:
@@ -240,7 +226,7 @@ EntNotInsertableError: table: cannot insert in vc:guest:master, because:
 `;
 
 exports[`0160: load crashes when some predicates fail with a wild error 1`] = `
-"Failure
+"Error Thrown Through
 --- (error returned to client) ---
 Error: wild
 --- (what actually happened) ---

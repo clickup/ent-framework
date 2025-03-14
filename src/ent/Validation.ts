@@ -1,3 +1,4 @@
+import flatten from "lodash/flatten";
 import pickBy from "lodash/pickBy";
 import {
   ID,
@@ -10,9 +11,8 @@ import {
 import { EntNotInsertableError } from "./errors/EntNotInsertableError";
 import { EntNotReadableError } from "./errors/EntNotReadableError";
 import { EntNotUpdatableError } from "./errors/EntNotUpdatableError";
-import type { EntValidationErrorInfo } from "./errors/EntValidationError";
 import { EntValidationError } from "./errors/EntValidationError";
-import type { Predicate } from "./predicates/Predicate";
+import type { AbstractIs } from "./predicates/AbstractIs";
 import type { AllowIf } from "./rules/AllowIf";
 import type { DenyIf } from "./rules/DenyIf";
 import { evaluate } from "./rules/evaluate";
@@ -63,9 +63,7 @@ export type ValidationRules<TTable extends Table> = {
   readonly insert: Validation<TTable>["insert"];
   readonly update?: Validation<TTable>["update"];
   readonly delete?: Validation<TTable>["delete"];
-  readonly validate?: Array<
-    Predicate<InsertInput<TTable>> & EntValidationErrorInfo
-  >;
+  readonly validate?: Array<AbstractIs<InsertInput<TTable>>>;
 };
 
 export class Validation<TTable extends Table> {
@@ -215,6 +213,8 @@ export class Validation<TTable extends Table> {
     newRow: InsertInput<TTable>,
     input: object,
   ): Promise<void> {
+    // Validation error details (like field name and message) are propagated
+    // through results[].cause which is EntValidationError.
     const { allow, results } = await evaluate(
       vc,
       newRow,
@@ -230,12 +230,25 @@ export class Validation<TTable extends Table> {
     // we actually touched. This makes sense for e.g. UPDATE: if we don't update
     // some field, it doesn't make sense to user-validate it.
     const touchedFields = Object.keys(pickBy(input, (v) => v !== undefined));
-    const failedPredicates = results
-      .filter(({ decision }) => decision === "DENY")
-      .map(({ rule }) => rule.predicate as unknown as EntValidationErrorInfo)
-      .filter(({ field }) => field === null || touchedFields.includes(field));
-    if (failedPredicates.length > 0) {
-      throw new EntValidationError(this.entName, failedPredicates);
+    const errors = flatten(
+      results
+        .filter(({ decision }) => decision === "DENY")
+        .map(({ cause, rule }) => {
+          // It's safe to cast to AbstractIs, because it's how we build
+          // this.validate array in our constructor.
+          const { name, field, message } = rule.predicate as AbstractIs<object>;
+          return cause instanceof EntValidationError
+            ? cause.errors
+            : cause === null
+              ? // The Predicate just returned false.
+                [{ field, message: message ?? `${name} returned false` }]
+              : // Some other error; we must not expose error message details,
+                // but can at least hint on the error class name.
+                [{ field, message: cause.name }];
+        }),
+    ).filter(({ field }) => field === null || touchedFields.includes(field));
+    if (errors.length > 0) {
+      throw new EntValidationError(this.entName, errors);
     }
   }
 }

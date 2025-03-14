@@ -6,7 +6,7 @@
 
 # Class: IDsCacheDeletable
 
-Defined in: [src/ent/predicates/Predicate.ts:46](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L46)
+Defined in: [src/ent/predicates/Predicate.ts:48](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L48)
 
 ## Extends
 

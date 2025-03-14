@@ -6,7 +6,7 @@
 
 # Class: IDsCacheUpdatable
 
-Defined in: [src/ent/predicates/Predicate.ts:45](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L45)
+Defined in: [src/ent/predicates/Predicate.ts:47](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L47)
 
 ## Extends
 

@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`0010: update fails when field validation fails 1`] = `
+"Failure
+--- (error returned to client) ---
+EntValidationError: table: tenant_id: "some one", tenant_id: "some two", name: "boom"
+--- (what actually happened) ---
+[FieldIs(tenant_id) [ '42', { id: '123', tenant_id: '42', name: 'hi' } ] returned] false
+[FieldIs(tenant_id) [ '42', { id: '123', tenant_id: '42', name: 'hi' } ] returned] false
+[FieldIs(tenant_id) [ 'hi', { id: '123', tenant_id: '42', name: 'hi' } ] returned] 'Promise'"
+`;
+
+exports[`0020: update succeeds when validation fails, but the field is untouched 1`] = `
+"OK
+--- (what actually happened) ---
+[FieldIs(name) [ 'hi', { id: '123', tenant_id: '101', name: 'hi' } ] returned] false
+[FieldIs(name) [ 'hi', { id: '123', tenant_id: '101', name: 'hi' } ] returned] { issues: [ { message: 'boom', path: [ 'name' ] } ] }"
+`;
+
+exports[`0030: insert succeeds when multiple validators succeed 1`] = `
+"OK
+--- (what actually happened) ---
+[RowIs { id: '123', tenant_id: '42', name: 'hi' } returned] true
+[RowIs { id: '123', tenant_id: '42', name: 'hi' } returned] { success: true }
+[FieldIs(name) [ 'hi', { id: '123', tenant_id: '42', name: 'hi' } ] returned] true
+[FieldIs(name) [ 'hi', { id: '123', tenant_id: '42', name: 'hi' } ] returned] { value: 42 }"
+`;
+
+exports[`0040: insert fails when field validation fails 1`] = `
+"Failure
+--- (error returned to client) ---
+EntValidationError: table: name: "boom", name: "boom"
+--- (what actually happened) ---
+[FieldIs(name) [ 'hi', { id: '123', tenant_id: '42', name: 'hi' } ] returned] false
+[FieldIs(name) [ 'hi', { id: '123', tenant_id: '42', name: 'hi' } ] returned] { success: false, error: { issues: [ { message: 'boom', path: [ 'name' ] } ] } }"
+`;
+
+exports[`0050: update fails when RowIs fails 1`] = `
+"Failure
+--- (error returned to client) ---
+EntValidationError: table: null: "boom"
+--- (what actually happened) ---
+[RowIs { id: '123', tenant_id: '42', name: 'hi' } returned] false"
+`;
+
+exports[`0060: update fails when RowIs fails, and RowIs propagates field name 1`] = `
+"Failure
+--- (error returned to client) ---
+EntValidationError: table: name: "boom"
+--- (what actually happened) ---
+[RowIs { id: '123', tenant_id: '42', name: 'hi' } returned] { success: false, error: { issues: [ { message: 'boom', path: [ 'name' ] } ] } }"
+`;
+
+exports[`0070: update succeeds when RowIs fails, but the field it propagates is untouched 1`] = `
+"OK
+--- (what actually happened) ---
+[RowIs { id: '123', tenant_id: '42', name: 'hi' } returned] { issues: [ { message: 'boom', path: [ 'name' ] } ] }"
+`;
+
+exports[`0080: insert fails when RowIs fails 1`] = `
+"Failure
+--- (error returned to client) ---
+EntValidationError: table: null: "boom", name: "boom", null: "Expected object, received number"
+--- (what actually happened) ---
+[RowIs { id: '123', tenant_id: '42', name: 'hi' } returned] false
+[RowIs { id: '123', tenant_id: '42', name: 'hi' } returned] { success: false, error: { issues: [ { message: 'boom', path: [ 'name' ] } ] } }
+[RowIs { id: '123', tenant_id: '42', name: 'hi' } returned] { success: false, error: { issues: [ { message: 'Expected object, received number', path: [] } ] } }"
+`;
+
+exports[`0090: insert throws when FieldIs throws a weird error 1`] = `
+"Error Thrown Through
+--- (error returned to client) ---
+Error: ouch
+--- (what actually happened) ---
+[FieldIs [ 'hi', { id: '123', tenant_id: '42', name: 'hi' } ] threw] Error: ouch"
+`;
+
+exports[`0095: insert fails on EntNotFoundError in FieldIs 1`] = `
+"Failure
+--- (error returned to client) ---
+EntValidationError: table: name: "EntNotFoundError"
+--- (what actually happened) ---
+[FieldIs [ 'hi', { id: '123', tenant_id: '42', name: 'hi' } ] threw] EntNotFoundError: MyEnt not found: id=42"
+`;
+
+exports[`0096: insert fails on manual EntValidationError in RowIs 1`] = `
+"Failure
+--- (error returned to client) ---
+EntValidationError: table: name: "huh"
+--- (what actually happened) ---
+[RowIs { id: '123', tenant_id: '42', name: 'hi' } threw] EntValidationError: MyEnt: name: "huh""
+`;
+
+exports[`0100: insert throws when RowIs throws a weird error 1`] = `
+"Error Thrown Through
+--- (error returned to client) ---
+Error: ouch
+--- (what actually happened) ---
+[RowIs { id: '123', tenant_id: '42', name: 'hi' } threw] Error: ouch"
+`;

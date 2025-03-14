@@ -645,6 +645,41 @@ test("updateChanged with CAS", async () => {
   ).toStrictEqual(["url_name"]);
 });
 
+test("updateChangedReturningX with CAS", async () => {
+  const user = await EntTestUser.loadX(vc, vc.principal);
+  const original = { ...user };
+  expect(
+    await user.updateChangedReturningX({
+      url_name: "skip-by-cas",
+      $cas: { updated_at: new Date(42) },
+    }),
+  ).toMatchObject({ url_name: original.url_name });
+  expect(
+    await user.updateChangedReturningX({
+      url_name: user.url_name, // skipped since no fields are changed
+      $cas: { updated_at: new Date(42) }, // CAS doesn't matter
+    }),
+  ).toMatchObject({
+    url_name: original.url_name,
+  });
+  expect(
+    await user.updateChangedReturningX({
+      url_name: user.url_name, // skipped since no fields are changed
+      $cas: { updated_at: user.updated_at }, // CAS doesn't matter
+    }),
+  ).toMatchObject({
+    url_name: original.url_name,
+  });
+  expect(
+    await user.updateChangedReturningX({
+      url_name: "new", // field changed
+      $cas: { updated_at: user.updated_at }, // CAS succeeded
+    }),
+  ).toMatchObject({
+    url_name: "new",
+  });
+});
+
 test("delete", async () => {
   const user = await EntTestUser.loadX(vc, vc.principal);
   expect(await user.deleteOriginal()).toBeTruthy();

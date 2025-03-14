@@ -8,7 +8,7 @@
 
 Defined in: [src/ent/errors/EntValidationError.ts:26](https://github.com/clickup/ent-framework/blob/master/src/ent/errors/EntValidationError.ts#L26)
 
-Auxillary information which every validation predicate should have.
+Auxiliary information which every validation predicate should emit.
 
 ## Properties
 

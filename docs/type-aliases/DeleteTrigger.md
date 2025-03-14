@@ -6,7 +6,7 @@
 
 # Type Alias: DeleteTrigger()\<TTable\>
 
-> **DeleteTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
+> **DeleteTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\> \| `unknown`
 
 Defined in: [src/ent/Triggers.ts:116](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L116)
 
@@ -26,4 +26,4 @@ Defined in: [src/ent/Triggers.ts:116](https://github.com/clickup/ent-framework/b
 
 ## Returns
 
-`Promise`\<`unknown`\>
+`Promise`\<`unknown`\> \| `unknown`

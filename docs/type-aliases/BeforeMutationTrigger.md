@@ -6,7 +6,7 @@
 
 # Type Alias: BeforeMutationTrigger()\<TTable\>
 
-> **BeforeMutationTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
+> **BeforeMutationTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\> \| `unknown`
 
 Defined in: [src/ent/Triggers.ts:123](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L123)
 
@@ -25,4 +25,4 @@ Defined in: [src/ent/Triggers.ts:123](https://github.com/clickup/ent-framework/b
 
 ## Returns
 
-`Promise`\<`unknown`\>
+`Promise`\<`unknown`\> \| `unknown`

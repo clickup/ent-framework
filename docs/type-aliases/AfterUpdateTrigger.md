@@ -6,7 +6,7 @@
 
 # Type Alias: AfterUpdateTrigger()\<TTable\>
 
-> **AfterUpdateTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
+> **AfterUpdateTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\> \| `unknown`
 
 Defined in: [src/ent/Triggers.ts:108](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L108)
 
@@ -27,4 +27,4 @@ Defined in: [src/ent/Triggers.ts:108](https://github.com/clickup/ent-framework/b
 
 ## Returns
 
-`Promise`\<`unknown`\>
+`Promise`\<`unknown`\> \| `unknown`

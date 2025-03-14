@@ -94,7 +94,7 @@ export type TriggerUpdateOrDeleteOldRow<TTable extends Table> = Flatten<
 export type InsertTrigger<TTable extends Table> = (
   vc: VC,
   args: { input: TriggerInsertInput<TTable> }, // always knows ID even in beforeInsert
-) => Promise<unknown>;
+) => Promise<unknown> | unknown;
 
 export type BeforeUpdateTrigger<TTable extends Table> = (
   vc: VC,
@@ -103,7 +103,7 @@ export type BeforeUpdateTrigger<TTable extends Table> = (
     oldRow: TriggerUpdateOrDeleteOldRow<TTable>;
     input: TriggerUpdateInput<TTable>;
   },
-) => Promise<unknown>;
+) => Promise<unknown> | unknown;
 
 export type AfterUpdateTrigger<TTable extends Table> = (
   vc: VC,
@@ -111,14 +111,14 @@ export type AfterUpdateTrigger<TTable extends Table> = (
     newRow: TriggerUpdateNewRow<TTable>;
     oldRow: TriggerUpdateOrDeleteOldRow<TTable>;
   },
-) => Promise<unknown>;
+) => Promise<unknown> | unknown;
 
 export type DeleteTrigger<TTable extends Table> = (
   vc: VC,
   args: {
     oldRow: TriggerUpdateOrDeleteOldRow<TTable>;
   },
-) => Promise<unknown>;
+) => Promise<unknown> | unknown;
 
 export type BeforeMutationTrigger<TTable extends Table> = (
   vc: VC,
@@ -142,7 +142,7 @@ export type BeforeMutationTrigger<TTable extends Table> = (
          * in their beforeMutation triggers, which is a boilerplate. */
         input: Writeable<TriggerUpdateOrDeleteOldRow<TTable>>;
       },
-) => Promise<unknown>;
+) => Promise<unknown> | unknown;
 
 export type AfterMutationTrigger<TTable extends Table> = (
   vc: VC,
@@ -159,7 +159,7 @@ export type AfterMutationTrigger<TTable extends Table> = (
         op: "DELETE";
         newOrOldRow: TriggerUpdateOrDeleteOldRow<TTable>;
       },
-) => Promise<unknown>;
+) => Promise<unknown> | unknown;
 
 export type DepsBuilder<TTable extends Table> = (
   vc: VC,

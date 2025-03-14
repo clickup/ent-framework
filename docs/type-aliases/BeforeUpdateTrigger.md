@@ -6,7 +6,7 @@
 
 # Type Alias: BeforeUpdateTrigger()\<TTable\>
 
-> **BeforeUpdateTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
+> **BeforeUpdateTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\> \| `unknown`
 
 Defined in: [src/ent/Triggers.ts:99](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L99)
 
@@ -28,4 +28,4 @@ Defined in: [src/ent/Triggers.ts:99](https://github.com/clickup/ent-framework/bl
 
 ## Returns
 
-`Promise`\<`unknown`\>
+`Promise`\<`unknown`\> \| `unknown`

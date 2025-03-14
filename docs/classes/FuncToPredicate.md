@@ -36,7 +36,7 @@ Defined in: [src/ent/predicates/Predicate.ts:32](https://github.com/clickup/ent-
 
 | Parameter | Type |
 | ------ | ------ |
-| `func` | (`vc`, `input`) => `Promise`\<`boolean`\> |
+| `func` | (`vc`, `input`) => `boolean` \| `Promise`\<`boolean`\> |
 
 #### Returns
 
@@ -54,7 +54,7 @@ Defined in: [src/ent/predicates/Predicate.ts:32](https://github.com/clickup/ent-
 
 > **check**(`vc`, `input`): `Promise`\<`boolean`\>
 
-Defined in: [src/ent/predicates/Predicate.ts:36](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L36)
+Defined in: [src/ent/predicates/Predicate.ts:38](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L38)
 
 #### Parameters
 

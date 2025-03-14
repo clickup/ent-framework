@@ -50,7 +50,7 @@ class EntTestUser extends BaseEnt(
   static override configure() {
     return new this.Configuration({
       shardAffinity: GLOBAL_SHARD,
-      privacyInferPrincipal: async (_vc, row) => row.id,
+      privacyInferPrincipal: (_vc, row) => row.id,
       privacyLoad: [new AllowIf(new OutgoingEdgePointsToVC("id"))],
       privacyInsert: [],
       privacyUpdate: [new Require(new OutgoingEdgePointsToVC("id"))],
@@ -109,7 +109,7 @@ class EntTestHeadline extends BaseEnt(
         new Require(new CanUpdateOutgoingEdge("user_id", EntTestUser)),
       ],
       beforeInsert: [
-        async (_vc, { input }) => {
+        (_vc, { input }) => {
           EntTestHeadline.TRIGGER_CALLS.push({
             type: "beforeInsert1",
             input: { ...input },
@@ -129,7 +129,7 @@ class EntTestHeadline extends BaseEnt(
         },
       ],
       beforeUpdate: [
-        async (_vc, { newRow, oldRow, input }) => {
+        (_vc, { newRow, oldRow, input }) => {
           EntTestHeadline.TRIGGER_CALLS.push({
             type: "beforeUpdate",
             oldRow,
@@ -164,7 +164,7 @@ class EntTestHeadline extends BaseEnt(
         },
       ],
       beforeMutation: [
-        async (_vc, { op, newOrOldRow, input }) => {
+        (_vc, { op, newOrOldRow, input }) => {
           EntTestHeadline.TRIGGER_CALLS.push({
             type: "beforeMutation",
             op,
@@ -210,7 +210,7 @@ class EntTestHeadline extends BaseEnt(
         },
       ],
       afterUpdate: [
-        async (_vc, { newRow, oldRow }) => {
+        (_vc, { newRow, oldRow }) => {
           EntTestHeadline.TRIGGER_CALLS.push({
             type: "afterUpdate",
             oldRow,
@@ -239,7 +239,7 @@ class EntTestHeadline extends BaseEnt(
         },
       ],
       afterMutation: [
-        async (_vc, { op, newOrOldRow }) => {
+        (_vc, { op, newOrOldRow }) => {
           EntTestHeadline.TRIGGER_CALLS.push({
             type: "afterMutation",
             op,

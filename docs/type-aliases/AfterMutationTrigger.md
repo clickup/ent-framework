@@ -6,7 +6,7 @@
 
 # Type Alias: AfterMutationTrigger()\<TTable\>
 
-> **AfterMutationTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\>
+> **AfterMutationTrigger**\<`TTable`\>: (`vc`, `args`) => `Promise`\<`unknown`\> \| `unknown`
 
 Defined in: [src/ent/Triggers.ts:147](https://github.com/clickup/ent-framework/blob/master/src/ent/Triggers.ts#L147)
 
@@ -25,4 +25,4 @@ Defined in: [src/ent/Triggers.ts:147](https://github.com/clickup/ent-framework/b
 
 ## Returns
 
-`Promise`\<`unknown`\>
+`Promise`\<`unknown`\> \| `unknown`

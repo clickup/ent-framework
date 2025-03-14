@@ -6,7 +6,7 @@
 
 # Class: IDsCacheReadable
 
-Defined in: [src/ent/predicates/Predicate.ts:44](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L44)
+Defined in: [src/ent/predicates/Predicate.ts:46](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L46)
 
 ## Extends
 

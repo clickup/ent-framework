@@ -20,6 +20,10 @@ based on the previously computed results. E.g. CanReadOutgoingEdge predicate
 knows that it already returned true for some ID once, it returns true again
 immediately. This saves us lots of database operations.
 
+## Extended by
+
+- [`AbstractIs`](AbstractIs.md)
+
 ## Type Parameters
 
 | Type Parameter |

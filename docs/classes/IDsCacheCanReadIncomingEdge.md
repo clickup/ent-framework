@@ -6,7 +6,7 @@
 
 # Class: IDsCacheCanReadIncomingEdge
 
-Defined in: [src/ent/predicates/Predicate.ts:47](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L47)
+Defined in: [src/ent/predicates/Predicate.ts:49](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Predicate.ts#L49)
 
 ## Extends
 

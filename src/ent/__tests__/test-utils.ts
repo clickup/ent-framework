@@ -1,5 +1,6 @@
 import { inspect } from "util";
 import type { InsertInput, Row, Table, UpdateInput } from "../../types";
+import { EntValidationError } from "../errors/EntValidationError";
 import type { Validation } from "../Validation";
 import { VC } from "../VC";
 import { VCWithQueryCache } from "../VCFlavor";
@@ -41,38 +42,54 @@ export function expectToMatchSnapshot(
 export class ValidationTester {
   private log: string[] = [];
 
-  respond(predName: string, response: boolean | Error, row?: unknown): boolean {
+  respond<TRes>(
+    predName: string,
+    response: TRes,
+    row?: unknown,
+  ): TRes extends Error ? boolean : TRes {
     predName += row ? " " + inspect(row) : "";
     if (response instanceof Error) {
       this.log.push(`[${predName} threw] ${response}`);
       throw response;
     } else {
-      this.log.push(`[${predName} returned] ${response}`);
-      return response;
+      this.log.push(
+        `[${predName} returned] ` +
+          (typeof response === "object"
+            ? inspect(
+                response instanceof Promise
+                  ? response.constructor.name // hide e.g. Datadog guts
+                  : { ...response },
+                { compact: true, depth: 10, breakLength: 10000 },
+              )
+            : response),
+      );
+      return response as TRes extends Error ? boolean : TRes;
     }
   }
 
-  async matchSnapshot<TTable extends Table>(
-    validation: Validation<TTable>,
-    row: Row<TTable>,
-    method?:
-      | "validateLoad"
-      | "validateInsert"
-      | "validateUpdate"
-      | "validateDelete",
-    updateInput: UpdateInput<TTable> = {},
+  async matchSnapshot<TTable extends Table>({
+    validation,
+    row,
+    method,
+    updateInput,
     vc = vcTestGuest,
-  ): Promise<void> {
-    let res = "";
-    try {
-      if (!method) {
-        if (validation.load.length > 0) {
-          method = "validateLoad";
-        } else {
-          method = "validateInsert";
-        }
+  }: {
+    validation: Validation<TTable>;
+    row: Row<TTable>;
+    vc?: VC;
+  } & (
+    | {
+        method: "validateLoad" | "validateInsert" | "validateDelete";
+        updateInput?: never;
       }
-
+    | {
+        method: "validateUpdate";
+        updateInput: UpdateInput<TTable>;
+      }
+  )): Promise<boolean> {
+    let res = "";
+    let allow = false;
+    try {
       if (method === "validateUpdate") {
         await validation.validateUpdate(vc, row, updateInput);
       } else {
@@ -80,11 +97,15 @@ export class ValidationTester {
       }
 
       res = "OK";
+      allow = true;
     } catch (e: unknown) {
-      res = "Failure\n--- (error returned to client) ---\n" + e;
+      const severity =
+        e instanceof EntValidationError ? "Failure" : "Error Thrown Through";
+      res = `${severity}\n--- (error returned to client) ---\n${e}`;
     }
 
     res += "\n--- (what actually happened) ---\n" + this.log.join("\n");
     expect(res.replace(/\b(vc:\w+)\(\d+\)/g, "$1")).toMatchSnapshot();
+    return allow;
   }
 }

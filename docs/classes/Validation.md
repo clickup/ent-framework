@@ -6,7 +6,7 @@
 
 # Class: Validation\<TTable\>
 
-Defined in: [src/ent/Validation.ts:71](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L71)
+Defined in: [src/ent/Validation.ts:69](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L69)
 
 ## Type Parameters
 
@@ -20,7 +20,7 @@ Defined in: [src/ent/Validation.ts:71](https://github.com/clickup/ent-framework/
 
 > **new Validation**\<`TTable`\>(`entName`, `rules`): [`Validation`](Validation.md)\<`TTable`\>
 
-Defined in: [src/ent/Validation.ts:80](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L80)
+Defined in: [src/ent/Validation.ts:78](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L78)
 
 #### Parameters
 
@@ -51,7 +51,7 @@ Defined in: [src/ent/Validation.ts:80](https://github.com/clickup/ent-framework/
 
 > **validateLoad**(`vc`, `row`): `Promise`\<`void`\>
 
-Defined in: [src/ent/Validation.ts:93](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L93)
+Defined in: [src/ent/Validation.ts:91](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L91)
 
 #### Parameters
 
@@ -70,7 +70,7 @@ Defined in: [src/ent/Validation.ts:93](https://github.com/clickup/ent-framework/
 
 > **validateInsert**(`vc`, `input`): `Promise`\<`void`\>
 
-Defined in: [src/ent/Validation.ts:104](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L104)
+Defined in: [src/ent/Validation.ts:102](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L102)
 
 #### Parameters
 
@@ -89,7 +89,7 @@ Defined in: [src/ent/Validation.ts:104](https://github.com/clickup/ent-framework
 
 > **validateUpdate**(`vc`, `old`, `input`, `privacyOnly`): `Promise`\<`void`\>
 
-Defined in: [src/ent/Validation.ts:116](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L116)
+Defined in: [src/ent/Validation.ts:114](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L114)
 
 #### Parameters
 
@@ -110,7 +110,7 @@ Defined in: [src/ent/Validation.ts:116](https://github.com/clickup/ent-framework
 
 > **validateDelete**(`vc`, `row`): `Promise`\<`void`\>
 
-Defined in: [src/ent/Validation.ts:143](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L143)
+Defined in: [src/ent/Validation.ts:141](https://github.com/clickup/ent-framework/blob/master/src/ent/Validation.ts#L141)
 
 #### Parameters
 
