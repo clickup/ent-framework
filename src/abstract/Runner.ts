@@ -33,7 +33,8 @@ export abstract class Runner<TInput, TOutput> {
   ): Promise<TOutput | undefined>;
 
   /**
-   * Typically issues complex queries with magic.
+   * Typically issues complex queries with magic. If the method is not defined,
+   * then the runner doesn't support batching, so only runSingle() will be used.
    */
   abstract runBatch?(
     inputs: Map<string, TInput>,

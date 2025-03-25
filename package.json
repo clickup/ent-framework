@@ -1,7 +1,7 @@
 {
   "name": "@clickup/ent-framework",
   "description": "A PostgreSQL graph-database-alike library with microsharding and row-level security",
-  "version": "2.15.1",
+  "version": "2.16.2",
   "license": "MIT",
   "keywords": [
     "postgresql",
@@ -71,8 +71,8 @@
     "prettier": "3.2.1",
     "streaming-iterables": "^7.1.0",
     "ts-jest": "^29.1.1",
-    "typedoc-plugin-markdown": "^4.3.2",
-    "typedoc-plugin-merge-modules": "^6.1.0",
+    "typedoc-plugin-markdown": "4.4.2",
+    "typedoc-plugin-merge-modules": "6.1.0",
     "typedoc": "0.27.5",
     "typescript": "^5.2.2",
     "wait-for-expect": "^3.0.2"

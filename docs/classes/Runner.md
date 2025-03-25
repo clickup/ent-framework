@@ -28,7 +28,7 @@ and how to parse the result back.
 
 > **new Runner**\<`TInput`, `TOutput`\>(`name`): [`Runner`](Runner.md)\<`TInput`, `TOutput`\>
 
-Defined in: [src/abstract/Runner.ts:69](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L69)
+Defined in: [src/abstract/Runner.ts:70](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L70)
 
 Parameter `name` is typically a table name.
 
@@ -80,9 +80,10 @@ one input to process, not many.
 
 > `abstract` `optional` **runBatch**(`inputs`, `annotations`): `Promise`\<`Map`\<`string`, `TOutput`\>\>
 
-Defined in: [src/abstract/Runner.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L38)
+Defined in: [src/abstract/Runner.ts:39](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L39)
 
-Typically issues complex queries with magic.
+Typically issues complex queries with magic. If the method is not defined,
+then the runner doesn't support batching, so only runSingle() will be used.
 
 #### Parameters
 
@@ -101,7 +102,7 @@ Typically issues complex queries with magic.
 
 > `abstract` **delayForSingleQueryRetryOnError**(`error`): `number` \| `"immediate_retry"` \| `"no_retry"`
 
-Defined in: [src/abstract/Runner.ts:47](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L47)
+Defined in: [src/abstract/Runner.ts:48](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L48)
 
 If the single query's error needs to be retried (e.g. it's a deadlock
 error), returns the number of milliseconds to wait before retrying.
@@ -122,7 +123,7 @@ error), returns the number of milliseconds to wait before retrying.
 
 > `abstract` **shouldDebatchOnError**(`error`): `boolean`
 
-Defined in: [src/abstract/Runner.ts:64](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L64)
+Defined in: [src/abstract/Runner.ts:65](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L65)
 
 If this method returns true for an error object, the batch is split back
 into sub-queries, they are executed individually, and then the response of
@@ -152,7 +153,7 @@ false.)
 
 > **key**(`_input`): `string`
 
-Defined in: [src/abstract/Runner.ts:76](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L76)
+Defined in: [src/abstract/Runner.ts:77](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L77)
 
 Returns a batch-dedupping key for the input. By default, no dedupping is
 performed (i.e. all inputs are processed individually and not collapsed

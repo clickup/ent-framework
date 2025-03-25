@@ -8,7 +8,7 @@
 
 > **RowIsValidatorStandardSchemaV1**\<`TRow`\>: (`row`, `vc`) => [`ValidatorStandardSchemaResult`](ValidatorStandardSchemaResult.md) \| `Promise`\<[`ValidatorStandardSchemaResult`](ValidatorStandardSchemaResult.md)\>
 
-Defined in: src/ent/predicates/RowIs.ts:29
+Defined in: [src/ent/predicates/RowIs.ts:29](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/RowIs.ts#L29)
 
 A row validator function that returns a Standard Schema validation result.
 

@@ -6,7 +6,7 @@
 
 # Class: RowIs\<TRow\>
 
-Defined in: src/ent/predicates/RowIs.ts:37
+Defined in: [src/ent/predicates/RowIs.ts:37](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/RowIs.ts#L37)
 
 Checks that the validator function returns true for the entire row.
 
@@ -26,7 +26,7 @@ Checks that the validator function returns true for the entire row.
 
 > **new RowIs**\<`TRow`\>(`validator`, `message`): [`RowIs`](RowIs.md)\<`TRow`\>
 
-Defined in: src/ent/predicates/RowIs.ts:46
+Defined in: [src/ent/predicates/RowIs.ts:46](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/RowIs.ts#L46)
 
 Manual validator.
 
@@ -45,7 +45,7 @@ Manual validator.
 
 > **new RowIs**\<`TRow`\>(`validator`): [`RowIs`](RowIs.md)\<`TRow`\>
 
-Defined in: src/ent/predicates/RowIs.ts:51
+Defined in: [src/ent/predicates/RowIs.ts:51](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/RowIs.ts#L51)
 
 Rich validator, like Standard Schema (https://standardschema.dev) or Zod.
 
@@ -74,7 +74,7 @@ Rich validator, like Standard Schema (https://standardschema.dev) or Zod.
 
 > **check**(`vc`, `row`): `Promise`\<`boolean`\>
 
-Defined in: src/ent/predicates/RowIs.ts:75
+Defined in: [src/ent/predicates/RowIs.ts:75](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/RowIs.ts#L75)
 
 Returns true if validation succeeds. Returns false if it wants the client
 to use this.message as a validation failure response. Throws an instance of

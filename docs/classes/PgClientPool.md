@@ -54,19 +54,22 @@ Defined in: [src/pg/PgClientPool.ts:75](https://github.com/clickup/ent-framework
 
 ### batcher()
 
-> **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
+> **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `disableBatching`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
-Defined in: [src/abstract/Client.ts:179](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L179)
+Defined in: [src/abstract/Client.ts:182](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L182)
 
-Batcher is per-Client per-query-type per-table-name-and-shape:
+Batcher is per-Client per-query-type
+per-table-name-and-shape-and-disableBatching:
+
 - Per-Client means that batchers are removed as soon as the Client is
   removed, i.e. the Client owns all the batchers for all tables.
 - Per-query-type means that the batcher for a SELECT query is different
   from the batcher for an INSERT query (obviously).
-- Per-table-name-and-shape means that each table has its own set of
-  batchers (obviously). Also, some queries may be complex (like UPDATE), so
-  the batcher also depends on the "shape" - the list of fields we're
-  updating.
+- Per-table-name-and-shape-and-disableBatching means that each table has
+  its own set of batchers (obviously). Also, some queries may be complex
+  (like UPDATE), so the batcher also depends on the "shape" - the list of
+  fields we're updating. Plus, for some inputs, we want to disable batching
+  at all - that produces a separate Batcher instance.
 
 Also, for every Batcher, there is exactly one Runner (which knows how to
 build the actual query in the context of the current Client). Batchers are
@@ -91,6 +94,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 | `_QueryClass` | `Function` |
 | `_schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
 | `_additionalShape` | `string` |
+| `disableBatching` | `boolean` |
 | `runnerCreator` | () => [`Runner`](Runner.md)\<`TInput`, `TOutput`\> |
 
 #### Returns
@@ -145,7 +149,7 @@ should expect that role() returns the actual master/replica role.
 
 > **shardNos**(): `Promise`\<readonly `number`[]\>
 
-Defined in: [src/pg/PgClient.ts:402](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L402)
+Defined in: [src/pg/PgClient.ts:408](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L408)
 
 Returns all Shard numbers discoverable via the connection to the Client's
 database.
@@ -164,7 +168,7 @@ database.
 
 > **ping**(`__namedParameters`): `Promise`\<`void`\>
 
-Defined in: [src/pg/PgClient.ts:426](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L426)
+Defined in: [src/pg/PgClient.ts:432](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L432)
 
 Sends a read or write test query to the server. Tells the server to sit and
 wait for at least the provided number of milliseconds.
@@ -189,7 +193,7 @@ wait for at least the provided number of milliseconds.
 
 > **shardNoByID**(`id`): `number`
 
-Defined in: [src/pg/PgClient.ts:444](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L444)
+Defined in: [src/pg/PgClient.ts:450](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L450)
 
 Extracts Shard number from an ID.
 
@@ -213,7 +217,7 @@ Extracts Shard number from an ID.
 
 > **withShard**(`no`): `this`
 
-Defined in: [src/pg/PgClient.ts:500](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L500)
+Defined in: [src/pg/PgClient.ts:506](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L506)
 
 Creates a new Client which is namespaced to the provided Shard number. The
 new Client will share the same connection pool with the parent's Client.
@@ -238,7 +242,7 @@ new Client will share the same connection pool with the parent's Client.
 
 > **role**(): [`ClientRole`](../type-aliases/ClientRole.md)
 
-Defined in: [src/pg/PgClient.ts:511](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L511)
+Defined in: [src/pg/PgClient.ts:517](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L517)
 
 Returns the Client's role reported after the last successful query. Master
 and replica roles may switch online unpredictably, without reconnecting, so
@@ -258,7 +262,7 @@ we only know the role after a query.
 
 > **connectionIssue**(): `null` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
 
-Defined in: [src/pg/PgClient.ts:515](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L515)
+Defined in: [src/pg/PgClient.ts:521](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L521)
 
 Returns a non-nullable value if the Client couldn't connect to the server
 (or it could, but the load balancer reported the remote server as not

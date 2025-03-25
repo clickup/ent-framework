@@ -8,7 +8,7 @@
 
 > **RowIsValidatorPlain**\<`TRow`\>: (`row`, `vc`) => [`ValidatorPlainResult`](ValidatorPlainResult.md) \| `Promise`\<[`ValidatorPlainResult`](ValidatorPlainResult.md)\>
 
-Defined in: src/ent/predicates/RowIs.ts:13
+Defined in: [src/ent/predicates/RowIs.ts:13](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/RowIs.ts#L13)
 
 A row validator function that returns a boolean.
 

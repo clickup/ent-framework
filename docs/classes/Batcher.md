@@ -27,7 +27,7 @@ Batcher is similar to DataLoader, but with a few important differences:
 
 ### new Batcher()
 
-> **new Batcher**\<`TInput`, `TOutput`\>(`runner`, `batchDelayMs`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
+> **new Batcher**\<`TInput`, `TOutput`\>(`runner`, `batchDelayMs`, `disableBatching`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
 Defined in: [src/abstract/Batcher.ts:90](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L90)
 
@@ -37,6 +37,7 @@ Defined in: [src/abstract/Batcher.ts:90](https://github.com/clickup/ent-framewor
 | ------ | ------ |
 | `runner` | [`Runner`](Runner.md)\<`TInput`, `TOutput`\> |
 | `batchDelayMs` | `MaybeCallable`\<`number`\> |
+| `disableBatching` | `boolean` |
 
 #### Returns
 
@@ -60,7 +61,7 @@ Defined in: [src/abstract/Batcher.ts:32](https://github.com/clickup/ent-framewor
 
 > **run**(`input`, `annotation`): `Promise`\<`TOutput`\>
 
-Defined in: [src/abstract/Batcher.ts:95](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L95)
+Defined in: [src/abstract/Batcher.ts:96](https://github.com/clickup/ent-framework/blob/master/src/abstract/Batcher.ts#L96)
 
 #### Parameters
 

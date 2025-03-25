@@ -224,20 +224,25 @@ export abstract class PgClient extends Client {
     table: string;
     batchFactor?: number;
   }): Promise<TRow[]> {
-    const { queries, queriesRollback, debugQueryWithHints, resultPos } =
-      this.buildMultiQuery(
-        hints,
-        queryLiteral,
-        this.options.role === "unknown"
-          ? // For master, we read its WAL LSN (pg_current_wal_insert_lsn) after
-            // each query (notice that, when run on a replica,
-            // pg_current_wal_insert_lsn() throws, so we call it only if
-            // pg_is_in_recovery() returns false). For replica, we read its WAL
-            // LSN (pg_last_wal_replay_lsn).
-            "SELECT CASE WHEN pg_is_in_recovery() THEN NULL ELSE pg_current_wal_insert_lsn() END AS pg_current_wal_insert_lsn, pg_last_wal_replay_lsn()"
-          : undefined,
-        isWrite,
-      );
+    const {
+      rawPrepend,
+      queries,
+      queriesRollback,
+      debugQueryWithHints,
+      resultPos,
+    } = this.buildMultiQuery(
+      hints,
+      queryLiteral,
+      this.options.role === "unknown"
+        ? // For master, we read its WAL LSN (pg_current_wal_insert_lsn) after
+          // each query (notice that, when run on a replica,
+          // pg_current_wal_insert_lsn() throws, so we call it only if
+          // pg_is_in_recovery() returns false). For replica, we read its WAL
+          // LSN (pg_last_wal_replay_lsn).
+          "SELECT CASE WHEN pg_is_in_recovery() THEN NULL ELSE pg_current_wal_insert_lsn() END AS pg_current_wal_insert_lsn, pg_last_wal_replay_lsn()"
+        : undefined,
+      isWrite,
+    );
 
     const startTime = performance.now();
     let queryTime: number | undefined = undefined;
@@ -264,6 +269,7 @@ export abstract class PgClient extends Client {
       queryTime = Math.round(performance.now() - startTime);
       const resMulti = await this.sendMultiQuery(
         conn,
+        rawPrepend,
         queries,
         queriesRollback,
       );
@@ -525,6 +531,7 @@ export abstract class PgClient extends Client {
     epilogue: string | undefined,
     isWrite: boolean,
   ): {
+    rawPrepend: string;
     queries: string[];
     queriesRollback: string[];
     debugQueryWithHints: string;
@@ -539,7 +546,7 @@ export abstract class PgClient extends Client {
     const queriesEpilogue: string[] = [];
     const queriesRollback: string[] = [];
 
-    const [hintQueriesDefault, hintQueries] = buildHintQueries(
+    const [rawPrepend, hintQueriesDefault, hintQueries] = buildHintQueries(
       this.options.hints ? maybeCall(this.options.hints) : undefined,
       hints,
     );
@@ -550,7 +557,8 @@ export abstract class PgClient extends Client {
     // The query which is logged to the logging infra. For more brief messages,
     // we don't log internal hints (this.hints) and search_path; see below.
     const debugQueryWithHints =
-      `/*${this.shardName}*/` + [...queriesPrologue, query].join("; ").trim();
+      `${rawPrepend}/*${this.shardName}*/` +
+      [...queriesPrologue, query].join("; ").trim();
 
     // Prepend internal per-Client hints to the prologue.
     queriesPrologue.unshift(...hintQueriesDefault);
@@ -580,6 +588,7 @@ export abstract class PgClient extends Client {
     }
 
     return {
+      rawPrepend,
       queries: [...queriesPrologue, query, ...queriesEpilogue],
       queriesRollback,
       debugQueryWithHints,
@@ -599,10 +608,11 @@ export abstract class PgClient extends Client {
    */
   private async sendMultiQuery(
     conn: PgClientConn,
+    rawPrepend: string,
     queries: string[],
     queriesRollback: string[],
   ): Promise<pg.QueryResult[]> {
-    const queriesStr = `/*${this.shardName}*/${queries.join("; ")}`;
+    const queriesStr = `${rawPrepend}/*${this.shardName}*/${queries.join("; ")}`;
 
     // For multi-query, query() actually returns an array of pg.QueryResult, but
     // it's not reflected in its TS typing, so patching this.

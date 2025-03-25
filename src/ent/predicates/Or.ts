@@ -13,7 +13,8 @@ export class Or<TInput> implements Predicate<TInput> {
 
   constructor(
     ...predicates: ReadonlyArray<
-      Predicate<TInput> | ((vc: VC, input: TInput) => Promise<boolean>)
+      | Predicate<TInput>
+      | ((vc: VC, input: TInput) => Promise<boolean> | boolean)
     >
   ) {
     this.predicates = predicates.map((predicate) =>

@@ -26,7 +26,7 @@ class PgRunnerDeleteWhere<TTable extends Table> extends PgRunner<
   private builder;
 
   readonly op = "DELETE_WHERE";
-  readonly maxBatchSize = 100;
+  readonly maxBatchSize = 1;
   readonly default = [];
 
   // This runner doesn't support batching.

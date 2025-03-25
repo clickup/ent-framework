@@ -40,6 +40,7 @@ export abstract class QueryBase<
         this.constructor,
         this.schema,
         "",
+        false,
         () => new this.RUNNER_CLASS(this.schema, client),
       )
       .run(this.input, annotation);

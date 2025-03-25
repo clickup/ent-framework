@@ -113,13 +113,14 @@ SELECT EXISTS (SELECT true FROM "pg-schema.composite-pk""table"
   UNION ALL
 SELECT EXISTS (SELECT true FROM "pg-schema.composite-pk""table"
   WHERE tenant_id='199999')
+-- Hints:enable_seqscan=off
 ----
 SELECT EXISTS (SELECT true FROM "pg-schema.composite-pk""table"
   WHERE user_id='?')
   UNION ALL
 SELECT EXISTS (SELECT true FROM "pg-schema.composite-pk""table"
   WHERE tenant_id='?')
-  UNION ALL ...
+  UNION ALL ...-- Hints:enable_seqscan=off
 "
 `;
 

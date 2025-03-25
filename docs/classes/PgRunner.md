@@ -94,9 +94,10 @@ one input to process, not many.
 
 > `abstract` `optional` **runBatch**(`inputs`, `annotations`): `Promise`\<`Map`\<`string`, `TOutput`\>\>
 
-Defined in: [src/abstract/Runner.ts:38](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L38)
+Defined in: [src/abstract/Runner.ts:39](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L39)
 
-Typically issues complex queries with magic.
+Typically issues complex queries with magic. If the method is not defined,
+then the runner doesn't support batching, so only runSingle() will be used.
 
 #### Parameters
 
@@ -119,7 +120,7 @@ Typically issues complex queries with magic.
 
 > **key**(`_input`): `string`
 
-Defined in: [src/abstract/Runner.ts:76](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L76)
+Defined in: [src/abstract/Runner.ts:77](https://github.com/clickup/ent-framework/blob/master/src/abstract/Runner.ts#L77)
 
 Returns a batch-dedupping key for the input. By default, no dedupping is
 performed (i.e. all inputs are processed individually and not collapsed

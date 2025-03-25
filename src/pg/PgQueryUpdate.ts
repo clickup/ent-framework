@@ -55,17 +55,12 @@ export class PgQueryUpdate<TTable extends Table> implements Query<boolean> {
       .batcher(
         this.constructor,
         this.schema,
-        fields.join(":") + ":" + casFields.join(":") + ":" + disableBatching,
+        fields.join(":") + ":" + casFields.join(":"),
+        disableBatching,
         () =>
           // This is run only once per every unique combination of field names,
           // not per every row updated, so it's cheap to do whatever we want.
-          new PgRunnerUpdate<TTable>(
-            this.schema,
-            client,
-            fields,
-            casFields,
-            disableBatching,
-          ),
+          new PgRunnerUpdate<TTable>(this.schema, client, fields, casFields),
       )
       .run(this.input, annotation);
   }
@@ -89,13 +84,8 @@ class PgRunnerUpdate<TTable extends Table> extends PgRunner<
     client: PgClient,
     fieldsIn: Array<Field<TTable>>,
     casFieldsIn: Array<Field<TTable>>,
-    private disableBatching: boolean,
   ) {
     super(schema, client);
-
-    if (this.disableBatching) {
-      this.runBatch = undefined;
-    }
 
     // Always include all autoUpdate fields.
     const fields = uniq([
@@ -153,10 +143,10 @@ class PgRunnerUpdate<TTable extends Table> extends PgRunner<
   }
 
   override key(input: UpdateInput<TTable> & { [ID]: string }): string {
-    return this.runBatch
-      ? input[ID] +
-          (input.$cas ? ":" + stringHash(JSON.stringify(input.$cas)) : "")
-      : super.key(input);
+    return (
+      input[ID] +
+      (input.$cas ? ":" + stringHash(JSON.stringify(input.$cas)) : "")
+    );
   }
 
   async runSingle(
@@ -177,7 +167,7 @@ class PgRunnerUpdate<TTable extends Table> extends PgRunner<
     return rows.length > 0 ? true : false;
   }
 
-  async runBatch?(
+  async runBatch(
     inputs: Map<string, UpdateInput<TTable> & { [ID]: string }>,
     annotations: QueryAnnotation[],
   ): Promise<Map<string, boolean>> {

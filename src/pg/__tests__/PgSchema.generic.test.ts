@@ -1,6 +1,7 @@
 import delay from "delay";
 import range from "lodash/range";
 import sortBy from "lodash/sortBy";
+import { escapeIdent } from "..";
 import type { Shard } from "../../abstract/Shard";
 import { MASTER, STALE_REPLICA } from "../../abstract/Shard";
 import { join, nullthrows } from "../../internal/misc";
@@ -222,7 +223,7 @@ beforeEach(async () => {
       CREATE: [
         `CREATE TABLE %T(
           date_id bigint NOT NULL PRIMARY KEY,
-          name text, 
+          name text,
           some_date timestamptz
         )`,
       ],
@@ -467,6 +468,23 @@ test("upsert single", async () => {
     { id: id1, name: "a'b'c", created_at: origRow1[0]["created_at"] },
     { id: id3, name: "zzz" },
   ]);
+});
+
+test("upsert batched does not mess up the rows order", async () => {
+  const [id1, id2, id3] = await join([
+    shardRun(shard, schema.upsert({ name: "zzz", url_name: "zzz" })),
+    shardRun(shard, schema.upsert({ name: "bbb", url_name: "bbb" })),
+    shardRun(shard, schema.upsert({ name: "ccc", url_name: "ccc" })),
+  ]);
+  master.toMatchSnapshot();
+  const [row1, row2, row3] = await join([
+    shardRun(shard, schema.load(id1)),
+    shardRun(shard, schema.load(id2)),
+    shardRun(shard, schema.load(id3)),
+  ]);
+  expect(row1).toMatchObject({ name: "zzz" });
+  expect(row2).toMatchObject({ name: "bbb" });
+  expect(row3).toMatchObject({ name: "ccc" });
 });
 
 test("upsert batched normal", async () => {
@@ -1163,11 +1181,53 @@ test("select custom", async () => {
 
   const [rows1a, rows2] = await join([
     shardRun(shard, schema.select(input)),
-    shardRun(shard, schema.select({ where: { name: "b" }, limit: 10 })),
+    shardRun(
+      shard,
+      schema.select({
+        where: { name: "b" },
+        limit: 10,
+        custom: { hints: { enable_seqscan: "off" } },
+      }),
+    ),
+    shardRun(shard, schema.select({ where: { name: "c" }, limit: 10 })),
   ]);
   expect(rows1a).toMatchObject([{ id: id1 }]);
   expect(rows2).toMatchObject([{ id: id2 }]);
 
+  master.toMatchSnapshot();
+});
+
+test("rawPrepend hint", async () => {
+  const [id1, id2] = await join([
+    shardRun(shard, schema.insert({ name: "a", url_name: "a1" })),
+    shardRun(shard, schema.insert({ name: "b", url_name: "b1" })),
+  ]);
+  master.resetSnapshot();
+
+  const [rows1, rows2] = await join([
+    shardRun(
+      shard,
+      schema.select({
+        where: { name: "a" },
+        limit: 10,
+        custom: {
+          hints: { "": `/*+SeqScan(${escapeIdent(schema.name)})*/` },
+        },
+      }),
+    ),
+    shardRun(
+      shard,
+      schema.select({
+        where: { name: "b" },
+        limit: 10,
+        custom: {
+          hints: { "": `/*+SeqScan(${escapeIdent(schema.name)})*/` },
+        },
+      }),
+    ),
+  ]);
+  expect(rows1).toMatchObject([{ id: id1 }]);
+  expect(rows2).toMatchObject([{ id: id2 }]);
   master.toMatchSnapshot();
 });
 

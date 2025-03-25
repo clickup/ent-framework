@@ -35,7 +35,7 @@ Defined in: [src/ent/rules/Rule.ts:43](https://github.com/clickup/ent-framework/
 
 | Parameter | Type |
 | ------ | ------ |
-| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`, `input`) => `Promise`\<`boolean`\> |
+| `predicate` | [`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`, `input`) => `boolean` \| `Promise`\<`boolean`\> |
 
 #### Returns
 

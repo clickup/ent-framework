@@ -6,7 +6,7 @@
 
 # Class: PgQuerySelect\<TTable\>
 
-Defined in: [src/pg/PgQuerySelect.ts:12](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQuerySelect.ts#L12)
+Defined in: [src/pg/PgQuerySelect.ts:35](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQuerySelect.ts#L35)
 
 A convenient base class for most (but not all) of the queries, where the
 Runner instance is the same for different query input shapes. If the query
@@ -78,7 +78,7 @@ Defined in: [src/abstract/QueryBase.ts:33](https://github.com/clickup/ent-framew
 
 > **run**(`client`, `annotation`): `Promise`\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
-Defined in: [src/abstract/QueryBase.ts:37](https://github.com/clickup/ent-framework/blob/master/src/abstract/QueryBase.ts#L37)
+Defined in: [src/pg/PgQuerySelect.ts:44](https://github.com/clickup/ent-framework/blob/master/src/pg/PgQuerySelect.ts#L44)
 
 #### Parameters
 
@@ -91,6 +91,6 @@ Defined in: [src/abstract/QueryBase.ts:37](https://github.com/clickup/ent-framew
 
 `Promise`\<[`Row`](../type-aliases/Row.md)\<`TTable`\>[]\>
 
-#### Inherited from
+#### Overrides
 
 [`QueryBase`](QueryBase.md).[`run`](QueryBase.md#run)

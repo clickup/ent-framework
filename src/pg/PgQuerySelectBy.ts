@@ -47,6 +47,7 @@ export class PgQuerySelectBy<
         this.constructor,
         this.schema,
         fields.join(":"),
+        false,
         () =>
           // This is run only once per every unique combination of field names,
           // not per every row updated, so it's cheap to do whatever we want.

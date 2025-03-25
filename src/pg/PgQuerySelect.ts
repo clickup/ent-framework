@@ -5,28 +5,10 @@ import type { Schema } from "../abstract/Schema";
 import { stringHash, hasKey, inspectCompact } from "../internal/misc";
 import type { Hints, Literal, Order, Row, SelectInput, Table } from "../types";
 import { escapeLiteral } from "./helpers/escapeLiteral";
+import { RAW_PREPEND_HINT } from "./internal/buildHintQueries";
 import { escapeString } from "./internal/escapeString";
 import type { PgClient } from "./PgClient";
 import { PgRunner } from "./PgRunner";
-
-export class PgQuerySelect<TTable extends Table> extends QueryBase<
-  TTable,
-  SelectInput<TTable>,
-  Array<Row<TTable>>,
-  PgClient
-> {
-  /** @ignore */
-  readonly RUNNER_CLASS = PgRunnerSelect;
-}
-
-const ALLOWED_ORDER = [
-  "ASC",
-  "ASC NULLS LAST",
-  "ASC NULLS FIRST",
-  "DESC",
-  "DESC NULLS LAST",
-  "DESC NULLS FIRST",
-];
 
 /**
  * This is mostly to do hacks in PostgreSQL queries. Not even exposed by Ent
@@ -40,6 +22,42 @@ export type SelectInputCustom =
       hints?: Hints;
     }
   | undefined;
+
+const ALLOWED_ORDER = [
+  "ASC",
+  "ASC NULLS LAST",
+  "ASC NULLS FIRST",
+  "DESC",
+  "DESC NULLS LAST",
+  "DESC NULLS FIRST",
+];
+
+export class PgQuerySelect<TTable extends Table> extends QueryBase<
+  TTable,
+  SelectInput<TTable>,
+  Array<Row<TTable>>,
+  PgClient
+> {
+  /** @ignore */
+  readonly RUNNER_CLASS = PgRunnerSelect;
+
+  override async run(
+    client: PgClient,
+    annotation: QueryAnnotation,
+  ): Promise<Array<Row<TTable>>> {
+    const custom = this.input.custom as SelectInputCustom;
+    const disableBatching = !!custom?.hints?.[RAW_PREPEND_HINT];
+    return client
+      .batcher(
+        this.constructor,
+        this.schema,
+        JSON.stringify(custom?.hints) || "",
+        disableBatching,
+        () => new this.RUNNER_CLASS(this.schema, client),
+      )
+      .run(this.input, annotation);
+  }
+}
 
 class PgRunnerSelect<TTable extends Table> extends PgRunner<
   TTable,

@@ -354,6 +354,30 @@ SELECT id, name, url_name, created_at, updated_at FROM "pg-schema.generic""table
 "
 `;
 
+exports[`rawPrepend hint 1`] = `
+"
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name='a'
+  LIMIT 10
+-- Hints:""=/*+SeqScan("pg-schema.generic""table")*/
+----
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name='?'
+  LIMIT ?
+-- Hints:""=/*+SeqScan("pg-schema.generic""table")*/
+
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name='b'
+  LIMIT 10
+-- Hints:""=/*+SeqScan("pg-schema.generic""table")*/
+----
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name='?'
+  LIMIT ?
+-- Hints:""=/*+SeqScan("pg-schema.generic""table")*/
+"
+`;
+
 exports[`select and count batched 1`] = `
 "
 (SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
@@ -607,6 +631,7 @@ a'
   UNION ALL
 SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
   WHERE name='b')
+-- Hints:enable_seqscan=off
 ----
 SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
   WHERE name=ANY('?')
@@ -653,6 +678,7 @@ SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
   UNION ALL
 SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
   WHERE name='?')
+-- Hints:enable_seqscan=off
 
 SELECT EXISTS (SELECT true FROM "pg-schema.generic""table"
   WHERE name=ANY('{"a
@@ -710,6 +736,7 @@ SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, js
 JOIN cte1 ON true
 JOIN (SELECT 10+'10' AS join2_v) join2 ON true
 WHERE name=ANY('{a,aa}') AND ('5' > '2') ORDER BY name ASC, cte1_v LIMIT 10
+-- Hints:enable_seqscan=off
 ----
 WITH
   cte1 AS (SELECT ?+'?' AS cte1_v FROM generate_series(?,?)),
@@ -718,6 +745,7 @@ SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, js
 JOIN cte1 ON true
 JOIN (SELECT ?+'?' AS join2_v) join2 ON true
 WHERE name=ANY('?') AND ('?' > '?') ORDER BY name ASC, cte1_v LIMIT ?
+-- Hints:enable_seqscan=off
 
 (WITH
   cte1 AS (SELECT 1+'1' AS cte1_v FROM generate_series(1,1)),
@@ -728,6 +756,7 @@ JOIN (SELECT 10+'10' AS join2_v) join2 ON true
 WHERE name=ANY('{a,aa}') AND ('5' > '2') ORDER BY name ASC, cte1_v LIMIT 10)
   UNION ALL
 (SELECT '<hash>' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table" WHERE name='b' LIMIT 10)
+-- Hints:enable_seqscan=off
 ----
 (WITH
   cte1 AS (SELECT ?+'?' AS cte1_v FROM generate_series(?,?)),
@@ -738,6 +767,15 @@ JOIN (SELECT ?+'?' AS join2_v) join2 ON true
 WHERE name=ANY('?') AND ('?' > '?') ORDER BY name ASC, cte1_v LIMIT ?)
   UNION ALL
 (SELECT '?' AS _key, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table" WHERE name='?' LIMIT ?)
+-- Hints:enable_seqscan=off
+
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name='c'
+  LIMIT 10
+----
+SELECT name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id, id FROM "pg-schema.generic""table"
+  WHERE name='?'
+  LIMIT ?
 "
 `;
 
@@ -824,13 +862,13 @@ UPDATE "pg-schema.generic""table" SET updated_at=now(), name = name || 42 WHERE 
 ----
 UPDATE "pg-schema.generic""table" SET updated_at=now(), name = name || ? WHERE id='?' RETURNING id
 
-UPDATE "pg-schema.generic""table" SET name='bbb', updated_at=now() WHERE id='<id>' RETURNING id
-----
-UPDATE "pg-schema.generic""table" SET name='?', updated_at=now() WHERE id='?' RETURNING id
-
 UPDATE "pg-schema.generic""table_date" SET name = name || 42 WHERE date_id='42' RETURNING date_id AS id
 ----
 UPDATE "pg-schema.generic""table_date" SET name = name || ? WHERE date_id='?' RETURNING date_id AS id
+
+UPDATE "pg-schema.generic""table" SET name='bbb', updated_at=now() WHERE id='<id>' RETURNING id
+----
+UPDATE "pg-schema.generic""table" SET name='?', updated_at=now() WHERE id='?' RETURNING id
 "
 `;
 
@@ -859,6 +897,20 @@ exports[`update skips if no known fields present 1`] = `
 UPDATE "pg-schema.generic""table" SET name='absent', updated_at=now() WHERE id='42' RETURNING id
 ----
 UPDATE "pg-schema.generic""table" SET name='?', updated_at=now() WHERE id='?' RETURNING id
+"
+`;
+
+exports[`upsert batched does not mess up the rows order 1`] = `
+"
+INSERT INTO "pg-schema.generic""table" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), 'zzz', 'zzz', false, NULL, NULL, NULL, NULL, now(), now(), NULL),
+  (id_gen(), 'bbb', 'bbb', false, NULL, NULL, NULL, NULL, now(), now(), NULL),
+  (id_gen(), 'ccc', 'ccc', false, NULL, NULL, NULL, NULL, now(), now(), NULL)
+  ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
+----
+INSERT INTO "pg-schema.generic""table" (id, name, url_name, some_flag, json_text_field, json_strongly_typed_field, jsonb_field, encrypted_field, created_at, updated_at, parent_id) VALUES
+  (id_gen(), '?', '?', false, NULL, NULL, NULL, NULL, now(), now(), NULL), ...
+  ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name, url_name=EXCLUDED.url_name, updated_at=EXCLUDED.updated_at RETURNING id
 "
 `;
 

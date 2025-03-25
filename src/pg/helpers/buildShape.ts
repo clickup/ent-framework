@@ -1,5 +1,5 @@
 const RE_COMMENT = toRegExp`
-  /\*.*?\*/
+  /\*(?!\+).*?\*/
 `;
 
 const RE_NUMBER = toRegExp`

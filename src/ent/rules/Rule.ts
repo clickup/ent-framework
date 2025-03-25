@@ -43,7 +43,7 @@ export abstract class Rule<TInput> {
   constructor(
     predicate:
       | Predicate<TInput>
-      | ((vc: VC, input: TInput) => Promise<boolean>),
+      | ((vc: VC, input: TInput) => Promise<boolean> | boolean),
   ) {
     this.predicate =
       predicate instanceof Function

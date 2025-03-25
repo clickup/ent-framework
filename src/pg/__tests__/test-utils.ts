@@ -93,7 +93,15 @@ export class TestPgClient
   }
 
   async query<TRes>(params: Parameters<PgClient["query"]>[0]): Promise<TRes[]> {
-    this.queries.push(escapeLiteral(params.query));
+    this.queries.push(
+      escapeLiteral(params.query) +
+        (params.hints && Object.keys(params.hints).length > 0
+          ? "\n-- Hints:" +
+            Object.entries(params.hints)
+              .map(([k, v]) => `${k || '""'}=${v}`)
+              .join(",")
+          : ""),
+    );
     return this.client.query<TRes>(params);
   }
 

@@ -8,7 +8,7 @@
 
 > **RowIsValidatorZodSafeParse**\<`TRow`\>: (`row`, `vc`) => [`ValidatorZodSafeParseResult`](ValidatorZodSafeParseResult.md) \| `Promise`\<[`ValidatorZodSafeParseResult`](ValidatorZodSafeParseResult.md)\>
 
-Defined in: src/ent/predicates/RowIs.ts:21
+Defined in: [src/ent/predicates/RowIs.ts:21](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/RowIs.ts#L21)
 
 A row validator function that returns a Zod result.
 

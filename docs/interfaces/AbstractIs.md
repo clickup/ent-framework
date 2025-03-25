@@ -6,7 +6,7 @@
 
 # Interface: AbstractIs\<TRow\>
 
-Defined in: src/ent/predicates/AbstractIs.ts:6
+Defined in: [src/ent/predicates/AbstractIs.ts:6](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/AbstractIs.ts#L6)
 
 A base interface for all user validation predicates.
 

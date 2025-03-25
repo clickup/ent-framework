@@ -227,19 +227,22 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 ### batcher()
 
-> **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
+> **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `disableBatching`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
-Defined in: [src/abstract/Client.ts:179](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L179)
+Defined in: [src/abstract/Client.ts:182](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L182)
 
-Batcher is per-Client per-query-type per-table-name-and-shape:
+Batcher is per-Client per-query-type
+per-table-name-and-shape-and-disableBatching:
+
 - Per-Client means that batchers are removed as soon as the Client is
   removed, i.e. the Client owns all the batchers for all tables.
 - Per-query-type means that the batcher for a SELECT query is different
   from the batcher for an INSERT query (obviously).
-- Per-table-name-and-shape means that each table has its own set of
-  batchers (obviously). Also, some queries may be complex (like UPDATE), so
-  the batcher also depends on the "shape" - the list of fields we're
-  updating.
+- Per-table-name-and-shape-and-disableBatching means that each table has
+  its own set of batchers (obviously). Also, some queries may be complex
+  (like UPDATE), so the batcher also depends on the "shape" - the list of
+  fields we're updating. Plus, for some inputs, we want to disable batching
+  at all - that produces a separate Batcher instance.
 
 Also, for every Batcher, there is exactly one Runner (which knows how to
 build the actual query in the context of the current Client). Batchers are
@@ -264,6 +267,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 | `_QueryClass` | `Function` |
 | `_schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
 | `_additionalShape` | `string` |
+| `disableBatching` | `boolean` |
 | `runnerCreator` | () => [`Runner`](Runner.md)\<`TInput`, `TOutput`\> |
 
 #### Returns
@@ -276,7 +280,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 > **prewarm**(): `void`
 
-Defined in: [src/abstract/Client.ts:199](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L199)
+Defined in: [src/abstract/Client.ts:207](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L207)
 
 A convenience method to put connections prewarming logic to. The idea is to
 keep the needed number of open connections and also, in each connection,

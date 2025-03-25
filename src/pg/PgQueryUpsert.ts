@@ -51,6 +51,7 @@ class PgRunnerUpsert<TTable extends Table> extends PgRunner<
       prefix: this.fmt("INSERT INTO %T (%FIELDS) VALUES", { fields }),
       indent: "  ",
       fields,
+      skipSorting: true, // we rely on the order of rows returned; see FRAGILE! comment below
       suffix: this.fmt(
         "\n" +
           `  ON CONFLICT (${uniqueKeyFields}) DO UPDATE ` +
@@ -115,11 +116,6 @@ class PgRunnerUpsert<TTable extends Table> extends PgRunner<
       inputs.size,
     );
 
-    // In "INSERT ... VALUES ... ON CONFLICT DO UPDATE ... RETURNING ..." in
-    // case insert didn't happen we can't match the updated row id with the key.
-    // Luckily, the order of rows returned is the same as the input rows order,
-    // and "ON CONFLICT DO UPDATE" update always succeeds entirely (or fails
-    // entirely).
     if (rows.length !== inputs.size) {
       throw Error(
         `BUG: number of rows returned from upsert (${rows.length}) ` +
@@ -127,6 +123,11 @@ class PgRunnerUpsert<TTable extends Table> extends PgRunner<
       );
     }
 
+    // FRAGILE! In "INSERT ... VALUES ... ON CONFLICT DO UPDATE ... RETURNING
+    // ..." in case insert didn't happen we can't match the updated row id with
+    // the key. Luckily, the order of rows returned is the same as the input
+    // rows order, and "ON CONFLICT DO UPDATE" update always succeeds entirely
+    // (or fails entirely).
     const outputs = new Map<string, string>();
     let i = 0;
     for (const key of inputs.keys()) {

@@ -44,12 +44,12 @@ export class Batcher<TInput, TOutput> {
     let outputs = new Map<string, TOutput | undefined>();
     const errors = new Map<string, unknown>();
 
-    if (inputs.size === 1 || !this.runner.runBatch) {
+    if (inputs.size === 1 || !this.runner.runBatch || this.disableBatching) {
       // Relatively rare since most of the requests come batched.
       await this.runSingleForEach(inputs, annotations, outputs, errors);
     } else {
+      // Called most of the times.
       try {
-        // Called most of the times.
         outputs = await this.runner.runBatch(inputs, annotations);
       } catch (e: unknown) {
         // Relatively rare under heavy load (since errors are rare).
@@ -90,6 +90,7 @@ export class Batcher<TInput, TOutput> {
   constructor(
     private runner: Runner<TInput, TOutput>,
     private batchDelayMs: MaybeCallable<number>,
+    private disableBatching: boolean,
   ) {}
 
   async run(input: TInput, annotation: QueryAnnotation): Promise<TOutput> {
@@ -114,7 +115,11 @@ export class Batcher<TInput, TOutput> {
       annotation,
     );
 
-    if (this.queuedInputs.size >= this.runner.maxBatchSize) {
+    if (
+      this.queuedInputs.size >= this.runner.maxBatchSize ||
+      !this.runner.runBatch ||
+      this.disableBatching
+    ) {
       runInVoid(this.flushQueue);
     } else if (this.queuedInputs.size === 1) {
       // Defer calling of flushQueue() to the "end of the event loop's spin", to

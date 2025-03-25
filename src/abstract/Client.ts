@@ -154,15 +154,18 @@ export abstract class Client {
   }
 
   /**
-   * Batcher is per-Client per-query-type per-table-name-and-shape:
+   * Batcher is per-Client per-query-type
+   * per-table-name-and-shape-and-disableBatching:
+   *
    * - Per-Client means that batchers are removed as soon as the Client is
    *   removed, i.e. the Client owns all the batchers for all tables.
    * - Per-query-type means that the batcher for a SELECT query is different
    *   from the batcher for an INSERT query (obviously).
-   * - Per-table-name-and-shape means that each table has its own set of
-   *   batchers (obviously). Also, some queries may be complex (like UPDATE), so
-   *   the batcher also depends on the "shape" - the list of fields we're
-   *   updating.
+   * - Per-table-name-and-shape-and-disableBatching means that each table has
+   *   its own set of batchers (obviously). Also, some queries may be complex
+   *   (like UPDATE), so the batcher also depends on the "shape" - the list of
+   *   fields we're updating. Plus, for some inputs, we want to disable batching
+   *   at all - that produces a separate Batcher instance.
    *
    * Also, for every Batcher, there is exactly one Runner (which knows how to
    * build the actual query in the context of the current Client). Batchers are
@@ -173,13 +176,14 @@ export abstract class Client {
    * 1000x20x8 Batchers/Runners (assuming we have 8 different operations).
    */
   @Memoize(
-    (QueryClass: Function, schema: Schema<Table>, additionalShape: string) =>
-      QueryClass.name + ":" + schema.hash + ":" + additionalShape,
+    (QueryClass, schema, additionalShape, _, disableBatching) =>
+      `${QueryClass.name}:${schema.hash}:${additionalShape}:${disableBatching}`,
   )
   batcher<TInput, TOutput, TTable extends Table>(
     _QueryClass: Function,
     _schema: Schema<TTable>,
     _additionalShape: string,
+    disableBatching: boolean,
     runnerCreator: () => Runner<TInput, TOutput>,
   ): Batcher<TInput, TOutput> {
     // At the moment, Runner doesn't depend on the Client. So theoretically we
@@ -187,7 +191,11 @@ export abstract class Client {
     // Clients) to save memory (and inject the Client via Runner.run*()
     // methods). But we don't do all that right now.
     const runner = runnerCreator();
-    return new Batcher<TInput, TOutput>(runner, this.options.batchDelayMs);
+    return new Batcher<TInput, TOutput>(
+      runner,
+      this.options.batchDelayMs,
+      disableBatching,
+    );
   }
 
   /**

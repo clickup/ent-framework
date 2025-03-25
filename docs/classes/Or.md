@@ -32,7 +32,7 @@ Defined in: [src/ent/predicates/Or.ts:14](https://github.com/clickup/ent-framewo
 
 | Parameter | Type |
 | ------ | ------ |
-| ...`predicates` | readonly ([`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`, `input`) => `Promise`\<`boolean`\>)[] |
+| ...`predicates` | readonly ([`Predicate`](../interfaces/Predicate.md)\<`TInput`\> \| (`vc`, `input`) => `boolean` \| `Promise`\<`boolean`\>)[] |
 
 #### Returns
 
@@ -51,7 +51,7 @@ Defined in: [src/ent/predicates/Or.ts:14](https://github.com/clickup/ent-framewo
 
 > **check**(`vc`, `input`): `Promise`\<`boolean`\>
 
-Defined in: [src/ent/predicates/Or.ts:26](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L26)
+Defined in: [src/ent/predicates/Or.ts:27](https://github.com/clickup/ent-framework/blob/master/src/ent/predicates/Or.ts#L27)
 
 #### Parameters
 
