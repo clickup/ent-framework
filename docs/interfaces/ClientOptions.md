@@ -6,7 +6,7 @@
 
 # Interface: ClientOptions
 
-Defined in: [src/abstract/Client.ts:16](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L16)
+Defined in: [src/abstract/Client.ts:17](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L17)
 
 Options for Client constructor.
 

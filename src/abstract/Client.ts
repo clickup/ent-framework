@@ -1,6 +1,7 @@
 import { Memoize } from "fast-typescript-memoize";
 import defaults from "lodash/defaults";
 import type { MaybeCallable, PickPartial } from "../internal/misc";
+import { objectId } from "../internal/objectId";
 import type { Table } from "../types";
 import { Batcher } from "./Batcher";
 import type { ClientErrorKind, ClientErrorPostAction } from "./ClientError";
@@ -177,7 +178,7 @@ export abstract class Client {
    */
   @Memoize(
     (QueryClass, schema, additionalShape, _, disableBatching) =>
-      `${QueryClass.name}:${schema.hash}:${additionalShape}:${disableBatching}`,
+      `${objectId(QueryClass)}:${schema.hash}:${additionalShape}:${disableBatching}`,
   )
   batcher<TInput, TOutput, TTable extends Table>(
     _QueryClass: Function,

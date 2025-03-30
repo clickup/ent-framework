@@ -6,7 +6,7 @@
 
 # Interface: ClientPingInput
 
-Defined in: [src/abstract/Client.ts:49](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L49)
+Defined in: [src/abstract/Client.ts:50](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L50)
 
 Input for Client#ping().
 

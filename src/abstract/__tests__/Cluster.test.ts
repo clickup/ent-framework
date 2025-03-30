@@ -5,6 +5,9 @@ import {
   TEST_CONFIG,
   testCluster,
 } from "../../pg/__tests__/test-utils";
+import { PgQueryInsert } from "../../pg/PgQueryInsert";
+import { PgSchema } from "../../pg/PgSchema";
+import { ID } from "../../types";
 
 jest.useFakeTimers({ advanceTimers: true });
 
@@ -72,4 +75,37 @@ test("Shard is not discoverable error when no such shard", async () => {
   expect(error?.replace(/\d{3,}/g, "NNN")).toEqual(
     "ShardIsNotDiscoverableError: Shard NNN is not discoverable: no such Shard in the Cluster? some Islands are down? connections limit?",
   );
+});
+
+test("batcher() memoizes", async () => {
+  const client = await testCluster.shardByNo(0).client(MASTER);
+
+  const schemaA = new PgSchema("test", { id: { type: ID } }, []);
+  const schemaB = new PgSchema("test", { id: { type: Number } }, []);
+  const PgRunnerInsert = new PgQueryInsert(schemaA, { id: "42" }).RUNNER_CLASS;
+
+  const batcher1 = client.batcher(
+    PgQueryInsert,
+    schemaA,
+    "",
+    false,
+    () => new PgRunnerInsert(schemaA, client.client),
+  );
+  const batcher2 = client.batcher(
+    PgQueryInsert,
+    schemaA,
+    "",
+    false,
+    () => new PgRunnerInsert(schemaA, client.client),
+  );
+  expect(batcher1).toBe(batcher2);
+
+  const batcher3 = client.batcher(
+    PgQueryInsert,
+    schemaB,
+    "",
+    false,
+    () => new PgRunnerInsert(schemaB, client.client),
+  );
+  expect(batcher1).not.toBe(batcher3);
 });

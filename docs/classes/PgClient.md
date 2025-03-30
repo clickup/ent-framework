@@ -67,7 +67,7 @@ Initializes an instance of PgClient.
 
 > `abstract` **address**(): `string`
 
-Defined in: [src/abstract/Client.ts:87](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L87)
+Defined in: [src/abstract/Client.ts:88](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L88)
 
 Represents the full destination address this Client is working with.
 Depending on the implementation, it may include hostname, port number,
@@ -89,7 +89,7 @@ shardNos) based on that address.
 
 > `abstract` **end**(): `Promise`\<`void`\>
 
-Defined in: [src/abstract/Client.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L94)
+Defined in: [src/abstract/Client.ts:95](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L95)
 
 Gracefully closes the connections to let the caller destroy the Client. The
 pending queries are awaited to finish before returning. The Client becomes
@@ -109,7 +109,7 @@ unusable after calling this method: you should not send queries to it.
 
 > `abstract` **isEnded**(): `boolean`
 
-Defined in: [src/abstract/Client.ts:122](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L122)
+Defined in: [src/abstract/Client.ts:123](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L123)
 
 Returns true if the Client is ended and can't be used anymore.
 
@@ -127,7 +127,7 @@ Returns true if the Client is ended and can't be used anymore.
 
 > `protected` **logSwallowedError**(`props`): `void`
 
-Defined in: [src/abstract/Client.ts:142](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L142)
+Defined in: [src/abstract/Client.ts:143](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L143)
 
 Calls swallowedErrorLogger() doing some preliminary amendment.
 
@@ -151,7 +151,7 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 > **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `disableBatching`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
-Defined in: [src/abstract/Client.ts:182](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L182)
+Defined in: [src/abstract/Client.ts:183](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L183)
 
 Batcher is per-Client per-query-type
 per-table-name-and-shape-and-disableBatching:
@@ -206,7 +206,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 > **prewarm**(): `void`
 
-Defined in: [src/abstract/Client.ts:207](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L207)
+Defined in: [src/abstract/Client.ts:208](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L208)
 
 A convenience method to put connections prewarming logic to. The idea is to
 keep the needed number of open connections and also, in each connection,

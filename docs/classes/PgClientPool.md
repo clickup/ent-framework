@@ -56,7 +56,7 @@ Defined in: [src/pg/PgClientPool.ts:75](https://github.com/clickup/ent-framework
 
 > **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `disableBatching`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
-Defined in: [src/abstract/Client.ts:182](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L182)
+Defined in: [src/abstract/Client.ts:183](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L183)
 
 Batcher is per-Client per-query-type
 per-table-name-and-shape-and-disableBatching:
