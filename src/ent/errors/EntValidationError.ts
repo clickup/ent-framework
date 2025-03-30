@@ -1,3 +1,4 @@
+import type { StandardSchemaV1FailureResult } from "./EntAccessError";
 import { EntAccessError } from "./EntAccessError";
 
 /**
@@ -17,6 +18,25 @@ export class EntValidationError extends EntAccessError {
           .map((error) => error.field + ": " + JSON.stringify(error.message))
           .join(", "),
     );
+  }
+
+  /**
+   * Converts the payload to a Standard Schema V1 compatible error result. See
+   * https://standardschema.dev.
+   */
+  override toStandardSchemaV1(): StandardSchemaV1FailureResult {
+    return {
+      issues: this.errors.map(({ field, message }) => ({
+        message,
+        path:
+          this.entName || field !== null
+            ? [
+                ...(this.entName ? [this.entName] : []),
+                ...(field !== null ? [field] : []),
+              ]
+            : undefined,
+      })),
+    };
   }
 }
 

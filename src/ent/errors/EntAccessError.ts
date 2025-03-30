@@ -1,8 +1,23 @@
 import { copyStack, indent, inspectCompact } from "../../internal/misc";
 
 /**
- * A base class for errors which trigger the validation framework to process
- * them as a DENY/SKIP.
+ * Standard Schema V1 compatible error result. Every EntAccessError can be
+ * converted to it. See https://standardschema.dev.
+ */
+export interface StandardSchemaV1FailureResult {
+  readonly issues: ReadonlyArray<{
+    readonly message: string;
+    readonly path?: readonly string[] | undefined;
+  }>;
+}
+
+/**
+ * A base class for errors that trigger the validation framework to process them
+ * as a DENY/SKIP. Invariants in derived classes: the error message should be
+ * safe to pass to the client (it must not have any private information; a good
+ * example is EntValidationError), plus the message alone should be descriptive
+ * enough to extract information from it. If `cause` is passed, it becomes a
+ * part of the message, with the above assumptions.
  */
 export class EntAccessError extends Error {
   public readonly cause: string | Error | null;
@@ -32,6 +47,16 @@ export class EntAccessError extends Error {
     } else {
       this.cause = cause ? causeToString(cause) : null;
     }
+  }
+
+  toStandardSchemaV1(): StandardSchemaV1FailureResult {
+    return {
+      issues: [
+        this.entName
+          ? { message: this.message, path: [this.entName] }
+          : { message: this.message },
+      ],
+    };
   }
 }
 

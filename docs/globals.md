@@ -97,6 +97,7 @@
 - [Query](interfaces/Query.md)
 - [QueryAnnotation](interfaces/QueryAnnotation.md)
 - [SchemaClass](interfaces/SchemaClass.md)
+- [StandardSchemaV1FailureResult](interfaces/StandardSchemaV1FailureResult.md)
 - [EntValidationErrorInfo](interfaces/EntValidationErrorInfo.md)
 - [ConfigInstance](interfaces/ConfigInstance.md)
 - [ConfigClass](interfaces/ConfigClass.md)

@@ -2,7 +2,9 @@ import { sanitizeIDForDebugPrinting } from "../../internal/misc";
 import { EntAccessError } from "./EntAccessError";
 
 /**
- * Error: non-existing ID in the database.
+ * Error: non-existing ID in the database (failed loadX() call), or non-existing
+ * Ent (failed loadByX() call). Notice that `where` data is intentionally NOT
+ * considered as private and may be delivered to the client.
  */
 export class EntNotFoundError extends EntAccessError {
   constructor(
