@@ -29,7 +29,6 @@ let seqKey = 0;
 export default async function* (): AsyncGenerator<unknown> {
   const pool = new Pool({
     ...TEST_CONFIG,
-    min: 1,
     max: 1,
     idleTimeoutMillis: 30000,
   });

@@ -18,7 +18,7 @@ import { PgClient } from "./PgClient";
 export interface PgClientPoolOptions extends PgClientOptions {
   /** Node-Postgres config. We can't make it MaybeCallable unfortunately,
    * because it's used to initialize Node-Postgres Pool. */
-  config: PoolConfig;
+  config: PoolConfig & { min?: number | undefined };
   /** Pool class (constructor) compatible with node-postgres Pool. */
   Pool?: typeof Pool;
   /** Close the connection after the query if it was opened long time ago. */
@@ -55,7 +55,12 @@ export class PgClientPool extends PgClient {
     maxConnLifetimeMs: 0,
     maxConnLifetimeJitter: 0.5,
     prewarmIntervalStep: 1,
-    prewarmIntervalMs: 10000,
+    /** The default value is half of the default node-postgres'es
+     * idleTimeoutMillis=10s. Together with 1..1.5x jitter
+     * (prewarmIntervalJitter=0.5), it is still slightly below
+     * idleTimeoutMillis, and thus, doesn't let Ent Framework close the
+     * connections prematurely. */
+    prewarmIntervalMs: 5000,
     prewarmIntervalJitter: 0.5,
     prewarmQuery: 'SELECT 1 AS "prewarmQuery"',
   };

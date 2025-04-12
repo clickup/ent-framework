@@ -25,7 +25,7 @@ connection pooling solution. They don't have to use PgClientPool.
 
 > **new PgClientPool**(`options`): [`PgClientPool`](PgClientPool.md)
 
-Defined in: [src/pg/PgClientPool.ts:75](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L75)
+Defined in: [src/pg/PgClientPool.ts:80](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L80)
 
 #### Parameters
 
@@ -283,7 +283,7 @@ until e.g. the next discovery query to it (or any query) succeeds.
 
 > **acquireConn**(): `Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\>
 
-Defined in: [src/pg/PgClientPool.ts:117](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L117)
+Defined in: [src/pg/PgClientPool.ts:122](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L122)
 
 Called when the Client needs a connection to run a query against. Implies
 than the caller MUST call release() method on the returned object.
@@ -302,7 +302,7 @@ than the caller MUST call release() method on the returned object.
 
 > **poolStats**(): `object`
 
-Defined in: [src/pg/PgClientPool.ts:130](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L130)
+Defined in: [src/pg/PgClientPool.ts:135](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L135)
 
 Returns statistics about the connection pool.
 
@@ -339,7 +339,7 @@ new available connection. This is the number of such queued requests.
 
 > **address**(): `string`
 
-Defined in: [src/pg/PgClientPool.ts:138](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L138)
+Defined in: [src/pg/PgClientPool.ts:143](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L143)
 
 Represents the full destination address this Client is working with.
 Depending on the implementation, it may include hostname, port number,
@@ -361,7 +361,7 @@ shardNos) based on that address.
 
 > **logSwallowedError**(`props`): `void`
 
-Defined in: [src/pg/PgClientPool.ts:149](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L149)
+Defined in: [src/pg/PgClientPool.ts:154](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L154)
 
 Calls swallowedErrorLogger() doing some preliminary amendment.
 
@@ -385,7 +385,7 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 > **end**(): `Promise`\<`void`\>
 
-Defined in: [src/pg/PgClientPool.ts:155](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L155)
+Defined in: [src/pg/PgClientPool.ts:160](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L160)
 
 Gracefully closes the connections to let the caller destroy the Client. The
 pending queries are awaited to finish before returning. The Client becomes
@@ -405,7 +405,7 @@ unusable after calling this method: you should not send queries to it.
 
 > **isEnded**(): `boolean`
 
-Defined in: [src/pg/PgClientPool.ts:166](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L166)
+Defined in: [src/pg/PgClientPool.ts:171](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L171)
 
 Returns true if the Client is ended and can't be used anymore.
 
@@ -423,7 +423,7 @@ Returns true if the Client is ended and can't be used anymore.
 
 > **prewarm**(): `void`
 
-Defined in: [src/pg/PgClientPool.ts:170](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L170)
+Defined in: [src/pg/PgClientPool.ts:175](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClientPool.ts#L175)
 
 A convenience method to put connections prewarming logic to. The idea is to
 keep the needed number of open connections and also, in each connection,
