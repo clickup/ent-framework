@@ -22,3 +22,6 @@ export * from "./PgSchema";
 export * from "./helpers/buildShape";
 export * from "./helpers/escapeIdent";
 export * from "./helpers/escapeLiteral";
+export * from "./types/BigIntArray";
+export * from "./types/ByteaBuffer";
+export * from "./types/StringArray";

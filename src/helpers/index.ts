@@ -3,3 +3,4 @@
  */
 
 export * from "./isBigintStr";
+export * from "./testSpecTypeIntegrity";

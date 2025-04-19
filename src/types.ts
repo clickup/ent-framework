@@ -381,3 +381,22 @@ export function Enum(): unknown {
     parse: (str: string) => str,
   } as const;
 }
+
+/**
+ * A value stored in the DB as a base64 encoded binary buffer. Actually, DB
+ * engines (like PostgreSQL) support native binary data fields (and store binary
+ * data efficiently), but sometimes (especially for small things, like
+ * public/private keys), it's easier to store the binary data as base64 encoded
+ * strings rather than dealing with the native binary data type.
+ */
+export function Base64Buffer(): {
+  dbValueToJs: (dbValue: string) => Buffer;
+  stringify: (jsValue: Buffer) => string;
+  parse: (str: string) => Buffer;
+} {
+  return {
+    dbValueToJs: (dbValue) => Buffer.from(dbValue, "base64"),
+    stringify: (jsValue) => jsValue.toString("base64"),
+    parse: (str) => Buffer.from(str, "base64"),
+  };
+}
