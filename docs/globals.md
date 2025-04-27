@@ -179,6 +179,7 @@
 - [ExistsInput](type-aliases/ExistsInput.md)
 - [DeleteWhereInput](type-aliases/DeleteWhereInput.md)
 - [Hints](type-aliases/Hints.md)
+- [JSONValue](type-aliases/JSONValue.md)
 
 ## Variables
 
@@ -202,7 +203,8 @@
 - [buildShape](functions/buildShape.md)
 - [escapeIdent](functions/escapeIdent.md)
 - [escapeLiteral](functions/escapeLiteral.md)
-- [BigIntArray](functions/BigIntArray.md)
-- [ByteaBuffer](functions/ByteaBuffer.md)
-- [StringArray](functions/StringArray.md)
-- [Base64Buffer](functions/Base64Buffer.md)
+- [BigIntArrayType](functions/BigIntArrayType.md)
+- [ByteaBufferType](functions/ByteaBufferType.md)
+- [StringArrayType](functions/StringArrayType.md)
+- [Base64BufferType](functions/Base64BufferType.md)
+- [JSONType](functions/JSONType.md)

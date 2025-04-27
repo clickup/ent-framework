@@ -7,6 +7,9 @@
     "./src/pg",
     "./src/tools"
   ],
-  "exclude": ["__", "internal"],
+  "exclude": [
+    "ent-framework\/.*\/__",
+    "ent-framework\/.*\/internal"
+  ],
   "delete": true
 }

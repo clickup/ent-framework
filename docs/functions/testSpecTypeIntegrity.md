@@ -8,7 +8,7 @@
 
 > **testSpecTypeIntegrity**\<`TDBValue`, `TJsValue`\>(`SpecType`, `dbValue`): `object`
 
-Defined in: src/helpers/testSpecTypeIntegrity.ts:9
+Defined in: [src/helpers/testSpecTypeIntegrity.ts:9](https://github.com/clickup/ent-framework/blob/master/src/helpers/testSpecTypeIntegrity.ts#L9)
 
 A tool to verify integrity of custom field types. It is meant to be called
 from Jest expect(). The helper runs dbValueToJs, stringify and parse methods

@@ -1,9 +1,9 @@
 import { testSpecTypeIntegrity } from "../../../helpers/testSpecTypeIntegrity";
-import { StringArray } from "../StringArray";
+import { StringArrayType } from "../StringArrayType";
 
 test("sanity", () => {
   expect(
-    testSpecTypeIntegrity(StringArray(), [
+    testSpecTypeIntegrity(StringArrayType(), [
       "a",
       null,
       'a"b"c',
@@ -28,7 +28,13 @@ test("sanity", () => {
 
 test("nulls", () => {
   expect(
-    testSpecTypeIntegrity(StringArray(), ["abc", null, null, "null", "NULL"]),
+    testSpecTypeIntegrity(StringArrayType(), [
+      "abc",
+      null,
+      null,
+      "null",
+      "NULL",
+    ]),
   ).toMatchInlineSnapshot(`
     {
       "jsValueDecoded": [
@@ -41,7 +47,8 @@ test("nulls", () => {
       "stringifiedBack": "{"abc",NULL,NULL,"null","NULL"}",
     }
   `);
-  expect(testSpecTypeIntegrity(StringArray(), [null])).toMatchInlineSnapshot(`
+  expect(testSpecTypeIntegrity(StringArrayType(), [null]))
+    .toMatchInlineSnapshot(`
     {
       "jsValueDecoded": [
         null,

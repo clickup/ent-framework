@@ -2,16 +2,20 @@
 
 ***
 
-[@clickup/ent-framework](../globals.md) / StringArray
+[@clickup/ent-framework](../globals.md) / BigIntArrayType
 
-# Function: StringArray()
+# Function: BigIntArrayType()
 
-> **StringArray**(): `object`
+> **BigIntArrayType**(): `object`
 
-Defined in: src/pg/types/StringArray.ts:13
+Defined in: src/pg/types/BigIntArrayType.ts:17
 
-An array of Strings. Note: node-postgres natively supports this type on read
-path, but on write path, we have to stringify by ourselves.
+An array of IDs. Notice that:
+1. Node-postgres natively supports this type on read path, but on write path,
+   we have to stringify by ourselves.
+2. GIN index doesn't support NULL, because PG's "&&" operator (intersection
+   check) doesn't work with NULLs. But we still allow NULLs in BigIntArrayType,
+   because to query such values, we can use a separate partial index.
 
 ## Returns
 

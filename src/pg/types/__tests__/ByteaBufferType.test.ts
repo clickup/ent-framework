@@ -1,9 +1,10 @@
 import { testSpecTypeIntegrity } from "../../../helpers/testSpecTypeIntegrity";
-import { ByteaBuffer } from "../ByteaBuffer";
+import { ByteaBufferType } from "../ByteaBufferType";
 
 test("sanity", () => {
-  expect(testSpecTypeIntegrity(ByteaBuffer(), Buffer.from("DEADBEEF", "hex")))
-    .toMatchInlineSnapshot(`
+  expect(
+    testSpecTypeIntegrity(ByteaBufferType(), Buffer.from("DEADBEEF", "hex")),
+  ).toMatchInlineSnapshot(`
     {
       "jsValueDecoded": {
         "data": [

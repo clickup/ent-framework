@@ -2,11 +2,11 @@
 
 ***
 
-[@clickup/ent-framework](../globals.md) / Base64Buffer
+[@clickup/ent-framework](../globals.md) / Base64BufferType
 
-# Function: Base64Buffer()
+# Function: Base64BufferType()
 
-> **Base64Buffer**(): `object`
+> **Base64BufferType**(): `object`
 
 Defined in: [src/types.ts:392](https://github.com/clickup/ent-framework/blob/master/src/types.ts#L392)
 

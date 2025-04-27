@@ -13,7 +13,7 @@ import { createVC } from "./test-utils";
 class EntTestUser extends BaseEnt(
   testCluster,
   new PgSchema(
-    'ent.composite-pk"test_user',
+    'ent.composite-pk"user',
     {
       userid: { type: ID, autoInsert: "id_gen()" },
       name: { type: String },
@@ -42,7 +42,7 @@ class EntTestUser extends BaseEnt(
 class EntTestComposite extends BaseEnt(
   testCluster,
   new PgSchema(
-    'ent.composite-pk"test_composite',
+    'ent.composite-pk"composite',
     {
       user_id: { type: ID },
       some_id: { type: ID, autoInsert: "id_gen()" },

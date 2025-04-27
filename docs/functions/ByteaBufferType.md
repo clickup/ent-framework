@@ -2,13 +2,13 @@
 
 ***
 
-[@clickup/ent-framework](../globals.md) / ByteaBuffer
+[@clickup/ent-framework](../globals.md) / ByteaBufferType
 
-# Function: ByteaBuffer()
+# Function: ByteaBufferType()
 
-> **ByteaBuffer**(): `object`
+> **ByteaBufferType**(): `object`
 
-Defined in: src/pg/types/ByteaBuffer.ts:6
+Defined in: src/pg/types/ByteaBufferType.ts:6
 
 A value stored in the DB as a bytea buffer.
 

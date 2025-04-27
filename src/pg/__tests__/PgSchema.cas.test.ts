@@ -3,9 +3,9 @@ import type { Shard } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
 import { join, nullthrows } from "../../internal/misc";
 import { PgSchema } from "../PgSchema";
+import { ByteaBufferType } from "../types/ByteaBufferType";
 import type { TestPgClient } from "./test-utils";
 import {
-  ByteaBuffer,
   EncryptedValue,
   TEST_TIMELINE,
   recreateTestTables,
@@ -24,7 +24,7 @@ const schema = new PgSchema(
       autoInsert: "NULL",
     },
     buffer_field: {
-      type: ByteaBuffer,
+      type: ByteaBufferType(),
       allowNull: true,
       autoInsert: "NULL",
     },

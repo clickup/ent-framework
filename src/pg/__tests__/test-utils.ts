@@ -3,7 +3,6 @@ import { connect, createServer } from "net";
 import delay from "delay";
 import compact from "lodash/compact";
 import type { PoolConfig } from "pg";
-import { types } from "pg";
 import waitForExpect from "wait-for-expect";
 import type {
   ClientConnectionIssue,
@@ -178,25 +177,6 @@ export class EncryptedValue {
   }
 
   private constructor(private dbValue: string) {}
-}
-
-/**
- * Another custom type which maps a JS Buffer to PG "bytea" native type.
- */
-export class ByteaBuffer {
-  static dbValueToJs(dbValue: Buffer): Buffer {
-    // Node-postgres returns "bytea" values as Buffer already.
-    return dbValue;
-  }
-
-  static stringify(jsValue: Buffer): string {
-    // PG's representation: '\xDEADBEEF'
-    return "\\x" + jsValue.toString("hex");
-  }
-
-  static parse(str: string): Buffer {
-    return types.getTypeParser(types.builtins.BYTEA)(str) as Buffer;
-  }
 }
 
 /**

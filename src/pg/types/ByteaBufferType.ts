@@ -3,7 +3,7 @@ import { types } from "pg";
 /**
  * A value stored in the DB as a bytea buffer.
  */
-export function ByteaBuffer(): {
+export function ByteaBufferType(): {
   dbValueToJs: (dbValue: Buffer) => Buffer;
   stringify: (jsValue: Buffer) => string;
   parse: (str: string) => Buffer;

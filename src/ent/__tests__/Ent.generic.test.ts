@@ -2,7 +2,7 @@ import { collect } from "streaming-iterables";
 import { join } from "../../internal/misc";
 import { recreateTestTables, testCluster } from "../../pg/__tests__/test-utils";
 import { PgSchema } from "../../pg/PgSchema";
-import { Enum, ID } from "../../types";
+import { EnumType, ID } from "../../types";
 import { BaseEnt } from "../BaseEnt";
 import { CanDeleteOutgoingEdge } from "../predicates/CanDeleteOutgoingEdge";
 import { CanReadOutgoingEdge } from "../predicates/CanReadOutgoingEdge";
@@ -35,9 +35,9 @@ class EntTestCompany extends BaseEnt(
     'ent.generic"company',
     {
       id: { type: String, autoInsert: "id_gen()" },
-      name: { type: Enum<"some" | "other">() },
-      industry: { type: Enum<Industry>() },
-      size: { type: Enum<Size>() },
+      name: { type: EnumType<"some" | "other">() },
+      industry: { type: EnumType<Industry>() },
+      size: { type: EnumType<Size>() },
     },
     ["name", "industry"],
   ),

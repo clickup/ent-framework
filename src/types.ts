@@ -347,10 +347,10 @@ export type Hints = Record<string, string | null | undefined>;
 
 /**
  * A wrapper for literal union types, suitable for the following Spec:
- * - { type: Enum<"a" | "b" | "c">() }
- * - { type: Enum<1 | 2 | 3>() }
+ * - { type: EnumType<"a" | "b" | "c">() }
+ * - { type: EnumType<1 | 2 | 3>() }
  */
-export function Enum<TValue extends string | number>(): {
+export function EnumType<TValue extends string | number>(): {
   dbValueToJs: (dbValue: string | number) => TValue;
   stringify: (jsValue: TValue) => string;
   parse: (str: string) => TValue;
@@ -364,17 +364,17 @@ export function Enum<TValue extends string | number>(): {
  *   B = "b",
  * }
  * ...
- * { type: Enum<MyEnum>() }
+ * { type: EnumType<MyEnum>() }
  * ```
  */
-export function Enum<TEnum extends Record<string, string | number>>(): {
+export function EnumType<TEnum extends Record<string, string | number>>(): {
   dbValueToJs: (dbValue: string | number) => TEnum[keyof TEnum];
   stringify: (jsValue: TEnum[keyof TEnum]) => string;
   parse: (str: string) => TEnum[keyof TEnum];
 };
 
 /** @ignore */
-export function Enum(): unknown {
+export function EnumType(): unknown {
   return {
     dbValueToJs: (dbValue: string | number) => dbValue,
     stringify: (jsValue: never) => jsValue as string,
@@ -389,7 +389,7 @@ export function Enum(): unknown {
  * public/private keys), it's easier to store the binary data as base64 encoded
  * strings rather than dealing with the native binary data type.
  */
-export function Base64Buffer(): {
+export function Base64BufferType(): {
   dbValueToJs: (dbValue: string) => Buffer;
   stringify: (jsValue: Buffer) => string;
   parse: (str: string) => Buffer;
@@ -398,5 +398,31 @@ export function Base64Buffer(): {
     dbValueToJs: (dbValue) => Buffer.from(dbValue, "base64"),
     stringify: (jsValue) => jsValue.toString("base64"),
     parse: (str) => Buffer.from(str, "base64"),
+  };
+}
+
+/**
+ * A JSON-serializable value.
+ */
+export type JSONValue =
+  | null
+  | string
+  | number
+  | boolean
+  | JSONValue[]
+  | { [k in string]?: JSONValue };
+
+/**
+ * An arbitrary JSON field type.
+ */
+export function JSONType<TCurrent extends JSONValue>(): {
+  dbValueToJs: (dbValue: TCurrent) => TCurrent;
+  stringify: (jsValue: TCurrent) => string;
+  parse: (str: string) => TCurrent;
+} {
+  return {
+    dbValueToJs: (dbValue) => dbValue,
+    stringify: (jsValue) => JSON.stringify(jsValue),
+    parse: (str) => JSON.parse(str),
   };
 }

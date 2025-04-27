@@ -1,9 +1,10 @@
 import { testSpecTypeIntegrity } from "../../../helpers/testSpecTypeIntegrity";
-import { BigIntArray } from "../BigIntArray";
+import { BigIntArrayType } from "../BigIntArrayType";
 
 test("sanity", () => {
-  expect(testSpecTypeIntegrity(BigIntArray(), ["5012413060896574870", "123"]))
-    .toMatchInlineSnapshot(`
+  expect(
+    testSpecTypeIntegrity(BigIntArrayType(), ["5012413060896574870", "123"]),
+  ).toMatchInlineSnapshot(`
     {
       "jsValueDecoded": [
         "5012413060896574870",
@@ -15,7 +16,7 @@ test("sanity", () => {
 });
 
 test("nulls", () => {
-  expect(testSpecTypeIntegrity(BigIntArray(), ["123", null, null, "234"]))
+  expect(testSpecTypeIntegrity(BigIntArrayType(), ["123", null, null, "234"]))
     .toMatchInlineSnapshot(`
     {
       "jsValueDecoded": [
@@ -27,7 +28,8 @@ test("nulls", () => {
       "stringifiedBack": "{123,NULL,NULL,234}",
     }
   `);
-  expect(testSpecTypeIntegrity(BigIntArray(), [null])).toMatchInlineSnapshot(`
+  expect(testSpecTypeIntegrity(BigIntArrayType(), [null]))
+    .toMatchInlineSnapshot(`
     {
       "jsValueDecoded": [
         null,
