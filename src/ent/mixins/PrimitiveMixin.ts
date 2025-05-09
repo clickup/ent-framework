@@ -254,7 +254,7 @@ export function PrimitiveMixin<
         }));
 
         let isInserted = false;
-        let isKnownServerState = true;
+        let allowUndoInverses = true;
         let lastError: unknown = undefined;
         try {
           // Preliminarily insert inverse rows to inverses table, even before we
@@ -279,30 +279,32 @@ export function PrimitiveMixin<
           // we'll get a null returned.
           return await this.TRIGGERS.wrapInsert(
             async (input) => {
-              try {
-                // Remember actuallyInsertedID received from exactly shard
-                // INSERT operation, prior to the after-triggers kick in. This
-                // allows to know that ID for inverse undo purposes in case some
-                // after-trigger fails.
-                const id = await shard.run(
-                  this.SCHEMA.insert(input),
-                  vc.toAnnotation(),
-                  vc.timeline(shard, this.SCHEMA.name),
-                  vc.freshness,
-                );
-                isInserted = !!id;
-                return id;
-              } catch (error: unknown) {
-                // Do we know for sure whether the server applied the insert or
-                // not? Some examples are: "connection reset" or PgBouncer
-                // timeout: in those cases, it's quite possible that the insert
-                // actually DID succeed internally, but we still received an
-                // error, so we must NOT delete inverses as a cleanup action.
-                isKnownServerState =
-                  error instanceof ClientError &&
-                  error.kind === "data-on-server-is-unchanged";
-                throw error;
-              }
+              const id = await shard.run(
+                this.SCHEMA.insert(input),
+                vc.toAnnotation(),
+                vc.timeline(shard, this.SCHEMA.name),
+                vc.freshness,
+                (error, _attempt) => {
+                  // Do we know for sure whether the server applied the insert
+                  // or not? Some examples are: "connection reset" or DB proxy
+                  // timeout: in those cases, it's quite possible that the
+                  // insert actually DID succeed internally (so we must NOT undo
+                  // inverses), but we still received an error, so we must NOT
+                  // delete inverses as a cleanup action.
+                  if (
+                    !(error instanceof ClientError) ||
+                    error.kind === "unknown-server-state"
+                  ) {
+                    allowUndoInverses = false;
+                  }
+                },
+              );
+              // Remember isInserted flag based on the ID received from the
+              // direct INSERT operation, prior to the after-triggers kick in.
+              // This allows to make decisions about inverse-undo in case some
+              // after-triggers fail.
+              isInserted = !!id;
+              return id;
             },
             vc,
             { ...input, [ID]: id2 },
@@ -314,20 +316,20 @@ export function PrimitiveMixin<
           // There are 3 failure conditions here:
           // 1. There was an exception, but we don't know the state of PG server
           //    (it might or might not have applied the insert).
-          // 2. There was an exception during the insert (in this case,
+          // 2. There was an exception during the INSERT (in this case,
           //    isInserted will remain null due to the above initialization),
           //    and we received the response from PG.
-          // 3. An insert resulted in a no-op due to unique constraints
-          //    violation (and in this case, insert() will return null, and we
-          //    will write false to isInserted).
-          if (!isInserted && isKnownServerState) {
+          // 3. An INSERT resulted in a no-op due to unique constraints
+          //    violation (in this case, insert() will return null, and we will
+          //    write false to isInserted).
+          if (!isInserted && allowUndoInverses) {
             // We couldn't insert the Ent due to an unique key violation or some
             // other DB error for which we know the exact PG server state. Try
             // to undo the inverses creation (but if we fail to undo, it's not a
             // big deal to have stale inverses in the DB since they are only
             // "hints" and affect Shard candidates locating). This logic looks
-            // scary, but in real life, there is always an "inverses fixer"
-            // service which removes orphaned inverses asynchronously.
+            // scary, but in real life, there will likely be an "inverses fixer"
+            // service that removes orphaned inverses asynchronously.
             await mapJoin(
               inverseRows,
               async ({ inverse, id1, id2, canUndoInverseInsert }) => {

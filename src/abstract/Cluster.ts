@@ -1,4 +1,5 @@
-import delay from "delay";
+import { inspect, types } from "util";
+import delayMod from "delay";
 import { Memoize } from "fast-typescript-memoize";
 import defaults from "lodash/defaults";
 import random from "lodash/random";
@@ -10,6 +11,7 @@ import type {
   MaybeCallable,
   MaybeError,
   PickPartial,
+  MaybeAsyncCallable,
 } from "../internal/misc";
 import {
   nullthrows,
@@ -19,6 +21,7 @@ import {
   maybeCall,
   jsonHash,
   jitter,
+  maybeAsyncCall,
 } from "../internal/misc";
 import { Registry } from "../internal/Registry";
 import type { Client } from "./Client";
@@ -28,31 +31,42 @@ import type { LocalCache } from "./LocalCache";
 import type { Loggers, SwallowedErrorLoggerProps } from "./Loggers";
 import { Shard } from "./Shard";
 import { ShardIsNotDiscoverableError } from "./ShardIsNotDiscoverableError";
+import type { ShardNamer } from "./ShardNamer";
+
+/** Same as vanilla delay(), but with unref()ed timers. */
+const delay = delayMod.createWithTimers({
+  setTimeout: (...args) => setTimeout(...args).unref(),
+  clearTimeout: (...args) => clearTimeout(...args),
+});
 
 /**
  * Options for Cluster constructor.
  */
 export interface ClusterOptions<TClient extends Client, TNode> {
   /** Islands configuration of the Cluster. */
-  islands: MaybeCallable<
-    ReadonlyArray<{ no: number; nodes: readonly TNode[] }>
-  >;
+  islands: MaybeAsyncCallable<ClusterIslands<TNode>>;
   /** Given a node of some Island, instantiates a Client for this node. Called
    * when a new node appears in the Cluster statically or dynamically. */
   createClient: (node: TNode) => TClient;
   /** Loggers to be injected into all Clients returned by createClient(). */
   loggers: Loggers;
-  /** An instance of LocalCache which may be used for auxillary purposes when
+  /** An instance of LocalCache which may be used for auxiliary purposes when
    * discovering Shards/Clients. */
   localCache?: LocalCache | null;
+  /** How often to recheck for changes in `options.islands`. If it is SYNC, then
+   * by default - often, like every 500 ms (since it's assumed that
+   * `options.islands` calculation is cheap). If it is ASYNC, then by default -
+   * not so often, every `shardsDiscoverIntervalMs` (we assume that getting the
+   * list of Island nodes may be expensive, e.g. fetching from AWS API or so).
+   * If the Islands list here changes, then we trigger Shards rediscovery and
+   * Clients recreation ASAP. */
+  reloadIslandsIntervalMs?: MaybeCallable<number>;
+  /** Info on how to build/parse Shard names. */
+  shardNamer?: ShardNamer | null;
   /** How often to run Shards rediscovery in normal circumstances. */
   shardsDiscoverIntervalMs?: MaybeCallable<number>;
-  /** Jitter for shardsDiscoverIntervalMs. */
+  /** Jitter for shardsDiscoverIntervalMs and reloadIslandsIntervalMs. */
   shardsDiscoverIntervalJitter?: MaybeCallable<number>;
-  /** How often to recheck for changes in options.islands (typically, often,
-   * since it's assumed that options.islands calculation is cheap). If the
-   * Cluster configuration is changed, then we trigger rediscovery ASAP. */
-  shardsDiscoverRecheckIslandsIntervalMs?: MaybeCallable<number>;
   /** Used in the following situations:
    * 1. If we think that we know Island of a particular Shard, but an attempt to
    *    access it fails, this means that maybe the Shard is migrating to another
@@ -74,6 +88,15 @@ export interface ClusterOptions<TClient extends Client, TNode> {
    * to it not simultaneously. */
   locateIslandErrorRediscoverIslandDelayMs?: MaybeCallable<number>;
 }
+
+/**
+ * A type of `ClusterOptions#islands` property. Represents the full list of
+ * Islands and their corresponding Nodes (masters and replicas).
+ */
+export type ClusterIslands<TNode> = ReadonlyArray<{
+  no: number;
+  nodes: readonly TNode[];
+}>;
 
 /**
  * Holds the complete auto-discovered and non-contradictory snapshot of Islands
@@ -104,9 +127,10 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
     PickPartial<ClusterOptions<Client, never>>
   > = {
     localCache: null,
+    shardNamer: null,
     shardsDiscoverIntervalMs: 10000,
     shardsDiscoverIntervalJitter: 0.2,
-    shardsDiscoverRecheckIslandsIntervalMs: 500,
+    reloadIslandsIntervalMs: NaN,
     locateIslandErrorRetryCount: 2,
     locateIslandErrorRediscoverClusterDelayMs: 1000,
     locateIslandErrorRediscoverIslandDelayMs: 5000,
@@ -124,11 +148,11 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
     { no: number; nodes: readonly TNode[]; clients: readonly Client[] },
     Island<Client>
   >;
+  /** Represents the result of the recent successful call to
+   * `options.islands()`. */
+  private islandsCache: CachedRefreshedValue<ClusterIslands<TNode>>;
   /** Represents the result of the recent successful Shards discovery. */
   private shardsDiscoverCache: CachedRefreshedValue<ShardsDiscovered<TClient>>;
-  /** A handler which extracts Shard number from an ID (derived from some node's
-   * Client assuming they all have the same logic). */
-  private shardNoByID: (id: string) => number;
   /** Once set to true, Clients for newly appearing nodes will be pre-warmed. */
   private prewarmEnabled = false;
 
@@ -142,10 +166,22 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
   constructor(options: ClusterOptions<TClient, TNode>) {
     this.options = defaults({}, options, Cluster.DEFAULT_OPTIONS);
 
+    if (
+      typeof this.options.reloadIslandsIntervalMs === "number" &&
+      isNaN(this.options.reloadIslandsIntervalMs)
+    ) {
+      this.options.reloadIslandsIntervalMs = types.isAsyncFunction(
+        this.options.islands,
+      )
+        ? maybeCall(this.options.shardsDiscoverIntervalMs)
+        : 500;
+    }
+
     this.clientRegistry = new Registry<TNode, Client>({
       key: (node) => jsonHash(node),
       create: (node) => {
         const client = this.options.createClient(node);
+        client.options.shardNamer ??= this.options.shardNamer;
         const loggers = { ...client.options.loggers };
         client.options.loggers = {
           swallowedErrorLogger: (props) => {
@@ -183,13 +219,37 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
         }),
     });
 
-    const [client] = this.clientRegistry.getOrCreate(
-      nullthrows(
-        maybeCall(options.islands).find(({ nodes }) => nodes.length > 0),
-        "The Cluster must have Islands with nodes",
-      ).nodes[0],
-    );
-    this.shardNoByID = client.shardNoByID.bind(client);
+    this.islandsCache = new CachedRefreshedValue({
+      delayMs: () =>
+        Math.round(
+          maybeCall(this.options.reloadIslandsIntervalMs) *
+            jitter(maybeCall(this.options.shardsDiscoverIntervalJitter)),
+        ),
+      warningTimeoutMs: () => maybeCall(this.options.reloadIslandsIntervalMs),
+      deps: {
+        // If `options.islands` is reassigned externally (e.g. in a unit test),
+        // then it will be reflected in `await this.islandsCache.cached()`
+        // within `deps.delayMs` (not immediately). To expedite this (and Shards
+        // map) recheck, call Cluster#rediscover().
+        delayMs: 50,
+        // We use the value of `options.islands` itself as a dependency, so if
+        // `options.islands` is reassigned externally, then we'll catch the
+        // change quickly, within `deps.delayMs`. We do NOT call
+        // `options.islands()` intentionally, we use its value - since we just
+        // want to check for reassignment (e.g. in unit tests).
+        handler: () => this.options.islands,
+      },
+      resolverName: "Cluster#options.islands",
+      resolverFn: async () => maybeAsyncCall(this.options.islands),
+      delay,
+      onError: (error, elapsed) =>
+        this.options.loggers.swallowedErrorLogger({
+          where: `${this.constructor.name}.islandsCache`,
+          error,
+          elapsed,
+          importance: "normal",
+        }),
+    });
 
     this.shardsDiscoverCache = new CachedRefreshedValue({
       delayMs: () =>
@@ -199,16 +259,13 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
         ),
       warningTimeoutMs: () => maybeCall(this.options.shardsDiscoverIntervalMs),
       deps: {
-        delayMs: () =>
-          maybeCall(this.options.shardsDiscoverRecheckIslandsIntervalMs),
-        handler: () => jsonHash(maybeCall(this.options.islands)),
+        delayMs: () => maybeCall(this.options.reloadIslandsIntervalMs),
+        handler: async () =>
+          jsonHash(await maybeAsyncCall(this.islandsCache.cached())),
       },
+      resolverName: "Cluster#shardsDiscoverExpensive",
       resolverFn: async () => this.shardsDiscoverExpensive(),
-      delay: async (ms) =>
-        delay.createWithTimers({
-          setTimeout: (...args) => setTimeout(...args).unref(),
-          clearTimeout: (...args) => clearTimeout(...args),
-        })(ms),
+      delay,
       onError: (error, elapsed) =>
         this.options.loggers.swallowedErrorLogger({
           where: `${this.constructor.name}.shardsDiscoverCache`,
@@ -290,7 +347,9 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
    * the query), no matter whether it was an immediate call or a deferred one.
    */
   shard(id: string): Shard<TClient> {
-    return this.shardByNo(this.shardNoByID(id));
+    return this.shardByNo(
+      this.options.shardNamer ? this.options.shardNamer.shardNoByID(id) : 0,
+    );
   }
 
   /**
@@ -303,9 +362,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
    */
   @Memoize()
   shardByNo(shardNo: number): Shard<TClient> {
-    return new Shard(shardNo, async (body) =>
-      this.runWithLocatedIsland(shardNo, body),
-    );
+    return new Shard(shardNo, this.runOnShard.bind(this));
   }
 
   /**
@@ -357,20 +414,28 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
    * in unit tests mostly, because in real life, it's enough to just modify the
    * cluster configuration.
    */
-  async rediscover(): Promise<void> {
-    await this.shardsDiscoverCache.waitRefresh();
+  async rediscover(what?: "islands" | "shards"): Promise<void> {
+    if (!what || what === "islands") {
+      await this.islandsCache.refreshAndWait();
+    }
+
+    if (!what || what === "shards") {
+      await this.shardsDiscoverCache.refreshAndWait();
+    }
   }
 
   /**
    * Runs the body function with retries. The Island injected into the body
-   * function is located automatically by the Shard number.
+   * function is located automatically by the Shard number. In case of an error
+   * after any run attempt, calls onAttemptError().
    */
-  private async runWithLocatedIsland<TRes>(
+  private async runOnShard<TRes>(
     shardNo: number,
     body: (island: Island<TClient>, attempt: number) => Promise<TRes>,
+    onAttemptError?: (error: unknown, attempt: number) => void,
   ): Promise<TRes> {
+    let island: Island<TClient>;
     for (let attempt = 0; ; attempt++) {
-      let island: Island<TClient>;
       try {
         // Re-read Islands map on every retry, because it might change.
         const startTime = performance.now();
@@ -381,7 +446,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
           // Notice that we don't retry ShardIsNotDiscoverableError below (it's
           // not a ClientError) to avoid DoS, since it could be e.g. a fake ID
           // passed to us in some URL or something else. We still want to log it
-          // through locateIslandErrorLogger() though.
+          // through runOnShardErrorLogger() though.
           throw new ShardIsNotDiscoverableError(
             shardNo,
             errors,
@@ -395,14 +460,28 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
         return await body(island, attempt);
       } catch (cause: unknown) {
         const error = cause as MaybeError | ClientError;
-        this.options.loggers.locateIslandErrorLogger?.({ attempt, error });
 
         if (typeof error?.stack === "string") {
           const suffix = `\n    after ${attempt + 1} attempt${attempt > 0 ? "s" : ""}`;
+          process.stdout.write(
+            `DEBUG: ${inspect(
+              {
+                error:
+                  error instanceof ClientError
+                    ? error
+                    : error?.constructor?.name,
+                island: island!?.options.clients.map((c) => c.options),
+              },
+              { depth: null, compact: true, breakLength: 100000000 },
+            )}\n`,
+          );
           if (!error.stack.endsWith(suffix)) {
             error.stack = error.stack.trimEnd() + suffix;
           }
         }
+
+        onAttemptError?.(error, attempt);
+        this.options.loggers.runOnShardErrorLogger?.({ error, attempt });
 
         if (
           !(error instanceof ClientError) ||
@@ -428,7 +507,8 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
   }
 
   /**
-   * Runs the whole-cluster rediscover after a delay.
+   * Runs the whole-cluster rediscover after a delay, hoping that we'll load the
+   * new Shards-to-Island mapping.
    *
    * Multiple concurrent calls to this method will be coalesced into one
    * (including the delay period):
@@ -445,7 +525,9 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
     // We don't want to wait forever if some Island is completely down.
     const startTime = performance.now();
     await pTimeout(
-      this.shardsDiscoverCache.waitRefresh(),
+      // Notice that we intentionally DO NOT call `islandsCache#refreshAndWait()
+      // here: changes in the list of Islands never reveal moved Shards.
+      this.shardsDiscoverCache.refreshAndWait(),
       Math.round(
         maybeCall(this.options.shardsDiscoverIntervalMs) *
           jitter(maybeCall(this.options.shardsDiscoverIntervalJitter)) *
@@ -500,13 +582,14 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
   /**
    * Runs the actual Shards discovery queries over all Islands and updates the
    * mapping from each Shard number to an Island where it lives. These queries
-   * may be expensive, so it's expected that the return Promise is heavily
+   * may be expensive, so it's expected that the returned Promise is heavily
    * cached by the caller code.
    */
   private async shardsDiscoverExpensive(): Promise<ShardsDiscovered<TClient>> {
+    const islands = await this.islandsCache.cached();
     const seenKeys = new Set<string>();
     const islandNoToIsland = new Map<number, Island<TClient>>(
-      maybeCall(this.options.islands).map(({ no, nodes }) => {
+      islands.map(({ no, nodes }) => {
         const clients = nodes.map((node) => {
           const [client, key] = this.clientRegistry.getOrCreate(node);
           seenKeys.add(key);

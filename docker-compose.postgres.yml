@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
       PGDATA: /tmp/postgresql
-      POSTGRES_INITDB_ARGS: "-c port=$PGPORT -c max_connections=1000 -c synchronous_commit=off -c wal_level=logical"
+      POSTGRES_INITDB_ARGS: "-c port=$PGPORT -c max_connections=2000 -c synchronous_commit=off -c wal_level=logical"
     healthcheck:
       test: "PGPORT=$PGPORT pg_isready -U postgres"
       interval: 0.3s

@@ -19,6 +19,7 @@ export * from "./PgQueryUpdate";
 export * from "./PgQueryUpsert";
 export * from "./PgRunner";
 export * from "./PgSchema";
+export * from "./PgShardNamer";
 export * from "./helpers/buildShape";
 export * from "./helpers/escapeIdent";
 export * from "./helpers/escapeLiteral";

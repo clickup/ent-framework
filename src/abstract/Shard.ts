@@ -32,8 +32,10 @@ export class Shard<TClient extends Client> {
     /** A middleware to wrap queries with. It's responsible for locating the
      * right Island and retrying the call to body() (i.e. failed queries) in
      * case e.g. a shard is moved to another Island. */
-    public readonly runWithLocatedIsland: <TRes>(
+    public readonly runOnShard: <TRes>(
+      shardNo: number,
       body: (island: Island<TClient>, attempt: number) => Promise<TRes>,
+      onAttemptError?: (error: unknown, attempt: number) => void,
     ) => Promise<TRes>,
   ) {}
 
@@ -44,7 +46,7 @@ export class Shard<TClient extends Client> {
   async client(
     timeline: Timeline | typeof MASTER | typeof STALE_REPLICA,
   ): Promise<TClient> {
-    const [client] = await this.runWithLocatedIsland(async (island) =>
+    const [client] = await this.runOnShard(this.no, async (island) =>
       this.clientImpl(island, timeline, undefined),
     );
     return client;
@@ -59,32 +61,37 @@ export class Shard<TClient extends Client> {
     annotation: QueryAnnotation,
     timeline: Timeline,
     freshness: null | typeof MASTER | typeof STALE_REPLICA,
+    onAttemptError?: (error: unknown, attempt: number) => void,
   ): Promise<TOutput> {
-    return this.runWithLocatedIsland(async (island, attempt) => {
-      const [client, whyClient] = await this.clientImpl(
-        island,
-        freshness ?? timeline,
-        query.IS_WRITE ? true : undefined,
-      );
-
-      // Throws if e.g. the Shard was there by the moment we got its client
-      // above, but it probably disappeared (during migration) and appeared on
-      // some other Island.
-      const res = await query.run(client, {
-        ...annotation,
-        whyClient,
-        attempt: annotation.attempt + attempt,
-      });
-
-      if (query.IS_WRITE && freshness !== STALE_REPLICA) {
-        timeline.setPos(
-          await client.timelineManager.currentPos(),
-          maybeCall(client.timelineManager.maxLagMs),
+    return this.runOnShard(
+      this.no,
+      async (island, attempt) => {
+        const [client, whyClient] = await this.clientImpl(
+          island,
+          freshness ?? timeline,
+          query.IS_WRITE ? true : undefined,
         );
-      }
 
-      return res;
-    });
+        // Throws if e.g. the Shard was there by the moment we got its client
+        // above, but it probably disappeared (during migration) and appeared on
+        // some other Island.
+        const res = await query.run(client, {
+          ...annotation,
+          whyClient,
+          attempt: annotation.attempt + attempt,
+        });
+
+        if (query.IS_WRITE && freshness !== STALE_REPLICA) {
+          timeline.setPos(
+            await client.timelineManager.currentPos(),
+            maybeCall(client.timelineManager.maxLagMs),
+          );
+        }
+
+        return res;
+      },
+      onAttemptError,
+    );
   }
 
   /**

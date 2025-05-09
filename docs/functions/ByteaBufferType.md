@@ -8,7 +8,7 @@
 
 > **ByteaBufferType**(): `object`
 
-Defined in: src/pg/types/ByteaBufferType.ts:6
+Defined in: [src/pg/types/ByteaBufferType.ts:6](https://github.com/clickup/ent-framework/blob/master/src/pg/types/ByteaBufferType.ts#L6)
 
 A value stored in the DB as a bytea buffer.
 

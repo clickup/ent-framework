@@ -8,7 +8,7 @@
 
 > **BigIntArrayType**(): `object`
 
-Defined in: src/pg/types/BigIntArrayType.ts:17
+Defined in: [src/pg/types/BigIntArrayType.ts:17](https://github.com/clickup/ent-framework/blob/master/src/pg/types/BigIntArrayType.ts#L17)
 
 An array of IDs. Notice that:
 1. Node-postgres natively supports this type on read path, but on write path,

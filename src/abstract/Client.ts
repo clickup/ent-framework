@@ -9,6 +9,7 @@ import type { Loggers, SwallowedErrorLoggerProps } from "./Loggers";
 import type { QueryAnnotation } from "./QueryAnnotation";
 import type { Runner } from "./Runner";
 import type { Schema } from "./Schema";
+import type { ShardNamer } from "./ShardNamer";
 import type { TimelineManager } from "./TimelineManager";
 
 /**
@@ -17,7 +18,12 @@ import type { TimelineManager } from "./TimelineManager";
 export interface ClientOptions {
   /** Name of the Client; used for logging. */
   name: string;
-  /** Loggers to be called at different stages. */
+  /** Info on how to build/parse Shard names. If not set, then Cluster injects
+   * its own ShardNamer here right after creating a Client instance. */
+  shardNamer?: ShardNamer | null;
+  /** Loggers to be called at different stages. Client code calls into them.
+   * Also, Cluster injects its own loggers here, in addition to the provided
+   * ones (if any). */
   loggers?: Loggers | null;
   /** If passed, there will be an artificial queries accumulation delay while
    * batching the requests. Default is 0 (turned off). Passed to
@@ -61,6 +67,7 @@ export interface ClientPingInput {
 export abstract class Client {
   /** Default values for the constructor options. */
   static readonly DEFAULT_OPTIONS: Required<PickPartial<ClientOptions>> = {
+    shardNamer: null,
     loggers: null,
     batchDelayMs: 0,
   };
@@ -105,11 +112,6 @@ export abstract class Client {
    * wait for at least the provided number of milliseconds.
    */
   abstract ping(input: ClientPingInput): Promise<void>;
-
-  /**
-   * Extracts Shard number from an ID.
-   */
-  abstract shardNoByID(id: string): number;
 
   /**
    * Creates a new Client which is namespaced to the provided Shard number. The

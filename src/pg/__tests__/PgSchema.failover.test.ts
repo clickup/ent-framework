@@ -71,7 +71,7 @@ test("query retries on new master when switchover happens", async () => {
   });
 
   // All 10 queries fail and cause Island rediscovery to happen.
-  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
+  expect(testCluster.options.loggers.runOnShardErrorLogger).toBeCalledTimes(
     queries.length,
   );
 
@@ -91,7 +91,5 @@ test("query fails when no master appears after a retry", async () => {
   await expect(
     shardRun(shard, schema.insert({ name: "test" })),
   ).rejects.toThrow(/read_only_sql_transaction/);
-  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
-    2,
-  );
+  expect(testCluster.options.loggers.runOnShardErrorLogger).toBeCalledTimes(2);
 });

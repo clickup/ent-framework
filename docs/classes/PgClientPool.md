@@ -56,7 +56,7 @@ Defined in: [src/pg/PgClientPool.ts:80](https://github.com/clickup/ent-framework
 
 > **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `disableBatching`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
-Defined in: [src/abstract/Client.ts:183](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L183)
+Defined in: [src/abstract/Client.ts:185](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L185)
 
 Batcher is per-Client per-query-type
 per-table-name-and-shape-and-disableBatching:
@@ -111,7 +111,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 > **query**\<`TRow`\>(`__namedParameters`): `Promise`\<`TRow`[]\>
 
-Defined in: [src/pg/PgClient.ts:210](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L210)
+Defined in: [src/pg/PgClient.ts:186](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L186)
 
 Sends a query (internally, a multi-query). After the query finishes, we
 should expect that role() returns the actual master/replica role.
@@ -149,7 +149,7 @@ should expect that role() returns the actual master/replica role.
 
 > **shardNos**(): `Promise`\<readonly `number`[]\>
 
-Defined in: [src/pg/PgClient.ts:408](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L408)
+Defined in: [src/pg/PgClient.ts:384](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L384)
 
 Returns all Shard numbers discoverable via the connection to the Client's
 database.
@@ -168,7 +168,7 @@ database.
 
 > **ping**(`__namedParameters`): `Promise`\<`void`\>
 
-Defined in: [src/pg/PgClient.ts:432](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L432)
+Defined in: [src/pg/PgClient.ts:407](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L407)
 
 Sends a read or write test query to the server. Tells the server to sit and
 wait for at least the provided number of milliseconds.
@@ -189,35 +189,11 @@ wait for at least the provided number of milliseconds.
 
 ***
 
-### shardNoByID()
-
-> **shardNoByID**(`id`): `number`
-
-Defined in: [src/pg/PgClient.ts:450](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L450)
-
-Extracts Shard number from an ID.
-
-#### Parameters
-
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `string` |
-
-#### Returns
-
-`number`
-
-#### Inherited from
-
-[`PgClient`](PgClient.md).[`shardNoByID`](PgClient.md#shardnobyid)
-
-***
-
 ### withShard()
 
 > **withShard**(`no`): `this`
 
-Defined in: [src/pg/PgClient.ts:506](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L506)
+Defined in: [src/pg/PgClient.ts:425](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L425)
 
 Creates a new Client which is namespaced to the provided Shard number. The
 new Client will share the same connection pool with the parent's Client.
@@ -242,7 +218,7 @@ new Client will share the same connection pool with the parent's Client.
 
 > **role**(): [`ClientRole`](../type-aliases/ClientRole.md)
 
-Defined in: [src/pg/PgClient.ts:517](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L517)
+Defined in: [src/pg/PgClient.ts:438](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L438)
 
 Returns the Client's role reported after the last successful query. Master
 and replica roles may switch online unpredictably, without reconnecting, so
@@ -262,7 +238,7 @@ we only know the role after a query.
 
 > **connectionIssue**(): `null` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
 
-Defined in: [src/pg/PgClient.ts:521](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L521)
+Defined in: [src/pg/PgClient.ts:442](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L442)
 
 Returns a non-nullable value if the Client couldn't connect to the server
 (or it could, but the load balancer reported the remote server as not

@@ -88,9 +88,7 @@ test("unknown shard failure, singleShardFromID", async () => {
   await expect(
     EntTestHuman.loadNullable(vc, ID_FROM_UNKNOWN_SHARD),
   ).rejects.toThrowErrorMatchingSnapshot();
-  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
-    1,
-  ); // not retried on intent
+  expect(testCluster.options.loggers.runOnShardErrorLogger).toBeCalledTimes(1); // not retried on intent
 });
 
 test("unknown shard failure, singleShardForInsert", async () => {
@@ -101,9 +99,7 @@ test("unknown shard failure, singleShardForInsert", async () => {
       name: "test",
     }),
   ).rejects.toThrowErrorMatchingSnapshot();
-  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
-    1,
-  ); // not retried on intent
+  expect(testCluster.options.loggers.runOnShardErrorLogger).toBeCalledTimes(1); // not retried on intent
 });
 
 test("unknown shard failure, multiShardsFromInput, no inverses", async () => {
@@ -121,7 +117,5 @@ test("shard relocation error when accessing a table should be retried", async ()
   await expect(
     EntTestHuman.loadNullable(vc, ID_FROM_EXISTING_SHARD),
   ).rejects.toThrow(/undefined_table/);
-  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
-    3,
-  );
+  expect(testCluster.options.loggers.runOnShardErrorLogger).toBeCalledTimes(3);
 });

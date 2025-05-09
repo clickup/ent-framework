@@ -29,7 +29,7 @@ let proxyServer: TCPProxyServer;
 beforeEach(async () => {
   testCluster.options.locateIslandErrorRetryCount = 1;
   testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 10000;
-  testCluster.options.shardsDiscoverRecheckIslandsIntervalMs = 10;
+  testCluster.options.reloadIslandsIntervalMs = 10;
   testCluster.options.shardsDiscoverIntervalMs = 100000;
 
   shard = await testCluster.randomShard();
@@ -41,8 +41,7 @@ beforeEach(async () => {
   const proxyTestConfig = {
     ...TEST_CONFIG,
     isAlwaysLaggingReplica: true,
-    host: proxyServer.address().address,
-    port: proxyServer.address().port,
+    ...(await proxyServer.hostPort()),
     connectionTimeoutMillis: 30000,
   };
 
@@ -80,7 +79,7 @@ test("chooses another replica if new connection can't be opened", async () => {
   await waitForExpect(() =>
     expect(
       "" +
-        jest.mocked(testCluster.options.loggers.locateIslandErrorLogger!).mock
+        jest.mocked(testCluster.options.loggers.runOnShardErrorLogger!).mock
           .lastCall?.[0].error,
     ).toContain("ECONNREFUSED"),
   );
@@ -111,6 +110,9 @@ test("retries on another replica if connection is aborted mid-query", async () =
   await proxyServer.abortConnections();
 
   const error = await promise;
-  expect(error).toBeInstanceOf(ClientError);
-  expect((error as ClientError).postAction).toEqual("choose-another-client");
+  if (!(error instanceof ClientError)) {
+    throw error;
+  }
+
+  expect(error.postAction).toEqual("choose-another-client");
 });

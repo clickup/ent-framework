@@ -12,8 +12,10 @@ export interface Loggers {
   clientQueryLogger?: (props: ClientQueryLoggerProps) => void;
   /** Logs errors which did not throw through (typically recoverable). */
   swallowedErrorLogger: (props: SwallowedErrorLoggerProps) => void;
-  /** Called when Island-from-Shard location fails (on every retry). */
-  locateIslandErrorLogger?: (props: LocateIslandErrorLoggerProps) => void;
+  /** Called when Island-from-Shard location fails (e.g. no such Shard), or when
+   * a query on a particular Shard fails due to any reason (like transport
+   * error). Mostly used in unit tests, since it's called for every retry. */
+  runOnShardErrorLogger?: (props: RunOnShardErrorLoggerProps) => void;
 }
 
 export interface ClientQueryLoggerProps {
@@ -54,7 +56,7 @@ export interface SwallowedErrorLoggerProps {
   importance: "low" | "normal";
 }
 
-export interface LocateIslandErrorLoggerProps {
-  attempt: number;
+export interface RunOnShardErrorLoggerProps {
   error: unknown;
+  attempt: number;
 }

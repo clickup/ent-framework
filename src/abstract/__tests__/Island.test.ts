@@ -27,7 +27,7 @@ const ISLAND_OPTIONS = {
 
 const CONNECTION_ISSUE: ClientConnectionIssue = {
   timestamp: new Date(),
-  cause: new Error("test"),
+  cause: Error("test"),
   postAction: "fail",
   kind: "data-on-server-is-unchanged",
   comment: "test",

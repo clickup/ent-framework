@@ -16,20 +16,14 @@ import {
 } from "../abstract/internal/misc";
 import type { ClientQueryLoggerProps } from "../abstract/Loggers";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
-import { ShardError } from "../abstract/ShardError";
 import { TimelineManager } from "../abstract/TimelineManager";
 import type { MaybeCallable, MaybeError, PickPartial } from "../internal/misc";
-import {
-  addSentenceSuffixes,
-  maybeCall,
-  sanitizeIDForDebugPrinting,
-} from "../internal/misc";
+import { addSentenceSuffixes, maybeCall } from "../internal/misc";
 import { Ref } from "../internal/Ref";
 import type { Hints, Literal } from "../types";
 import { escapeLiteral } from "./helpers/escapeLiteral";
 import { buildHintQueries } from "./internal/buildHintQueries";
 import { CLIENT_ERROR_PREDICATES } from "./internal/misc";
-import { parseCompositeRow } from "./internal/parseCompositeRow";
 import { parseLsn } from "./internal/parseLsn";
 import { PgError } from "./PgError";
 
@@ -37,14 +31,6 @@ import { PgError } from "./PgError";
  * Options for PgClient constructor.
  */
 export interface PgClientOptions extends ClientOptions {
-  /** Info on how to discover the shards. */
-  shards?: {
-    /** Name of a PG shard schema (e.g. "sh%04d"). */
-    nameFormat: string;
-    /** A SQL query which should return the names of shard schemas served by
-     * this Client. */
-    discoverQuery: MaybeCallable<string>;
-  } | null;
   /** PG "SET key=value" hints to run before each query. Often times we use it
    * to pass statement_timeout option since e.g. PGBouncer doesn't support
    * per-connection statement timeout in transaction pooling mode: it throws
@@ -105,7 +91,6 @@ export abstract class PgClient extends Client {
     PickPartial<PgClientOptions>
   > = {
     ...super.DEFAULT_OPTIONS,
-    shards: null,
     hints: null,
     role: "unknown",
     maxReplicationLagMs: 60000,
@@ -192,15 +177,6 @@ export abstract class PgClient extends Client {
         }
       },
     );
-
-    if (this.options.shards) {
-      this.shardNoPadLen = this.buildShardName(0).match(/(\d+)/)
-        ? RegExp.$1.length
-        : 0;
-      if (!this.shardNoPadLen) {
-        throw Error("Invalid shards.nameFormat value");
-      }
-    }
   }
 
   /**
@@ -406,14 +382,16 @@ export abstract class PgClient extends Client {
   }
 
   async shardNos(): Promise<readonly number[]> {
+    const shardNamer = this.options.shardNamer;
+
     // An installation without sharding enabled.
-    if (!this.options.shards) {
+    if (!shardNamer) {
       return [0];
     }
 
     // e.g. sh0000, sh0123 and not e.g. sh1 or sh12345678
     const rows = await this.query<Partial<Record<string, string>>>({
-      query: [maybeCall(this.options.shards.discoverQuery)],
+      query: [maybeCall(shardNamer.options.discoverQuery)],
       isWrite: false,
       annotations: [],
       op: OP_SHARD_NOS,
@@ -421,10 +399,7 @@ export abstract class PgClient extends Client {
     });
     return rows
       .map((row) => Object.values(row)[0])
-      .map((name) => {
-        const no = name?.match(/(\d+)/) ? parseInt(RegExp.$1) : null;
-        return no !== null && name === this.buildShardName(no) ? no : null;
-      })
+      .map((name) => (name ? shardNamer.shardNoByName(name) : null))
       .filter((no): no is number => no !== null)
       .sort((a, b) => a - b);
   }
@@ -447,66 +422,12 @@ export abstract class PgClient extends Client {
     });
   }
 
-  shardNoByID(id: string): number {
-    // An installation without sharding enabled.
-    if (!this.options.shards) {
-      return 0;
-    }
-
-    // Just a historical exception for id="1".
-    if (id === "1") {
-      return 1;
-    }
-
-    // Composite ID: `(100008888888,1023499999999)` - try extracting non-zero
-    // Shard from parts (left to right) first, and if there is none, allow shard
-    // zero too.
-    if (typeof id === "string" && id.startsWith("(") && id.endsWith(")")) {
-      let no = NaN;
-      for (const subID of parseCompositeRow(id)) {
-        const tryNo =
-          subID && subID.length >= this.shardNoPadLen + 1
-            ? parseInt(subID.substring(1, this.shardNoPadLen + 1))
-            : NaN;
-        if (!isNaN(tryNo)) {
-          if (tryNo > 0) {
-            return tryNo;
-          } else if (isNaN(no)) {
-            no = tryNo;
-          }
-        }
-      }
-
-      if (isNaN(no)) {
-        const idSafe = sanitizeIDForDebugPrinting(id);
-        throw Error(
-          `Cannot extract shard number from the composite ID ${idSafe}`,
-        );
-      }
-
-      return no;
-    }
-
-    // Plain ID.
-    const no =
-      typeof id === "string" && id.length >= this.shardNoPadLen + 1
-        ? parseInt(id.substring(1, this.shardNoPadLen + 1))
-        : NaN;
-    if (isNaN(no)) {
-      const idSafe = sanitizeIDForDebugPrinting(id);
-      throw new ShardError(
-        `Cannot parse ID ${idSafe} to detect shard number`,
-        this.options.name,
-      );
-    }
-
-    return no;
-  }
-
   withShard(no: number): this {
     return Object.assign(Object.create(this.constructor.prototype), {
       ...this,
-      shardName: this.buildShardName(no),
+      shardName: this.options.shardNamer
+        ? this.options.shardNamer.shardNameByNo(no)
+        : this.shardName,
       // Notice that we can ONLY have readonly properties in this and all
       // derived classes to make it work. If we need some mutable props shared
       // across all of the clones, we need to wrap them in a Ref (and make the
@@ -632,23 +553,6 @@ export abstract class PgClient extends Client {
     }
 
     return resMulti;
-  }
-
-  /**
-   * Builds the schema name (aka "Shard name") by Shard number using
-   * `options#shards#nameFormat`.
-   *
-   * E.g. nameFormat="sh%04d" generates names like "sh0042".
-   */
-  private buildShardName(no: number | string): string {
-    //
-    return this.options.shards
-      ? this.options.shards.nameFormat.replace(
-          /%(0?)(\d+)[sd]/,
-          (_, zero: string, d: string) =>
-            no.toString().padStart(zero ? parseInt(d) : 0, "0"),
-        )
-      : this.shardName;
   }
 }
 

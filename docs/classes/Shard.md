@@ -20,7 +20,7 @@ Shard lives within an Island with one master and N replicas.
 
 ### new Shard()
 
-> **new Shard**\<`TClient`\>(`no`, `runWithLocatedIsland`): [`Shard`](Shard.md)\<`TClient`\>
+> **new Shard**\<`TClient`\>(`no`, `runOnShard`): [`Shard`](Shard.md)\<`TClient`\>
 
 Defined in: [src/abstract/Shard.ts:29](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L29)
 
@@ -29,7 +29,7 @@ Defined in: [src/abstract/Shard.ts:29](https://github.com/clickup/ent-framework/
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `no` | `number` | Shard number. |
-| `runWithLocatedIsland` | \<`TRes`\>(`body`) => `Promise`\<`TRes`\> | A middleware to wrap queries with. It's responsible for locating the right Island and retrying the call to body() (i.e. failed queries) in case e.g. a shard is moved to another Island. |
+| `runOnShard` | \<`TRes`\>(`shardNo`, `body`, `onAttemptError`?) => `Promise`\<`TRes`\> | A middleware to wrap queries with. It's responsible for locating the right Island and retrying the call to body() (i.e. failed queries) in case e.g. a shard is moved to another Island. |
 
 #### Returns
 
@@ -41,7 +41,7 @@ Defined in: [src/abstract/Shard.ts:29](https://github.com/clickup/ent-framework/
 | ------ | ------ | ------ | ------ |
 | <a id="lastknownislandno"></a> `lastKnownIslandNo` | `null` \| `number` | `null` | The last known Island number where this Shard was discovered. It may be out of date after the Shard is moved, and also it may be null in case there was no discovery happened yet. |
 | <a id="no-1"></a> `no` | `number` | `undefined` | Shard number. |
-| <a id="runwithlocatedisland-1"></a> `runWithLocatedIsland` | \<`TRes`\>(`body`: (`island`, `attempt`) => `Promise`\<`TRes`\>) => `Promise`\<`TRes`\> | `undefined` | A middleware to wrap queries with. It's responsible for locating the right Island and retrying the call to body() (i.e. failed queries) in case e.g. a shard is moved to another Island. |
+| <a id="runonshard-1"></a> `runOnShard` | \<`TRes`\>(`shardNo`: `number`, `body`: (`island`, `attempt`) => `Promise`\<`TRes`\>, `onAttemptError`?: (`error`, `attempt`) => `void`) => `Promise`\<`TRes`\> | `undefined` | A middleware to wrap queries with. It's responsible for locating the right Island and retrying the call to body() (i.e. failed queries) in case e.g. a shard is moved to another Island. |
 
 ## Methods
 
@@ -49,7 +49,7 @@ Defined in: [src/abstract/Shard.ts:29](https://github.com/clickup/ent-framework/
 
 > **client**(`timeline`): `Promise`\<`TClient`\>
 
-Defined in: [src/abstract/Shard.ts:44](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L44)
+Defined in: [src/abstract/Shard.ts:46](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L46)
 
 Chooses the right Client to be used for this Shard. We don't memoize,
 because the Shard may relocate to another Island during re-discovery.
@@ -68,9 +68,9 @@ because the Shard may relocate to another Island during re-discovery.
 
 ### run()
 
-> **run**\<`TOutput`\>(`query`, `annotation`, `timeline`, `freshness`): `Promise`\<`TOutput`\>
+> **run**\<`TOutput`\>(`query`, `annotation`, `timeline`, `freshness`, `onAttemptError`?): `Promise`\<`TOutput`\>
 
-Defined in: [src/abstract/Shard.ts:57](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L57)
+Defined in: [src/abstract/Shard.ts:59](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L59)
 
 Runs a query after choosing the right Client (destination connection,
 Shard, annotation etc.)
@@ -89,6 +89,7 @@ Shard, annotation etc.)
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 | `timeline` | [`Timeline`](Timeline.md) |
 | `freshness` | `null` \| *typeof* [`MASTER`](../variables/MASTER.md) \| *typeof* [`STALE_REPLICA`](../variables/STALE_REPLICA.md) |
+| `onAttemptError`? | (`error`, `attempt`) => `void` |
 
 #### Returns
 
@@ -100,7 +101,7 @@ Shard, annotation etc.)
 
 > **assertDiscoverable**(): `Promise`\<`void`\>
 
-Defined in: [src/abstract/Shard.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L94)
+Defined in: [src/abstract/Shard.ts:101](https://github.com/clickup/ent-framework/blob/master/src/abstract/Shard.ts#L101)
 
 Throws if this Shard does not exist, or its Island is down, or something
 else is wrong with it.

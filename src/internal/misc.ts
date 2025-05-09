@@ -63,6 +63,11 @@ export type PickPartial<T> = {
 export type MaybeCallable<T> = T | (() => T);
 
 /**
+ * Similar to MaybeCallable, but allows for async functions.
+ */
+export type MaybeAsyncCallable<T> = T | (() => T) | (() => Promise<T>);
+
+/**
  * Some Node APIs throw not an instance of Error object, but something looking
  * like an Error. So we can't do "instanceof Error" check in all cases, we can
  * only compare the shape of a variable received in a `catch (e: unknown)` block
@@ -408,6 +413,17 @@ export function entries<K extends string, V>(
  * If the passed value is a function, calls it; otherwise, returns it intact.
  */
 export function maybeCall<T>(valueOrFn: MaybeCallable<T>): T {
+  return typeof valueOrFn === "function" || valueOrFn instanceof Function
+    ? (valueOrFn as Function)()
+    : valueOrFn;
+}
+
+/**
+ * Same as maybeCall(), but for MaybeAsyncCallable.
+ */
+export async function maybeAsyncCall<T>(
+  valueOrFn: MaybeAsyncCallable<T>,
+): Promise<T> {
   return typeof valueOrFn === "function" || valueOrFn instanceof Function
     ? (valueOrFn as Function)()
     : valueOrFn;

@@ -34,7 +34,7 @@ let connStuckTestConfig: typeof TEST_CONFIG;
 beforeEach(async () => {
   testCluster.options.locateIslandErrorRetryCount = 2;
   testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 100;
-  testCluster.options.shardsDiscoverRecheckIslandsIntervalMs = 20000; // intentionally large
+  testCluster.options.reloadIslandsIntervalMs = 20000; // intentionally large
   testCluster.options.shardsDiscoverIntervalMs = 100000;
 
   testCluster.options.islands = TEST_ISLANDS;
@@ -64,8 +64,7 @@ beforeEach(async () => {
   connStuckTestConfig = {
     ...TEST_CONFIG,
     isAlwaysLaggingReplica: true,
-    host: connStuckServer.address().address,
-    port: connStuckServer.address().port,
+    ...(await connStuckServer.hostPort()),
     connectionTimeoutMillis: 30000,
   };
 });
@@ -81,8 +80,8 @@ test("when connection gets stuck during background rediscovery, it does not slow
   testCluster.options.islands = [
     { no: 0, nodes: [TEST_CONFIG, connStuckTestConfig] },
   ];
-  jest.advanceTimersByTime(
-    maybeCall(testCluster.options.shardsDiscoverRecheckIslandsIntervalMs),
+  await jest.advanceTimersByTimeAsync(
+    maybeCall(testCluster.options.reloadIslandsIntervalMs),
   );
   await connStuckServer.waitForAtLeastConnections(1);
 

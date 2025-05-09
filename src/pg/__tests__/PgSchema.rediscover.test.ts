@@ -54,7 +54,7 @@ test("shard relocation error when accessing a table should be retried", async ()
 
   const waitRefreshSpy = jest.spyOn(
     CachedRefreshedValue.prototype,
-    "waitRefresh",
+    "refreshAndWait",
   );
 
   const queries = range(50).map((i) => schema.insert({ name: `test${i}` }));
@@ -72,7 +72,7 @@ test("shard relocation error when accessing a table should be retried", async ()
     /undefined_object/,
   );
 
-  // Check that calls to waitRefresh() were coalesced (i.e.
+  // Check that calls to refreshAndWait() were coalesced (i.e.
   // Cluster#rediscoverCluster() is coalesce-memoized). Despite we have 50
   // parallel queries, the calls to whole-Cluster rediscovery were coalesced to
   // just a few.
@@ -90,15 +90,11 @@ test("shard-to-island resolution failure should NOT cause rediscovery when runni
   await expect(
     shardRun(shard, schema.load(ID_FROM_UNKNOWN_SHARD)),
   ).rejects.toThrow(/not discoverable/);
-  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
-    1,
-  );
+  expect(testCluster.options.loggers.runOnShardErrorLogger).toBeCalledTimes(1);
 });
 
 test("shard-to-island resolution failure should NOT cause rediscover when just getting a client", async () => {
   const shard = testCluster.shard(ID_FROM_UNKNOWN_SHARD);
   await expect(shard.client(MASTER)).rejects.toThrow(/not discoverable/);
-  expect(testCluster.options.loggers.locateIslandErrorLogger).toBeCalledTimes(
-    1,
-  );
+  expect(testCluster.options.loggers.runOnShardErrorLogger).toBeCalledTimes(1);
 });

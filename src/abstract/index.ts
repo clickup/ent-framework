@@ -19,5 +19,6 @@ export * from "./Schema";
 export * from "./Shard";
 export * from "./ShardError";
 export * from "./ShardIsNotDiscoverableError";
+export * from "./ShardNamer";
 export * from "./Timeline";
 export * from "./TimelineManager";

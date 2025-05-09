@@ -24,15 +24,14 @@ beforeEach(async () => {
 afterEach(async () => {
   testCluster.options.islands = [{ no: 0, nodes: [TEST_CONFIG] }];
   testCluster.options.shardsDiscoverIntervalMs = 1000000;
-  testCluster.options.shardsDiscoverRecheckIslandsIntervalMs = 50;
+  testCluster.options.reloadIslandsIntervalMs = 50;
   await testCluster.rediscover();
 });
 
 test("Shard is not discoverable error when connection got stuck", async () => {
   const STUCK_CONFIG = {
     ...TEST_CONFIG,
-    host: connStuckServer.address().address,
-    port: connStuckServer.address().port,
+    ...(await connStuckServer.hostPort()),
     connectionTimeoutMillis: 5000,
   };
   testCluster.options.islands = [

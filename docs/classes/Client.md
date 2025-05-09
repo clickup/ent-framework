@@ -6,7 +6,7 @@
 
 # Class: `abstract` Client
 
-Defined in: [src/abstract/Client.ts:61](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L61)
+Defined in: [src/abstract/Client.ts:67](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L67)
 
 Client is a Shard name aware abstraction which sends an actual query and
 tracks the master/replica timeline. The concrete query sending implementation
@@ -22,7 +22,7 @@ tracks the master/replica timeline. The concrete query sending implementation
 
 > **new Client**(`options`): [`Client`](Client.md)
 
-Defined in: [src/abstract/Client.ts:153](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L153)
+Defined in: [src/abstract/Client.ts:155](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L155)
 
 Initializes an instance of Client.
 
@@ -51,7 +51,7 @@ Initializes an instance of Client.
 
 > `abstract` **address**(): `string`
 
-Defined in: [src/abstract/Client.ts:88](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L88)
+Defined in: [src/abstract/Client.ts:95](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L95)
 
 Represents the full destination address this Client is working with.
 Depending on the implementation, it may include hostname, port number,
@@ -69,7 +69,7 @@ shardNos) based on that address.
 
 > `abstract` **end**(): `Promise`\<`void`\>
 
-Defined in: [src/abstract/Client.ts:95](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L95)
+Defined in: [src/abstract/Client.ts:102](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L102)
 
 Gracefully closes the connections to let the caller destroy the Client. The
 pending queries are awaited to finish before returning. The Client becomes
@@ -85,7 +85,7 @@ unusable after calling this method: you should not send queries to it.
 
 > `abstract` **shardNos**(): `Promise`\<readonly `number`[]\>
 
-Defined in: [src/abstract/Client.ts:101](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L101)
+Defined in: [src/abstract/Client.ts:108](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L108)
 
 Returns all Shard numbers discoverable via the connection to the Client's
 database.
@@ -100,7 +100,7 @@ database.
 
 > `abstract` **ping**(`input`): `Promise`\<`void`\>
 
-Defined in: [src/abstract/Client.ts:107](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L107)
+Defined in: [src/abstract/Client.ts:114](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L114)
 
 Sends a read or write test query to the server. Tells the server to sit and
 wait for at least the provided number of milliseconds.
@@ -117,31 +117,11 @@ wait for at least the provided number of milliseconds.
 
 ***
 
-### shardNoByID()
-
-> `abstract` **shardNoByID**(`id`): `number`
-
-Defined in: [src/abstract/Client.ts:112](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L112)
-
-Extracts Shard number from an ID.
-
-#### Parameters
-
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `string` |
-
-#### Returns
-
-`number`
-
-***
-
 ### withShard()
 
 > `abstract` **withShard**(`no`): `this`
 
-Defined in: [src/abstract/Client.ts:118](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L118)
+Defined in: [src/abstract/Client.ts:120](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L120)
 
 Creates a new Client which is namespaced to the provided Shard number. The
 new Client will share the same connection pool with the parent's Client.
@@ -162,7 +142,7 @@ new Client will share the same connection pool with the parent's Client.
 
 > `abstract` **isEnded**(): `boolean`
 
-Defined in: [src/abstract/Client.ts:123](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L123)
+Defined in: [src/abstract/Client.ts:125](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L125)
 
 Returns true if the Client is ended and can't be used anymore.
 
@@ -176,7 +156,7 @@ Returns true if the Client is ended and can't be used anymore.
 
 > `abstract` **role**(): [`ClientRole`](../type-aliases/ClientRole.md)
 
-Defined in: [src/abstract/Client.ts:130](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L130)
+Defined in: [src/abstract/Client.ts:132](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L132)
 
 Returns the Client's role reported after the last successful query. Master
 and replica roles may switch online unpredictably, without reconnecting, so
@@ -192,7 +172,7 @@ we only know the role after a query.
 
 > `abstract` **connectionIssue**(): `null` \| [`ClientConnectionIssue`](../interfaces/ClientConnectionIssue.md)
 
-Defined in: [src/abstract/Client.ts:138](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L138)
+Defined in: [src/abstract/Client.ts:140](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L140)
 
 Returns a non-nullable value if the Client couldn't connect to the server
 (or it could, but the load balancer reported the remote server as not
@@ -209,7 +189,7 @@ until e.g. the next discovery query to it (or any query) succeeds.
 
 > `protected` **logSwallowedError**(`props`): `void`
 
-Defined in: [src/abstract/Client.ts:143](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L143)
+Defined in: [src/abstract/Client.ts:145](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L145)
 
 Calls swallowedErrorLogger() doing some preliminary amendment.
 
@@ -229,7 +209,7 @@ Calls swallowedErrorLogger() doing some preliminary amendment.
 
 > **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `disableBatching`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
-Defined in: [src/abstract/Client.ts:183](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L183)
+Defined in: [src/abstract/Client.ts:185](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L185)
 
 Batcher is per-Client per-query-type
 per-table-name-and-shape-and-disableBatching:
@@ -280,7 +260,7 @@ All that means that in a 1000-Shard 20-table Cluster we'll eventually have
 
 > **prewarm**(): `void`
 
-Defined in: [src/abstract/Client.ts:208](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L208)
+Defined in: [src/abstract/Client.ts:210](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L210)
 
 A convenience method to put connections prewarming logic to. The idea is to
 keep the needed number of open connections and also, in each connection,

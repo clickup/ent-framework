@@ -6,7 +6,7 @@
 
 # Interface: PgClientConn
 
-Defined in: [src/pg/PgClient.ts:74](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L74)
+Defined in: [src/pg/PgClient.ts:60](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L60)
 
 An opened low-level PostgreSQL connection.
 

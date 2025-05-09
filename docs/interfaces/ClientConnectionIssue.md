@@ -6,7 +6,7 @@
 
 # Interface: ClientConnectionIssue
 
-Defined in: [src/abstract/Client.ts:39](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L39)
+Defined in: [src/abstract/Client.ts:45](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L45)
 
 An information about Client's connection related issue.
 

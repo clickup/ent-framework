@@ -5,7 +5,7 @@ import uniq from "lodash/uniq";
 import { collect } from "streaming-iterables";
 import { MASTER } from "../../abstract/Shard";
 import { ShardError } from "../../abstract/ShardError";
-import { join, mapJoin } from "../../internal/misc";
+import { inspectCompact, join, mapJoin } from "../../internal/misc";
 import {
   recreateTestTables,
   testCluster,
@@ -153,18 +153,29 @@ class EntTestTopic extends BaseEnt(
 
 let vc: VC;
 let myCompany: EntTestCompany;
+let proxyServer: TCPProxyServer;
 
 beforeEach(async () => {
+  testCluster.options.locateIslandErrorRetryCount = 2;
   testCluster.options.islands = [{ no: 0, nodes: [TEST_CONFIG] }];
+  process.stdout.write("beforeEach 0\n");
   await testCluster.rediscover();
+  process.stdout.write("beforeEach 1\n");
 
   await recreateTestTables(
     [EntTestCompany, EntTestUser, EntTestTopic],
     TABLE_INVERSE,
   );
+  process.stdout.write("beforeEach 2\n");
 
   vc = createVC();
   myCompany = await EntTestCompany.insertReturning(vc, { name: "my-company" });
+  process.stdout.write("beforeEach 3\n");
+
+  proxyServer = new TCPProxyServer({
+    host: TEST_CONFIG.host!,
+    port: TEST_CONFIG.port!,
+  });
 });
 
 test("CRUD", async () => {
@@ -380,21 +391,50 @@ test("inverses are NOT deleted when throwInAfterMutation trigger throws any erro
   expect(await inverse.id2s(vc, myCompany.id)).toHaveLength(1);
 });
 
-test("inverses are NOT deleted when connection aborts at ent creation", async () => {
-  const proxyServer = new TCPProxyServer({
-    host: TEST_CONFIG.host!,
-    port: TEST_CONFIG.port!,
-  });
+test("inverses are NOT deleted when connection aborts at ent creation, and there were no retries", async () => {
+  testCluster.options.locateIslandErrorRetryCount = 0;
   testCluster.options.islands = [
     {
       no: 0,
-      nodes: [
-        {
-          ...TEST_CONFIG,
-          host: proxyServer.address().address,
-          port: proxyServer.address().port,
-        },
-      ],
+      nodes: [{ ...TEST_CONFIG, ...(await proxyServer.hostPort()) }],
+    },
+  ];
+  process.stdout.write("0\n");
+  await testCluster.rediscover();
+  process.stdout.write("01\n");
+
+  const promise = EntTestTopic.insertIfNotExists(vc, {
+    owner_id: myCompany.id,
+    slug: "pg_sleep",
+    sleep: 5,
+  }).catch((e) => inspectCompact(e));
+  process.stdout.write("02\n");
+
+  await delay(2000);
+  process.stdout.write("1\n");
+  await proxyServer.abortConnections();
+  process.stdout.write("2\n");
+  expect(await promise).toContain("Connection terminated unexpectedly");
+  process.stdout.write("3\n");
+
+  // On an accidental disconnect (and when INSERT wasn't retried), we don't
+  // know, whether the DB applied the insert or not, so we should expect Ent
+  // Framework to NOT delete the inverse.
+  expect(
+    await EntTestTopic.INVERSES[0].id2s(
+      vc.withOneTimeStaleReplica(),
+      myCompany.id,
+    ),
+  ).toHaveLength(1);
+  process.stdout.write("4\n");
+});
+
+test("inverses are NOT deleted when connection aborts at ent creation, and insert returned null due to a successful retry", async () => {
+  testCluster.options.locateIslandErrorRetryCount = 2;
+  testCluster.options.islands = [
+    {
+      no: 0,
+      nodes: [{ ...TEST_CONFIG, ...(await proxyServer.hostPort()) }],
     },
   ];
   await testCluster.rediscover();
@@ -403,19 +443,27 @@ test("inverses are NOT deleted when connection aborts at ent creation", async ()
     owner_id: myCompany.id,
     slug: "pg_sleep",
     sleep: 5,
-  }).catch((e) => e.message);
+  }).catch((e) => inspectCompact(e));
 
-  await delay(1000);
-
+  await delay(2000);
   await proxyServer.abortConnections();
 
-  expect(await promise).toContain("Connection terminated unexpectedly");
+  // Success after a retry, but it returns null thinking that there was such a
+  // row already in the DB. From the caller perspective, we can't distinguish
+  // whether the row existed there originally, or it was silently created during
+  // the 1st attempt (right before the disconnect) and we didn't know about it.
+  expect(await promise).toBeNull();
 
-  // On an accidental disconnect, we don't know, whether the DB applied the
-  // insert or not, so we should expect Ent Framework to NOT delete the inverse.
-  const inverse = EntTestTopic.INVERSES[0];
+  // On the 1st attempt of the insert(), there is an accidental disconnect. In
+  // fact, the INSERT succeeds, so on a retry, it returns null instead of an ID
+  // (because there is such a row inserted already - unique key violation). In
+  // this case, Ent Framework must not undo inverses creation! Otherwise, there
+  // will remain a row in the DB with no inverses.
   expect(
-    await inverse.id2s(vc.withOneTimeStaleReplica(), myCompany.id),
+    await EntTestTopic.INVERSES[0].id2s(
+      vc.withOneTimeStaleReplica(),
+      myCompany.id,
+    ),
   ).toHaveLength(1);
 });
 

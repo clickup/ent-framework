@@ -6,7 +6,7 @@
 
 # Class: Cluster\<TClient, TNode\>
 
-Defined in: [src/abstract/Cluster.ts:101](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L101)
+Defined in: [src/abstract/Cluster.ts:124](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L124)
 
 Cluster is a collection of Islands and an orchestration of shardNo -> Island
 resolution.
@@ -29,7 +29,7 @@ Shard 0 is a special "global" Shard.
 
 > **new Cluster**\<`TClient`, `TNode`\>(`options`): [`Cluster`](Cluster.md)\<`TClient`, `TNode`\>
 
-Defined in: [src/abstract/Cluster.ts:142](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L142)
+Defined in: [src/abstract/Cluster.ts:166](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L166)
 
 Initializes the Cluster, but doesn't send any queries yet, even discovery
 queries (also, no implicit prewarming).
@@ -57,7 +57,7 @@ queries (also, no implicit prewarming).
 
 > **prewarm**(`randomizedDelayMs`, `onInitialPrewarm`?): `void`
 
-Defined in: [src/abstract/Cluster.ts:234](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L234)
+Defined in: [src/abstract/Cluster.ts:291](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L291)
 
 Signals the Cluster to keep the Clients pre-warmed, e.g. open. (It's up to
 the particular Client's implementation, what does a "pre-warmed Client"
@@ -87,7 +87,7 @@ pgbouncer or when DB is accessed over SSL).
 
 > **globalShard**(): [`Shard`](Shard.md)\<`TClient`\>
 
-Defined in: [src/abstract/Cluster.ts:265](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L265)
+Defined in: [src/abstract/Cluster.ts:322](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L322)
 
 Returns a global Shard of the Cluster. This method is made synchronous
 intentionally, to defer the I/O and possible errors to the moment of the
@@ -103,7 +103,7 @@ actual query.
 
 > **nonGlobalShards**(): `Promise`\<readonly [`Shard`](Shard.md)\<`TClient`\>[]\>
 
-Defined in: [src/abstract/Cluster.ts:272](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L272)
+Defined in: [src/abstract/Cluster.ts:329](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L329)
 
 Returns all currently known (discovered) non-global Shards in the Cluster.
 
@@ -117,7 +117,7 @@ Returns all currently known (discovered) non-global Shards in the Cluster.
 
 > **shard**(`id`): [`Shard`](Shard.md)\<`TClient`\>
 
-Defined in: [src/abstract/Cluster.ts:292](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L292)
+Defined in: [src/abstract/Cluster.ts:349](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L349)
 
 Returns Shard of a particular id. This method is made synchronous
 intentionally, to defer the I/O and possible errors to the moment of the
@@ -149,7 +149,7 @@ the query), no matter whether it was an immediate call or a deferred one.
 
 > **shardByNo**(`shardNo`): [`Shard`](Shard.md)\<`TClient`\>
 
-Defined in: [src/abstract/Cluster.ts:305](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L305)
+Defined in: [src/abstract/Cluster.ts:364](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L364)
 
 Returns a Shard if we know its number. The idea: for each Shard number
 (even for non-discovered yet Shards), we keep the corresponding Shard
@@ -174,7 +174,7 @@ Shard hasn't been discovered actually).
 
 > **randomShard**(`seed`?): `Promise`\<[`Shard`](Shard.md)\<`TClient`\>\>
 
-Defined in: [src/abstract/Cluster.ts:315](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L315)
+Defined in: [src/abstract/Cluster.ts:372](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L372)
 
 Returns a random Shard among the ones which are currently known
 (discovered) in the Cluster.
@@ -195,7 +195,7 @@ Returns a random Shard among the ones which are currently known
 
 > **island**(`islandNo`): `Promise`\<[`Island`](Island.md)\<`TClient`\>\>
 
-Defined in: [src/abstract/Cluster.ts:339](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L339)
+Defined in: [src/abstract/Cluster.ts:396](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L396)
 
 Returns an Island by its number.
 
@@ -215,7 +215,7 @@ Returns an Island by its number.
 
 > **islands**(): `Promise`\<[`Island`](Island.md)\<`TClient`\>[]\>
 
-Defined in: [src/abstract/Cluster.ts:350](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L350)
+Defined in: [src/abstract/Cluster.ts:407](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L407)
 
 Returns all Islands in the Cluster.
 
@@ -227,13 +227,19 @@ Returns all Islands in the Cluster.
 
 ### rediscover()
 
-> **rediscover**(): `Promise`\<`void`\>
+> **rediscover**(`what`?): `Promise`\<`void`\>
 
-Defined in: [src/abstract/Cluster.ts:360](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L360)
+Defined in: [src/abstract/Cluster.ts:417](https://github.com/clickup/ent-framework/blob/master/src/abstract/Cluster.ts#L417)
 
 Triggers shards rediscovery and finishes as soon as it's done. To be used
 in unit tests mostly, because in real life, it's enough to just modify the
 cluster configuration.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `what`? | `"islands"` \| `"shards"` |
 
 #### Returns
 

@@ -26,6 +26,7 @@ import { escapeLiteral } from "../helpers/escapeLiteral";
 import type { PgClient, PgClientConn } from "../PgClient";
 import type { PgClientPoolOptions } from "../PgClientPool";
 import { PgClientPool } from "../PgClientPool";
+import { PgShardNamer } from "../PgShardNamer";
 
 /**
  * A proxy for an PgClient which records all the queries passing through and
@@ -69,10 +70,6 @@ export class TestPgClient
 
   async ping(input: ClientPingInput): Promise<void> {
     return this.client.ping(input);
-  }
-
-  shardNoByID(id: string): number {
-    return this.client.shardNoByID(id);
   }
 
   withShard(no: number): this {
@@ -185,7 +182,7 @@ export class EncryptedValue {
 export class TCPProxyServer {
   private connections = new Set<Socket>();
   private server: Server;
-  private port?: number;
+  private usedPort?: number;
 
   constructor({
     host,
@@ -205,12 +202,21 @@ export class TCPProxyServer {
         ),
       );
     });
-    this.listen();
   }
 
   async abortConnections(): Promise<void> {
+    const destroyed = [...this.connections];
+    if (destroyed.length === 0) {
+      return;
+    }
+
+    // Some new connection may appear while we're waiting for all the existing
+    // connections to be destroyed - this is fine. We just need to make sure
+    // that we really closed all of the EXISTING connections.
     this.connections.forEach((socket) => socket.destroy());
-    await waitForExpect(() => expect(this.connections.size).toEqual(0));
+    await waitForExpect(() =>
+      expect(destroyed.some((s) => this.connections.has(s))).toBeFalsy(),
+    );
   }
 
   async destroy(): Promise<void> {
@@ -218,8 +224,8 @@ export class TCPProxyServer {
     await this.abortConnections();
   }
 
-  resurrectOnSamePort(): void {
-    this.listen(this.port);
+  async resurrectOnSamePort(): Promise<void> {
+    await this.listen(this.usedPort);
   }
 
   async waitForAtLeastConnections(n: number): Promise<void> {
@@ -232,13 +238,24 @@ export class TCPProxyServer {
     return this.connections.size;
   }
 
-  address(): AddressInfo {
-    return this.server.address() as AddressInfo;
+  async hostPort(): Promise<{ host: string; port: number }> {
+    if (!this.usedPort) {
+      await this.listen();
+    }
+
+    return {
+      host: (this.server.address() as AddressInfo).address,
+      port: this.usedPort!,
+    };
   }
 
-  private listen(port?: number): void {
-    this.server.listen(port);
-    this.port = this.address().port;
+  private async listen(port?: number): Promise<void> {
+    return new Promise((resolve) =>
+      this.server.listen(port, "127.0.0.1", () => {
+        this.usedPort = (this.server.address() as AddressInfo).port;
+        resolve();
+      }),
+    );
   }
 }
 
@@ -263,7 +280,7 @@ export const TEST_CONFIG: PoolConfig & {
   loggers: {
     swallowedErrorLogger: jest.fn(),
     clientQueryLogger: jest.fn(),
-    locateIslandErrorLogger: jest.fn(),
+    runOnShardErrorLogger: jest.fn(),
   },
 };
 
@@ -301,8 +318,6 @@ beforeEach(() => {
  * Test Cluster backed by the test config.
  */
 export const testCluster = new Cluster({
-  shardsDiscoverIntervalMs: 500,
-  shardsDiscoverIntervalJitter: 0.01,
   islands: TEST_ISLANDS,
   createClient: ({ nameSuffix, isAlwaysLaggingReplica, loggers, ...config }) =>
     new TestPgClient(
@@ -314,19 +329,21 @@ export const testCluster = new Cluster({
         ...(isAlwaysLaggingReplica
           ? { role: "replica", maxReplicationLagMs: 1e10 }
           : {}),
-        shards: {
-          nameFormat: "sh%04d",
-          discoverQuery:
-            "SELECT nspname FROM pg_namespace WHERE nspname ~ 'sh[0-9]+'",
-        },
         config,
       }),
     ),
   loggers: {
     swallowedErrorLogger: jest.fn(),
     clientQueryLogger: jest.fn(),
-    locateIslandErrorLogger: jest.fn(),
+    runOnShardErrorLogger: jest.fn(),
   },
+  shardNamer: new PgShardNamer({
+    nameFormat: "sh%04d",
+    discoverQuery:
+      "SELECT nspname FROM pg_namespace WHERE nspname ~ 'sh[0-9]+'",
+  }),
+  shardsDiscoverIntervalMs: 500,
+  shardsDiscoverIntervalJitter: 0.01,
 });
 
 /**
@@ -431,15 +448,16 @@ function indentQuery(query: string): string {
 
   // Make the order of rows in UPDATE clause static (to avoid flaky tests); the
   // framework orders the rows by ID typically.
-  if (query.match(/^(WITH.*\(VALUES\n.*?\n)(.*?)(\)\n\s*UPDATE.*)/s)) {
+  const match = query.match(/^(WITH.*\(VALUES\n.*?\n)(.*?)(\)\n\s*UPDATE.*)/s);
+  if (match) {
     query =
-      RegExp.$1 +
-      RegExp.$2
+      match[1] +
+      match[2]
         .split(",\n")
         .sort()
         .map((s) => `${s}<reordered for test>`)
         .join(",\n") +
-      RegExp.$3;
+      match[3];
   }
 
   return query;

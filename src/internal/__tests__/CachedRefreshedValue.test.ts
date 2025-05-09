@@ -108,7 +108,7 @@ test("timeout warning", async () => {
   deferred.resolve("first");
   await promise;
   expect(onError.mock.lastCall[0]).toMatchInlineSnapshot(
-    "[Error: CachedRefreshedValue.refreshLoop: Warning: resolverFn did not complete in 100 ms!]",
+    "[Error: CachedRefreshedValue.refreshLoop: Warning: resolverFn() did not complete in 100 ms!]",
   );
 });
 
@@ -140,7 +140,7 @@ test("throwing in onError during timeout", async () => {
   deferred.resolve("first");
   await promise;
   expect(onError.mock.lastCall[0]).toMatchInlineSnapshot(
-    "[Error: CachedRefreshedValue.refreshLoop: Warning: resolverFn did not complete in 100 ms!]",
+    "[Error: CachedRefreshedValue.refreshLoop: Warning: resolverFn() did not complete in 100 ms!]",
   );
 });
 
@@ -162,7 +162,7 @@ test("throwing in onError during error", async () => {
   );
 });
 
-test("waitRefresh()", async () => {
+test("refreshAndWait() multiple times", async () => {
   let i = 0;
   cache = new CachedRefreshedValue({
     ...OPTIONS,
@@ -171,11 +171,11 @@ test("waitRefresh()", async () => {
       return `delayed ${i++}`;
     }),
   });
-  await cache.waitRefresh();
+  await cache.refreshAndWait();
   expect(await cache.cached()).toBe("delayed 1");
-  await cache.waitRefresh();
+  await cache.refreshAndWait();
   expect(await cache.cached()).toBe("delayed 2");
-  await cache.waitRefresh();
+  await cache.refreshAndWait();
   expect(await cache.cached()).toBe("delayed 3");
 });
 
@@ -187,10 +187,10 @@ test("destroy before cached()", async () => {
   );
 });
 
-test("destroy before waitRefresh()", async () => {
+test("destroy before refreshAndWait()", async () => {
   cache = new CachedRefreshedValue({ ...OPTIONS, resolverFn: jest.fn() });
   cache.destroy();
-  await expect(cache.waitRefresh()).rejects.toMatchInlineSnapshot(
+  await expect(cache.refreshAndWait()).rejects.toMatchInlineSnapshot(
     "[Error: CachedRefreshedValue: This instance is destroyed]",
   );
 });
@@ -204,11 +204,11 @@ test("destroy after cached()", async () => {
   );
 });
 
-test("destroy after waitRefresh()", async () => {
+test("destroy after refreshAndWait()", async () => {
   cache = new CachedRefreshedValue({ ...OPTIONS, resolverFn: jest.fn() });
-  await cache.waitRefresh();
+  await cache.refreshAndWait();
   cache.destroy();
-  await expect(cache.waitRefresh()).rejects.toMatchInlineSnapshot(
+  await expect(cache.refreshAndWait()).rejects.toMatchInlineSnapshot(
     "[Error: CachedRefreshedValue: This instance is destroyed]",
   );
 });
@@ -222,7 +222,7 @@ test("destroy stops resolverFn() calls", async () => {
   expect(resolverFn).toBeCalledTimes(1);
 });
 
-test("waitRefresh() returns fresh value", async () => {
+test("refreshAndWait() returns fresh value", async () => {
   let resolveDeferred = pDefer();
   let delayDeferred = pDefer();
   cache = new CachedRefreshedValue({
@@ -243,13 +243,13 @@ test("waitRefresh() returns fresh value", async () => {
 
   await delay(1000);
 
-  const freshValue = cache.waitRefresh().then(async () => cache.cached());
+  const freshValue = cache.refreshAndWait().then(async () => cache.cached());
   delayDeferred.resolve();
   resolveDeferred.resolve("fresh");
   expect(await freshValue).toBe("fresh");
 });
 
-test("waitRefresh() skips in-flight value", async () => {
+test("refreshAndWait() skips in-flight value", async () => {
   let resolveCalled = pDefer();
   let resolveDeferred = pDefer();
   let delayDeferred = pDefer();
@@ -273,7 +273,7 @@ test("waitRefresh() skips in-flight value", async () => {
 
   delayDeferred.resolve();
   await resolveCalled.promise;
-  const freshValue = cache.waitRefresh().then(async () => cache.cached());
+  const freshValue = cache.refreshAndWait().then(async () => cache.cached());
 
   resolveDeferred.resolve("in-flight");
   delayDeferred.resolve();
@@ -284,7 +284,7 @@ test("waitRefresh() skips in-flight value", async () => {
   expect(await freshValue).toBe("fresh");
 });
 
-test("waitRefresh() skips delay", async () => {
+test("refreshAndWait() skips delay", async () => {
   cache = new CachedRefreshedValue({
     ...OPTIONS,
     resolverFn: jest
@@ -300,10 +300,10 @@ test("waitRefresh() skips delay", async () => {
 
   await cache.cached();
 
-  await cache.waitRefresh();
+  await cache.refreshAndWait();
   expect(await cache.cached()).toBe("two");
 
-  await cache.waitRefresh();
+  await cache.refreshAndWait();
   expect(await cache.cached()).toBe("three");
 }, 10_000 /* timeout */);
 

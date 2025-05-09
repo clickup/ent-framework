@@ -106,6 +106,17 @@ export const CLIENT_ERROR_PREDICATES: Array<
       kind: "data-on-server-is-unchanged",
       comment: "Node TCP library connect error.",
     },
+  ({ code }) =>
+    code === "ECONNRESET" && {
+      abbreviation: "ECONNRESET",
+      postAction: {
+        ifMaster: "rediscover-island",
+        ifReplica: "choose-another-client",
+        reportConnectionIssue: true,
+      },
+      kind: "unknown-server-state", // !!!
+      comment: "Node TCP library connection was externally closed mid-way.",
+    },
   ({ code, message }) =>
     code === "08P01" && // protocol_violation
     message.includes("server conn crashed") && {
@@ -115,7 +126,7 @@ export const CLIENT_ERROR_PREDICATES: Array<
         ifReplica: "choose-another-client",
         reportConnectionIssue: true,
       },
-      kind: "unknown-server-state",
+      kind: "unknown-server-state", // !!!
       comment: "PG is terminated cruelly (e.g. by SIGKILL or SIGSEGV).",
     },
   ({ code, message }) =>
