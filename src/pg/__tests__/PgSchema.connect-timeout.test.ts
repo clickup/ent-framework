@@ -32,8 +32,8 @@ let connStuckServer: TCPProxyServer;
 let connStuckTestConfig: typeof TEST_CONFIG;
 
 beforeEach(async () => {
-  testCluster.options.locateIslandErrorRetryCount = 2;
-  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 100;
+  testCluster.options.runOnShardErrorRetryCount = 2;
+  testCluster.options.runOnShardErrorRediscoverClusterDelayMs = 100;
   testCluster.options.reloadIslandsIntervalMs = 20000; // intentionally large
   testCluster.options.shardsDiscoverIntervalMs = 100000;
 

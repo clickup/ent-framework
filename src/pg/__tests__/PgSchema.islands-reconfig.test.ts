@@ -25,7 +25,7 @@ const schema = new PgSchema(
 );
 
 beforeEach(async () => {
-  testCluster.options.locateIslandErrorRetryCount = 1;
+  testCluster.options.runOnShardErrorRetryCount = 1;
   testCluster.options.shardsDiscoverIntervalMs = 20000; // very large intentionally
   testCluster.options.reloadIslandsIntervalMs = 10;
 

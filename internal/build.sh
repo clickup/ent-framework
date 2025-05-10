@@ -1,4 +1,10 @@
 #!/bin/bash
 set -e
 
-tsc --build
+if [[ -d ../../packages ]]; then
+  tsc --build
+else
+  cat tsconfig.json | sed 's/"references"/"references-off"/'> tsconfig.json.tmp
+  trap 'rm -f tsconfig.json.tmp' EXIT
+  tsc -p tsconfig.json.tmp
+fi

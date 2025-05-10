@@ -6,7 +6,7 @@
 
 # Class: PgShardNamer
 
-Defined in: src/pg/PgShardNamer.ts:9
+Defined in: [src/pg/PgShardNamer.ts:9](https://github.com/clickup/ent-framework/blob/master/src/pg/PgShardNamer.ts#L9)
 
 ShardNamer implementation for PG.
 
@@ -20,7 +20,7 @@ ShardNamer implementation for PG.
 
 > **new PgShardNamer**(`options`): [`PgShardNamer`](PgShardNamer.md)
 
-Defined in: src/abstract/ShardNamer.ts:34
+Defined in: [src/abstract/ShardNamer.ts:34](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardNamer.ts#L34)
 
 Initializes an instance of ShardNamer.
 
@@ -51,7 +51,7 @@ Initializes an instance of ShardNamer.
 
 > **shardNoByName**(`name`): `null` \| `number`
 
-Defined in: src/abstract/ShardNamer.ts:46
+Defined in: [src/abstract/ShardNamer.ts:46](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardNamer.ts#L46)
 
 Converts a Shard name to Shard number. Returns null if it's not a correct
 Shard name.
@@ -76,7 +76,7 @@ Shard name.
 
 > **shardNameByNo**(`no`): `string`
 
-Defined in: src/abstract/ShardNamer.ts:58
+Defined in: [src/abstract/ShardNamer.ts:58](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardNamer.ts#L58)
 
 Builds the Shard name (e.g. for PG, "schema name") by Shard number using
 `ShardNamerOptions#nameFormat`.
@@ -103,7 +103,7 @@ E.g. nameFormat="sh%04d" generates names like "sh0042".
 
 > **shardNoByID**(`id`): `number`
 
-Defined in: src/pg/PgShardNamer.ts:14
+Defined in: [src/pg/PgShardNamer.ts:14](https://github.com/clickup/ent-framework/blob/master/src/pg/PgShardNamer.ts#L14)
 
 Synchronously extracts Shard number from an ID. Can also extract from PG
 composite rows (to support composite IDs).

@@ -6,7 +6,7 @@
 
 # Interface: ShardNamerOptions
 
-Defined in: src/abstract/ShardNamer.ts:6
+Defined in: [src/abstract/ShardNamer.ts:6](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardNamer.ts#L6)
 
 Options for ShardNamer constructor.
 

@@ -39,7 +39,7 @@ beforeEach(async () => {
     },
   ]);
 
-  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 1000;
+  testCluster.options.runOnShardErrorRediscoverClusterDelayMs = 1000;
   testCluster.options.shardsDiscoverIntervalMs = 1_000_000;
   await testCluster.rediscover();
 
@@ -48,7 +48,7 @@ beforeEach(async () => {
 });
 
 test("shard relocation error when accessing a table should be retried", async () => {
-  testCluster.options.locateIslandErrorRetryCount = 30;
+  testCluster.options.runOnShardErrorRetryCount = 30;
 
   await master.rows("ALTER TABLE %T RENAME TO %T", schema.name, TABLE_BAK);
 
@@ -64,9 +64,8 @@ test("shard relocation error when accessing a table should be retried", async ()
   // Pause until we have at least 2 retries happened.
   await waitForExpect(
     () => expect(queryRunSpies[0]).toBeCalledTimes(2),
-    maybeCall(testCluster.options.locateIslandErrorRediscoverClusterDelayMs) *
-      4, // timeout
-    maybeCall(testCluster.options.locateIslandErrorRediscoverClusterDelayMs), // retry interval
+    maybeCall(testCluster.options.runOnShardErrorRediscoverClusterDelayMs) * 4, // timeout
+    maybeCall(testCluster.options.runOnShardErrorRediscoverClusterDelayMs), // retry interval
   );
   await expect(queryRunSpies[0].mock.results[0].value).rejects.toThrow(
     /undefined_object/,

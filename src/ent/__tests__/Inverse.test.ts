@@ -156,21 +156,17 @@ let myCompany: EntTestCompany;
 let proxyServer: TCPProxyServer;
 
 beforeEach(async () => {
-  testCluster.options.locateIslandErrorRetryCount = 2;
+  testCluster.options.runOnShardErrorRetryCount = 2;
   testCluster.options.islands = [{ no: 0, nodes: [TEST_CONFIG] }];
-  process.stdout.write("beforeEach 0\n");
   await testCluster.rediscover();
-  process.stdout.write("beforeEach 1\n");
 
   await recreateTestTables(
     [EntTestCompany, EntTestUser, EntTestTopic],
     TABLE_INVERSE,
   );
-  process.stdout.write("beforeEach 2\n");
 
   vc = createVC();
   myCompany = await EntTestCompany.insertReturning(vc, { name: "my-company" });
-  process.stdout.write("beforeEach 3\n");
 
   proxyServer = new TCPProxyServer({
     host: TEST_CONFIG.host!,
@@ -351,7 +347,7 @@ test("race condition in insert/loadBy", async () => {
 });
 
 test("inverses are deleted when ent insert DB operation fails", async () => {
-  testCluster.options.locateIslandErrorRetryCount = 0;
+  testCluster.options.runOnShardErrorRetryCount = 0;
   await mapJoin(testCluster.nonGlobalShards(), async (shard) => {
     const master = await shard.client(MASTER);
     await master.rows(
@@ -392,45 +388,39 @@ test("inverses are NOT deleted when throwInAfterMutation trigger throws any erro
 });
 
 test("inverses are NOT deleted when connection aborts at ent creation, and there were no retries", async () => {
-  testCluster.options.locateIslandErrorRetryCount = 0;
+  testCluster.options.runOnShardErrorRetryCount = 0;
   testCluster.options.islands = [
     {
       no: 0,
       nodes: [{ ...TEST_CONFIG, ...(await proxyServer.hostPort()) }],
     },
   ];
-  process.stdout.write("0\n");
   await testCluster.rediscover();
-  process.stdout.write("01\n");
 
   const promise = EntTestTopic.insertIfNotExists(vc, {
     owner_id: myCompany.id,
     slug: "pg_sleep",
     sleep: 5,
   }).catch((e) => inspectCompact(e));
-  process.stdout.write("02\n");
 
   await delay(2000);
-  process.stdout.write("1\n");
   await proxyServer.abortConnections();
-  process.stdout.write("2\n");
   expect(await promise).toContain("Connection terminated unexpectedly");
-  process.stdout.write("3\n");
 
   // On an accidental disconnect (and when INSERT wasn't retried), we don't
   // know, whether the DB applied the insert or not, so we should expect Ent
   // Framework to NOT delete the inverse.
+  testCluster.options.runOnShardErrorRetryCount = 10;
   expect(
     await EntTestTopic.INVERSES[0].id2s(
       vc.withOneTimeStaleReplica(),
       myCompany.id,
     ),
   ).toHaveLength(1);
-  process.stdout.write("4\n");
 });
 
 test("inverses are NOT deleted when connection aborts at ent creation, and insert returned null due to a successful retry", async () => {
-  testCluster.options.locateIslandErrorRetryCount = 2;
+  testCluster.options.runOnShardErrorRetryCount = 5;
   testCluster.options.islands = [
     {
       no: 0,
@@ -459,6 +449,7 @@ test("inverses are NOT deleted when connection aborts at ent creation, and inser
   // (because there is such a row inserted already - unique key violation). In
   // this case, Ent Framework must not undo inverses creation! Otherwise, there
   // will remain a row in the DB with no inverses.
+  testCluster.options.runOnShardErrorRetryCount = 10;
   expect(
     await EntTestTopic.INVERSES[0].id2s(
       vc.withOneTimeStaleReplica(),

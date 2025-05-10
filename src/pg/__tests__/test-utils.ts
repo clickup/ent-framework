@@ -88,6 +88,10 @@ export class TestPgClient
     return this.client.connectionIssue();
   }
 
+  override prewarm(): void {
+    return this.client.prewarm();
+  }
+
   async query<TRes>(params: Parameters<PgClient["query"]>[0]): Promise<TRes[]> {
     this.queries.push(
       escapeLiteral(params.query) +
@@ -204,19 +208,19 @@ export class TCPProxyServer {
     });
   }
 
-  async abortConnections(): Promise<void> {
+  async abortConnections(): Promise<number> {
     const destroyed = [...this.connections];
-    if (destroyed.length === 0) {
-      return;
+    if (destroyed.length > 0) {
+      // Some new connection may appear while we're waiting for all the existing
+      // connections to be destroyed - this is fine. We just need to make sure
+      // that we really closed all of the EXISTING connections.
+      this.connections.forEach((socket) => socket.destroy());
+      await waitForExpect(() =>
+        expect(destroyed.some((s) => this.connections.has(s))).toBeFalsy(),
+      );
     }
 
-    // Some new connection may appear while we're waiting for all the existing
-    // connections to be destroyed - this is fine. We just need to make sure
-    // that we really closed all of the EXISTING connections.
-    this.connections.forEach((socket) => socket.destroy());
-    await waitForExpect(() =>
-      expect(destroyed.some((s) => this.connections.has(s))).toBeFalsy(),
-    );
+    return destroyed.length;
   }
 
   async destroy(): Promise<void> {

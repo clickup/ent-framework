@@ -27,8 +27,8 @@ let shard: Shard<TestPgClient>;
 let proxyServer: TCPProxyServer;
 
 beforeEach(async () => {
-  testCluster.options.locateIslandErrorRetryCount = 1;
-  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 10000;
+  testCluster.options.runOnShardErrorRetryCount = 1;
+  testCluster.options.runOnShardErrorRediscoverClusterDelayMs = 10000;
   testCluster.options.reloadIslandsIntervalMs = 10;
   testCluster.options.shardsDiscoverIntervalMs = 100000;
 
@@ -73,7 +73,7 @@ test("chooses another replica if new connection can't be opened", async () => {
   const promise = shardRun(shard, schema.select({ where: {}, limit: 1 }));
 
   jest.advanceTimersByTime(
-    maybeCall(testCluster.options.locateIslandErrorRediscoverClusterDelayMs) *
+    maybeCall(testCluster.options.runOnShardErrorRediscoverClusterDelayMs) *
       1.5,
   );
   await waitForExpect(() =>
@@ -85,8 +85,7 @@ test("chooses another replica if new connection can't be opened", async () => {
   );
 
   await jest.advanceTimersByTimeAsync(
-    maybeCall(testCluster.options.locateIslandErrorRediscoverClusterDelayMs) *
-      3,
+    maybeCall(testCluster.options.runOnShardErrorRediscoverClusterDelayMs) * 3,
   );
   await promise;
 });

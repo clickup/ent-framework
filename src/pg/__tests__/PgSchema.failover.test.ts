@@ -21,9 +21,9 @@ let islandClient2: TestPgClient;
 
 beforeEach(async () => {
   testCluster.options.shardsDiscoverIntervalMs = 1_000_000;
-  testCluster.options.locateIslandErrorRetryCount = 1;
-  testCluster.options.locateIslandErrorRediscoverIslandDelayMs = 100;
-  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 10000000;
+  testCluster.options.runOnShardErrorRetryCount = 1;
+  testCluster.options.runOnShardErrorRediscoverIslandDelayMs = 100;
+  testCluster.options.runOnShardErrorRediscoverClusterDelayMs = 10000000;
   await testCluster.rediscover();
 
   const island0 = await testCluster.island(0);

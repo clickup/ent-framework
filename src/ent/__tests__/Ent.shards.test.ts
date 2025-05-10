@@ -80,8 +80,8 @@ class EntTestHuman extends BaseEnt(
 beforeEach(async () => {
   await recreateTestTables([EntTestUniverse, EntTestHuman]);
 
-  testCluster.options.locateIslandErrorRetryCount = 2;
-  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 1000;
+  testCluster.options.runOnShardErrorRetryCount = 2;
+  testCluster.options.runOnShardErrorRediscoverClusterDelayMs = 1000;
 });
 
 test("unknown shard failure, singleShardFromID", async () => {
@@ -109,7 +109,7 @@ test("unknown shard failure, multiShardsFromInput, no inverses", async () => {
 });
 
 test("shard relocation error when accessing a table should be retried", async () => {
-  testCluster.options.locateIslandErrorRediscoverClusterDelayMs = 1;
+  testCluster.options.runOnShardErrorRediscoverClusterDelayMs = 1;
 
   const master = await testCluster.shard(ID_FROM_EXISTING_SHARD).client(MASTER);
   await master.rows("DROP TABLE %T CASCADE", EntTestHuman.SCHEMA.name);

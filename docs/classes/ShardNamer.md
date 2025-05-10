@@ -6,7 +6,7 @@
 
 # Class: `abstract` ShardNamer
 
-Defined in: src/abstract/ShardNamer.ts:19
+Defined in: [src/abstract/ShardNamer.ts:19](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardNamer.ts#L19)
 
 Client-specific logic on how to synchronously convert an ID into Shard number
 (only for the use cases when ID is prefixed with a Shard number), how to
@@ -22,7 +22,7 @@ build Shard names, and how to extract Shard number from a Shard name.
 
 > **new ShardNamer**(`options`): [`ShardNamer`](ShardNamer.md)
 
-Defined in: src/abstract/ShardNamer.ts:34
+Defined in: [src/abstract/ShardNamer.ts:34](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardNamer.ts#L34)
 
 Initializes an instance of ShardNamer.
 
@@ -49,7 +49,7 @@ Initializes an instance of ShardNamer.
 
 > `abstract` **shardNoByID**(`id`): `number`
 
-Defined in: src/abstract/ShardNamer.ts:24
+Defined in: [src/abstract/ShardNamer.ts:24](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardNamer.ts#L24)
 
 Synchronously extracts Shard number from an ID prefix, for the use cases
 where IDs have this information.
@@ -70,7 +70,7 @@ where IDs have this information.
 
 > **shardNoByName**(`name`): `null` \| `number`
 
-Defined in: src/abstract/ShardNamer.ts:46
+Defined in: [src/abstract/ShardNamer.ts:46](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardNamer.ts#L46)
 
 Converts a Shard name to Shard number. Returns null if it's not a correct
 Shard name.
@@ -91,7 +91,7 @@ Shard name.
 
 > **shardNameByNo**(`no`): `string`
 
-Defined in: src/abstract/ShardNamer.ts:58
+Defined in: [src/abstract/ShardNamer.ts:58](https://github.com/clickup/ent-framework/blob/master/src/abstract/ShardNamer.ts#L58)
 
 Builds the Shard name (e.g. for PG, "schema name") by Shard number using
 `ShardNamerOptions#nameFormat`.

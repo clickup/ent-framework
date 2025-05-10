@@ -1,4 +1,4 @@
-import { inspect, types } from "util";
+import { types } from "util";
 import delayMod from "delay";
 import { Memoize } from "fast-typescript-memoize";
 import defaults from "lodash/defaults";
@@ -68,25 +68,26 @@ export interface ClusterOptions<TClient extends Client, TNode> {
   /** Jitter for shardsDiscoverIntervalMs and reloadIslandsIntervalMs. */
   shardsDiscoverIntervalJitter?: MaybeCallable<number>;
   /** Used in the following situations:
-   * 1. If we think that we know Island of a particular Shard, but an attempt to
-   *    access it fails, this means that maybe the Shard is migrating to another
-   *    Island. In this case, we wait a bit and retry that many times. We should
-   *    not do it too many times though, because all DB requests will be blocked
-   *    waiting for the resolution.
-   * 2. If we sent a write request to a Client, but it appeared that this Client
+   * 1. If we think that we know the Island of a particular Shard, but an
+   *    attempt to access it fails. This means that maybe the Shard is migrating
+   *    to another Island. So, we wait a bit and retry that many times. We
+   *    should not do it too many times though, because all DB requests will be
+   *    blocked waiting for the resolution.
+   * 2. If we sent a WRITE request to a Client, but it appeared that this Client
    *    is a replica, and the master moved to some other Client. In this case,
    *    we wait a bit and ping all Clients of the Island to refresh, who is
    *    master and who is replica. */
-  locateIslandErrorRetryCount?: MaybeCallable<number>;
-  /** How much time to wait before we retry rediscovering the entire Cluster.
-   * The time here should be just enough to wait for switching the Shard from
-   * one Island to another (typically quick). */
-  locateIslandErrorRediscoverClusterDelayMs?: MaybeCallable<number>;
+  runOnShardErrorRetryCount?: MaybeCallable<number>;
+  /** How much time to wait before we retry rediscovering the entire Cluster
+   * after a Shard-to-Island resolution error. The time here should be just
+   * enough to wait for switching the Shard from one Island to another
+   * (typically quick). */
+  runOnShardErrorRediscoverClusterDelayMs?: MaybeCallable<number>;
   /** How much time to wait before sending discover requests to all Clients of
-   * the Island trying to find the new master. The time here may reach several
-   * seconds, since some DBs shut down the old master and promote some replica
-   * to it not simultaneously. */
-  locateIslandErrorRediscoverIslandDelayMs?: MaybeCallable<number>;
+   * the Island trying to find the new master (or to reconnect). The time here
+   * may reach several seconds, since some DBs shut down the old master and
+   * promote some replica to it not simultaneously. */
+  runOnShardErrorRediscoverIslandDelayMs?: MaybeCallable<number>;
 }
 
 /**
@@ -131,9 +132,9 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
     shardsDiscoverIntervalMs: 10000,
     shardsDiscoverIntervalJitter: 0.2,
     reloadIslandsIntervalMs: NaN,
-    locateIslandErrorRetryCount: 2,
-    locateIslandErrorRediscoverClusterDelayMs: 1000,
-    locateIslandErrorRediscoverIslandDelayMs: 5000,
+    runOnShardErrorRetryCount: 2,
+    runOnShardErrorRediscoverClusterDelayMs: 1000,
+    runOnShardErrorRediscoverIslandDelayMs: 5000,
   };
 
   /** The complete registry of all initialized Clients. Cluster nodes may change
@@ -434,8 +435,8 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
     body: (island: Island<TClient>, attempt: number) => Promise<TRes>,
     onAttemptError?: (error: unknown, attempt: number) => void,
   ): Promise<TRes> {
-    let island: Island<TClient>;
     for (let attempt = 0; ; attempt++) {
+      let island: Island<TClient>;
       try {
         // Re-read Islands map on every retry, because it might change.
         const startTime = performance.now();
@@ -463,18 +464,6 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
 
         if (typeof error?.stack === "string") {
           const suffix = `\n    after ${attempt + 1} attempt${attempt > 0 ? "s" : ""}`;
-          process.stdout.write(
-            `DEBUG: ${inspect(
-              {
-                error:
-                  error instanceof ClientError
-                    ? error
-                    : error?.constructor?.name,
-                island: island!?.options.clients.map((c) => c.options),
-              },
-              { depth: null, compact: true, breakLength: 100000000 },
-            )}\n`,
-          );
           if (!error.stack.endsWith(suffix)) {
             error.stack = error.stack.trimEnd() + suffix;
           }
@@ -485,7 +474,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
 
         if (
           !(error instanceof ClientError) ||
-          attempt >= maybeCall(this.options.locateIslandErrorRetryCount)
+          attempt >= maybeCall(this.options.runOnShardErrorRetryCount)
         ) {
           throw error;
         }
@@ -520,7 +509,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
   @Memoize({ clearOnResolve: true })
   private async rediscoverCluster(): Promise<void> {
     await delay(
-      maybeCall(this.options.locateIslandErrorRediscoverClusterDelayMs),
+      maybeCall(this.options.runOnShardErrorRediscoverClusterDelayMs),
     );
     // We don't want to wait forever if some Island is completely down.
     const startTime = performance.now();
@@ -556,9 +545,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
    */
   @Memoize((island) => island.no, { clearOnResolve: true })
   private async rediscoverIsland(island: Island<TClient>): Promise<void> {
-    await delay(
-      maybeCall(this.options.locateIslandErrorRediscoverIslandDelayMs),
-    );
+    await delay(maybeCall(this.options.runOnShardErrorRediscoverIslandDelayMs));
     // We don't want to wait forever if the Island is completely down.
     const startTime = performance.now();
     await pTimeout(
