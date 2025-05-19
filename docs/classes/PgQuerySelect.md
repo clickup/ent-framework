@@ -84,7 +84,7 @@ Defined in: [src/pg/PgQuerySelect.ts:44](https://github.com/clickup/ent-framewor
 
 | Parameter | Type |
 | ------ | ------ |
-| `client` | [`PgClient`](PgClient.md) |
+| `client` | [`PgClient`](PgClient.md)\<`Pool`\> |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
 #### Returns

@@ -31,7 +31,9 @@ export interface ClientQueryLoggerProps {
     acquire: number;
   };
   connStats: {
+    /** The stats related to the used connection. */
     id: string;
+    /** The number of queries sent to the connection. */
     queriesSent: number;
   };
   poolStats: {

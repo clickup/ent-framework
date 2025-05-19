@@ -81,11 +81,25 @@ unusable after calling this method: you should not send queries to it.
 
 ***
 
+### isEnded()
+
+> `abstract` **isEnded**(): `boolean`
+
+Defined in: [src/abstract/Client.ts:107](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L107)
+
+Returns true if the Client is ended and can't be used anymore.
+
+#### Returns
+
+`boolean`
+
+***
+
 ### shardNos()
 
 > `abstract` **shardNos**(): `Promise`\<readonly `number`[]\>
 
-Defined in: [src/abstract/Client.ts:108](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L108)
+Defined in: [src/abstract/Client.ts:113](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L113)
 
 Returns all Shard numbers discoverable via the connection to the Client's
 database.
@@ -100,7 +114,7 @@ database.
 
 > `abstract` **ping**(`input`): `Promise`\<`void`\>
 
-Defined in: [src/abstract/Client.ts:114](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L114)
+Defined in: [src/abstract/Client.ts:119](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L119)
 
 Sends a read or write test query to the server. Tells the server to sit and
 wait for at least the provided number of milliseconds.
@@ -121,7 +135,7 @@ wait for at least the provided number of milliseconds.
 
 > `abstract` **withShard**(`no`): `this`
 
-Defined in: [src/abstract/Client.ts:120](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L120)
+Defined in: [src/abstract/Client.ts:125](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L125)
 
 Creates a new Client which is namespaced to the provided Shard number. The
 new Client will share the same connection pool with the parent's Client.
@@ -135,20 +149,6 @@ new Client will share the same connection pool with the parent's Client.
 #### Returns
 
 `this`
-
-***
-
-### isEnded()
-
-> `abstract` **isEnded**(): `boolean`
-
-Defined in: [src/abstract/Client.ts:125](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L125)
-
-Returns true if the Client is ended and can't be used anymore.
-
-#### Returns
-
-`boolean`
 
 ***
 

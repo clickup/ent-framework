@@ -259,8 +259,7 @@ test("idGen batched", async () => {
 
 test("idGen with large batch", async () => {
   const query = new PgQueryIDGen(schema);
-  const maxBatchSize = new query.RUNNER_CLASS(schema, master.client)
-    .maxBatchSize;
+  const maxBatchSize = new query.RUNNER_CLASS(schema, master).maxBatchSize;
   master.resetSnapshot();
   await join(
     range(maxBatchSize * 2 - 10).map(async () =>
@@ -350,8 +349,7 @@ test("insert batched", async () => {
 
 test("insert large batch", async () => {
   const query = new PgQueryInsert(schema, { name: "", url_name: null });
-  const maxBatchSize = new query.RUNNER_CLASS(schema, master.client)
-    .maxBatchSize;
+  const maxBatchSize = new query.RUNNER_CLASS(schema, master).maxBatchSize;
   master.resetSnapshot();
   await join(
     range(maxBatchSize * 2 - 10).map(async (i) =>

@@ -1,13 +1,44 @@
 import range from "lodash/range";
 import { MASTER } from "../../abstract/Shard";
 import { mapJoin } from "../../internal/misc";
-import { PgClientPool, type PgClientPoolOptions } from "../PgClientPool";
+import { PgClient, type PgClientOptions } from "../PgClient";
 import { testCluster } from "./test-utils";
 
-let options: PgClientPoolOptions;
+let options: PgClientOptions;
 
 beforeEach(async () => {
   options = (await testCluster.globalShard().client(MASTER)).options;
+});
+
+test("custom Pool implementation is type safe", async () => {
+  const master = await testCluster.shardByNo(2).client(MASTER);
+  expect(master.pool().some()).toEqual("some");
+});
+
+test("sub-pools are distinct", async () => {
+  const master = await testCluster.shardByNo(2).client(MASTER);
+  const client = new PgClient(master.options);
+
+  const defaultPool = client.pool();
+  const subPoolA = client.pool({ name: "a" });
+  const subPoolB = client.pool({ name: "b" });
+
+  expect(subPoolA).toBe(client.pool({ name: "a", max: 42 }));
+  expect(subPoolA).not.toBe(subPoolB);
+  expect(subPoolA).not.toBe(defaultPool);
+
+  let conn;
+  try {
+    conn = await client.acquireConn({ name: "a" });
+    expect(subPoolA.totalCount).toEqual(1);
+    expect(subPoolB.totalCount).toEqual(0);
+    expect(defaultPool.totalCount).toEqual(0);
+  } finally {
+    conn?.release();
+  }
+
+  await client.end();
+  expect(subPoolA.totalCount).toEqual(0);
 });
 
 test("acquireConn does not leak when release() is called", async () => {
@@ -27,7 +58,7 @@ test("acquireConn does not leak when release() is called", async () => {
 });
 
 test("static role=master", async () => {
-  const client = new PgClientPool({
+  const client = new PgClient({
     ...options,
     role: "master",
     maxReplicationLagMs: undefined,
@@ -45,7 +76,7 @@ test("static role=master", async () => {
 });
 
 test("static role=replica", async () => {
-  const client = new PgClientPool({
+  const client = new PgClient({
     ...options,
     role: "replica",
     maxReplicationLagMs: 20000,
@@ -62,7 +93,7 @@ test("static role=replica", async () => {
 });
 
 test("dynamic role=unknown", async () => {
-  const client = new PgClientPool({ ...options, role: "unknown" });
+  const client = new PgClient({ ...options, role: "unknown" });
   await client.query({
     query: ["SELECT 1"],
     isWrite: false,

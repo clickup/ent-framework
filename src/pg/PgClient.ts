@@ -1,5 +1,6 @@
 import defaults from "lodash/defaults";
-import type pg from "pg";
+import range from "lodash/range";
+import pg from "pg";
 import type {
   ClientConnectionIssue,
   ClientOptions,
@@ -14,11 +15,17 @@ import {
   OP_SHARD_NOS,
   OP_TIMELINE_POS_REFRESH,
 } from "../abstract/internal/misc";
-import type { ClientQueryLoggerProps } from "../abstract/Loggers";
+import type { SwallowedErrorLoggerProps } from "../abstract/Loggers";
 import type { QueryAnnotation } from "../abstract/QueryAnnotation";
 import { TimelineManager } from "../abstract/TimelineManager";
 import type { MaybeCallable, MaybeError, PickPartial } from "../internal/misc";
-import { addSentenceSuffixes, maybeCall } from "../internal/misc";
+import {
+  addSentenceSuffixes,
+  jitter,
+  mapJoin,
+  maybeCall,
+  runInVoid,
+} from "../internal/misc";
 import { Ref } from "../internal/Ref";
 import type { Hints, Literal } from "../types";
 import { escapeLiteral } from "./helpers/escapeLiteral";
@@ -30,7 +37,35 @@ import { PgError } from "./PgError";
 /**
  * Options for PgClient constructor.
  */
-export interface PgClientOptions extends ClientOptions {
+export interface PgClientOptions<TPool extends pg.Pool = pg.Pool>
+  extends ClientOptions {
+  /** Node-Postgres config. We can't make it MaybeCallable unfortunately,
+   * because it's used to initialize Node-Postgres Pool. */
+  config: pg.PoolConfig & { min?: number | undefined };
+  /** Should create an instance of Pool class compatible with node-postgres
+   * Pool. By default, node-postgres Pool is used. */
+  createPool?: (config: pg.PoolConfig) => TPool;
+  /** Close the connection after the query if it was opened long time ago. */
+  maxConnLifetimeMs?: MaybeCallable<number>;
+  /** Jitter for maxConnLifetimeMs. */
+  maxConnLifetimeJitter?: MaybeCallable<number>;
+  /** Add not more than this number of connections in each prewarm interval. New
+   * connections are expensive to establish (especially when SSL is enabled). */
+  prewarmIntervalStep?: MaybeCallable<number>;
+  /** How often to send bursts of prewarm queries to all Clients to keep the
+   * minimal number of open connections. The default value is half of the
+   * default node-postgres'es idleTimeoutMillis=10s. Together with 1..1.5x
+   * jitter (default prewarmIntervalJitter=0.5), it is still slightly below
+   * idleTimeoutMillis, and thus, doesn't let Ent Framework close the
+   * connections prematurely. */
+  prewarmIntervalMs?: MaybeCallable<number>;
+  /** Jitter for prewarmIntervalMs. */
+  prewarmIntervalJitter?: MaybeCallable<number>;
+  /** What prewarm query to send. */
+  prewarmQuery?: MaybeCallable<string>;
+  /** If true, also sends prewarm queries and keeps the min number of
+   * connections in all sub-pools. See pool() method for details. */
+  prewarmSubPools?: boolean;
   /** PG "SET key=value" hints to run before each query. Often times we use it
    * to pass statement_timeout option since e.g. PGBouncer doesn't support
    * per-connection statement timeout in transaction pooling mode: it throws
@@ -57,50 +92,66 @@ export interface PgClientOptions extends ClientOptions {
 /**
  * An opened low-level PostgreSQL connection.
  */
-export interface PgClientConn extends pg.PoolClient {
-  /** Undocumented property of node-postgres, see:
-   * https://github.com/brianc/node-postgres/issues/2665 */
-  processID?: number | null;
+export interface PgClientConn<TPool extends pg.Pool = pg.Pool>
+  extends pg.PoolClient {
+  /** Pool instance that created this connection. */
+  pool: TPool;
   /** An additional property to the vanilla client: auto-incrementing ID of the
    * connection for logging purposes. */
-  id?: number;
+  id: number;
   /** An additional property to the vanilla client: number of queries sent
    * within this connection. */
-  queriesSent?: number;
+  queriesSent: number;
   /** An additional property to the vanilla client: when do we want to
    * hard-close that connection. */
-  closeAt?: number;
+  closeAt: number | null;
 }
 
 /**
- * An abstract PostgreSQL Client which doesn't know how to acquire an actual
- * connection and send queries; these things are up to the derived classes to
- * implement.
- *
- * The idea is that in each particular project, people may have they own classes
- * derived from PgClient, in case the codebase already has some existing
- * connection pooling solution. They don't have to use PgClientPool.
+ * A named low-level Pool config used to create sub-pools. Sub-pool derives
+ * configuration from the default PgClientOptions#config, but allow overrides.
+ * See PgClient#pool() method for details.
+ */
+export interface PgClientSubPoolConfig extends Partial<pg.PoolConfig> {
+  name: string;
+}
+
+/**
+ * An abstract PostgreSQL Client. Includes connection pooling logic.
  *
  * Since the class is cloneable internally (using the prototype substitution
- * technique), the contract of this class is that ALL its derived classes may
- * only have readonly immediate properties.
+ * technique, see withShard()), the contract of this class is that ALL its
+ * derived classes may only have readonly immediate properties. Use Ref helper
+ * if you need some mutable properties.
  */
-export abstract class PgClient extends Client {
+export class PgClient<TPool extends pg.Pool = pg.Pool> extends Client {
   /** Default values for the constructor options. */
   static override readonly DEFAULT_OPTIONS: Required<
-    PickPartial<PgClientOptions>
+    PickPartial<PgClientOptions<pg.Pool>>
   > = {
     ...super.DEFAULT_OPTIONS,
+    createPool: (config) => new pg.Pool(config),
+    maxConnLifetimeMs: 0,
+    maxConnLifetimeJitter: 0.5,
+    prewarmIntervalStep: 1,
+    prewarmIntervalMs: 5000,
+    prewarmIntervalJitter: 0.5,
+    prewarmQuery: 'SELECT 1 AS "prewarmQuery"',
+    prewarmSubPools: false,
     hints: null,
     role: "unknown",
     maxReplicationLagMs: 60000,
     replicaTimelinePosRefreshMs: 1000,
   };
 
-  /** Number of decimal digits in an ID allocated for shard number. Calculated
-   * dynamically based on shards.nameFormat (e.g. for "sh%04d", it will be 4
-   * since it expands to "sh0012"). */
-  private readonly shardNoPadLen: number = 0;
+  /** PG named connection pools to use. The default pool has `null` key.*/
+  private readonly pools = new Map<string | null, TPool>();
+
+  /** Prewarming periodic timer (if scheduled). */
+  private readonly prewarmTimeout = new Ref<NodeJS.Timeout | null>(null);
+
+  /** Whether the pool has been ended and is not usable anymore. */
+  private readonly ended = new Ref(false);
 
   /** This value is set after each request to reflect the actual role of the
    * client. The idea is that master/replica role may change online, without
@@ -115,7 +166,7 @@ export abstract class PgClient extends Client {
     new Ref<ClientConnectionIssue | null>(null);
 
   /** PgClient configuration options. */
-  override readonly options: Required<PgClientOptions>;
+  override readonly options: Required<PgClientOptions<TPool>>;
 
   /** Name of the shard associated to this Client. */
   readonly shardName: string = "public";
@@ -124,20 +175,18 @@ export abstract class PgClient extends Client {
   readonly timelineManager: TimelineManager;
 
   /**
-   * Returns statistics about the connection pool.
+   * Calls swallowedErrorLogger() doing some preliminary amendment.
    */
-  abstract poolStats(): ClientQueryLoggerProps["poolStats"];
-
-  /**
-   * Called when the Client needs a connection to run a query against. Implies
-   * than the caller MUST call release() method on the returned object.
-   */
-  abstract acquireConn(): Promise<PgClientConn>;
+  protected override logSwallowedError(props: SwallowedErrorLoggerProps): void {
+    if (!this.ended.current) {
+      super.logSwallowedError(props);
+    }
+  }
 
   /**
    * Initializes an instance of PgClient.
    */
-  constructor(options: PgClientOptions) {
+  constructor(options: PgClientOptions<TPool>) {
     super(options);
     this.options = defaults(
       {},
@@ -145,7 +194,7 @@ export abstract class PgClient extends Client {
       (this as Client).options,
       {
         maxReplicationLagMs:
-          options.role === "master" || options.role === "replica"
+          options.role !== "unknown"
             ? 2000 // e.g. AWS Aurora, assuming it always "catches up" fast
             : undefined,
       },
@@ -180,8 +229,284 @@ export abstract class PgClient extends Client {
   }
 
   /**
-   * Sends a query (internally, a multi-query). After the query finishes, we
-   * should expect that role() returns the actual master/replica role.
+   * Represents the full destination address this Client is working with.
+   * Depending on the implementation, it may include hostname, port number,
+   * database name, shard name etc. It is required that the address is stable
+   * enough to be able to cache some destination database related metadata (e.g.
+   * shardNos) based on that address.
+   */
+  override address(): string {
+    const { host, port, database } = this.options.config;
+    return (
+      host +
+      (port ? `:${port}` : "") +
+      (database ? `/${database}` : "") +
+      "#" +
+      this.shardName
+    );
+  }
+
+  /**
+   * Gracefully closes all the connections of this Client to let the caller
+   * destroy it. The pending queries are awaited to finish before returning. The
+   * Client becomes unusable right after calling this method (even before the
+   * connections are drained): you should not send queries to it.
+   */
+  override async end(): Promise<void> {
+    if (this.ended.current) {
+      return;
+    }
+
+    this.ended.current = true;
+    clearTimeout(this.prewarmTimeout.current ?? undefined);
+    this.prewarmTimeout.current = null;
+    await mapJoin([...this.pools.values()], async (pool) => pool.end());
+  }
+
+  /**
+   * Returns true if the Client is ended and can't be used anymore.
+   */
+  override isEnded(): boolean {
+    return this.ended.current;
+  }
+
+  /**
+   * Returns all Shard numbers discoverable via the connection to the Client's
+   * database.
+   */
+  override async shardNos(): Promise<readonly number[]> {
+    const shardNamer = this.options.shardNamer;
+
+    // An installation without sharding enabled.
+    if (!shardNamer) {
+      return [0];
+    }
+
+    // e.g. sh0000, sh0123 and not e.g. sh1 or sh12345678
+    const rows = await this.query<Partial<Record<string, string>>>({
+      query: [maybeCall(shardNamer.options.discoverQuery)],
+      isWrite: false,
+      annotations: [],
+      op: OP_SHARD_NOS,
+      table: "pg_catalog",
+    });
+    return rows
+      .map((row) => Object.values(row)[0])
+      .map((name) => (name ? shardNamer.shardNoByName(name) : null))
+      .filter((no): no is number => no !== null)
+      .sort((a, b) => a - b);
+  }
+
+  /**
+   * Sends a read or write test query to the server. Tells the server to sit and
+   * wait for at least the provided number of milliseconds.
+   */
+  override async ping({
+    execTimeMs,
+    isWrite,
+    annotation,
+  }: ClientPingInput): Promise<void> {
+    await this.query<Partial<Record<string, string>>>({
+      query: [
+        "DO $$ BEGIN PERFORM pg_sleep(?); IF pg_is_in_recovery() AND ? THEN RAISE read_only_sql_transaction; END IF; END $$",
+        execTimeMs / 1000,
+        isWrite,
+      ],
+      isWrite,
+      annotations: [annotation],
+      op: OP_PING,
+      table: "pg_catalog",
+    });
+  }
+
+  /**
+   * Creates a new Client which is namespaced to the provided Shard number. The
+   * new Client will share the same connection pool with the parent's Client.
+   */
+  override withShard(no: number): this {
+    return Object.assign(Object.create(this.constructor.prototype), {
+      ...this,
+      shardName: this.options.shardNamer
+        ? this.options.shardNamer.shardNameByNo(no)
+        : this.shardName,
+      // Notice that we can ONLY have readonly properties in this and all
+      // derived classes to make it work. If we need some mutable props shared
+      // across all of the clones, we need to wrap them in a Ref (and make the
+      // Ref object itself readonly). That's a pretty fragile contract though.
+    });
+  }
+
+  /**
+   * Returns the Client's role reported after the last successful query. Master
+   * and replica roles may switch online unpredictably, without reconnecting, so
+   * we only know the role after a query.
+   */
+  override role(): ClientRole {
+    return this.reportedRoleAfterLastQuery.current;
+  }
+
+  /**
+   * Returns a non-nullable value if the Client couldn't connect to the server
+   * (or it could, but the load balancer reported the remote server as not
+   * working), so it should ideally be removed from the list of active replicas
+   * until e.g. the next discovery query to it (or any query) succeeds.
+   */
+  override connectionIssue(): ClientConnectionIssue | null {
+    return this.reportedConnectionIssue.current;
+  }
+
+  /**
+   * A convenience method to put connections prewarming logic to. The idea is to
+   * keep the needed number of open connections and also, in each connection,
+   * minimize the time which the very 1st query will take (e.g. pre-cache
+   * full-text dictionaries).
+   */
+  override prewarm(): void {
+    if (this.prewarmTimeout.current) {
+      // Already scheduled a prewarm, so skipping.
+      return;
+    }
+
+    const subPools = this.options.prewarmSubPools
+      ? [...this.pools.entries()]
+          .filter(([name]) => name !== null)
+          .map(([_, pool]) => pool)
+      : [];
+
+    for (const pool of [this.pool(), ...subPools]) {
+      const config = pool.options as PgClientOptions["config"];
+      if (!config.min) {
+        continue;
+      }
+
+      const min = Math.min(
+        config.min,
+        config.max ?? Infinity,
+        pool.totalCount + (maybeCall(this.options.prewarmIntervalStep) || 1),
+      );
+      const toPrewarm = min - pool.waitingCount;
+      if (toPrewarm > 0) {
+        const startTime = performance.now();
+        range(toPrewarm).forEach(() =>
+          runInVoid(
+            pool.query(maybeCall(this.options.prewarmQuery)).catch((error) =>
+              this.logSwallowedError({
+                where: `${this.constructor.name}.prewarm`,
+                error,
+                elapsed: Math.round(performance.now() - startTime),
+                importance: "normal",
+              }),
+            ),
+          ),
+        );
+      }
+    }
+
+    this.prewarmTimeout.current = setTimeout(
+      () => {
+        this.prewarmTimeout.current = null;
+        this.prewarm();
+      },
+      Math.round(
+        maybeCall(this.options.prewarmIntervalMs) *
+          jitter(maybeCall(this.options.prewarmIntervalJitter)),
+      ),
+    ).unref();
+  }
+
+  /**
+   * Returns a default pool (when subPoolConfig is not passed), or a "sub-pool"
+   * (a named low-level Pool implementation compatible to node-postgres). The
+   * method is specific to the current class and is not a part of
+   * database-agnostic Client API.
+   * - Sub-pools are lazily created and memoized by the provided name. They may
+   *   differ by config options (like statement_timeout or max connections).
+   * - Sub-pools inherit the properties from default PgClientOptions.config.
+   * - It is implied (but not enforced) that all sub-pools use the same physical
+   *   database, because otherwise it makes not a lot of sense.
+   */
+  pool(subPoolConfig?: PgClientSubPoolConfig): TPool {
+    let pool = this.pools.get(subPoolConfig?.name ?? null);
+    if (pool) {
+      return pool;
+    }
+
+    pool = this.options
+      .createPool(
+        defaults({}, subPoolConfig, this.options.config, {
+          allowExitOnIdle: true,
+        }),
+      )
+      .on("connect", (poolClient) => {
+        // Called only once, after the connection is 1st created.
+        const client = poolClient as PgClientConn<TPool>;
+
+        // Initialize additional properties merged into the default PoolClient.
+        const maxConnLifetimeMs =
+          maybeCall(this.options.maxConnLifetimeMs) *
+          jitter(maybeCall(this.options.maxConnLifetimeJitter));
+        client.pool = pool!;
+        client.id = connId++;
+        client.queriesSent = 0;
+        client.closeAt =
+          maxConnLifetimeMs > 0
+            ? Date.now() + Math.round(maxConnLifetimeMs)
+            : null;
+
+        // Sets a "default error" handler to not let errors leak to e.g. Jest
+        // and the outside world as "unhandled error". Appending an additional
+        // error handler to EventEmitter doesn't affect the existing error
+        // handlers anyhow, so should be safe.
+        client.on("error", () => {});
+      })
+      .on("error", (error) =>
+        // Having this hook prevents node from crashing.
+        this.logSwallowedError({
+          where: 'Pool.on("error")',
+          error,
+          elapsed: null,
+          importance: "low",
+        }),
+      );
+
+    this.pools.set(subPoolConfig?.name ?? null, pool);
+    return pool;
+  }
+
+  /**
+   * Called when the Client needs a connection in the default pool (when
+   * subPoolConfig is not passed), or in a sub-pool (see pool() method) to run a
+   * query against. Implies than the caller MUST call release() method on the
+   * returned object. The difference from pool().connect() is that when calling
+   * release() on a result of acquireConn(), it additionally closes the
+   * connection automatically if was OPENED (not queried!) more than
+   * maxConnLifetimeMs ago (node-postgres Pool doesn't have this feature) The
+   * method is specific to the current class and is not a part of
+   * database-agnostic Client API.
+   */
+  async acquireConn(
+    subPoolConfig?: PgClientSubPoolConfig,
+  ): Promise<PgClientConn<TPool>> {
+    const pool = this.pool(subPoolConfig);
+    const conn = (await pool.connect()) as PgClientConn<TPool>;
+
+    const connReleaseOrig = conn.release.bind(conn);
+    conn.release = (arg) => {
+      // Manage maxConnLifetimeMs manually since it's not supported by the
+      // vanilla node-postgres.
+      const needClose = !!(conn.closeAt && Date.now() > conn.closeAt);
+      return connReleaseOrig(arg !== undefined ? arg : needClose);
+    };
+
+    return conn;
+  }
+
+  /**
+   * Sends a query (internally, a multi-query) through the default Pool (if
+   * subPoolConfig is not passed), or through a named sub-pool (see pool()
+   * method). After the query finishes, we should expect that role() returns the
+   * actual master/replica role. The method is specific to the current class and
+   * is not a part of database-agnostic Client API.
    */
   async query<TRow>({
     query: queryLiteral,
@@ -191,6 +516,7 @@ export abstract class PgClient extends Client {
     op,
     table,
     batchFactor,
+    subPoolConfig,
   }: {
     query: Literal;
     hints?: Hints;
@@ -199,6 +525,7 @@ export abstract class PgClient extends Client {
     op: string;
     table: string;
     batchFactor?: number;
+    subPoolConfig?: PgClientSubPoolConfig;
   }): Promise<TRow[]> {
     const {
       rawPrepend,
@@ -222,7 +549,7 @@ export abstract class PgClient extends Client {
 
     const startTime = performance.now();
     let queryTime: number | undefined = undefined;
-    let conn: PgClientConn | undefined = undefined;
+    let conn: PgClientConn<TPool> | undefined = undefined;
     let res: TRow[] | undefined = undefined;
     let e: MaybeError<{ severity?: unknown }> = undefined;
     let postAction: ClientErrorPostAction = "fail";
@@ -238,9 +565,8 @@ export abstract class PgClient extends Client {
         );
       }
 
-      conn = await this.acquireConn();
-      conn.id ??= connNo++;
-      conn.queriesSent = (conn.queriesSent ?? 0) + 1;
+      conn = await this.acquireConn(subPoolConfig);
+      conn.queriesSent++;
 
       queryTime = Math.round(performance.now() - startTime);
       const resMulti = await this.sendMultiQuery(
@@ -347,6 +673,7 @@ export abstract class PgClient extends Client {
       throw e;
     } finally {
       conn?.release();
+      const pool = conn?.pool ?? this.pool(subPoolConfig);
       const now = performance.now();
       this.options.loggers?.clientQueryLogger?.({
         annotations,
@@ -365,7 +692,11 @@ export abstract class PgClient extends Client {
           id: conn ? "" + (conn.id ?? 0) : "?",
           queriesSent: conn?.queriesSent ?? 0,
         },
-        poolStats: this.poolStats(),
+        poolStats: {
+          totalConns: pool.totalCount,
+          idleConns: pool.idleCount,
+          queuedReqs: pool.waitingCount,
+        },
         error:
           e === undefined
             ? undefined
@@ -379,68 +710,6 @@ export abstract class PgClient extends Client {
         address: this.address(),
       });
     }
-  }
-
-  async shardNos(): Promise<readonly number[]> {
-    const shardNamer = this.options.shardNamer;
-
-    // An installation without sharding enabled.
-    if (!shardNamer) {
-      return [0];
-    }
-
-    // e.g. sh0000, sh0123 and not e.g. sh1 or sh12345678
-    const rows = await this.query<Partial<Record<string, string>>>({
-      query: [maybeCall(shardNamer.options.discoverQuery)],
-      isWrite: false,
-      annotations: [],
-      op: OP_SHARD_NOS,
-      table: "pg_catalog",
-    });
-    return rows
-      .map((row) => Object.values(row)[0])
-      .map((name) => (name ? shardNamer.shardNoByName(name) : null))
-      .filter((no): no is number => no !== null)
-      .sort((a, b) => a - b);
-  }
-
-  async ping({
-    execTimeMs,
-    isWrite,
-    annotation,
-  }: ClientPingInput): Promise<void> {
-    await this.query<Partial<Record<string, string>>>({
-      query: [
-        "DO $$ BEGIN PERFORM pg_sleep(?); IF pg_is_in_recovery() AND ? THEN RAISE read_only_sql_transaction; END IF; END $$",
-        execTimeMs / 1000,
-        isWrite,
-      ],
-      isWrite,
-      annotations: [annotation],
-      op: OP_PING,
-      table: "pg_catalog",
-    });
-  }
-
-  withShard(no: number): this {
-    return Object.assign(Object.create(this.constructor.prototype), {
-      ...this,
-      shardName: this.options.shardNamer
-        ? this.options.shardNamer.shardNameByNo(no)
-        : this.shardName,
-      // Notice that we can ONLY have readonly properties in this and all
-      // derived classes to make it work. If we need some mutable props shared
-      // across all of the clones, we need to wrap them in a Ref (and make the
-      // Ref object itself readonly). That's a pretty fragile contract though.
-    });
-  }
-
-  role(): ClientRole {
-    return this.reportedRoleAfterLastQuery.current;
-  }
-
-  connectionIssue(): ClientConnectionIssue | null {
-    return this.reportedConnectionIssue.current;
   }
 
   /**
@@ -528,7 +797,7 @@ export abstract class PgClient extends Client {
    * https://github.com/DefinitelyTyped/DefinitelyTyped/pull/33297
    */
   private async sendMultiQuery(
-    conn: PgClientConn,
+    conn: PgClientConn<TPool>,
     rawPrepend: string,
     queries: string[],
     queriesRollback: string[],
@@ -556,4 +825,28 @@ export abstract class PgClient extends Client {
   }
 }
 
-let connNo = 1;
+/**
+ * For backward compatibility, exposing the old name as well.
+ * @deprecated Use PgClient instead.
+ * @ignore
+ */
+export const PgClientPool = PgClient;
+
+/**
+ * For backward compatibility, exposing the old name as well.
+ * @deprecated Use PgClient instead.
+ * @ignore
+ */
+export type PgClientPool = PgClient;
+
+/**
+ * For backward compatibility, exposing the old name as well.
+ * @deprecated Use PgClientOptions instead.
+ * @ignore
+ */
+export type PgClientPoolOptions = PgClientOptions;
+
+/**
+ * Auto-incrementing connection number (for debugging purposes).
+ */
+let connId = 1;

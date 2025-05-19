@@ -2,107 +2,47 @@ import type { AddressInfo, Server, Socket } from "net";
 import { connect, createServer } from "net";
 import delay from "delay";
 import compact from "lodash/compact";
-import type { PoolConfig } from "pg";
+import { Pool, type PoolConfig } from "pg";
 import waitForExpect from "wait-for-expect";
-import type {
-  ClientConnectionIssue,
-  ClientPingInput,
-  ClientRole,
-} from "../../abstract/Client";
-import { Client } from "../../abstract/Client";
+
 import { Cluster } from "../../abstract/Cluster";
 import type { Loggers } from "../../abstract/Loggers";
 import type { Query } from "../../abstract/Query";
 import type { STALE_REPLICA, Shard } from "../../abstract/Shard";
 import { MASTER } from "../../abstract/Shard";
 import { Timeline } from "../../abstract/Timeline";
-import type { TimelineManager } from "../../abstract/TimelineManager";
 import { GLOBAL_SHARD } from "../../ent/ShardAffinity";
 import { join, mapJoin, nullthrows, runInVoid } from "../../internal/misc";
 import type { Literal } from "../../types";
 import { buildShape } from "../helpers/buildShape";
 import { escapeIdent } from "../helpers/escapeIdent";
 import { escapeLiteral } from "../helpers/escapeLiteral";
-import type { PgClient, PgClientConn } from "../PgClient";
-import type { PgClientPoolOptions } from "../PgClientPool";
-import { PgClientPool } from "../PgClientPool";
+import { PgClient } from "../PgClient";
 import { PgShardNamer } from "../PgShardNamer";
 
 /**
- * A proxy for an PgClient which records all the queries passing through and
- * has some other helper methods.
+ * A proxy for an PgClient which records all the queries passing through and has
+ * some other helper methods.
  */
-export class TestPgClient
-  extends Client
-  implements Pick<PgClient, "query" | "options" | "acquireConn">
-{
+export class TestPgClient<TPool extends Pool = Pool> extends PgClient<TPool> {
   readonly queries: string[] = [];
-  override readonly options: Required<PgClientPoolOptions>;
 
-  constructor(public readonly client: PgClientPool) {
-    super(client.options);
-    this.options = client.options;
-  }
+  override async query<TRes>(
+    params: Parameters<PgClient["query"]>[0],
+  ): Promise<TRes[]> {
+    if (params.op !== "SHARD_NOS") {
+      this.queries.push(
+        escapeLiteral(params.query) +
+          (params.hints && Object.keys(params.hints).length > 0
+            ? "\n-- Hints:" +
+              Object.entries(params.hints)
+                .map(([k, v]) => `${k || '""'}=${v}`)
+                .join(",")
+            : ""),
+      );
+    }
 
-  get shardName(): string {
-    return this.client.shardName;
-  }
-
-  get timelineManager(): TimelineManager {
-    return this.client.timelineManager;
-  }
-
-  async acquireConn(): Promise<PgClientConn> {
-    return this.client.acquireConn();
-  }
-
-  address(): string {
-    return this.client.address();
-  }
-
-  async end(): Promise<void> {
-    return this.client.end();
-  }
-
-  async shardNos(): Promise<readonly number[]> {
-    return this.client.shardNos();
-  }
-
-  async ping(input: ClientPingInput): Promise<void> {
-    return this.client.ping(input);
-  }
-
-  withShard(no: number): this {
-    return new TestPgClient(this.client.withShard(no)) as this;
-  }
-
-  isEnded(): boolean {
-    return this.client.isEnded();
-  }
-
-  role(): ClientRole {
-    return this.client.role();
-  }
-
-  connectionIssue(): ClientConnectionIssue | null {
-    return this.client.connectionIssue();
-  }
-
-  override prewarm(): void {
-    return this.client.prewarm();
-  }
-
-  async query<TRes>(params: Parameters<PgClient["query"]>[0]): Promise<TRes[]> {
-    this.queries.push(
-      escapeLiteral(params.query) +
-        (params.hints && Object.keys(params.hints).length > 0
-          ? "\n-- Hints:" +
-            Object.entries(params.hints)
-              .map(([k, v]) => `${k || '""'}=${v}`)
-              .join(",")
-          : ""),
-    );
-    return this.client.query<TRes>(params);
+    return super.query<TRes>(params);
   }
 
   toMatchSnapshot(): void {
@@ -132,7 +72,7 @@ export class TestPgClient
   ): Promise<Array<Record<string, unknown>>> {
     sql = sql.replace(/%T/g, (_) => escapeIdent("" + values.shift()));
     return nullthrows(
-      await this.client.query({
+      await super.query({
         query: [sql, ...values],
         isWrite: true, // because used for BOTH read and write queries in tests
         annotations: [],
@@ -278,6 +218,7 @@ export const TEST_CONFIG: PoolConfig & {
   database: process.env["PGDATABASE"] || process.env["DB_DATABASE"],
   user: process.env["PGUSER"] || process.env["DB_USER"],
   password: process.env["PGPASSWORD"] || process.env["DB_PASS"],
+  idleTimeoutMillis: 30000,
   // Additional custom props (tests facilities).
   nameSuffix: undefined,
   isAlwaysLaggingReplica: false,
@@ -319,23 +260,31 @@ beforeEach(() => {
 });
 
 /**
+ * A derived class from the default node-postgres Pool.
+ */
+export class TestPool extends Pool {
+  some(): string {
+    return "some";
+  }
+}
+
+/**
  * Test Cluster backed by the test config.
  */
 export const testCluster = new Cluster({
   islands: TEST_ISLANDS,
   createClient: ({ nameSuffix, isAlwaysLaggingReplica, loggers, ...config }) =>
-    new TestPgClient(
-      new PgClientPool({
-        name:
-          `test-pool(replica=${isAlwaysLaggingReplica})` +
-          (nameSuffix ? `-${nameSuffix}` : ""),
-        loggers,
-        ...(isAlwaysLaggingReplica
-          ? { role: "replica", maxReplicationLagMs: 1e10 }
-          : {}),
-        config,
-      }),
-    ),
+    new TestPgClient({
+      name:
+        `test-pool(replica=${isAlwaysLaggingReplica})` +
+        (nameSuffix ? `-${nameSuffix}` : ""),
+      loggers,
+      ...(isAlwaysLaggingReplica
+        ? { role: "replica", maxReplicationLagMs: 1e10 }
+        : {}),
+      config,
+      createPool: (config) => new TestPool(config),
+    }),
   loggers: {
     swallowedErrorLogger: jest.fn(),
     clientQueryLogger: jest.fn(),

@@ -61,7 +61,7 @@ Defined in: [src/pg/PgQueryUpdate.ts:26](https://github.com/clickup/ent-framewor
 
 | Parameter | Type |
 | ------ | ------ |
-| `client` | [`PgClient`](PgClient.md) |
+| `client` | [`PgClient`](PgClient.md)\<`Pool`\> |
 | `annotation` | [`QueryAnnotation`](../interfaces/QueryAnnotation.md) |
 
 #### Returns

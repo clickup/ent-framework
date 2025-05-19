@@ -88,14 +88,14 @@ test("batcher() memoizes", async () => {
     schemaA,
     "",
     false,
-    () => new PgRunnerInsert(schemaA, client.client),
+    () => new PgRunnerInsert(schemaA, client),
   );
   const batcher2 = client.batcher(
     PgQueryInsert,
     schemaA,
     "",
     false,
-    () => new PgRunnerInsert(schemaA, client.client),
+    () => new PgRunnerInsert(schemaA, client),
   );
   expect(batcher1).toBe(batcher2);
 
@@ -104,7 +104,7 @@ test("batcher() memoizes", async () => {
     schemaB,
     "",
     false,
-    () => new PgRunnerInsert(schemaB, client.client),
+    () => new PgRunnerInsert(schemaB, client),
   );
   expect(batcher1).not.toBe(batcher3);
 });

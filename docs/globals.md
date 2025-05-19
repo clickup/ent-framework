@@ -63,7 +63,6 @@
 - [Require](classes/Require.md)
 - [Rule](classes/Rule.md)
 - [PgClient](classes/PgClient.md)
-- [PgClientPool](classes/PgClientPool.md)
 - [PgError](classes/PgError.md)
 - [PgQueryCount](classes/PgQueryCount.md)
 - [PgQueryDelete](classes/PgQueryDelete.md)
@@ -114,7 +113,7 @@
 - [Ent](interfaces/Ent.md)
 - [PgClientOptions](interfaces/PgClientOptions.md)
 - [PgClientConn](interfaces/PgClientConn.md)
-- [PgClientPoolOptions](interfaces/PgClientPoolOptions.md)
+- [PgClientSubPoolConfig](interfaces/PgClientSubPoolConfig.md)
 - [ToolPingOptions](interfaces/ToolPingOptions.md)
 - [ToolScoreboardOptions](interfaces/ToolScoreboardOptions.md)
 

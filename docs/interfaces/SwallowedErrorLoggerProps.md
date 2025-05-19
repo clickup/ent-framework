@@ -6,7 +6,7 @@
 
 # Interface: SwallowedErrorLoggerProps
 
-Defined in: [src/abstract/Loggers.ts:52](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L52)
+Defined in: [src/abstract/Loggers.ts:54](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L54)
 
 ## Properties
 

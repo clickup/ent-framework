@@ -102,6 +102,11 @@ export abstract class Client {
   abstract end(): Promise<void>;
 
   /**
+   * Returns true if the Client is ended and can't be used anymore.
+   */
+  abstract isEnded(): boolean;
+
+  /**
    * Returns all Shard numbers discoverable via the connection to the Client's
    * database.
    */
@@ -118,11 +123,6 @@ export abstract class Client {
    * new Client will share the same connection pool with the parent's Client.
    */
   abstract withShard(no: number): this;
-
-  /**
-   * Returns true if the Client is ended and can't be used anymore.
-   */
-  abstract isEnded(): boolean;
 
   /**
    * Returns the Client's role reported after the last successful query. Master

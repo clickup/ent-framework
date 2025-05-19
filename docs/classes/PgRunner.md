@@ -40,7 +40,7 @@ Defined in: [src/pg/PgRunner.ts:504](https://github.com/clickup/ent-framework/bl
 | Parameter | Type |
 | ------ | ------ |
 | `schema` | [`Schema`](Schema.md)\<`TTable`, [`UniqueKey`](../type-aliases/UniqueKey.md)\<`TTable`\>\> |
-| `client` | [`PgClient`](PgClient.md) |
+| `client` | [`PgClient`](PgClient.md)\<`Pool`\> |
 
 #### Returns
 

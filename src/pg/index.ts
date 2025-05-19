@@ -3,7 +3,6 @@
  */
 
 export * from "./PgClient";
-export * from "./PgClientPool";
 export * from "./PgError";
 export * from "./PgQueryCount";
 export * from "./PgQueryDelete";

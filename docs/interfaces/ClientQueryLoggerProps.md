@@ -23,8 +23,8 @@ Defined in: [src/abstract/Loggers.ts:21](https://github.com/clickup/ent-framewor
 | `elapsed.total` | `number` | - |
 | `elapsed.acquire` | `number` | - |
 | <a id="connstats"></a> `connStats` | `object` | - |
-| `connStats.id` | `string` | - |
-| `connStats.queriesSent` | `number` | - |
+| `connStats.id` | `string` | The stats related to the used connection. |
+| `connStats.queriesSent` | `number` | The number of queries sent to the connection. |
 | <a id="poolstats"></a> `poolStats` | `object` | - |
 | `poolStats.totalConns` | `number` | Total number of connections in the pool. |
 | `poolStats.idleConns` | `number` | Connections not busy running a query. |
