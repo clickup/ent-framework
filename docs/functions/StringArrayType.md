@@ -8,7 +8,7 @@
 
 > **StringArrayType**(): `object`
 
-Defined in: [src/pg/types/StringArrayType.ts:13](https://github.com/clickup/ent-framework/blob/master/src/pg/types/StringArrayType.ts#L13)
+Defined in: [src/pg/types/StringArrayType.ts:14](https://github.com/clickup/ent-framework/blob/master/src/pg/types/StringArrayType.ts#L14)
 
 An array of Strings. Note: node-postgres natively supports this type on read
 path, but on write path, we have to stringify by ourselves.

@@ -1,10 +1,11 @@
 import { types } from "pg";
+import type { DesperateAny } from "../../internal/misc";
 
 /**
  * It is in pg-types/lib/textParsers.js (1016::regtype is "bigint[]"), just not
  * exported to TS types.
  */
-const BIGINT_ARRAY_OID = 1016;
+const BIGINT_ARRAY_OID: DesperateAny = 1016;
 
 /**
  * An array of IDs. Notice that:
