@@ -6,12 +6,18 @@
 
 # Function: StringArrayType()
 
-> **StringArrayType**(): `object`
+> **StringArrayType**\<`T`\>(): `object`
 
 Defined in: [src/pg/types/StringArrayType.ts:14](https://github.com/clickup/ent-framework/blob/master/src/pg/types/StringArrayType.ts#L14)
 
 An array of Strings. Note: node-postgres natively supports this type on read
 path, but on write path, we have to stringify by ourselves.
+
+## Type Parameters
+
+| Type Parameter | Default type |
+| ------ | ------ |
+| `T` *extends* `null` \| `string` | `null` \| `string` |
 
 ## Returns
 
@@ -19,17 +25,17 @@ path, but on write path, we have to stringify by ourselves.
 
 ### dbValueToJs()
 
-> **dbValueToJs**: (`dbValue`) => (`string` \| `null`)[]
+> **dbValueToJs**: (`dbValue`) => `T`[]
 
 #### Parameters
 
 | Parameter | Type |
 | ------ | ------ |
-| `dbValue` | (`string` \| `null`)[] |
+| `dbValue` | `T`[] |
 
 #### Returns
 
-(`string` \| `null`)[]
+`T`[]
 
 ### stringify()
 
@@ -39,7 +45,7 @@ path, but on write path, we have to stringify by ourselves.
 
 | Parameter | Type |
 | ------ | ------ |
-| `jsValue` | (`string` \| `null`)[] |
+| `jsValue` | `T`[] |
 
 #### Returns
 
@@ -47,7 +53,7 @@ path, but on write path, we have to stringify by ourselves.
 
 ### parse()
 
-> **parse**: (`str`) => (`string` \| `null`)[]
+> **parse**: (`str`) => `T`[]
 
 #### Parameters
 
@@ -57,4 +63,4 @@ path, but on write path, we have to stringify by ourselves.
 
 #### Returns
 
-(`string` \| `null`)[]
+`T`[]

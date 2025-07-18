@@ -369,7 +369,7 @@ export async function shardRun<TOutput>(
 export async function reconfigureToTwoIslands(): Promise<void> {
   // Since we add the same physical host to island 1 as we already have in
   // island 0, we force the old Client to discover 0 shards to avoid "Shard
-  // exists in more than one island" error.
+  // exists on more than one island" error.
   const oldIsland0 = await testCluster.island(0);
   const oldMaster0 = oldIsland0.master(); // will be reused
   jest.spyOn(oldMaster0, "shardNos").mockResolvedValue([]);

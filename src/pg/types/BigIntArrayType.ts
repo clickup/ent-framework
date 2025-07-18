@@ -12,13 +12,14 @@ const BIGINT_ARRAY_OID: DesperateAny = 1016;
  * 1. Node-postgres natively supports this type on read path, but on write path,
  *    we have to stringify by ourselves.
  * 2. GIN index doesn't support NULL, because PG's "&&" operator (intersection
- *    check) doesn't work with NULLs. But we still allow NULLs in BigIntArrayType,
- *    because to query such values, we can use a separate partial index.
+ *    check) doesn't work with NULLs. But we still allow NULLs in
+ *    BigIntArrayType, since to query such values, the user could use a separate
+ *    partial index.
  */
-export function BigIntArrayType(): {
-  dbValueToJs: (dbValue: Array<string | null>) => Array<string | null>;
-  stringify: (jsValue: Array<string | null>) => string;
-  parse: (str: string) => Array<string | null>;
+export function BigIntArrayType<T extends string | null = string | null>(): {
+  dbValueToJs: (dbValue: T[]) => T[];
+  stringify: (jsValue: T[]) => string;
+  parse: (str: string) => T[];
 } {
   return {
     dbValueToJs: (dbValue) => dbValue,
@@ -29,7 +30,6 @@ export function BigIntArrayType(): {
     stringify: (jsValue) =>
       "{" + jsValue.map((v) => v ?? "NULL").join(",") + "}",
 
-    parse: (str) =>
-      types.getTypeParser(BIGINT_ARRAY_OID)(str) as Array<string | null>,
+    parse: (str) => types.getTypeParser(BIGINT_ARRAY_OID)(str) as T[],
   };
 }

@@ -11,10 +11,10 @@ const VARCHAR_ARRAY_OID: DesperateAny = 1015;
  * An array of Strings. Note: node-postgres natively supports this type on read
  * path, but on write path, we have to stringify by ourselves.
  */
-export function StringArrayType(): {
-  dbValueToJs: (dbValue: Array<string | null>) => Array<string | null>;
-  stringify: (jsValue: Array<string | null>) => string;
-  parse: (str: string) => Array<string | null>;
+export function StringArrayType<T extends string | null = string | null>(): {
+  dbValueToJs: (dbValue: T[]) => T[];
+  stringify: (jsValue: T[]) => string;
+  parse: (str: string) => T[];
 } {
   return {
     dbValueToJs: (dbValue) => dbValue,
@@ -30,7 +30,6 @@ export function StringArrayType(): {
         .join(",") +
       "}",
 
-    parse: (str) =>
-      types.getTypeParser(VARCHAR_ARRAY_OID)(str) as Array<string | null>,
+    parse: (str) => types.getTypeParser(VARCHAR_ARRAY_OID)(str) as T[],
   };
 }

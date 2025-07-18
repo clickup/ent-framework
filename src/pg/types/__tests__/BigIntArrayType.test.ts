@@ -38,3 +38,15 @@ test("nulls", () => {
     }
   `);
 });
+
+test("non-nullable type", () => {
+  expect(testSpecTypeIntegrity(BigIntArrayType<string>(), ["123"]))
+    .toMatchInlineSnapshot(`
+    {
+      "jsValueDecoded": [
+        "123",
+      ],
+      "stringifiedBack": "{123}",
+    }
+  `);
+});

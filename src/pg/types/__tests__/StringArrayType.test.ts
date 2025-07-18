@@ -57,3 +57,41 @@ test("nulls", () => {
     }
   `);
 });
+
+test("non-nullable type", () => {
+  expect(testSpecTypeIntegrity(StringArrayType<string>(), ["abc"]))
+    .toMatchInlineSnapshot(`
+    {
+      "jsValueDecoded": [
+        "abc",
+      ],
+      "stringifiedBack": "{"abc"}",
+    }
+  `);
+});
+
+test("enum and literal type", () => {
+  enum MyEnum {
+    A = "a",
+  }
+
+  expect(testSpecTypeIntegrity(StringArrayType<MyEnum>(), [MyEnum.A]))
+    .toMatchInlineSnapshot(`
+    {
+      "jsValueDecoded": [
+        "a",
+      ],
+      "stringifiedBack": "{"a"}",
+    }
+  `);
+
+  expect(testSpecTypeIntegrity(StringArrayType<"a" | "b">(), ["a"]))
+    .toMatchInlineSnapshot(`
+    {
+      "jsValueDecoded": [
+        "a",
+      ],
+      "stringifiedBack": "{"a"}",
+    }
+  `);
+});

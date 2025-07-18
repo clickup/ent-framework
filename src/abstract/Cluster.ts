@@ -606,7 +606,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
           const otherIslandNo = shardNoToIslandNo.get(shard.no);
           if (otherIslandNo !== undefined) {
             throw Error(
-              `Shard #${shard.no} exists in more than one island: ` +
+              `Shard #${shard.no} exists on more than one Island: ` +
                 islandNoToIsland.get(otherIslandNo)?.master().options.name +
                 `(${otherIslandNo})` +
                 " and " +
