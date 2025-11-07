@@ -1,3 +1,4 @@
+import delay from "delay";
 import pDefer from "p-defer";
 import waitForExpect from "wait-for-expect";
 import { STALE_REPLICA } from "../../abstract/Shard";
@@ -28,6 +29,7 @@ beforeEach(async () => {
   testCluster.options.runOnShardErrorRetryCount = 1;
   testCluster.options.shardsDiscoverIntervalMs = 20000; // very large intentionally
   testCluster.options.reloadIslandsIntervalMs = 10;
+  testCluster.options.clientEndDelayMs = 0;
 
   testCluster.options.islands = TEST_ISLANDS;
   await testCluster.rediscover();
@@ -54,6 +56,7 @@ test("node added dynamically appears in the cluster, old client is removed", asy
 
   await reconfigureToTwoIslands();
 
+  await delay(1);
   expect(oldMaster0.isEnded()).toBeFalsy();
   expect(oldReplica0.isEnded()).toBeTruthy();
 
@@ -87,8 +90,10 @@ test("when old client is returned to the shard code, but then ended, the operati
   const oldReplicaQueryUnfreezeDefer = pDefer();
   jest.spyOn(oldReplica, "query").mockImplementationOnce(async (...args) => {
     oldReplicaQueryCalledDefer.resolve();
+    await delay(1);
     expect(oldReplica.isEnded()).toBeFalsy();
     await oldReplicaQueryUnfreezeDefer.promise;
+    await delay(1);
     expect(oldReplica.isEnded()).toBeTruthy();
     return oldReplica.query(...args);
   });
@@ -126,11 +131,16 @@ test("low level (non-sharded) client queries are not retried if the client is en
   const island = await testCluster.island(0);
   const oldReplica = island.replica();
 
+  const clientEndLoggerSpy = jest.spyOn(
+    testCluster.options.loggers,
+    "clientEndLogger",
+  );
   testCluster.options.islands = () => [
     { no: 0, nodes: [TEST_CONFIG, { ...TEST_CONFIG, nameSuffix: "modified" }] },
   ];
   await testCluster.rediscover();
 
+  expect(clientEndLoggerSpy).toBeCalled();
   await waitForExpect(() => expect(oldReplica.isEnded()).toBeTruthy());
   await expect(
     oldReplica.query({

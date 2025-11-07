@@ -5,6 +5,7 @@ export class PgError extends ClientError {
     cause: null | undefined | {},
     where: string,
     public readonly sql: string,
+    public readonly table: string,
   ) {
     super(cause, where, "fail", "data-on-server-is-unchanged", "pg_error");
 
@@ -13,8 +14,6 @@ export class PgError extends ClientError {
       writable: false,
       enumerable: false,
     });
-
-    this.stack += ": " + sql.replace(/\s*\n\s*/g, " ");
   }
 
   isFKError(fkName?: string): boolean {

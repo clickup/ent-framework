@@ -20,7 +20,10 @@ export function buildHintQueries(
   const queriesDefault: string[] = [];
   const queries: string[] = [];
 
-  const rawPrepend = hints[RAW_PREPEND_HINT] ?? "";
+  let rawPrepend = hints[RAW_PREPEND_HINT] ?? "";
+  if (rawPrepend) {
+    rawPrepend += " ";
+  }
 
   for (const k in hintsDefault) {
     const v = hintsDefault[k];

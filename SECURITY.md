@@ -24,7 +24,7 @@ ClickUp defines a security vulnerability as an unintended weakness or exposure t
 
 ## Vulnerability Reporting
 
-ClickUp recommends that you share the details of any suspected vulnerabilities across any asset owned, controlled, or operated by ClickUp (or that would reasonably impact the security of ClickUp and our users) using our vulnerability disclosure form at <http://clickup.com/bug-bounty>. The ClickUp Security team will acknowledge receipt of each valid vulnerability report, conduct a thorough investigation, and then take appropriate action for resolution.
+ClickUp recommends that you share the details of any suspected vulnerabilities across any asset owned, controlled, or operated by ClickUp (or that would reasonably impact the security of ClickUp and our users) using our vulnerability disclosure form at <https://clickup.com/vulnerability-disclosure>. The ClickUp Security team will acknowledge receipt of each valid vulnerability report, conduct a thorough investigation, and then take appropriate action for resolution.
 
 ## Safe Harbor
 
@@ -36,4 +36,4 @@ When conducting vulnerability research according to this policy, we consider thi
 - Lawful, helpful to the overall security of the Internet, and conducted in good faith.
 - You are expected, as always, to comply with all applicable laws.
 
-If at any time you have concerns or are uncertain whether your security research is consistent with this policy, please inquire via <support@bugcrowd.com> before going any further.
+If at any time you have concerns or are uncertain whether your security research is consistent with this policy, please inquire via HackerOne Support team before going any further.

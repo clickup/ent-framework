@@ -141,7 +141,7 @@ export async function join(promises: unknown[] | object): Promise<unknown> {
   let errorCount = 0;
   const resultsArray = await Promise["all"](
     promisesArray.map(async (promise) =>
-      Promise.resolve(promise).catch((err) => {
+      Promise.resolve(promise).catch((err: unknown) => {
         if (errorCount === 0) {
           firstError = err;
         }
@@ -180,33 +180,50 @@ export function jitter(jitter: number): number {
 }
 
 /**
- * Copies a stack-trace from fromErr error into toErr object. Useful for
+ * Appends a stack-trace from causeErr error into err object. Useful for
  * lightweight exceptions wrapping.
  */
-export function copyStack<
+export function appendCause<
   TError extends Error,
-  TFrom extends { stack?: unknown; message?: unknown } | null | undefined,
->(toErr: TError, fromErr: TFrom): TError {
-  if (
-    typeof fromErr?.stack !== "string" ||
-    typeof fromErr?.message !== "string"
-  ) {
-    return toErr;
+  TCause extends { stack?: unknown } | null | undefined,
+>(err: TError, causeErr: TCause): TError {
+  if (typeof causeErr?.stack !== "string") {
+    return err;
   }
 
-  // This is magic, the 1st line in stacktrace must be exactly "ExceptionType:
-  // exception message\n", otherwise jest goes mad and prints the stacktrace
-  // incorrectly (once from err.message and then once from err.stack). See also:
-  // https://stackoverflow.com/questions/42754270/re-throwing-exception-in-nodejs-and-not-losing-stack-trace
-  const fromMessageLines = fromErr.message.split("\n").length;
-  toErr.stack =
-    toErr.toString() + // original toErr message
-    "\n" +
-    fromErr.stack
-      .split("\n")
-      .slice(fromMessageLines) // skip prefix=fromErr.message in fromErr.stack
-      .join("\n");
-  return toErr;
+  if (causeErr.stack && !err.stack?.includes(causeErr.stack)) {
+    err.stack =
+      (err.stack ? err.stack.trimEnd() + "\n" : "") +
+      "Cause: " +
+      causeErr.stack;
+  }
+
+  return err;
+}
+
+/**
+ * Inserts the caller stack into the error stack if it is not already there.
+ */
+export function appendCaller(e: unknown): unknown {
+  if (
+    e &&
+    typeof e === "object" &&
+    "stack" in e &&
+    typeof e.stack === "string"
+  ) {
+    const oldStack = e.stack;
+    Error.captureStackTrace(e, appendCaller);
+    const newStack = e.stack
+      ?.trimEnd()
+      .replaceAll(/(?<=\(index )\d+(?=\))/g, "*");
+    if (newStack && !oldStack.includes(newStack)) {
+      e.stack = newStack + "\nCause: " + oldStack;
+    } else {
+      e.stack = oldStack;
+    }
+  }
+
+  return e;
 }
 
 /**

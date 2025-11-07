@@ -419,14 +419,14 @@ test("select and count", async () => {
     vc,
     { post_id: [] },
     Number.MAX_SAFE_INTEGER,
-  ).catch((e) => e.toString());
+  ).catch((e: unknown) => `${e}`);
   expect(error1).toMatchSnapshot();
 
   const error2 = await EntTestComment.select(
     vc,
     { post_id: "" },
     Number.MAX_SAFE_INTEGER,
-  ).catch((e) => e.toString());
+  ).catch((e: unknown) => `${e}`);
   expect(error2).toMatchSnapshot();
 
   const count = await EntTestComment.count(vc, {
@@ -504,7 +504,7 @@ test("custom shard", async () => {
     vc,
     { id: post.id, $shardOfID: "" },
     Number.MAX_SAFE_INTEGER,
-  ).catch((e) => e.toString());
+  ).catch((e: unknown) => `${e}`);
   expect(error).toMatchSnapshot();
 });
 

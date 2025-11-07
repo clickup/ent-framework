@@ -10,6 +10,7 @@ import { Require } from "../rules/Require";
 import { Validation } from "../Validation";
 import { createVC, ValidationTester } from "./test-utils";
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const companySchema = new PgSchema(
   'ent.validation"privacy"company',
   {

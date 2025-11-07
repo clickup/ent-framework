@@ -6,7 +6,7 @@
 
 # Interface: ClientQueryLoggerProps
 
-Defined in: [src/abstract/Loggers.ts:21](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L21)
+Defined in: [src/abstract/Loggers.ts:25](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L25)
 
 ## Properties
 

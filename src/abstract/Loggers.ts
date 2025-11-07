@@ -1,4 +1,5 @@
-import type { ClientRole } from "./Client";
+import type { DesperateAny } from "../internal/misc";
+import type { Client, ClientRole } from "./Client";
 import type { QueryAnnotation } from "./QueryAnnotation";
 
 /**
@@ -7,7 +8,7 @@ import type { QueryAnnotation } from "./QueryAnnotation";
  * 1. It is not friendly to mocking in Jest.
  * 2. The built-in EventEmitter is not strongly typed.
  */
-export interface Loggers {
+export interface Loggers<TNode = DesperateAny> {
   /** Logs actual queries to the database (after batching). */
   clientQueryLogger?: (props: ClientQueryLoggerProps) => void;
   /** Logs errors which did not throw through (typically recoverable). */
@@ -16,6 +17,9 @@ export interface Loggers {
    * a query on a particular Shard fails due to any reason (like transport
    * error). Mostly used in unit tests, since it's called for every retry. */
   runOnShardErrorLogger?: (props: RunOnShardErrorLoggerProps) => void;
+  /** Called when a Client gets ended due to dynamic Islands reconfiguration.
+   * Allows to debug flaky Island reconfiguration. */
+  clientEndLogger?: (props: ClientEndLoggerProps<TNode>) => void;
 }
 
 export interface ClientQueryLoggerProps {
@@ -61,4 +65,10 @@ export interface SwallowedErrorLoggerProps {
 export interface RunOnShardErrorLoggerProps {
   error: unknown;
   attempt: number;
+}
+
+export interface ClientEndLoggerProps<TNode> {
+  client: Client;
+  key: string;
+  node: TNode;
 }

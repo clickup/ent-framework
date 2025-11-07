@@ -13,6 +13,7 @@ import type { ValidationRules } from "../Validation";
 import { Validation } from "../Validation";
 import { ValidationTester } from "./test-utils";
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const companySchema = new PgSchema(
   'ent.validation"validate"company',
   {

@@ -75,6 +75,9 @@ export abstract class Client {
   /** Client configuration options. */
   readonly options: Required<ClientOptions>;
 
+  /** Date when this Client instance was constructed. */
+  readonly createdAt: Date;
+
   /** Each Client may be bound to some Shard, so the queries executed via it
    * will be namespaced to this Shard. E.g. in relational databases, Shard name
    * may be a namespace (or schema) name (or "public" if the Client wasn't
@@ -154,6 +157,7 @@ export abstract class Client {
    */
   constructor(options: ClientOptions) {
     this.options = defaults({}, options, Client.DEFAULT_OPTIONS);
+    this.createdAt = new Date();
   }
 
   /**

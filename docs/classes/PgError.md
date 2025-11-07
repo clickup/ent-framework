@@ -19,7 +19,7 @@ carries suggestions, what to do next.
 
 ### new PgError()
 
-> **new PgError**(`cause`, `where`, `sql`): [`PgError`](PgError.md)
+> **new PgError**(`cause`, `where`, `sql`, `table`): [`PgError`](PgError.md)
 
 Defined in: [src/pg/PgError.ts:4](https://github.com/clickup/ent-framework/blob/master/src/pg/PgError.ts#L4)
 
@@ -30,6 +30,7 @@ Defined in: [src/pg/PgError.ts:4](https://github.com/clickup/ent-framework/blob/
 | `cause` | `undefined` \| `null` \| \{\} |
 | `where` | `string` |
 | `sql` | `string` |
+| `table` | `string` |
 
 #### Returns
 
@@ -49,6 +50,7 @@ Defined in: [src/pg/PgError.ts:4](https://github.com/clickup/ent-framework/blob/
 | <a id="abbreviation"></a> `abbreviation` | `string` |
 | <a id="comment"></a> `comment?` | `string` |
 | <a id="sql-1"></a> `sql` | `string` |
+| <a id="table-1"></a> `table` | `string` |
 
 ## Methods
 
@@ -56,7 +58,7 @@ Defined in: [src/pg/PgError.ts:4](https://github.com/clickup/ent-framework/blob/
 
 > **isFKError**(`fkName`?): `boolean`
 
-Defined in: [src/pg/PgError.ts:20](https://github.com/clickup/ent-framework/blob/master/src/pg/PgError.ts#L20)
+Defined in: [src/pg/PgError.ts:19](https://github.com/clickup/ent-framework/blob/master/src/pg/PgError.ts#L19)
 
 #### Parameters
 

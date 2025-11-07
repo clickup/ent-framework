@@ -401,7 +401,7 @@ test("inverses are NOT deleted when connection aborts at ent creation, and there
     owner_id: myCompany.id,
     slug: "pg_sleep",
     sleep: 5,
-  }).catch((e) => inspectCompact(e));
+  }).catch((e: unknown) => inspectCompact(e));
 
   await delay(2000);
   await proxyServer.abortConnections();
@@ -433,7 +433,7 @@ test("inverses are NOT deleted when connection aborts at ent creation, and inser
     owner_id: myCompany.id,
     slug: "pg_sleep",
     sleep: 5,
-  }).catch((e) => inspectCompact(e));
+  }).catch((e: unknown) => inspectCompact(e));
 
   await delay(2000);
   await proxyServer.abortConnections();

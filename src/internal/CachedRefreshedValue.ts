@@ -169,6 +169,7 @@ export class CachedRefreshedValue<TValue> {
           ? setTimeout(depsTimeoutBody, depsDelayMs).unref()
           : undefined;
       try {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.options
           .delay(maybeCall(this.options.delayMs))
           .finally(() => delayDefer.resolve());

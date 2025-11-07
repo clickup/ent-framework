@@ -83,11 +83,14 @@ export class Timeline {
   }
 
   setPos(pos: bigint, maxLagMs: number): void {
-    if (this.state !== "unknown" && this.state.pos >= pos) {
-      // We already hold a "more recent" pos, so don't need to update it.
+    if (this.state !== "unknown" && pos < this.state.pos) {
+      // Tried to set a "worse" pos than current, so just ignore both the pos
+      // and expiresAt timestamp.
       return;
     }
 
+    // Trying to set a "more recent" pos than current, or the same pos as
+    // current (e.g. when replication lag is tracked via timestamp simulation).
     this.state = { pos, expiresAt: Date.now() + maxLagMs };
   }
 

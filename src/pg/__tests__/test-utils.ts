@@ -4,7 +4,7 @@ import delay from "delay";
 import compact from "lodash/compact";
 import { Pool, type PoolConfig } from "pg";
 import waitForExpect from "wait-for-expect";
-
+import type { ClientRole } from "../../abstract/Client";
 import { Cluster } from "../../abstract/Cluster";
 import type { Loggers } from "../../abstract/Loggers";
 import type { Query } from "../../abstract/Query";
@@ -210,6 +210,7 @@ export const TEST_CONFIG: PoolConfig & {
   nameSuffix: string | undefined;
   isAlwaysLaggingReplica: boolean;
   loggers: Loggers;
+  role?: ClientRole;
 } = {
   host: process.env["PGHOST"] || process.env["DB_HOST_DEFAULT"],
   port:
@@ -273,7 +274,13 @@ export class TestPool extends Pool {
  */
 export const testCluster = new Cluster({
   islands: TEST_ISLANDS,
-  createClient: ({ nameSuffix, isAlwaysLaggingReplica, loggers, ...config }) =>
+  createClient: ({
+    nameSuffix,
+    isAlwaysLaggingReplica,
+    loggers,
+    role,
+    ...config
+  }) =>
     new TestPgClient({
       name:
         `test-pool(replica=${isAlwaysLaggingReplica})` +
@@ -281,7 +288,9 @@ export const testCluster = new Cluster({
       loggers,
       ...(isAlwaysLaggingReplica
         ? { role: "replica", maxReplicationLagMs: 1e10 }
-        : {}),
+        : role
+          ? { role, maxReplicationLagMs: 10000 }
+          : {}),
       config,
       createPool: (config) => new TestPool(config),
     }),
@@ -289,6 +298,7 @@ export const testCluster = new Cluster({
     swallowedErrorLogger: jest.fn(),
     clientQueryLogger: jest.fn(),
     runOnShardErrorLogger: jest.fn(),
+    clientEndLogger: jest.fn(),
   },
   shardNamer: new PgShardNamer({
     nameFormat: "sh%04d",

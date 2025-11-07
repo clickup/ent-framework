@@ -53,6 +53,7 @@ Initializes an instance of PgClient.
 
 | Property | Type | Default value | Description |
 | ------ | ------ | ------ | ------ |
+| <a id="createdat"></a> `createdAt` | `Date` | `undefined` | Date when this Client instance was constructed. |
 | <a id="default_options"></a> `DEFAULT_OPTIONS` | `Required`\<`PickPartial`\<[`PgClientOptions`](../interfaces/PgClientOptions.md)\<`Pool`\>\>\> | `undefined` | Default values for the constructor options. |
 | <a id="options-1"></a> `options` | `Required`\<[`PgClientOptions`](../interfaces/PgClientOptions.md)\<`TPool`\>\> | `undefined` | PgClient configuration options. |
 | <a id="shardname"></a> `shardName` | `string` | `"public"` | Name of the shard associated to this Client. |
@@ -64,7 +65,7 @@ Initializes an instance of PgClient.
 
 > **batcher**\<`TInput`, `TOutput`, `TTable`\>(`_QueryClass`, `_schema`, `_additionalShape`, `disableBatching`, `runnerCreator`): [`Batcher`](Batcher.md)\<`TInput`, `TOutput`\>
 
-Defined in: [src/abstract/Client.ts:185](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L185)
+Defined in: [src/abstract/Client.ts:189](https://github.com/clickup/ent-framework/blob/master/src/abstract/Client.ts#L189)
 
 Batcher is per-Client per-query-type
 per-table-name-and-shape-and-disableBatching:
@@ -335,7 +336,7 @@ full-text dictionaries).
 
 > **pool**(`subPoolConfig`?): `TPool`
 
-Defined in: [src/pg/PgClient.ts:428](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L428)
+Defined in: [src/pg/PgClient.ts:430](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L430)
 
 Returns a default pool (when subPoolConfig is not passed), or a "sub-pool"
 (a named low-level Pool implementation compatible to node-postgres). The
@@ -363,7 +364,7 @@ database-agnostic Client API.
 
 > **acquireConn**(`subPoolConfig`?): `Promise`\<[`PgClientConn`](../interfaces/PgClientConn.md)\<`TPool`\>\>
 
-Defined in: [src/pg/PgClient.ts:487](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L487)
+Defined in: [src/pg/PgClient.ts:489](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L489)
 
 Called when the Client needs a connection in the default pool (when
 subPoolConfig is not passed), or in a sub-pool (see pool() method) to run a
@@ -391,7 +392,7 @@ database-agnostic Client API.
 
 > **query**\<`TRow`\>(`__namedParameters`): `Promise`\<`TRow`[]\>
 
-Defined in: [src/pg/PgClient.ts:511](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L511)
+Defined in: [src/pg/PgClient.ts:513](https://github.com/clickup/ent-framework/blob/master/src/pg/PgClient.ts#L513)
 
 Sends a query (internally, a multi-query) through the default Pool (if
 subPoolConfig is not passed), or through a named sub-pool (see pool()

@@ -11,9 +11,11 @@ const vcTestGuest =
 /**
  * Creates a test VC.
  */
-export function createVC(): VC {
+export function createVC(noCache?: "no-cache"): VC {
   const vc = vcTestGuest
-    .withFlavor(new VCWithQueryCache({ maxQueries: 1000 }))
+    .withFlavor(
+      noCache ? undefined : new VCWithQueryCache({ maxQueries: 1000 }),
+    )
     .withDefaultFreshness();
   return vc;
 }

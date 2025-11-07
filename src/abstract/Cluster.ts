@@ -88,6 +88,10 @@ export interface ClusterOptions<TClient extends Client, TNode> {
    * may reach several seconds, since some DBs shut down the old master and
    * promote some replica to it not simultaneously. */
   runOnShardErrorRediscoverIslandDelayMs?: MaybeCallable<number>;
+  /** Delay the Client ending when this Client got removed from the Cluster.
+   * This allows to lower the number of client_is_ended errors in case a Client
+   * instance gets captured somewhere in the application code. */
+  clientEndDelayMs?: MaybeCallable<number>;
 }
 
 /**
@@ -135,6 +139,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
     runOnShardErrorRetryCount: 2,
     runOnShardErrorRediscoverClusterDelayMs: 1000,
     runOnShardErrorRediscoverIslandDelayMs: 5000,
+    clientEndDelayMs: 10000,
   };
 
   /** The complete registry of all initialized Clients. Cluster nodes may change
@@ -196,9 +201,11 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
         };
         return client;
       },
-      end: async (client) => {
+      end: async (client, key, node) => {
+        await delay(maybeCall(this.options.clientEndDelayMs));
         const startTime = performance.now();
-        await client.end().catch((error) =>
+        this.options.loggers.clientEndLogger?.({ client, key, node });
+        await client.end().catch((error: unknown) =>
           this.options.loggers.swallowedErrorLogger({
             where: `${this.constructor.name}.clientRegistry`,
             error,
@@ -523,7 +530,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
           2,
       ),
       "Timed out while waiting for whole-Cluster Shards discovery.",
-    ).catch((error) =>
+    ).catch((error: unknown) =>
       this.options.loggers.swallowedErrorLogger({
         where: `${this.constructor.name}.rediscoverCluster`,
         error,
@@ -556,7 +563,7 @@ export class Cluster<TClient extends Client, TNode = DesperateAny> {
           2,
       ),
       `Timed out while waiting for Island ${island.no} Shards discovery.`,
-    ).catch((error) =>
+    ).catch((error: unknown) =>
       this.options.loggers.swallowedErrorLogger({
         where: `${this.constructor.name}.rediscoverIsland(${island.no})`,
         error,

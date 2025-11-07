@@ -380,18 +380,18 @@ test("insert de-batches pg error", async () => {
       shard,
       // should succeed
       schema.insert({ name: "some", url_name: null }),
-    ).catch((e) => e),
+    ).catch((e: unknown) => e),
     shardRun(
       shard,
       // should fail with FK constraint error
       schema.insert({ name: "other", url_name: null, parent_id: "0" }),
-    ).catch((e) => e),
+    ).catch((e: unknown) => e),
   ]);
   master.toMatchSnapshot();
   expect(typeof res1).toEqual("string");
   expect(res2).toBeInstanceOf(PgError);
-  expect(res2.isFKError()).toBeTruthy();
-  expect(res2.isFKError("fk_parent_id")).toBeTruthy();
+  expect((res2 as PgError).isFKError()).toBeTruthy();
+  expect((res2 as PgError).isFKError("fk_parent_id")).toBeTruthy();
 });
 
 test("insert de-batches pg error: data type: varchar", async () => {
@@ -400,17 +400,17 @@ test("insert de-batches pg error: data type: varchar", async () => {
       shard,
       // should succeed
       schema.insert({ name: "some", url_name: null }),
-    ).catch((e) => e),
+    ).catch((e: unknown) => e),
     shardRun(
       shard,
       // should fail with "value too long for type character varying" error
       schema.insert({ name: `l${"o".repeat(1024)}g`, url_name: null }),
-    ).catch((e) => e),
+    ).catch((e: unknown) => e),
   ]);
   master.toMatchSnapshot();
   expect(typeof res1).toEqual("string");
   expect(res2).toBeInstanceOf(PgError);
-  expect(res2.message).toContain("value too long for type character varying");
+  expect(`${res2}`).toContain("value too long for type character varying");
 });
 
 test("insert de-batches pg error: data type: bigint", async () => {
@@ -419,7 +419,7 @@ test("insert de-batches pg error: data type: bigint", async () => {
       shard,
       // should succeed
       schema.insert({ name: "some", url_name: null }),
-    ).catch((e) => e),
+    ).catch((e: unknown) => e),
     shardRun(
       shard,
       // should fail with "invalid input syntax for type bigint" error
@@ -428,12 +428,12 @@ test("insert de-batches pg error: data type: bigint", async () => {
         url_name: null,
         id: "not a bigint",
       }),
-    ).catch((e) => e),
+    ).catch((e: unknown) => e),
   ]);
   master.toMatchSnapshot();
   expect(typeof res1).toEqual("string");
   expect(res2).toBeInstanceOf(PgError);
-  expect(res2.message).toContain("invalid input syntax for type bigint");
+  expect(`${res2}`).toContain("invalid input syntax for type bigint");
 });
 
 test("upsert single", async () => {

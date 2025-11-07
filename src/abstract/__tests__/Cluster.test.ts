@@ -55,13 +55,13 @@ test("Shard is not discoverable error when connection got stuck", async () => {
     shard.client(MASTER),
   ])
     .then(() => null)
-    .catch((error: Error) => error.toString());
+    .catch((error: unknown) => `${error}`);
   expect(error1?.replace(/\d{3,}/g, "NNN")).toMatchSnapshot();
 
   const error2 = await shard
     .client(MASTER)
     .then(() => null)
-    .catch((error: Error) => error.toString());
+    .catch((error: unknown) => `${error}`);
   expect(error2?.replace(/\d{3,}/g, "NNN")).toMatchSnapshot();
 });
 
@@ -70,7 +70,7 @@ test("Shard is not discoverable error when no such shard", async () => {
   const error = await shard
     .client(MASTER)
     .then(() => null)
-    .catch((error) => error.toString() as string);
+    .catch((error: unknown) => `${error}`);
   expect(error?.replace(/\d{3,}/g, "NNN")).toEqual(
     "ShardIsNotDiscoverableError: Shard NNN is not discoverable: no such Shard in the Cluster? some Islands are down? connections limit?",
   );

@@ -95,6 +95,7 @@
 - [ClientQueryLoggerProps](interfaces/ClientQueryLoggerProps.md)
 - [SwallowedErrorLoggerProps](interfaces/SwallowedErrorLoggerProps.md)
 - [RunOnShardErrorLoggerProps](interfaces/RunOnShardErrorLoggerProps.md)
+- [ClientEndLoggerProps](interfaces/ClientEndLoggerProps.md)
 - [Query](interfaces/Query.md)
 - [QueryAnnotation](interfaces/QueryAnnotation.md)
 - [SchemaClass](interfaces/SchemaClass.md)

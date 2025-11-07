@@ -163,7 +163,7 @@ export class LocalCache<TValue extends {} = never> {
    * periodically.
    */
   private onCleanupTimer(): void {
-    this.cleanup().catch((error) =>
+    this.cleanup().catch((error: unknown) =>
       this.options.loggers.swallowedErrorLogger?.({
         where: `${this.constructor.name}.cleanup`,
         error,

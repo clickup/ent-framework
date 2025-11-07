@@ -1,4 +1,4 @@
-import { copyStack, indent, inspectCompact } from "../../internal/misc";
+import { indent, inspectCompact, appendCause } from "../../internal/misc";
 
 /**
  * Standard Schema V1 compatible error result. Every EntAccessError can be
@@ -43,7 +43,7 @@ export class EntAccessError extends Error {
 
     if (cause instanceof Error) {
       this.cause = cause;
-      copyStack(this, cause);
+      appendCause(this, cause);
     } else {
       this.cause = cause ? causeToString(cause) : null;
     }

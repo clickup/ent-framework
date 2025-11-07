@@ -1,5 +1,5 @@
 import type { MaybeError } from "../internal/misc";
-import { addSentenceSuffixes, copyStack } from "../internal/misc";
+import { addSentenceSuffixes, appendCause } from "../internal/misc";
 
 /**
  * The suggested action, what can we do when facing a ClientError.
@@ -66,7 +66,7 @@ export class ClientError extends Error {
     if (typeof cause === "string") {
       this.cause = Error(cause);
     } else {
-      copyStack(this, cause);
+      appendCause(this, cause);
     }
 
     this.stack += `\n    on ${where}`;

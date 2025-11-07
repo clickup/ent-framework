@@ -13,7 +13,7 @@ Defined in: [src/abstract/LocalCache.ts:8](https://github.com/clickup/ent-framew
 | Property | Type | Description |
 | ------ | ------ | ------ |
 | <a id="dir"></a> `dir` | `string` | Directory to store the cache in (auto-created). |
-| <a id="loggers"></a> `loggers` | `Pick`\<[`Loggers`](Loggers.md), `"swallowedErrorLogger"`\> | Loggers for e.g. swallowed errors. |
+| <a id="loggers"></a> `loggers` | `Pick`\<[`Loggers`](Loggers.md)\<`any`\>, `"swallowedErrorLogger"`\> | Loggers for e.g. swallowed errors. |
 | <a id="expirationms"></a> `expirationMs?` | `number` | Max time (approximately) for an unread key to exist. |
 | <a id="ext"></a> `ext?` | `string` | Extension of cache files (without dot). |
 | <a id="cleanupjitter"></a> `cleanupJitter?` | `number` | Jitter for cleanup runs. |

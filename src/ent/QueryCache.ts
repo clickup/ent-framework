@@ -1,8 +1,10 @@
 import QuickLRU from "quick-lru";
 import { MASTER } from "../abstract/Shard";
+import { appendCaller } from "../internal/misc";
 import type { VC } from "./VC";
 import { VCWithQueryCache } from "./VCFlavor";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const OPS = [
   "loadNullable",
   "loadByNullable",
@@ -149,6 +151,10 @@ export class QueryCache {
       this.set(EntClass, op, key, value);
     }
 
-    return value;
+    try {
+      return await value;
+    } catch (e) {
+      throw appendCaller(e);
+    }
   }
 }

@@ -115,7 +115,7 @@ Defined in: [src/abstract/Timeline.ts:85](https://github.com/clickup/ent-framewo
 
 > **isCaughtUp**(`replicaPos`): [`TimelineCaughtUpReason`](../type-aliases/TimelineCaughtUpReason.md)
 
-Defined in: [src/abstract/Timeline.ts:94](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L94)
+Defined in: [src/abstract/Timeline.ts:97](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L97)
 
 #### Parameters
 
@@ -133,7 +133,7 @@ Defined in: [src/abstract/Timeline.ts:94](https://github.com/clickup/ent-framewo
 
 > **reset**(): `void`
 
-Defined in: [src/abstract/Timeline.ts:104](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L104)
+Defined in: [src/abstract/Timeline.ts:107](https://github.com/clickup/ent-framework/blob/master/src/abstract/Timeline.ts#L107)
 
 #### Returns
 

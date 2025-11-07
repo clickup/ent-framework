@@ -60,7 +60,7 @@ test("raw prepend hint", () => {
       [RAW_PREPEND_HINT]: "/*+IndexScan(my_table)*/",
     }),
   ).toEqual([
-    "/*+IndexScan(my_table)*/",
+    "/*+IndexScan(my_table)*/ ",
     [],
     ["SET LOCAL statement_timeout TO 42"],
   ]);

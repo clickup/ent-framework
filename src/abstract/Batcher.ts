@@ -3,7 +3,7 @@ import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import { DefaultMap } from "../internal/DefaultMap";
 import type { MaybeCallable } from "../internal/misc";
-import { maybeCall, runInVoid } from "../internal/misc";
+import { appendCaller, maybeCall, runInVoid } from "../internal/misc";
 import type { QueryAnnotation } from "./QueryAnnotation";
 import type { Runner } from "./Runner";
 
@@ -74,14 +74,14 @@ export class Batcher<TInput, TOutput> {
       if (error === undefined) {
         const outputOrDefault =
           output === undefined ? this.runner.default : output;
-        for (const { resolve } of defersOfKey) {
+        for (const defer of defersOfKey) {
           // There are typically multiple callers waiting for the query results
           // (due to e.g. same-ID queries coalescing).
-          resolve(outputOrDefault);
+          defer.resolve(outputOrDefault);
         }
       } else {
-        for (const { reject } of defersOfKey) {
-          reject(error);
+        for (const defer of defersOfKey) {
+          defer.reject(error);
         }
       }
     }
@@ -139,7 +139,9 @@ export class Batcher<TInput, TOutput> {
       );
     }
 
-    return defer.promise;
+    return defer.promise.catch((e: unknown) => {
+      throw appendCaller(e);
+    }) as Promise<TOutput>;
   }
 
   private async runSingleForEach(
@@ -153,7 +155,7 @@ export class Batcher<TInput, TOutput> {
       promises.push(
         this.runner
           .runSingle(input, annotations)
-          .catch(async (error) => {
+          .catch(async (error: unknown) => {
             const retryMs = this.runner.delayForSingleQueryRetryOnError(error);
 
             if (typeof retryMs === "number") {
@@ -170,7 +172,7 @@ export class Batcher<TInput, TOutput> {
             throw error;
           })
           .then((output) => outOutputs.set(key, output))
-          .catch((error) => outErrors.set(key, error)),
+          .catch((error: unknown) => outErrors.set(key, error)),
       );
     }
 

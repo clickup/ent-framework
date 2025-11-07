@@ -111,7 +111,7 @@ test("when rediscovery is triggered by a failed query, and connection gets stuck
   runInVoid(
     shardRun(shard, schema.insert({ name: "abc" }))
       .then(() => (shardRunResult = true))
-      .catch((e) => (shardRunResult = e)),
+      .catch((e: unknown) => (shardRunResult = e)),
   );
   await connStuckServer.waitForAtLeastConnections(1);
 

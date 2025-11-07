@@ -6,7 +6,7 @@
 
 # Interface: RunOnShardErrorLoggerProps
 
-Defined in: [src/abstract/Loggers.ts:61](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L61)
+Defined in: [src/abstract/Loggers.ts:65](https://github.com/clickup/ent-framework/blob/master/src/abstract/Loggers.ts#L65)
 
 ## Properties
 

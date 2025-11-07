@@ -224,9 +224,7 @@ export function PrimitiveMixin<
         vc.heartbeater.heartbeat(),
       ]);
 
-      if (!vc.isOmni()) {
-        await this.VALIDATION.validateInsert(vc, input);
-      }
+      await this.VALIDATION.validateInsert(vc, input);
 
       if (this.TRIGGERS.hasInsertTriggers() || this.INVERSES.length > 0) {
         // We have some triggers or inverses; that means we must generate an ID
@@ -389,9 +387,7 @@ export function PrimitiveMixin<
         );
       }
 
-      if (!vc.isOmni()) {
-        await this.VALIDATION.validateInsert(vc, input);
-      }
+      await this.VALIDATION.validateInsert(vc, input);
 
       const query = this.SCHEMA.upsert(input);
       const id = await shard.run(
@@ -617,13 +613,11 @@ export function PrimitiveMixin<
         this.vc.heartbeater.heartbeat(),
       ]);
 
-      if (!this.vc.isOmni()) {
-        await this.constructor.VALIDATION.validateUpdate(
-          this.vc,
-          this as Row<TTable>,
-          input,
-        );
-      }
+      await this.constructor.VALIDATION.validateUpdate(
+        this.vc,
+        this as Row<TTable>,
+        input,
+      );
 
       if (!shard) {
         return false;

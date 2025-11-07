@@ -46,12 +46,33 @@ beforeEach(async () => {
 test('upsert() error does not duplicate "after 1 attempt" suffix in the stack', async () => {
   const error = nullthrows(
     await join([
-      EntTestNoUniqueIndex.upsert(vc, { name: "name1" }),
-      EntTestNoUniqueIndex.upsert(vc, { name: "name2" }),
-      EntTestNoUniqueIndex.upsert(vc, { name: "name3" }),
+      join([
+        EntTestNoUniqueIndex.upsert(vc, { name: "name1" }),
+        EntTestNoUniqueIndex.upsert(vc, { name: "name2" }),
+        EntTestNoUniqueIndex.upsert(vc, { name: "name3" }),
+      ]),
+      EntTestNoUniqueIndex.upsert(vc, { name: "name4" }),
+      EntTestNoUniqueIndex.upsert(vc, { name: "name5" }),
+      join([
+        EntTestNoUniqueIndex.upsert(vc, { name: "name6" }),
+        EntTestNoUniqueIndex.upsert(vc, { name: "name7" }),
+        EntTestNoUniqueIndex.upsert(vc, { name: "name8" }),
+      ]),
     ])
       .then(() => null)
-      .catch((e: Error) => e),
+      .catch((e: unknown) => e),
   );
-  expect(error.stack).toMatch(/\n\s+on test-pool[^\n]+\n\s+after 1 attempt$/s);
+
+  const stackTraceLines = (error as Error).stack?.split("\n");
+  expect(
+    stackTraceLines?.filter((line) => line.includes("Cause:")).length,
+  ).toBe(3);
+  expect(
+    stackTraceLines?.filter((line) =>
+      line.includes("at async Promise.all (index *)"),
+    ).length,
+  ).toBe(3);
+  expect((error as Error).stack).toMatch(
+    /.*Ent.errors.test.ts.*\n\s+on test-pool.*\n\s+after 1 attempt$/s,
+  );
 });

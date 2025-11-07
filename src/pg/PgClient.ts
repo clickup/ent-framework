@@ -389,14 +389,16 @@ export class PgClient<TPool extends pg.Pool = pg.Pool> extends Client {
         const startTime = performance.now();
         range(toPrewarm).forEach(() =>
           runInVoid(
-            pool.query(maybeCall(this.options.prewarmQuery)).catch((error) =>
-              this.logSwallowedError({
-                where: `${this.constructor.name}.prewarm`,
-                error,
-                elapsed: Math.round(performance.now() - startTime),
-                importance: "normal",
-              }),
-            ),
+            pool
+              .query(maybeCall(this.options.prewarmQuery))
+              .catch((error: unknown) =>
+                this.logSwallowedError({
+                  where: `${this.constructor.name}.prewarm`,
+                  error,
+                  elapsed: Math.round(performance.now() - startTime),
+                  importance: "normal",
+                }),
+              ),
           ),
         );
       }
@@ -527,25 +529,20 @@ export class PgClient<TPool extends pg.Pool = pg.Pool> extends Client {
     batchFactor?: number;
     subPoolConfig?: PgClientSubPoolConfig;
   }): Promise<TRow[]> {
-    const {
-      rawPrepend,
-      queries,
-      queriesRollback,
-      debugQueryWithHints,
-      resultPos,
-    } = this.buildMultiQuery(
-      hints,
-      queryLiteral,
-      this.options.role === "unknown"
-        ? // For master, we read its WAL LSN (pg_current_wal_insert_lsn) after
-          // each query (notice that, when run on a replica,
-          // pg_current_wal_insert_lsn() throws, so we call it only if
-          // pg_is_in_recovery() returns false). For replica, we read its WAL
-          // LSN (pg_last_wal_replay_lsn).
-          "SELECT CASE WHEN pg_is_in_recovery() THEN NULL ELSE pg_current_wal_insert_lsn() END AS pg_current_wal_insert_lsn, pg_last_wal_replay_lsn()"
-        : undefined,
-      isWrite,
-    );
+    const { queries, queriesRollback, debugQueryWithHints, resultPos } =
+      this.buildMultiQuery(
+        hints,
+        queryLiteral,
+        this.options.role === "unknown"
+          ? // For master, we read its WAL LSN (pg_current_wal_insert_lsn) after
+            // each query (notice that, when run on a replica,
+            // pg_current_wal_insert_lsn() throws, so we call it only if
+            // pg_is_in_recovery() returns false). For replica, we read its WAL
+            // LSN (pg_last_wal_replay_lsn).
+            "SELECT CASE WHEN pg_is_in_recovery() THEN NULL ELSE pg_current_wal_insert_lsn() END AS pg_current_wal_insert_lsn, pg_last_wal_replay_lsn()"
+          : undefined,
+        isWrite,
+      );
 
     const startTime = performance.now();
     let queryTime: number | undefined = undefined;
@@ -571,7 +568,6 @@ export class PgClient<TPool extends pg.Pool = pg.Pool> extends Client {
       queryTime = Math.round(performance.now() - startTime);
       const resMulti = await this.sendMultiQuery(
         conn,
-        rawPrepend,
         queries,
         queriesRollback,
       );
@@ -665,7 +661,7 @@ export class PgClient<TPool extends pg.Pool = pg.Pool> extends Client {
       // Only wrap the errors which PG sent to us explicitly. Those errors mean
       // that there was some aborted transaction, so it's safe to retry.
       if (e?.severity) {
-        throw new PgError(e, this.options.name, debugQueryWithHints);
+        throw new PgError(e, this.options.name, debugQueryWithHints, table);
       }
 
       // Some other error which should not trigger query retries or
@@ -721,17 +717,11 @@ export class PgClient<TPool extends pg.Pool = pg.Pool> extends Client {
     epilogue: string | undefined,
     isWrite: boolean,
   ): {
-    rawPrepend: string;
     queries: string[];
     queriesRollback: string[];
     debugQueryWithHints: string;
     resultPos: number;
   } {
-    const query = escapeLiteral(literal).trimEnd();
-    if (query === "") {
-      throw Error("Empty query passed to query()");
-    }
-
     const queriesPrologue: string[] = [];
     const queriesEpilogue: string[] = [];
     const queriesRollback: string[] = [];
@@ -741,14 +731,20 @@ export class PgClient<TPool extends pg.Pool = pg.Pool> extends Client {
       hints,
     );
 
+    const rawQuery = escapeLiteral(literal).trimEnd();
+    if (rawQuery === "") {
+      throw Error("Empty query passed to query()");
+    }
+
+    const query = rawPrepend + rawQuery;
+
     // Prepend per-query hints to the prologue (if any); they will be logged.
     queriesPrologue.unshift(...hintQueries);
 
     // The query which is logged to the logging infra. For more brief messages,
     // we don't log internal hints (this.hints) and search_path; see below.
     const debugQueryWithHints =
-      `${rawPrepend}/*${this.shardName}*/` +
-      [...queriesPrologue, query].join("; ").trim();
+      `/*${this.shardName}*/` + [...queriesPrologue, query].join("; ").trim();
 
     // Prepend internal per-Client hints to the prologue.
     queriesPrologue.unshift(...hintQueriesDefault);
@@ -778,7 +774,6 @@ export class PgClient<TPool extends pg.Pool = pg.Pool> extends Client {
     }
 
     return {
-      rawPrepend,
       queries: [...queriesPrologue, query, ...queriesEpilogue],
       queriesRollback,
       debugQueryWithHints,
@@ -798,15 +793,14 @@ export class PgClient<TPool extends pg.Pool = pg.Pool> extends Client {
    */
   private async sendMultiQuery(
     conn: PgClientConn<TPool>,
-    rawPrepend: string,
     queries: string[],
     queriesRollback: string[],
   ): Promise<pg.QueryResult[]> {
-    const queriesStr = `${rawPrepend}/*${this.shardName}*/${queries.join("; ")}`;
+    const queriesStr = `/*${this.shardName}*/${queries.join("; ")}`;
 
     // For multi-query, query() actually returns an array of pg.QueryResult, but
     // it's not reflected in its TS typing, so patching this.
-    const resMulti = (await conn.query(queriesStr).catch(async (e) => {
+    const resMulti = (await conn.query(queriesStr).catch(async (e: unknown) => {
       // We must run a ROLLBACK if we used BEGIN in the queries, because
       // otherwise the connection is released to the pool in "aborted
       // transaction" state (see the protocol link above).

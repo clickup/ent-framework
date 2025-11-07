@@ -103,7 +103,7 @@ test("retries on another replica if connection is aborted mid-query", async () =
       op: "test",
       table: "test",
     })
-    .catch((e) => e);
+    .catch((e: unknown) => e);
 
   await proxyServer.waitForAtLeastConnections(1);
   await proxyServer.abortConnections();

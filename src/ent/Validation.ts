@@ -160,6 +160,10 @@ export class Validation<TTable extends Table> {
       | typeof EntNotInsertableError
       | typeof EntNotUpdatableError,
   ): Promise<void> {
+    if (vc.isOmni()) {
+      return;
+    }
+
     this.validateTenantUserIDImpl(vc, row, ExceptionClass);
 
     const { allow, cause } =
